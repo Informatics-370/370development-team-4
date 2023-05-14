@@ -1,0 +1,27 @@
+
+<h1>View Sizes</h1>
+<table class="sizeTable">
+  <thead>
+    <tr>
+      <th>Width</th>
+      <th>Height</th>
+      <th>Length</th>
+      <th>Volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of sizes">
+      <td>{{ item.width }}</td>
+      <td>{{ item.height }}</td>
+      <td>{{ item.length }}</td>
+      <td>{{ item.volume }}</td>
+
+      <td>
+
+       <!--<a type="button" class="btn btn-success" [routerLink]="['/edit-course', item.sizeId]">Edit Size</a>--> 
+        <button type="button" class="btn btn-secondary" (click)="deleteSize(item)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<router-outlet></router-outlet>
