@@ -13,3 +13,4 @@ namespace BOX.Models
 
 	}
 }
+//For the sake of simplicity I will be editing the Size class with a comment so that it does not change the integrity or data of anything in this class. I will be pushing this to dev but there must be a whole pull request process, which I am still figuring out-- Kuziwa
