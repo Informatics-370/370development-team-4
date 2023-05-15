@@ -6,21 +6,27 @@ namespace BOX.Models
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
 			//This sets the composite key for the Estimate Line Entity and does the same for the remaining Associative entities
 			modelBuilder.Entity<Estimate_Line>()
-	 .HasKey(e => new { e.CustomerID , e.EstimateID});
+	 .HasKey(e => new { e.CustomerID, e.EstimateID });
 
 			modelBuilder.Entity<Customer_Order_Line>()
-	 .HasKey(e => new { e.CustomerOrderID, e.FixedProductID,e.CustomProductID });
+	 .HasKey(e => new { e.CustomerOrderID, e.FixedProductID, e.CustomProductID });
 
 			modelBuilder.Entity<Supplier_OrderLine>()
-	 .HasKey(e => new { e.SupplierOrderID, e.FixedProductID,e.RawMaterialID });
+	 .HasKey(e => new { e.SupplierOrderID, e.FixedProductID, e.RawMaterialID });
 
 			modelBuilder.Entity<User_Role_Permission>()
 	 .HasKey(e => new { e.RoleId, e.UserPermissionID });
+
+			modelBuilder.Entity<Category_Size_Variables>()
+ .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
+
+			modelBuilder.Entity<FixedProductSize>()
+ .HasKey(e => new { e.SizeID,e.FixedProductID });
 		}
 
 		public DbSet<Admin> Admin { get; set; }
@@ -46,8 +52,6 @@ namespace BOX.Models
 		public DbSet<Estimate_Line> Estimate_Line { get; set; }
 
 		public DbSet<Estimate_Status> Estimate_Status { get; set; }
-
-		public DbSet<Fixed_Price> Fixed_Price { get; set; }
 
 		public DbSet<FixedProductSize> FixedProductSize { get; set; }
 
@@ -78,6 +82,9 @@ namespace BOX.Models
 		public DbSet<Write_Off_Reason> Write_Off_Reason { get; set; }
 		public DbSet<Customer_Order_Line> Customer_Order_Line { get; set; }
 		public DbSet<User_Role_Permission> User_Role_Permission { get; set; }
+		public DbSet<Size_Variables> Size_Variables { get; set; }
+		public DbSet<Category_Size_Variables> Category_Size_Variables { get; set; }
+
 
 
 
