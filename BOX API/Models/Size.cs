@@ -10,6 +10,10 @@ namespace BOX.Models
 		[Required] public decimal Length { get; set; }
 		[Required] public decimal Weight { get; set; }
 		[Required] public decimal Volume { get; set; }
-
+		//Random comment. Testing 8, 8, 8
 	}
 }
+
+
+
+//boom bam
