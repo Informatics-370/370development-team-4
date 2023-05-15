@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace BOX.Models
-{
+{//Hello world
 	public class Size
 	{
 		[Key] public int SizeID { get; set; }
