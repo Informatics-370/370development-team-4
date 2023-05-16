@@ -160,7 +160,7 @@ namespace BOX.Migrations
                 column: "SizeID",
                 principalTable: "Size",
                 principalColumn: "SizeID",
-                onDelete: ReferentialAction.NoAction
+                onDelete: ReferentialAction.NoAction);
         }
     }
 }

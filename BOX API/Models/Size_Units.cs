@@ -2,7 +2,7 @@
 
 namespace BOX.Models
 {//Hello world
-	public class Size
+	public class Size_Units
 	{
 		[Key] public int SizeID { get; set; }
 		[Required] public decimal Width { get; set; }

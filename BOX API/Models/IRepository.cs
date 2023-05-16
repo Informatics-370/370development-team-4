@@ -10,8 +10,8 @@ namespace BOX.Models
     
     // For our basic CRUDS these are the standard functions we will be creating for the Models we scaffold.
     // Please do not forget to add these.
-    Task<Size[]> GetAllSizesAsync();
-    Task<Size> GetSizeAsync(int sizeId);
+    Task<Size_Units[]> GetAllSizesAsync();
+    Task<Size_Units> GetSizeAsync(int sizeId);
 
 
     

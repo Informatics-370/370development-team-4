@@ -25,8 +25,7 @@ namespace BOX.Models
 			modelBuilder.Entity<Category_Size_Variables>()
  .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
 
-			modelBuilder.Entity<FixedProductSize>()
- .HasKey(e => new { e.SizeID,e.FixedProductID });
+		
 		}
 
 		public DbSet<Admin> Admin { get; set; }
@@ -53,8 +52,6 @@ namespace BOX.Models
 
 		public DbSet<Estimate_Status> Estimate_Status { get; set; }
 
-		public DbSet<FixedProductSize> FixedProductSize { get; set; }
-
 		public DbSet<Order_Delivery_Schedule> Order_Delivery_Schedule { get; set; }
 
 		public DbSet<Payment> Payment { get; set; }
@@ -67,7 +64,7 @@ namespace BOX.Models
 		public DbSet<QR_Code> QR_Code { get; set; }
 		public DbSet<Raw_Material> Raw_Material { get; set; }
 		public DbSet<Role> Role { get; set; }
-		public DbSet<Size> Size { get; set; }
+		public DbSet<Size_Units> Size_Units { get; set; }
 		public DbSet<Stock_Take> Stock_Take { get; set; }
 		public DbSet<Supplier> Supplier { get; set; }
 		public DbSet<Supplier_Order> Supplier_Order { get; set; }
