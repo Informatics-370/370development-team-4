@@ -55,7 +55,7 @@ namespace BOX.Controllers
     [Route("AddSize")]
     public async Task<IActionResult> AddSize(SizeViewModel svm)
     {
-      var size = new Size { Width = svm.Width,Height=svm.Height,Length=svm.Length,Weight=svm.Weight,Volume=svm.Volume };
+      var size = new Size_Units { Width = svm.Width,Height=svm.Height,Length=svm.Length,Weight=svm.Weight,Volume=svm.Volume };
 
       try
       {

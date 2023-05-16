@@ -25,15 +25,15 @@ namespace BOX.Models
     }
       
     //Gets all Sizes
-    public async Task<Size[]> GetAllSizesAsync()
+    public async Task<Size_Units[]> GetAllSizesAsync()
     {
-      IQueryable<Size> query = _appDbContext.Size;
+      IQueryable<Size_Units> query = _appDbContext.Size_Units;
       return await query.ToArrayAsync();
     }
     //Gets one Size according to the ID
-    public async Task<Size> GetSizeAsync(int sizeId)
+    public async Task<Size_Units> GetSizeAsync(int sizeId)
     {
-      IQueryable<Size> query = _appDbContext.Size.Where(c => c.SizeID == sizeId);
+      IQueryable<Size_Units> query = _appDbContext.Size_Units.Where(c => c.SizeID == sizeId);
       return await query.FirstOrDefaultAsync();
     }
 
