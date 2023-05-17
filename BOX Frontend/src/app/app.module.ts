@@ -5,14 +5,18 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
+import { EditScreenComponent } from './edit-screen/edit-screen.component';
+
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { ProductItemTestComponent } from './product-item-test/product-item-test.component';
 
 @NgModule({
-  declarations: [
+  declarations: [ 
     AppComponent,
     DashboardComponent,
-    RegisterComponent
+    RegisterComponent,
+    ProductItemTestComponent
   ],
   imports: [
     BrowserModule,

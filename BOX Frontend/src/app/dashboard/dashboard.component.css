@@ -20,3 +20,7 @@ button {
     color: black;
     font-weight: 1000;
 }
+
+.card[data-clickable=true] {
+    cursor: pointer;
+}
