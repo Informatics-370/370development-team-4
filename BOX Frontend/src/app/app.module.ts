@@ -7,12 +7,14 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
-    RegisterComponent
+    RegisterComponent,
+    ViewHelpInventoryComponent
   ],
   imports: [
     BrowserModule,
