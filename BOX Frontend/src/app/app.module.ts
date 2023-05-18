@@ -9,14 +9,18 @@ import { EditScreenComponent } from './edit-screen/edit-screen.component';
 
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
 import { ProductItemTestComponent } from './product-item-test/product-item-test.component';
+
 
 @NgModule({
   declarations: [ 
     AppComponent,
     DashboardComponent,
-    RegisterComponent,
-    ProductItemTestComponent
+        RegisterComponent,
+       ProductItemTestComponent,
+        ViewHelpInventoryComponent
+
   ],
   imports: [
     BrowserModule,
