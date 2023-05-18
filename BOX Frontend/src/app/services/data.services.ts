@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { map, Observable, Subject } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Size } from '../shared/Size';
+import { Category } from '../shared/category';
 
 imports:[
   HttpClientModule
@@ -54,6 +55,11 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
   );
 }
 
+  //------------PRODUCT CATEGORY------------ [Give it its own service?]
+  GetCategories(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}ProductCategory/GetAllCategories`)
+    .pipe(map(result => result))
+  }
 
 }
 
