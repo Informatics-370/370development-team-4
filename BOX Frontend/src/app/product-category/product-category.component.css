@@ -1,0 +1,26 @@
+.fa-icon-large {
+    font-size: 75px;
+    color: #FFFFFF;
+}
+
+h1, h2, h3, h4, h5, h6, label {
+    color: #FFFFFF;
+}
+
+button {
+    width: 200px;
+    height: 47px;
+    color: black;
+    font-weight: 1000;
+    background-color: #DDDDDD;
+}
+
+.active {
+    background-color: #00F2C8;
+    color: black;
+    font-weight: 1000;
+}
+
+.card[data-clickable=true] {
+    cursor: pointer;
+}
