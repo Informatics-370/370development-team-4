@@ -101,5 +101,73 @@ namespace BOX.Controllers
 
             
         }
+
+        [HttpPut]
+        [Route("UpdateCategory/{categoryId}")]
+        public async Task<ActionResult<CategoryViewModel>> UpdateCategory(int categoryId, CategoryViewModel categoryVM)
+        {
+            try
+            {
+                //find the category
+                var existingCategory = await _repository.GetCategoryAsync(categoryId);
+                if (existingCategory == null) return NotFound("The category does not exist on the B.O.X System");
+
+                //find the category_size_variable
+                var existingCatSizeVar = await _repository.GetCategorySizeVariablesAsync(categoryId);
+                if (existingCatSizeVar == null) return NotFound("The category does not exist on the B.O.X System");
+
+                //use that to find the size variable
+                var existingSizeVar = await _repository.GetSizeVariableAsync(existingCatSizeVar.SizeVariablesID);
+                if (existingSizeVar == null) return NotFound("The size variable does not exist on the B.O.X System");
+                                
+                existingCategory.Description = categoryVM.CategoryDescription; //update the category
+                //update the size variables
+                existingSizeVar.Width = categoryVM.Width;
+                existingSizeVar.Length = categoryVM.Length;
+                existingSizeVar.Height = categoryVM.Height;
+                existingSizeVar.Weight = categoryVM.Weight;
+                existingSizeVar.Volume = categoryVM.Volume;
+
+                if (await _repository.SaveChangesAsync())
+                    return Ok(categoryVM);
+            }
+            catch (Exception)
+            { return StatusCode(500, "Internal Server Error. Please contact B.O.X support."); }
+
+            return BadRequest("Your request is invalid.");
+        }
+
+        [HttpDelete]
+        [Route("DeleteCategory/{categoryId}")]
+        public async Task<IActionResult> DeleteCategory(int categoryId)
+        {
+            try
+            {
+                //find the category
+                var existingCategory = await _repository.GetCategoryAsync(categoryId);
+                if (existingCategory == null) return NotFound("The category does not exist on the B.O.X System");
+
+                //find the category_size_variable
+                var existingCatSizeVar = await _repository.GetCategorySizeVariablesAsync(categoryId);
+                if (existingCatSizeVar == null) return NotFound("The category does not exist on the B.O.X System");
+
+                //use that to find the size variable
+                var existingSizeVar = await _repository.GetSizeVariableAsync(existingCatSizeVar.SizeVariablesID);
+                if (existingSizeVar == null) return NotFound("The size variable does not exist on the B.O.X System");
+
+                //delete category, size variable and category_size_variable record in associative entity
+                _repository.Delete(existingCategory);
+                _repository.Delete(existingSizeVar);
+                _repository.Delete(existingCatSizeVar);
+
+                if (await _repository.SaveChangesAsync()) return Ok(existingCatSizeVar);
+
+            }
+            catch (Exception)
+            { return StatusCode(500, "Internal Server Error. Please contact B.O.X support."); }
+
+            return BadRequest("Your request is invalid.");
+        }
+
     }
 }
