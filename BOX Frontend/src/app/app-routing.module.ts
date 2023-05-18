@@ -1,12 +1,14 @@
-import { NgModule, ViewChildren } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ViewScreenComponent } from './view-screen/view-screen.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { RegisterComponent } from './register/register.component';
+import { ProductItemTestComponent } from './product-item-test/product-item-test.component';
 
 const routes: Routes = [
-  { path: 'Size', component: ViewScreenComponent},
-  //{ path: 'edit-course/:id', component: EditcourseComponent },
- // { path: '', redirectTo: 'Size', pathMatch: 'full' },
-
+  { path:"", redirectTo:'register', pathMatch:'full' },
+  { path:"dashboard", component: DashboardComponent },
+  { path:"register", component: RegisterComponent },
+  { path:"product-item", component: ProductItemTestComponent}
 ];
 
 @NgModule({

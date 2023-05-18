@@ -1,0 +1,71 @@
+<div class="row">
+    <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
+        <div class="container">
+            <div class="text-center pt-3">
+                <h2>Menu</h2>
+            </div>
+            <pre></pre>
+            <pre></pre>
+            <pre></pre>
+            
+            <div class="text-center">
+                <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
+                    Dashboard
+                </button><pre></pre>
+                <button class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
+                    Product Category
+                </button><pre></pre>
+                <button class="btn btn-info active text-start">
+                    <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
+                    Product Item
+                </button><pre></pre>
+                <button class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'tape']"></fa-icon>
+                    Size
+                </button><pre></pre>
+                <button class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'box']"></fa-icon>
+                    Product
+                </button><pre></pre>
+            </div>
+        </div>
+    </div>
+
+    <!--Right Side-->
+    <div class="col-md-9">
+        <h3 class="p-3" style="color: black;">View Product Item</h3>
+        <hr class="hr hr-blurry m-3" />
+        <button class="btn btn-create">Create Product Item</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col">Product Item</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <fa-icon class="m-3" [icon]="['fas', 'trash']"></fa-icon>
+                        <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                    </td>
+                    <td>
+                        Double-wall box
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <fa-icon class="m-3" [icon]="['fas', 'trash']"></fa-icon>
+                        <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                    </td>
+                    <td>
+                        30 Micron plastic
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
