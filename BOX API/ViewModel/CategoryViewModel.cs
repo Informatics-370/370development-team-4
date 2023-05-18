@@ -6,6 +6,7 @@
         public bool Width { get; set; }
         public bool Height { get; set; }
         public bool Length { get; set; }
+        public bool Weight { get; set; }
         public bool Volume { get; set; }
     }
 }

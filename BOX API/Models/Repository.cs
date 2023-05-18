@@ -50,6 +50,18 @@ namespace BOX.Models
         return await query.FirstOrDefaultAsync();
     }
 
+    public async Task<Size_Variables> GetSizeVariableAsync(int sizeVarId) //Get size variable by ID
+    {
+        IQueryable<Size_Variables> query = _appDbContext.Size_Variables.Where(c => c.SizeVariablesID == sizeVarId);
+        return await query.FirstOrDefaultAsync();
+    }
+
+    public async Task<Category_Size_Variables> GetCategorySizeVariablesAsync(int catId) //Get category_size_variable by category ID
+    {
+        IQueryable<Category_Size_Variables> query = _appDbContext.Category_Size_Variables.Where(c => c.CategoryID == catId);
+            return await query.FirstOrDefaultAsync();
+    }
+
     //-----------------------PRODUCT ITEM-----------------------
     public async Task<Product_Item[]> GetAllItemsAsync() //Gets all items
     {
