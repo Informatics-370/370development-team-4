@@ -1,26 +1,19 @@
-.fa-icon-large {
-    font-size: 75px;
-    color: #FFFFFF;
+@import "../dashboard/dashboard.component.css";
+
+.btn-create {
+    background-color: #D6AD60;
+    color: #FFF;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 25px;
+    width: fit-content;
 }
 
-h1, h2, h3, h4, h5, h6, label {
-    color: #FFFFFF;
+.btn-create:hover {
+    background-color: #a78444;
+    color: #FFF;
 }
 
-button {
-    width: 200px;
-    height: 47px;
-    color: black;
-    font-weight: 1000;
-    background-color: #DDDDDD;
-}
-
-.active {
-    background-color: #00F2C8;
-    color: black;
-    font-weight: 1000;
-}
-
-.card[data-clickable=true] {
-    cursor: pointer;
+.table {
+    margin-left: 25px;
 }

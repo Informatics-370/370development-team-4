@@ -1,5 +1,5 @@
-<!--DASHBOARD-->
 <div class="row">
+    <!--DASHBOARD-->
     <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
         <div class="container">
             <div class="text-center pt-3">
@@ -36,6 +36,36 @@
 
     <!-- RIGHT SIDE- i.e. PAGE CONTENT -->
     <div class="col-md-9">
-        <p>product-category works!</p>
+        <h3 class="p-3" style="color: black;">View Product Category</h3>
+        <hr class="hr hr-blurry m-3" />
+        <button class="btn btn-create">Create Product Category</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col">Product Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <fa-icon class="m-3" [icon]="['fas', 'trash']"></fa-icon>
+                        <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                    </td>
+                    <td>
+                        Box
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <fa-icon class="m-3" [icon]="['fas', 'trash']"></fa-icon>
+                        <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                    </td>
+                    <td>
+                        Plastic
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>

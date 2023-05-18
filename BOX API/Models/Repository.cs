@@ -37,10 +37,23 @@ namespace BOX.Models
       return await query.FirstOrDefaultAsync();
     }
 
+    //-------------------------PRODUCT CATEGORY-------------------------
+    public async Task<Product_Category[]> GetAllCategoriesAsync() //Gets all categories
+    {
+        IQueryable<Product_Category> query = _appDbContext.Product_Category;
+        return await query.ToArrayAsync();
+    }
+
+    public async Task<Product_Category> GetCategoryAsync(int categoryId) //Get category by ID
+    {
+        IQueryable<Product_Category> query = _appDbContext.Product_Category.Where(c => c.CategoryID == categoryId);
+        return await query.FirstOrDefaultAsync();
+    }
+
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    //Never remove this line of code, code above the line above.
+        //Never remove this line of code, code above the line above.
       public async Task<bool> SaveChangesAsync()
       {
         return await _appDbContext.SaveChangesAsync() > 0;
