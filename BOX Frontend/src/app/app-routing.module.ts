@@ -9,8 +9,8 @@ import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inve
 const routes: Routes = [
   { path:"", redirectTo:'register', pathMatch:'full' },
   { path:"dashboard", component: DashboardComponent },
-    { path: "register", component: RegisterComponent }
-      { path: "product-item", component: ProductItemTestComponent }
+    { path: "register", component: RegisterComponent },
+      { path: "product-item", component: ProductItemTestComponent },
         { path: "help", component: ViewHelpInventoryComponent }
 
 ];
