@@ -12,9 +12,11 @@ namespace BOX.Models
         // Please do not forget to add these.
         Task<Size_Units[]> GetAllSizesAsync();
         Task<Size_Units> GetSizeAsync(int sizeId);
-        //-----------------------------------------------------PRODUCT CATEGORY------------------------------------------------------------
+        //-----------------------PRODUCT CATEGORY-----------------------
         Task<Product_Category[]> GetAllCategoriesAsync();
         Task<Product_Category> GetCategoryAsync(int categoryId);
-
+        //-----------------------PRODUCT ITEM-----------------------
+        Task<Product_Item[]> GetAllItemsAsync();
+        Task<Product_Item> GetItemAsync(int itemId);
     }
 }

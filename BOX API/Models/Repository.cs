@@ -37,7 +37,7 @@ namespace BOX.Models
       return await query.FirstOrDefaultAsync();
     }
 
-    //-------------------------PRODUCT CATEGORY-------------------------
+    //-----------------------PRODUCT CATEGORY-----------------------
     public async Task<Product_Category[]> GetAllCategoriesAsync() //Gets all categories
     {
         IQueryable<Product_Category> query = _appDbContext.Product_Category;
@@ -50,6 +50,18 @@ namespace BOX.Models
         return await query.FirstOrDefaultAsync();
     }
 
+    //-----------------------PRODUCT ITEM-----------------------
+    public async Task<Product_Item[]> GetAllItemsAsync() //Gets all items
+    {
+        IQueryable<Product_Item> query = _appDbContext.Product_Item;
+        return await query.ToArrayAsync();
+    }
+
+    public async Task<Product_Item> GetItemAsync(int itemId) //Get item by ID
+    {
+        IQueryable<Product_Item> query = _appDbContext.Product_Item.Where(c => c.ItemID == itemId);
+        return await query.FirstOrDefaultAsync();
+    }
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
