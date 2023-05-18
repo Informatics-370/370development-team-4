@@ -1,6 +1,7 @@
 ﻿using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BOX.Controllers
 {
@@ -69,7 +70,36 @@ namespace BOX.Controllers
         [Route("AddCategory")]
         public async Task<IActionResult> AddCategory(CategoryViewModel catVM)
         {
+            var category = new Product_Category { Description = catVM.CategoryDescription };
+            var sizeVariable = new Size_Variables 
+            {
+                Width = catVM.Width, 
+                Height = catVM.Height, 
+                Length = catVM.Length,
+                Weight = catVM.Weight,
+                Volume = catVM.Volume
+            };
 
+            try
+            {
+                _repository.Add(category);
+                _repository.Add(sizeVariable);
+                var catSizeVar = new Category_Size_Variables 
+                {    
+                    CategoryID = category.CategoryID,
+                    Product_Category = category,
+                    SizeVariablesID = sizeVariable.SizeVariablesID,
+                    Size_Variables = sizeVariable
+                };
+                _repository.Add(catSizeVar);
+                await _repository.SaveChangesAsync();
+
+                return Ok(catVM);
+            }
+            catch (Exception)
+            { return BadRequest("Invalid transaction"); }
+
+            
         }
     }
 }

@@ -4,7 +4,7 @@
 
 namespace BOX.Migrations
 {
-    public partial class LatestDBschema : Migration
+    public partial class UpdateDBschema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

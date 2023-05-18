@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230518120449_Latest-DB-schema")]
-    partial class LatestDBschema
+    [Migration("20230518171043_Update-DB-schema")]
+    partial class UpdateDBschema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
