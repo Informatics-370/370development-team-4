@@ -4,6 +4,7 @@ import { Category } from '../shared/category';
 import { Router } from '@angular/router';
 import { CategoryVM } from '../shared/category-vm';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-category',
@@ -12,7 +13,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class ProductCategoryComponent {
   categories: Category[] = []; //used to get all categories
-  specificCategory!: CategoryVM;
+  specificCategory!: CategoryVM; //used to get a specific category
   //forms
   addCategoryForm: FormGroup;
   updateCategoryForm: FormGroup;
@@ -31,12 +32,12 @@ export class ProductCategoryComponent {
     });
 
     this.updateCategoryForm = this.formBuilder.group({
-      categoryDescription: ['', Validators.required],
-      length: [false],
-      width: [false],
-      height: [false],
-      weight: [false],
-      volume: [false]
+      uCategoryDescription: ['', Validators.required],
+      uLength: [false],
+      uWidth: [false],
+      uHeight: [false],
+      uWeight: [false],
+      uVolume: [false]
     });
   }
 
@@ -164,7 +165,14 @@ export class ProductCategoryComponent {
       (result) => {
         this.specificCategory = result;
         console.log('Category to update: ', this.specificCategory);        
-        this.updateCategoryForm.setValue(this.specificCategory); //display data; Reactive forms are so powerful. All the categoryVM data passed with one method
+        this.updateCategoryForm.setValue({
+          uCategoryDescription: this.specificCategory.categoryDescription,
+          uLength: this.specificCategory.length,
+          uWidth: this.specificCategory.width,
+          uHeight: this.specificCategory.height,
+          uWeight: this.specificCategory.weight,
+          uVolume: this.specificCategory.volume
+        }); //display data; Reactive forms are so powerful. All the categoryVM data passed with one method
       }
     );
 
@@ -196,8 +204,15 @@ export class ProductCategoryComponent {
       console.log(categoryId);
 
       //get form data
-      let updatedCategory : CategoryVM = this.updateCategoryForm.value;
-      console.log(updatedCategory);
+      const formValues = this.updateCategoryForm.value;
+      let updatedCategory : CategoryVM = {
+        categoryDescription: formValues.uCategoryDescription,
+        width: formValues.uWidth,
+        length: formValues.uLength,
+        height: formValues.uHeight,
+        weight: formValues.uWeight,
+        volume: formValues.uVolume
+      };
 
       //update category
       this.dataService.UpdateCategory(categoryId, updatedCategory).subscribe(
