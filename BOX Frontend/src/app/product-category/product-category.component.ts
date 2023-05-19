@@ -20,7 +20,6 @@ export class ProductCategoryComponent {
 
   getCategories() {
     this.dataService.GetCategories().subscribe((result: any[]) => {
-      console.log('getCategories result: ', result);
       let allCategories: any[] = result;
       allCategories.forEach((category) => {
         this.categories.push(category);
