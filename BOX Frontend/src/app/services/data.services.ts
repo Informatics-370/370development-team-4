@@ -73,6 +73,9 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
+  DeleteCategory(categoryId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}ProductCategory/DeleteCategory/${categoryId}`, this.httpOptions);
+  }
 }
 
 

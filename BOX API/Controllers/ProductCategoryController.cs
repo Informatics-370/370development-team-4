@@ -50,12 +50,12 @@ namespace BOX.Controllers
 
                 CategoryViewModel catVM = new CategoryViewModel()
                 {
-                    CategoryDescription = category.Description,
-                    Width = sizeVariable.Width,
-                    Height = sizeVariable.Height,
-                    Length = sizeVariable.Length,
-                    Weight = sizeVariable.Weight,
-                    Volume = sizeVariable.Volume
+                    categoryDescription = category.Description,
+                    width = sizeVariable.Width,
+                    height = sizeVariable.Height,
+                    length = sizeVariable.Length,
+                    weight = sizeVariable.Weight,
+                    volume = sizeVariable.Volume
                 };
 
                 return Ok(catVM);
@@ -70,14 +70,14 @@ namespace BOX.Controllers
         [Route("AddCategory")]
         public async Task<IActionResult> AddCategory(CategoryViewModel catVM)
         {
-            var category = new Product_Category { Description = catVM.CategoryDescription };
+            var category = new Product_Category { Description = catVM.categoryDescription };
             var sizeVariable = new Size_Variables 
             {
-                Width = catVM.Width, 
-                Height = catVM.Height, 
-                Length = catVM.Length,
-                Weight = catVM.Weight,
-                Volume = catVM.Volume
+                Width = catVM.width, 
+                Height = catVM.height, 
+                Length = catVM.length,
+                Weight = catVM.weight,
+                Volume = catVM.volume
             };
 
             try
@@ -120,13 +120,13 @@ namespace BOX.Controllers
                 var existingSizeVar = await _repository.GetSizeVariableAsync(existingCatSizeVar.SizeVariablesID);
                 if (existingSizeVar == null) return NotFound("The size variable does not exist on the B.O.X System");
                                 
-                existingCategory.Description = categoryVM.CategoryDescription; //update the category
+                existingCategory.Description = categoryVM.categoryDescription; //update the category
                 //update the size variables
-                existingSizeVar.Width = categoryVM.Width;
-                existingSizeVar.Length = categoryVM.Length;
-                existingSizeVar.Height = categoryVM.Height;
-                existingSizeVar.Weight = categoryVM.Weight;
-                existingSizeVar.Volume = categoryVM.Volume;
+                existingSizeVar.Width = categoryVM.width;
+                existingSizeVar.Length = categoryVM.length;
+                existingSizeVar.Height = categoryVM.height;
+                existingSizeVar.Weight = categoryVM.weight;
+                existingSizeVar.Volume = categoryVM.volume;
 
                 if (await _repository.SaveChangesAsync())
                     return Ok(categoryVM);

@@ -18,15 +18,20 @@
     margin-left: 25px;
 }
 
-/**MODAL STYLES*/
+/*MODAL STYLES*/
 .modal-title { color: black; font-weight: normal; }
 
-.close-modal {
+.close-modal, .CRUD-icon {
     background-color: white;
     border: none;
     margin: 0;
     padding: 0;
     max-width: 20px;
+}
+
+.CRUD-icon {    
+    max-width: fit-content;
+    display: inline;
 }
 
 .modal-form-label { color: black; }
@@ -45,3 +50,9 @@
 }
 
 .form-submit-div { text-align: center;}
+
+.bold { font-weight: 600; }
+
+.red-btn { background-color: #E33131;}
+
+.red-btn:hover {background-color: #bc2a2a; }

@@ -2,11 +2,11 @@
 {
     public class CategoryViewModel
     {
-        public string? CategoryDescription { get; set; }
-        public bool Width { get; set; }
-        public bool Height { get; set; }
-        public bool Length { get; set; }
-        public bool Weight { get; set; }
-        public bool Volume { get; set; }
+        public string categoryDescription { get; set; }
+        public bool width { get; set; }
+        public bool height { get; set; }
+        public bool length { get; set; }
+        public bool weight { get; set; }
+        public bool volume { get; set; }
     }
 }
