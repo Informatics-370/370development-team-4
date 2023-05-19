@@ -15,8 +15,10 @@ export class ProductCategoryComponent {
   specificCategory!: CategoryVM;
   //forms
   addCategoryForm: FormGroup;
+  updateCategoryForm: FormGroup;
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
+  @ViewChild('updateModal') updateModal: any;
 
   constructor(private dataService: DataService, private router: Router, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -25,7 +27,16 @@ export class ProductCategoryComponent {
       width: [false],
       height: [false],
       weight: [false],
-      volume: [false],
+      volume: [false]
+    });
+
+    this.updateCategoryForm = this.formBuilder.group({
+      categoryDescription: ['', Validators.required],
+      length: [false],
+      width: [false],
+      height: [false],
+      weight: [false],
+      volume: [false]
     });
   }
 
@@ -144,6 +155,64 @@ export class ProductCategoryComponent {
     );
 
     this.closeDeleteModal();
+  }
+
+  //--------------------UPDATE CATEGORY LOGIC----------------
+  openUpdateModal(categoryId: number) {
+    //get category and display data
+    this.dataService.GetCategory(categoryId).subscribe(
+      (result) => {
+        this.specificCategory = result;
+        console.log('Category to update: ', this.specificCategory);        
+        this.updateCategoryForm.setValue(this.specificCategory); //display data; Reactive forms are so powerful. All the categoryVM data passed with one method
+      }
+    );
+
+    //Open the modal manually
+    this.updateModal.nativeElement.classList.add('show');
+    this.updateModal.nativeElement.style.display = 'block';
+    this.updateModal.nativeElement.id = 'updateCategory-' + categoryId; //pass category ID into modal ID so I can use it to update later
+    //Fade background when modal is open.
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "block"};
+    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+  }
+
+  closeUpdateModal() {
+    //Close the modal manually
+    this.updateModal.nativeElement.classList.remove('show');
+    this.updateModal.nativeElement.style.display = 'none';
+    //Show background as normal
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "none"};
+    document.body.style.overflow = 'auto'; //allow scrolling web page body again
+  }
+
+  updateCategory() {
+    if (this.updateCategoryForm.valid) {
+      //get category ID which I stored in modal ID
+      let id = this.updateModal.nativeElement.id;
+      let categoryId = id.substring(id.indexOf('-') + 1);
+      console.log(categoryId);
+
+      //get form data
+      let updatedCategory : CategoryVM = this.updateCategoryForm.value;
+      console.log(updatedCategory);
+
+      //update category
+      this.dataService.UpdateCategory(categoryId, updatedCategory).subscribe(
+        (result: any) => {
+          console.log('Updated category', result);
+          this.getCategories(); //refresh category list
+        },
+        (error) => {
+          console.error('Error updating category:', error);
+        }
+      );
+
+      this.closeUpdateModal();
+    }
+    
   }
 
 }

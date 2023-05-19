@@ -53,7 +53,7 @@
                         <button class="CRUD-icon" (click)="openDeleteModal(category.categoryID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon">
+                        <button class="CRUD-icon" (click)="openUpdateModal(category.categoryID)">
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
@@ -149,6 +149,61 @@
             <button class="btn btn-create modal-form-submit" (click)="deleteCategory()">Yes</button>
             <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
         </div>
+      </div>
+    </div>
+</div>
+
+<!--UPDATE CATEGORY MODAL-->
+<div class="modal fade" id="updateCategory" tabindex="-1" #updateModal>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Update Product Category</h4>
+          <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="updateCategoryForm">
+            <div class="form-group">
+                <label for="description" class="form-label modal-form-label bold">Product Category:</label>
+                <input id="update-description" type="text" formControlName="categoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="update-length" formControlName="length" class="form-check-input modal-form-input" type="checkbox" name="length"> Length
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="update-width" formControlName="width" class="form-check-input modal-form-input" type="checkbox" name="width"> Width
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="update-height" formControlName="height" class="form-check-input modal-form-input" type="checkbox" name="height"> Height
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="update-weight" formControlName="weight" class="form-check-input modal-form-input" type="checkbox" name="weight"> Weight
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="update-volume" formControlName="volume" class="form-check-input modal-form-input" type="checkbox" name="volume"> Volume
+                </label>
+            </div>
+
+            <div class="form-submit-div">
+                <button class="btn btn-create modal-form-submit" (click)="updateCategory()">Update</button>
+            </div>
+            
+          </form>
+        </div>
+        
       </div>
     </div>
 </div>
