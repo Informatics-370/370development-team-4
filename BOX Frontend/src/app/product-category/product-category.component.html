@@ -38,7 +38,7 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">View Product Category</h3>
         <hr class="hr hr-blurry m-3" />
-        <button class="btn btn-create">Create Product Category</button>
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addCategory">Create Product Category</button>
         <table class="table">
             <thead>
                 <tr>
@@ -61,3 +61,59 @@
         </table>
     </div>
 </div>
+
+<!--CRUD MODALS-->
+<!--ADD CATEGORY MODAL-->
+<div class="modal fade" id="addCategory" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Create Product Category</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="addCategoryForm">
+            <div class="form-group">
+                <label for="description" class="form-label modal-form-label">Product Category:</label>
+                <input id="add-description" type="text" formControlName="CategoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="add-length" formControlName="Length" class="form-check-input modal-form-input" type="checkbox" name="length"> Length
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="add-width" formControlName="Width" class="form-check-input modal-form-input" type="checkbox" name="width"> Width
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="add-height" formControlName="Height" class="form-check-input modal-form-input" type="checkbox" name="height"> Height
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="add-weight" formControlName="Weight" class="form-check-input modal-form-input" type="checkbox" name="weight"> Weight
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label modal-form-label">
+                    <input id="add-volume" formControlName="Volume" class="form-check-input modal-form-input" type="checkbox" name="volume"> Volume
+                </label>
+            </div>
+
+            <div class="form-submit-div">
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addCategory()">Create</button>
+            </div>
+            
+          </form>
+        </div>
+        
+      </div>
+    </div>
+</div> 
