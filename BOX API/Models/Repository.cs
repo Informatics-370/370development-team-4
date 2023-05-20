@@ -37,10 +37,47 @@ namespace BOX.Models
       return await query.FirstOrDefaultAsync();
     }
 
+    //-----------------------PRODUCT CATEGORY-----------------------
+    public async Task<Product_Category[]> GetAllCategoriesAsync() //Gets all categories
+    {
+        IQueryable<Product_Category> query = _appDbContext.Product_Category;
+        return await query.ToArrayAsync();
+    }
+
+    public async Task<Product_Category> GetCategoryAsync(int categoryId) //Get category by ID
+    {
+        IQueryable<Product_Category> query = _appDbContext.Product_Category.Where(c => c.CategoryID == categoryId);
+        return await query.FirstOrDefaultAsync();
+    }
+
+    public async Task<Size_Variables> GetSizeVariableAsync(int sizeVarId) //Get size variable by ID
+    {
+        IQueryable<Size_Variables> query = _appDbContext.Size_Variables.Where(c => c.SizeVariablesID == sizeVarId);
+        return await query.FirstOrDefaultAsync();
+    }
+
+    public async Task<Category_Size_Variables> GetCategorySizeVariablesAsync(int catId) //Get category_size_variable by category ID
+    {
+        IQueryable<Category_Size_Variables> query = _appDbContext.Category_Size_Variables.Where(c => c.CategoryID == catId);
+            return await query.FirstOrDefaultAsync();
+    }
+
+    //-----------------------PRODUCT ITEM-----------------------
+    public async Task<Product_Item[]> GetAllItemsAsync() //Gets all items
+    {
+        IQueryable<Product_Item> query = _appDbContext.Product_Item;
+        return await query.ToArrayAsync();
+    }
+
+    public async Task<Product_Item> GetItemAsync(int itemId) //Get item by ID
+    {
+        IQueryable<Product_Item> query = _appDbContext.Product_Item.Where(c => c.ItemID == itemId);
+        return await query.FirstOrDefaultAsync();
+    }
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    //Never remove this line of code, code above the line above.
+        //Never remove this line of code, code above the line above.
       public async Task<bool> SaveChangesAsync()
       {
         return await _appDbContext.SaveChangesAsync() > 0;

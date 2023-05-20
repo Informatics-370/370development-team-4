@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { map, Observable, Subject } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Size } from '../shared/Size';
+import { Category } from '../shared/category';
+import { CategoryVM } from '../shared/category-vm';
 
 imports:[
   HttpClientModule
@@ -54,7 +56,30 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
   );
 }
 
+  //------------PRODUCT CATEGORY------------ [Give it its own service?]
+  GetCategories(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}ProductCategory/GetAllCategories`)
+    .pipe(map(result => result))
+  }
 
+  GetCategory(categoryId: number): Observable<CategoryVM> {
+    return this.httpClient.get<CategoryVM>(`${this.apiUrl}ProductCategory/GetCategory/${categoryId}`)
+      .pipe(map(result => result));
+  }
+
+  AddCategory(catVM: CategoryVM): Observable<CategoryVM> {
+    return this.httpClient.post<CategoryVM>(
+      `${this.apiUrl}ProductCategory/AddCategory`, catVM, this.httpOptions
+    );
+  }
+
+  DeleteCategory(categoryId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}ProductCategory/DeleteCategory/${categoryId}`, this.httpOptions);
+  }
+
+  UpdateCategory(categoryId: number, categoryVM: CategoryVM): Observable<CategoryVM> {
+    return this.httpClient.put<CategoryVM>(`${this.apiUrl}ProductCategory/UpdateCategory/${categoryId}`, categoryVM, this.httpOptions);
+  }
 }
 
 

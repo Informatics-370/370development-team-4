@@ -1,0 +1,58 @@
+@import "../dashboard/dashboard.component.css";
+
+.btn-create {
+    background-color: #D6AD60;
+    color: #FFF;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 25px;
+    width: fit-content;
+}
+
+.btn-create:hover {
+    background-color: #a78444;
+    color: #FFF;
+}
+
+.table {
+    margin-left: 25px;
+}
+
+/*MODAL STYLES*/
+.modal-title { color: black; font-weight: normal; }
+
+.close-modal, .CRUD-icon {
+    background-color: white;
+    border: none;
+    margin: 0;
+    padding: 0;
+    max-width: 20px;
+}
+
+.CRUD-icon {    
+    max-width: fit-content;
+    display: inline;
+}
+
+.modal-form-label { color: black; }
+
+.modal-form-text, .modal-form-text:hover {
+    border-color: #41A0B5;
+    border-radius: 0%;
+    box-shadow: none;    
+}
+
+.modal-form-input { margin-bottom: 20px; }
+
+.modal-form-submit {
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+.form-submit-div { text-align: center;}
+
+.bold { font-weight: 600; }
+
+.red-btn { background-color: #E33131;}
+
+.red-btn:hover {background-color: #bc2a2a; }

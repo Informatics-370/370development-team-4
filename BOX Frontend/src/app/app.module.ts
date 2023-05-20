@@ -11,7 +11,9 @@ import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontaweso
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
 import { ProductItemTestComponent } from './product-item-test/product-item-test.component';
-
+import { ProductCategoryComponent } from './product-category/product-category.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [ 
@@ -19,13 +21,16 @@ import { ProductItemTestComponent } from './product-item-test/product-item-test.
     DashboardComponent,
         RegisterComponent,
        ProductItemTestComponent,
-        ViewHelpInventoryComponent
+        ViewHelpInventoryComponent,
+        ProductCategoryComponent
 
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
