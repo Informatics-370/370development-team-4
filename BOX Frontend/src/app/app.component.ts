@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-declare var $: any;
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
