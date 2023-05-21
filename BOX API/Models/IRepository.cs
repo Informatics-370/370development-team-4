@@ -21,5 +21,15 @@ namespace BOX.Models
         //-----------------------PRODUCT ITEM-----------------------
         Task<Product_Item[]> GetAllItemsAsync();
         Task<Product_Item> GetItemAsync(int itemId);
-    }
+
+		//-----------------------Write Off Reason-----------------------
+		Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync();
+		Task<Write_Off_Reason> GetWriteOffReasonAsync(int sizeId);
+
+
+		//-----------------------Customer Refund Reason Reason-----------------------
+		Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync();
+		Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
+
+	}
 }
