@@ -58,23 +58,36 @@ export class ProductCategoryComponent {
   }
 
   //--------------------ADD CATEGORY LOGIC----------------
+  // addCategory() {
+  //   if (this.addCategoryForm.valid) {
+  //     let newCategory : CategoryVM = this.addCategoryForm.value;
+      
+  //     this.dataService.AddCategory(newCategory).subscribe(
+  //       (result: any) => {
+  //         console.log('new category!', result);    
+
+  //         this.getCategories(); //refresh category list          
+  //         this.addCategoryForm.reset(); //reset form
+  //       }
+  //     );
+  //   }
+  // }
+
   addCategory() {
     if (this.addCategoryForm.valid) {
       let newCategory : CategoryVM = this.addCategoryForm.value;
-      
+      console.log(newCategory);
       this.dataService.AddCategory(newCategory).subscribe(
         (result: any) => {
-          console.log('new category!', result);    
-
+          console.log('new category!', result);
+  
           this.getCategories(); //refresh category list          
-          this.addCategoryForm.reset(); //reset form
-        },
-        (error) => {
-          console.error('Error submitting form:', error);
+          this.addCategoryForm.patchValue({ length: false, width: false, height: false, weight: false, volume: false }); // set boolean values to false
         }
       );
     }
   }
+  
 
   //--------------------DELETE CATEGORY LOGIC----------------
   openDeleteModal(categoryId: number) {
