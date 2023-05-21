@@ -75,10 +75,40 @@ namespace BOX.Models
         return await query.FirstOrDefaultAsync();
     }
 
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        //Never remove this line of code, code above the line above.
-      public async Task<bool> SaveChangesAsync()
+		//------------------------------Write OFF Reason------------------------------------------
+
+		//Gets all Write Off Reasons
+		public async Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync()
+		{
+			IQueryable<Write_Off_Reason> query = _appDbContext.Write_Off_Reason;
+			return await query.ToArrayAsync();
+		}
+		//Gets one Size according to the ID
+		public async Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeoffreasonId)
+		{
+			IQueryable<Write_Off_Reason> query = _appDbContext.Write_Off_Reason.Where(c => c.WriteOffReasonID == writeoffreasonId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+		//------------------------------Customer Refund Reason------------------------------------------
+		public async Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync()
+		{
+			IQueryable<Customer_Refund_Reason> query = _appDbContext.Customer_Refund_Reason;
+			return await query.ToArrayAsync();
+		}
+		//Gets one Customer Refund Reason according to the ID
+		public async Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int customerrefundreasonId)
+		{
+			IQueryable<Customer_Refund_Reason> query = _appDbContext.Customer_Refund_Reason.Where(c => c.CustomerRefundReasonID == customerrefundreasonId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+		
+
+		//Never remove this line of code, code above the line above.
+		public async Task<bool> SaveChangesAsync()
       {
         return await _appDbContext.SaveChangesAsync() > 0;
       }
