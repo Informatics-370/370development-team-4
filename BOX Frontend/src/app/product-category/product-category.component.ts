@@ -62,13 +62,15 @@ export class ProductCategoryComponent {
   addCategory() {
     if (this.addCategoryForm.valid) {
       let newCategory : CategoryVM = this.addCategoryForm.value;
+      console.log(newCategory);
       
       this.dataService.AddCategory(newCategory).subscribe(
         (result: any) => {
-          console.log('new category!', result);    
+          console.log('new category!', result);
 
-          this.getCategories(); //refresh category list          
-          this.addCategoryForm.reset(); //reset form
+          this.getCategories(); //refresh category list
+          this.addCategoryForm.patchValue({ length: false, width: false, height: false, weight: false, volume: false }); // set boolean values to false
+
         },
         (error) => {
           console.error('Error submitting form:', error);

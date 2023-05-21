@@ -66,4 +66,24 @@ export class ProductItemTestComponent {
     });
   }
 
+  //--------------------ADD CATEGORY LOGIC----------------
+  addItem() {
+    if (this.addItemForm.valid) {
+      let newItem : ItemVM = this.addItemForm.value;
+      console.log(newItem);
+      
+      this.dataService.AddItem(newItem).subscribe(
+        (result: any) => {
+          console.log('New item!', result);
+
+          this.getItems(); //refresh item list
+          this.addItemForm.reset();
+        },
+        (error) => {
+          console.error('Error submitting form:', error);
+        }
+      );
+    }
+  }
+
 }
