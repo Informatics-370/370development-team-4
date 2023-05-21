@@ -1,4 +1,5 @@
 @import "../dashboard/dashboard.component.css";
+@import "../product-category/product-category.component.css";
 
 .btn-create {
     background-color: #D6AD60;

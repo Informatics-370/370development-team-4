@@ -1,4 +1,5 @@
 <div class="row">
+    <!--SIDE NAVBAR-->
     <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
         <div class="container">
             <div class="text-center pt-3">
@@ -13,7 +14,7 @@
                     <fa-icon [icon]="['fas', 'home']"></fa-icon>
                     Dashboard
                 </button><pre></pre>
-                <button class="btn btn-info text-start">
+                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
                     Product Category
                 </button><pre></pre>
@@ -37,7 +38,7 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">View Product Item</h3>
         <hr class="hr hr-blurry m-3" />
-        <button class="btn btn-create">Create Product Item</button>
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addItem">Create Product Item</button>
         <table class="table">
             <thead>
                 <tr>
@@ -45,23 +46,23 @@
                     <th scope="col">Product Item</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <fa-icon class="m-3" [icon]="['fas', 'trash']"></fa-icon>
-                        <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
-                    </td>
-                    <td>
-                        Double-wall box
-                    </td>
+            <tbody>                
+                <!--Error message if there's no items in the DB-->
+                <tr *ngIf="itemCount==0">
+                    <td colspan="2">No items found. Please add a new item to the system.</td>
                 </tr>
-                <tr>
+                <!--Item data from API-->
+                <tr *ngFor="let item of items">
                     <td>
-                        <fa-icon class="m-3" [icon]="['fas', 'trash']"></fa-icon>
-                        <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                        <button class="CRUD-icon" >
+                            <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
+                        </button>
+                        <button class="CRUD-icon" >
+                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                        </button>                                              
                     </td>
                     <td>
-                        30 Micron plastic
+                        {{item.description}}
                     </td>
                 </tr>
             </tbody>
@@ -69,3 +70,40 @@
     </div>
 </div>
 
+<!--CRUD MODALS-->
+<!--ADD ITEM MODAL-->
+<div class="modal fade" id="addItem" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Create Product Item</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="addItemForm">
+            <div class="form-group">
+                <label for="category" class="form-label modal-form-label bold">Product Category:</label>
+                <select id="add-categoryID" formControlName="categoryID" class="form-control modal-form-input modal-form-text" name="category" size="1">
+                    <option value="" disabled selected>Choose an option</option>
+                    <option *ngFor="let cat of categories" value="{{cat.categoryID}}">{{cat.description}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description" class="form-label modal-form-label bold">Product Item:</label>
+                <input id="add-description" type="text" formControlName="itemDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Single wall box" name="description" required>
+            </div>
+
+            <div class="form-submit-div">
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" >Create</button>
+            </div>
+            
+          </form>
+        </div>
+        
+      </div>
+    </div>
+</div>

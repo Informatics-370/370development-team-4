@@ -52,7 +52,7 @@ namespace BOX.Controllers
             var newItem = new Product_Item
             {
                 Description = itemVM.ItemDescription,
-                CategoryID = itemVM.CategoryId
+                CategoryID = itemVM.CategoryID
             };
 
             try
@@ -78,7 +78,7 @@ namespace BOX.Controllers
 
                 //update the item
                 existingItem.Description = itemVM.ItemDescription;
-                existingItem.CategoryID = itemVM.CategoryId; //I wanted to update the actual category object but it was throwing an error and I figured it wasn't necessary cos I have the ID anyways
+                existingItem.CategoryID = itemVM.CategoryID; //I wanted to update the actual category object but it was throwing an error and I figured it wasn't necessary cos I have the ID anyways
 
                 if (await _repository.SaveChangesAsync())
                     return Ok(itemVM);

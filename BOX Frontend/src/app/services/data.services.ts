@@ -3,8 +3,9 @@ import { Injectable } from '@angular/core';
 import { map, Observable, Subject } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Size } from '../shared/Size';
-import { Category } from '../shared/category';
 import { CategoryVM } from '../shared/category-vm';
+import { Item } from '../shared/item';
+import { ItemVM } from '../shared/item-vm';
 
 imports:[
   HttpClientModule
@@ -80,6 +81,11 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
   UpdateCategory(categoryId: number, categoryVM: CategoryVM): Observable<CategoryVM> {
     return this.httpClient.put<CategoryVM>(`${this.apiUrl}ProductCategory/UpdateCategory/${categoryId}`, categoryVM, this.httpOptions);
   }
+
+  //------------PRODUCT ITEM------------ [Give it its own service?]
+  GetItems(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}ProductItem/GetAllItems`)
+    .pipe(map(result => result))
+  }
+
 }
-
-

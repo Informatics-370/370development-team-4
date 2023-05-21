@@ -1,10 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { Category } from '../shared/category';
-import { Router } from '@angular/router';
 import { CategoryVM } from '../shared/category-vm';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-category',
@@ -14,6 +12,7 @@ import { map } from 'rxjs/operators';
 export class ProductCategoryComponent {
   categories: Category[] = []; //used to get all categories
   specificCategory!: CategoryVM; //used to get a specific category
+  categoryCount: number = this.categories.length; //keep track of how many categories there are in the DB
   //forms
   addCategoryForm: FormGroup;
   updateCategoryForm: FormGroup;
@@ -21,7 +20,7 @@ export class ProductCategoryComponent {
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
 
-  constructor(private dataService: DataService, private router: Router, private formBuilder: FormBuilder) {
+  constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
       categoryDescription: ['', Validators.required],
       length: [false],
@@ -52,6 +51,8 @@ export class ProductCategoryComponent {
       allCategories.forEach((category) => {
         this.categories.push(category);
       });
+
+      this.categoryCount = this.categories.length; //update the number of categories
 
       console.log('All categories array: ', this.categories);
     });

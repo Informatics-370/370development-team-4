@@ -47,6 +47,10 @@
                 </tr>
             </thead>
             <tbody>
+                <!--Error message if there's no categories in the DB-->
+                <tr *ngIf="categoryCount==0">
+                    <td colspan="2">No categories found. Please add a new category to the system.</td>
+                </tr>
                 <!--Category data from API-->
                 <tr *ngFor="let category of categories">
                     <td>
