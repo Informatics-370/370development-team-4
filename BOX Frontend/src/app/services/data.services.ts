@@ -103,4 +103,8 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     return this.httpClient.delete<any>(`${this.apiUrl}ProductItem/DeleteItem/${itemId}`, this.httpOptions);
   }
 
+  UpdateItem(itemId: number, itemVM: ItemVM): Observable<ItemVM> {
+    return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
+  }
+
 }

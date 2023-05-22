@@ -4,6 +4,7 @@ import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { Category } from '../shared/category';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { error } from 'jquery';
 
 @Component({
   selector: 'app-product-item-test',
@@ -18,7 +19,7 @@ export class ProductItemTestComponent {
   categories: Category[] = []; //used to store all categories
   //forms
   addItemForm: FormGroup;
-  // updateItemForm: FormGroup;
+  updateItemForm: FormGroup;
   //I need these two variables below just to display a default, disabled option in the caetgory dropdown. Can you imagine?!!
   isDisabled = true;
   public selectedValue = 'NA';
@@ -32,6 +33,11 @@ export class ProductItemTestComponent {
     this.addItemForm = this.formBuilder.group({
       itemDescription: ['', Validators.required],
       categoryID: [{value: 'NA'}, Validators.required]
+    });
+
+    this.updateItemForm = this.formBuilder.group({
+      uItemDescription: ['', Validators.required],
+      uCategoryID: [{value: '7'}, Validators.required]
     });
   }  
 
@@ -147,21 +153,87 @@ export class ProductItemTestComponent {
   }
 
   deleteItem() {
-    //get category ID which I stored in modal ID
+    //get item ID which I stored in modal ID
     let id = this.deleteModal.nativeElement.id;
     let itemId = id.substring(id.indexOf('-') + 1);
     console.log(itemId);
     this.dataService.DeleteItem(itemId).subscribe(
       (result) => {
         console.log("Successfully deleted ", result);
-        this.getItems(); //refresh category list
+        this.getItems(); //refresh item list
       },
       (error) => {
-        console.error('Error deleting category with ID ', itemId, error);
+        console.error('Error deleting item with ID ', itemId, error);
       }
     );
 
     this.closeDeleteModal();
+  }
+
+  //--------------------UPDATE ITEM LOGIC----------------
+  openUpdateModal(itemId: number) {
+    //get item and display data
+    this.dataService.GetItem(itemId).subscribe(
+      (result) => {
+        console.log('Item to update: ', result);        
+        this.updateItemForm.setValue({
+          uCategoryID: result.categoryID,
+          uItemDescription: result.description
+        }); //display data; Reactive forms are so powerful. All the item data passed with one method
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+
+    //Open the modal manually
+    this.updateModal.nativeElement.classList.add('show');
+    this.updateModal.nativeElement.style.display = 'block';
+    this.updateModal.nativeElement.id = 'updateItem-' + itemId; //pass item ID into modal ID so I can use it to update later
+    //Fade background when modal is open.
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "block"};
+    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+  }
+
+  closeUpdateModal() {
+    //Close the modal manually
+    this.updateModal.nativeElement.classList.remove('show');
+    this.updateModal.nativeElement.style.display = 'none';
+    //Show background as normal
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "none"};
+    document.body.style.overflow = 'auto'; //allow scrolling web page body again
+  }
+
+  updateItem() {
+    if (this.updateItemForm.valid) {
+      //get category ID which I stored in modal ID
+      let id = this.updateModal.nativeElement.id;
+      let itemId = id.substring(id.indexOf('-') + 1);
+      console.log(itemId);
+
+      //get form data
+      const formValues = this.updateItemForm.value;
+      let updatedItem : ItemVM = {
+        categoryID: formValues.uCategoryID,
+        itemDescription: formValues.uItemDescription
+      };
+
+      //update item
+      this.dataService.UpdateItem(itemId, updatedItem).subscribe(
+        (result: any) => {
+          console.log('Updated items', result);
+          this.getItems(); //refresh item list
+        },
+        (error) => {
+          console.error('Error updating items:', error);
+        }
+      );
+
+      this.closeUpdateModal();
+    }
+    
   }
 
 }

@@ -65,7 +65,7 @@
                         <button class="CRUD-icon" (click)="openDeleteModal(item.itemID)" >
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" >
+                        <button class="CRUD-icon" (click)="openUpdateModal(item.itemID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
@@ -123,7 +123,7 @@
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Delete Product Category</h4>
+          <h4 class="modal-title">Delete Product Item</h4>
           <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
@@ -138,6 +138,42 @@
             <button class="btn btn-create modal-form-submit" (click)="deleteItem()" >Yes</button>
             <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
         </div>
+      </div>
+    </div>
+</div>
+
+<!--UPDATE CATEGORY MODAL-->
+<div class="modal fade" id="updateItem" tabindex="-1" #updateModal>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Update Product Item</h4>
+          <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="updateItemForm">
+            <div class="form-group">
+                <label for="category" class="form-label modal-form-label bold">Product Category:</label>
+                <select id="update-categoryID" [(ngModel)]="selectedValue" formControlName="uCategoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
+                    <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.description}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description" class="form-label modal-form-label bold">Product Item:</label>
+                <input id="update-description" type="text" formControlName="uItemDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Single wall box" name="description" required>
+            </div>
+
+            <div class="form-submit-div">
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateItem()">Update</button>
+            </div>
+            
+          </form>
+        </div>
+        
       </div>
     </div>
 </div>

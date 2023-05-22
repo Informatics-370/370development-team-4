@@ -30,6 +30,7 @@ namespace BOX.Models
 		//-----------------------Customer Refund Reason Reason-----------------------
 		Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync();
 		Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
+        
 
-	}
+    }
 }

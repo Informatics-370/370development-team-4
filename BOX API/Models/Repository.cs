@@ -105,10 +105,9 @@ namespace BOX.Models
 			return await query.FirstOrDefaultAsync();
 		}
 
-		
 
-		//Never remove this line of code, code above the line above.
-		public async Task<bool> SaveChangesAsync()
+        //Never remove this line of code, code above the line above.
+        public async Task<bool> SaveChangesAsync()
       {
         return await _appDbContext.SaveChangesAsync() > 0;
       }
