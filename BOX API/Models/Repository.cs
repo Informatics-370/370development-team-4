@@ -114,43 +114,50 @@ namespace BOX.Models
 
         public async Task<Raw_Material> GetRawMaterialAsync(int rawMaterialId)
         {
-            IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(rm => rm.RawMaterialID == rawMaterialId);
-            return await query.FirstOrDefaultAsync();
-        }
 
-        // ------------------------------ VAT -------------------------------------------
-        public async Task<VAT[]> GetAllVatAsync()
-        {
-            IQueryable<VAT> query = _appDbContext.VAT;
-            return await query.ToArrayAsync();
-        }
+            //------------------------------ESTIMATE DURATION------------------------------------------
+            public async Task<Estimate_Duration[]> GetAllEstimateDurationsAsync()
+            {
+                IQueryable<Estimate_Duration> query = _appDbContext.Estimate_Duration;
+                return await query.ToArrayAsync();
+            }
+            //Gets one Customer Refund Reason according to the ID
+            public async Task<Estimate_Duration> GetEstimateDurationAsync(int durationId)
+            {
 
-        public async Task<VAT> GetVatAsync(int vatId)
-        {
-            IQueryable<VAT> query = _appDbContext.VAT.Where(v => v.VatID == vatId);
-            return await query.FirstOrDefaultAsync();
-        }
 
-        // ------------------------------ Supplier -------------------------------------------
-        public async Task<Supplier[]> GetAllSuppliersAsync()
-        {
-            IQueryable<Supplier> query = _appDbContext.Supplier;
-            return await query.ToArrayAsync();
-        }
+                // ------------------------------ VAT -------------------------------------------
+                public async Task<VAT[]> GetAllVatAsync()
+                {
+                    IQueryable<VAT> query = _appDbContext.VAT;
+                    return await query.ToArrayAsync();
+                }
 
-        public async Task<Supplier> GetSupplierAsync(int supplierId)
-        {
-            IQueryable<Supplier> query = _appDbContext.Supplier.Where(s => s.SupplierID == supplierId);
-            return await query.FirstOrDefaultAsync();
-        }
+                public async Task<VAT> GetVatAsync(int vatId)
+                {
+                    IQueryable<VAT> query = _appDbContext.VAT.Where(v => v.VatID == vatId);
+                    return await query.FirstOrDefaultAsync();
+                }
 
-        //=================================================================================
-        //Never remove this line of code, code above the line above.
-        public async Task<bool> SaveChangesAsync()
-        {
-            return await _appDbContext.SaveChangesAsync() > 0;
-        }
+                // ------------------------------ Supplier -------------------------------------------
+                public async Task<Supplier[]> GetAllSuppliersAsync()
+                {
+                    IQueryable<Supplier> query = _appDbContext.Supplier;
+                    return await query.ToArrayAsync();
+                }
+
+                public async Task<Supplier> GetSupplierAsync(int supplierId)
+                {
+                    IQueryable<Supplier> query = _appDbContext.Supplier.Where(s => s.SupplierID == supplierId);
+
+
+
+                    //Never remove this line of code, code above the line above.
+                    public async Task<bool> SaveChangesAsync()
+      {
+        return await _appDbContext.SaveChangesAsync() > 0;
+      }
+    }
   }
-}
 
 
