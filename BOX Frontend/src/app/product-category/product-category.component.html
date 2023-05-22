@@ -39,7 +39,7 @@
         <h3 class="p-3" style="color: black;">View Product Category</h3>
         <!--Search bar-->
         <form id="searchbar" (ngSubmit)="searchCategories($event)">
-            <input [(ngModel)]="searchTerm" type="search" id="search" class="modal-form-input modal-form-text" placeholder="e.g. Box" />
+            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Box" />
             <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>
             
         </form>
