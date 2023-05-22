@@ -5,15 +5,17 @@ import { RegisterComponent } from './register/register.component';
 import { ProductItemTestComponent } from './product-item-test/product-item-test.component';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
 import { ProductCategoryComponent } from './product-category/product-category.component';
+import { RawMaterialComponent } from './raw-material/raw-material.component';
 
 
 const routes: Routes = [
   { path:"", redirectTo:'register', pathMatch:'full' },
   { path:"dashboard", component: DashboardComponent },
-    { path: "register", component: RegisterComponent },
-      { path: "product-item", component: ProductItemTestComponent },
-        { path: "help", component: ViewHelpInventoryComponent },
-          { path: "product-category", component: ProductCategoryComponent },
+  { path: "register", component: RegisterComponent },
+  { path: "product-item", component: ProductItemTestComponent },
+  { path: "help", component: ViewHelpInventoryComponent },
+  { path: "product-category", component: ProductCategoryComponent },
+  { path: "raw-material", component: RawMaterialComponent}
 
 ];
 

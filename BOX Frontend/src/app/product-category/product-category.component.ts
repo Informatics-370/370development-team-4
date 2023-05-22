@@ -4,7 +4,6 @@ import { Category } from '../shared/category';
 import { Router } from '@angular/router';
 import { CategoryVM } from '../shared/category-vm';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-category',

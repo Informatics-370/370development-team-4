@@ -5,6 +5,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { Size } from '../shared/Size';
 import { Category } from '../shared/category';
 import { CategoryVM } from '../shared/category-vm';
+import { RawMaterial } from '../shared/rawMaterial';
+import { rmVM } from '../shared/rawMaterialVM';
 
 imports:[
   HttpClientModule
@@ -79,6 +81,31 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   UpdateCategory(categoryId: number, categoryVM: CategoryVM): Observable<CategoryVM> {
     return this.httpClient.put<CategoryVM>(`${this.apiUrl}ProductCategory/UpdateCategory/${categoryId}`, categoryVM, this.httpOptions);
+  }
+
+  //---------------------------------- Raw Materials ----------------------------------------
+  GetAllRawMaterials(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}RawMaterial/GetAllRawMaterials`)
+    .pipe(map(result => result))
+  }
+
+  GetRawMaterial(id: number): Observable<rmVM> {
+    return this.httpClient.get<rmVM>(`${this.apiUrl}RawMaterial/${id}`)
+      .pipe(map(result => result));
+  }
+
+  AddRawMaterial(rmVW: rmVM): Observable<rmVM> {
+    return this.httpClient.post<rmVM>(
+      `${this.apiUrl}RawMaterial/AddRawMaterial`, rmVW, this.httpOptions
+    );
+  }
+
+  DeleteRawMaterial(rawMaterialId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}RawMaterial/DeleteRawMaterial/${rawMaterialId}`, this.httpOptions);
+  }
+
+  UpdateRawMaterial(rawMaterialId: number, rawVM: rmVM): Observable<rmVM> {
+    return this.httpClient.put<rmVM>(`${this.apiUrl}RawMaterial/UpdateRawMaterial/${rawMaterialId}`, rawVM, this.httpOptions);
   }
 }
 

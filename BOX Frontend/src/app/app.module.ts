@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
-import { EditScreenComponent } from './edit-screen/edit-screen.component';
 
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -17,16 +14,18 @@ import { ProductCategoryComponent } from './product-category/product-category.co
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { VatComponent } from './vat/vat.component';
+import { RawMaterialComponent } from './raw-material/raw-material.component';
 
 @NgModule({
   declarations: [ 
     AppComponent,
     DashboardComponent,
-        RegisterComponent,
-       ProductItemTestComponent,
-        ViewHelpInventoryComponent,
-        ProductCategoryComponent,
-        VatComponent
+    RegisterComponent,
+    ProductItemTestComponent,
+    ViewHelpInventoryComponent,
+    ProductCategoryComponent,
+    VatComponent,
+    RawMaterialComponent
 
   ],
   imports: [

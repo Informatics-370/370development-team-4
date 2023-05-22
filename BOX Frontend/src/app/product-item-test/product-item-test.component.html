@@ -10,14 +10,14 @@
             
             <div class="text-center">
                 <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
+                    <fa-icon [icon]="['fas', 'industry']"></fa-icon>
                     Dashboard
                 </button><pre></pre>
-                <button class="btn btn-info text-start">
+                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
                     Product Category
                 </button><pre></pre>
-                <button class="btn btn-info active text-start">
+                <button [routerLink]="['/product-item']" class="btn btn-info active text-start">
                     <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
                     Product Item
                 </button><pre></pre>
@@ -28,6 +28,10 @@
                 <button class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'box']"></fa-icon>
                     Product
+                </button><pre></pre>
+                <button [routerLink]="['/raw-material']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'recycle']"></fa-icon>
+                    Raw Material
                 </button><pre></pre>
             </div>
         </div>

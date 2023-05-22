@@ -24,7 +24,7 @@ namespace BOX.Controllers
         // GET: api/RawMaterial
         //READ ALL FROM ENTITY
         [HttpGet]
-        [Route("GetAllRawMaterial")]
+        [Route("GetAllRawMaterials")]
         public async Task<IActionResult> GetAllRawMaterials()
         {
           try
@@ -46,7 +46,7 @@ namespace BOX.Controllers
             try
             {
                 var rawMaterial = await _repository.GetRawMaterialAsync(rawMaterialId);
-                if (rawMaterial == null) return NotFound("Raw mateorial does not exist on the system");
+                if (rawMaterial == null) return NotFound("Raw material does not exist on the system");
 
                 RawMaterialViewModel rmVM = new RawMaterialViewModel()
                 {
@@ -99,7 +99,7 @@ namespace BOX.Controllers
 
             try 
             { 
-                _repository.Add(rawMaterial);
+  
                 var createRM = new Raw_Material
                 {
                     Description = rmVW.Description
