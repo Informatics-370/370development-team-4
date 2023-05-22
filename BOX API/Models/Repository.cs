@@ -105,13 +105,26 @@ namespace BOX.Models
 			return await query.FirstOrDefaultAsync();
 		}
 
-		
+        //------------------------------ESTIMATE DURATION------------------------------------------
+        public async Task<Estimate_Duration[]> GetAllEstimateDurationsAsync()
+        {
+            IQueryable<Estimate_Duration> query = _appDbContext.Estimate_Duration;
+            return await query.ToArrayAsync();
+        }
+        //Gets one Customer Refund Reason according to the ID
+        public async Task<Estimate_Duration> GetEstimateDurationAsync(int durationId)
+        {
+            IQueryable<Estimate_Duration> query = _appDbContext.Estimate_Duration.Where(c => c.EstimateDurationID == durationId);
+            return await query.FirstOrDefaultAsync();
+        }
 
-		//Never remove this line of code, code above the line above.
-		public async Task<bool> SaveChangesAsync()
+        //Never remove this line of code, code above the line above.
+        public async Task<bool> SaveChangesAsync()
       {
         return await _appDbContext.SaveChangesAsync() > 0;
       }
+
+
     }
   }
 
