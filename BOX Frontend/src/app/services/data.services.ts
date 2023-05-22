@@ -99,4 +99,8 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
+  DeleteItem(itemId: number): Observable<any> {    
+    return this.httpClient.delete<any>(`${this.apiUrl}ProductItem/DeleteItem/${itemId}`, this.httpOptions);
+  }
+
 }

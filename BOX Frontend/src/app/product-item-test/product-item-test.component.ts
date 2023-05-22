@@ -119,7 +119,7 @@ export class ProductItemTestComponent {
     this.dataService.GetItem(itemId).subscribe(
       (result) => {
         this.specificItem = result;
-        //display data; I know there's a better was to do this, but I can't find it.
+        console.log(this.specificItem);
         const deleteDescription = document.getElementById('deleteDescription')
         if (deleteDescription) deleteDescription.innerHTML = this.specificItem.description;
       }
@@ -151,15 +151,15 @@ export class ProductItemTestComponent {
     let id = this.deleteModal.nativeElement.id;
     let itemId = id.substring(id.indexOf('-') + 1);
     console.log(itemId);
-    // this.dataService.DeleteItem(itemId).subscribe(
-    //   (result) => {
-    //     console.log("Successfully deleted ", result);
-    //     this.getItems(); //refresh category list
-    //   },
-    //   (error) => {
-    //     console.error('Error deleting category with ID ', itemId, error);
-    //   }
-    // );
+    this.dataService.DeleteItem(itemId).subscribe(
+      (result) => {
+        console.log("Successfully deleted ", result);
+        this.getItems(); //refresh category list
+      },
+      (error) => {
+        console.error('Error deleting category with ID ', itemId, error);
+      }
+    );
 
     this.closeDeleteModal();
   }
