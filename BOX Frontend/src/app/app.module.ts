@@ -16,6 +16,7 @@ import { ProductItemTestComponent } from './product-item-test/product-item-test.
 import { ProductCategoryComponent } from './product-category/product-category.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { VatComponent } from './vat/vat.component';
 
 @NgModule({
   declarations: [ 
@@ -24,7 +25,8 @@ import { ReactiveFormsModule } from '@angular/forms';
         RegisterComponent,
        ProductItemTestComponent,
         ViewHelpInventoryComponent,
-        ProductCategoryComponent
+        ProductCategoryComponent,
+        VatComponent
 
   ],
   imports: [
