@@ -24,12 +24,24 @@ namespace BOX.Models
 
 		//-----------------------Write Off Reason-----------------------
 		Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync();
-		Task<Write_Off_Reason> GetWriteOffReasonAsync(int sizeId);
+		Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeOffReasonId);
 
 
 		//-----------------------Customer Refund Reason Reason-----------------------
 		Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync();
-		Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
+		Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int refundReasonId);
 
-	}
+        //-----------------------Raw Material-----------------------------------
+        Task<Raw_Material[]> GetAllRawMaterialsAsync();
+        Task<Raw_Material> GetRawMaterialAsync(int rawMaterialId);
+
+        //------------------------- VAT -----------------------------------
+        Task<VAT[]> GetAllVatAsync();
+        Task<VAT> GetVatAsync(int vatId);
+
+        //------------------------ Supplier -------------------------------
+        Task<Supplier[]> GetAllSuppliersAsync();
+        Task<Supplier> GetSupplierAsync(int supplierId);
+
+    }
 }
