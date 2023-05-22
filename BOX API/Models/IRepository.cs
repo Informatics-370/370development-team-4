@@ -31,5 +31,9 @@ namespace BOX.Models
 		Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync();
 		Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
 
-	}
+        //-----------------------Estimate Duration ----------------------
+        Task<Estimate_Duration[]> GetAllEstimateDurationsAsync();
+        Task<Estimate_Duration[]> GetEstimateDurationAsync(int durationId);
+
+    }
 }
