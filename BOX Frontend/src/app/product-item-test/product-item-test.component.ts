@@ -12,8 +12,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class ProductItemTestComponent {
   items: Item[] = []; //used to store all items
-  specificItem!: ItemVM; //used to get a specific item
-  itemCount: number = this.items.length; //keep track of how many items there are in the DB
+  filteredItems: Item[] = []; //used to hold all the categories that will be displayed to the user
+  specificItem!: Item; //used to get a specific item
+  itemCount: number = this.filteredItems.length; //keep track of how many items there are in the DB
   categories: Category[] = []; //used to store all categories
   //forms
   addItemForm: FormGroup;
@@ -24,6 +25,8 @@ export class ProductItemTestComponent {
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
+  //search functionality
+  searchTerm: string = '';
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addItemForm = this.formBuilder.group({
@@ -40,19 +43,20 @@ export class ProductItemTestComponent {
   getItems() {
     this.dataService.GetItems().subscribe((result: any[]) => {
       let allItems: any[] = result;
-      this.items = []; //empty item array
+      this.filteredItems = []; //empty item array
       allItems.forEach((itemFromDB) => {
         // let item: Item = {
         //   itemID = itemFromDB.itemID,
         //   description = itemFromDB.description,
         //   categoryID = itemFromDB.categoryID
         // };
-        this.items.push(itemFromDB);
+        this.filteredItems.push(itemFromDB);
       });
+      
+      this.items = this.filteredItems; //store all the categories someplace before I search below
+      this.itemCount = this.filteredItems.length; //update the number of items
 
-      this.itemCount = this.items.length; //update the number of items
-
-      console.log('All items array: ', this.items);
+      console.log('All items array: ', this.filteredItems);
     });
   }
 
@@ -67,9 +71,23 @@ export class ProductItemTestComponent {
 
       console.log('All categories array: ', this.categories);
     });
+  }  
+
+  //--------------------SEARCH BAR LOGIC----------------
+  searchItems(event: Event) {
+    event.preventDefault();
+    this.filteredItems = []; //clear array
+    for (let i = 0; i < this.items.length; i++) {
+      let currentItemDescripton: string = this.items[i].description.toLowerCase();
+      if (currentItemDescripton.includes(this.searchTerm.toLowerCase()))
+      {
+        this.filteredItems.push(this.items[i]);
+      }
+      console.log(this.filteredItems);
+    }
   }
 
-  //--------------------ADD CATEGORY LOGIC----------------
+  //--------------------ADD ITEM LOGIC----------------
   addItem() {
     if (this.addItemForm.valid) {
       const formData = this.addItemForm.value;
@@ -79,19 +97,71 @@ export class ProductItemTestComponent {
       }
       console.log(newItem);
       
-      // this.dataService.AddItem(newItem).subscribe(
-      //   (result: any) => {
-      //     console.log('New item!', result);
+      this.dataService.AddItem(newItem).subscribe(
+        (result: any) => {
+          console.log('New item!', result);
 
-      //     this.getItems(); //refresh item list
-      //     this.addItemForm.reset();
-      //   },
-      //   (error) => {
-      //     console.error('Error submitting form:', error);
-      //   }
-      // );
+          this.getItems(); //refresh item list
+          this.addItemForm.reset();
+        },
+        (error) => {
+          console.error('Error submitting form:', error);
+        }
+      );
     }
     else {console.log('Invalid data')}
+  }
+  
+
+  //--------------------DELETE ITEM LOGIC----------------
+  openDeleteModal(itemId: number) {
+    //get category and display data
+    this.dataService.GetItem(itemId).subscribe(
+      (result) => {
+        this.specificItem = result;
+        //display data; I know there's a better was to do this, but I can't find it.
+        const deleteDescription = document.getElementById('deleteDescription')
+        if (deleteDescription) deleteDescription.innerHTML = this.specificItem.description;
+      }
+    );
+
+    //Open the modal manually
+    this.deleteModal.nativeElement.classList.add('show');
+    this.deleteModal.nativeElement.style.display = 'block';
+    this.deleteModal.nativeElement.id = 'deleteItem-' + itemId;
+    //Fade background when modal is open.
+    //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error.
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "block"};
+    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+  }
+
+  closeDeleteModal() {
+    //Close the modal manually
+    this.deleteModal.nativeElement.classList.remove('show');
+    this.deleteModal.nativeElement.style.display = 'none';
+    //Show background as normal
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "none"};
+    document.body.style.overflow = 'auto'; //allow scrolling web page body again
+  }
+
+  deleteItem() {
+    //get category ID which I stored in modal ID
+    let id = this.deleteModal.nativeElement.id;
+    let itemId = id.substring(id.indexOf('-') + 1);
+    console.log(itemId);
+    // this.dataService.DeleteItem(itemId).subscribe(
+    //   (result) => {
+    //     console.log("Successfully deleted ", result);
+    //     this.getItems(); //refresh category list
+    //   },
+    //   (error) => {
+    //     console.error('Error deleting category with ID ', itemId, error);
+    //   }
+    // );
+
+    this.closeDeleteModal();
   }
 
 }

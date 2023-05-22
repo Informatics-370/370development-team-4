@@ -76,7 +76,6 @@ export class ProductCategoryComponent {
     }
   }
 
-
   //--------------------ADD CATEGORY LOGIC----------------
 
   addCategory() {

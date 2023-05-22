@@ -88,6 +88,11 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     .pipe(map(result => result))
   }
 
+  GetItem(itemId: number): Observable<Item> {
+    return this.httpClient.get<Item>(`${this.apiUrl}ProductItem/GetItem/${itemId}`)
+      .pipe(map(result => result));
+  }
+
   AddItem(itemVM: ItemVM): Observable<ItemVM> {
     return this.httpClient.post<ItemVM>(
       `${this.apiUrl}ProductItem/AddItem`, itemVM, this.httpOptions

@@ -17,3 +17,7 @@
 .table {
     margin-left: 25px;
 }
+
+.red-btn { background-color: #E33131;}
+
+.red-btn:hover {background-color: #bc2a2a; }
