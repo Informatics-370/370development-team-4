@@ -87,14 +87,9 @@
           <form [formGroup]="addItemForm">
             <div class="form-group">
                 <label for="category" class="form-label modal-form-label bold">Product Category:</label>
-                <select id="add-categoryID" formControlName="categoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
-                    <option value="none" disabled selected>Choose an option</option>
-                    <option *ngFor="let cat of categories" value="{{cat.categoryID}}">{{cat.description}}</option>
-                </select>
-                <select>
-                    <option value="0" disabled hidden selected>Zero</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
+                <select id="add-categoryID" [(ngModel)]="selectedValue" formControlName="categoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text">                    
+                    <option disabled value="NA">Choose a category</option>
+                    <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.description}}</option>
                 </select>
             </div>
             <div class="form-group">
@@ -103,7 +98,7 @@
             </div>
 
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" >Create</button>
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addItem()">Create</button>
             </div>
             
           </form>

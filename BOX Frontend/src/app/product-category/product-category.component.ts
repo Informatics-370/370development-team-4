@@ -11,14 +11,17 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class ProductCategoryComponent {
   categories: Category[] = []; //used to get all categories
+  filteredCategories: Category[] = []; //used to hold all the categories that will be displayed to the user
   specificCategory!: CategoryVM; //used to get a specific category
-  categoryCount: number = this.categories.length; //keep track of how many categories there are in the DB
+  categoryCount: number = this.filteredCategories.length; //keep track of how many categories there are in the DB
   //forms
   addCategoryForm: FormGroup;
   updateCategoryForm: FormGroup;
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
+  //search functionality
+  searchTerm: string = '';
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -47,32 +50,34 @@ export class ProductCategoryComponent {
   getCategories() {
     this.dataService.GetCategories().subscribe((result: any[]) => {
       let allCategories: any[] = result;
-      this.categories = []; //empty array
+      this.filteredCategories = []; //empty array
       allCategories.forEach((category) => {
-        this.categories.push(category);
+        this.filteredCategories.push(category);
       });
+      
+      this.categories = this.filteredCategories; //store all the categories someplace before I search below
+      this.categoryCount = this.filteredCategories.length; //update the number of categories
 
-      this.categoryCount = this.categories.length; //update the number of categories
-
-      console.log('All categories array: ', this.categories);
+      console.log('All categories array: ', this.filteredCategories);
     });
   }
 
-  //--------------------ADD CATEGORY LOGIC----------------
-  // addCategory() {
-  //   if (this.addCategoryForm.valid) {
-  //     let newCategory : CategoryVM = this.addCategoryForm.value;
-      
-  //     this.dataService.AddCategory(newCategory).subscribe(
-  //       (result: any) => {
-  //         console.log('new category!', result);    
+  //--------------------SEARCH BAR LOGIC----------------
+  searchCategories(event: Event) {
+    event.preventDefault();
+    this.filteredCategories = []; //clear array
+    for (let i = 0; i < this.categories.length; i++) {
+      let notCaseSensitive: string = this.categories[i].description.toLowerCase();
+      if (notCaseSensitive.includes(this.searchTerm.toLowerCase()))
+      {
+        this.filteredCategories.push(this.categories[i]);
+      }
+      console.log(this.filteredCategories);
+    }
+  }
 
-  //         this.getCategories(); //refresh category list          
-  //         this.addCategoryForm.reset(); //reset form
-  //       }
-  //     );
-  //   }
-  // }
+
+  //--------------------ADD CATEGORY LOGIC----------------
 
   addCategory() {
     if (this.addCategoryForm.valid) {
@@ -82,10 +87,15 @@ export class ProductCategoryComponent {
         (result: any) => {
               console.log('new category!', result);
 
-              this.getCategories(); //refresh category list          
-              this.addCategoryForm.patchValue({ length: false, width: false, height: false, weight: false, volume: false }); // set boolean values to false
+              this.getCategories(); //refresh category list              
+              //reset form; NT reset and patchValue methods didn't quite work
+              this.addCategoryForm.setValue({categoryDescription: '', length: false, width: false, height: false, weight: false, volume: false });
         }
       );
+    }
+    else {
+      const invalid = document.getElementById('invalid');
+      if(invalid) invalid.style.display = 'block';
     }
   }
   

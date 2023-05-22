@@ -18,6 +18,9 @@ export class ProductItemTestComponent {
   //forms
   addItemForm: FormGroup;
   // updateItemForm: FormGroup;
+  //I need these two variables below just to display a default, disabled option in the caetgory dropdown. Can you imagine?!!
+  isDisabled = true;
+  public selectedValue = 'NA';
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
@@ -25,7 +28,7 @@ export class ProductItemTestComponent {
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addItemForm = this.formBuilder.group({
       itemDescription: ['', Validators.required],
-      categoryID: [Validators.required]
+      categoryID: [{value: 'NA'}, Validators.required]
     });
   }  
 
@@ -69,21 +72,26 @@ export class ProductItemTestComponent {
   //--------------------ADD CATEGORY LOGIC----------------
   addItem() {
     if (this.addItemForm.valid) {
-      let newItem : ItemVM = this.addItemForm.value;
+      const formData = this.addItemForm.value;
+      let newItem : ItemVM = {
+        itemDescription: formData.itemDescription,
+        categoryID: parseInt(formData.categoryID)
+      }
       console.log(newItem);
       
-      this.dataService.AddItem(newItem).subscribe(
-        (result: any) => {
-          console.log('New item!', result);
+      // this.dataService.AddItem(newItem).subscribe(
+      //   (result: any) => {
+      //     console.log('New item!', result);
 
-          this.getItems(); //refresh item list
-          this.addItemForm.reset();
-        },
-        (error) => {
-          console.error('Error submitting form:', error);
-        }
-      );
+      //     this.getItems(); //refresh item list
+      //     this.addItemForm.reset();
+      //   },
+      //   (error) => {
+      //     console.error('Error submitting form:', error);
+      //   }
+      // );
     }
+    else {console.log('Invalid data')}
   }
 
 }
