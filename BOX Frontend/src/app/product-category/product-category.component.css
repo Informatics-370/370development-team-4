@@ -18,6 +18,35 @@
     margin-left: 25px;
 }
 
+/*SEARCH BAR*/
+#searchbar {
+    text-align: right;
+}
+
+#search-icon {  
+    color:white;
+}
+
+#search, #search:focus {
+    padding: 5px;
+    padding-right: 40px;
+    outline: none;
+    border-color: #D6AD60;
+}
+
+#search-btn{
+    margin: 0;
+    padding: 5px;
+    border-color: #D6AD60;
+    outline-color: #D6AD60;
+    border-radius: 0%;
+    background-color: #D6AD60;
+    height: fit-content;
+    width: fit-content;
+}
+
+#search-btn:hover { background-color: #a78444; border-color: #a78444;}
+
 /*MODAL STYLES*/
 .modal-title { color: black; font-weight: normal; }
 
@@ -36,7 +65,7 @@
 
 .modal-form-label { color: black; }
 
-.modal-form-text, .modal-form-text:hover {
+.modal-form-text, .modal-form-text:hover, .modal-form-text:focus {
     border-color: #41A0B5;
     border-radius: 0%;
     box-shadow: none;    
@@ -56,3 +85,5 @@
 .red-btn { background-color: #E33131;}
 
 .red-btn:hover {background-color: #bc2a2a; }
+
+.required-field { color: red; font-weight: bold; }

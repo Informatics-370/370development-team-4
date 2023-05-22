@@ -1,4 +1,5 @@
 ﻿using BOX.Models;
+using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BOX.Controllers
@@ -43,5 +44,70 @@ namespace BOX.Controllers
             catch (Exception)
             { return StatusCode(500, "Internal Server Error. Please contact B.O.X support services."); }
         }
+
+        [HttpPost]
+        [Route("AddItem")]
+        public async Task<IActionResult> AddItem(ItemViewModel itemVM)
+        {
+            var newItem = new Product_Item
+            {
+                Description = itemVM.ItemDescription,
+                CategoryID = itemVM.CategoryID
+            };
+
+            try
+            {
+                _repository.Add(newItem);
+                await _repository.SaveChangesAsync();
+                return Ok(itemVM);
+            }
+            catch (Exception)
+            { return BadRequest("Invalid transaction"); }
+
+        }
+
+        [HttpPut]
+        [Route("UpdateItem/{itemId}")]
+        public async Task<ActionResult<ItemViewModel>> UpdateItem(int itemId, ItemViewModel itemVM)
+        {
+            try
+            {
+                //find the item
+                var existingItem = await _repository.GetItemAsync(itemId);
+                if (existingItem == null) return NotFound("The product item does not exist on the B.O.X System");
+
+                //update the item
+                existingItem.Description = itemVM.ItemDescription;
+                existingItem.CategoryID = itemVM.CategoryID; //I wanted to update the actual category object but it was throwing an error and I figured it wasn't necessary cos I have the ID anyways
+
+                if (await _repository.SaveChangesAsync())
+                    return Ok(itemVM);
+            }
+            catch (Exception)
+            { return StatusCode(500, "Internal Server Error. Please contact B.O.X support."); }
+
+            return BadRequest("Your request is invalid.");
+        }
+
+        [HttpDelete]
+        [Route("DeleteItem/{itemId}")]
+        public async Task<IActionResult> DeleteItem(int itemId)
+        {
+            try
+            {
+                //find item
+                var existingItem = await _repository.GetItemAsync(itemId);
+                if (existingItem == null) return NotFound("The product item does not exist on the B.O.X System");
+
+                //delete item
+                _repository.Delete(existingItem);
+                if (await _repository.SaveChangesAsync()) return Ok(existingItem);
+            }
+            catch (Exception)
+            { return StatusCode(500, "Internal Server Error. Please contact B.O.X support."); }
+
+            return BadRequest("Your request is invalid.");
+        }
+
     }
 }

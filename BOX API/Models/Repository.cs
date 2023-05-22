@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
-
 namespace BOX.Models
 {
 
@@ -105,52 +103,56 @@ namespace BOX.Models
 	        return await query.FirstOrDefaultAsync();
         }
 
-        // ------------------------------ RAW MATERIAL -------------------------------------------------
-        public async Task<Raw_Material[]> GetAllRawMaterialsAsync()
-        {
-            IQueryable<Raw_Material> query = _appDbContext.Raw_Material;
-            return await query.ToArrayAsync();
-        }
+		// ------------------------------ RAW MATERIAL -------------------------------------------------
+		public async Task<Raw_Material[]> GetAllRawMaterialsAsync()
+		{
+			IQueryable<Raw_Material> query = _appDbContext.Raw_Material;
+			return await query.ToArrayAsync();
+		}
 
-        public async Task<Raw_Material> GetRawMaterialAsync(int rawMaterialId)
-        {
-            IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(rm => rm.RawMaterialID == rawMaterialId);
-            return await query.FirstOrDefaultAsync();
-        }
+		public async Task<Raw_Material> GetRawMaterialAsync(int rawMaterialId)
+		{
+			IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(rm => rm.RawMaterialID == rawMaterialId);
+			return await query.FirstOrDefaultAsync();
+		}
 
-        // ------------------------------ VAT -------------------------------------------
-        public async Task<VAT[]> GetAllVatAsync()
-        {
-            IQueryable<VAT> query = _appDbContext.VAT;
-            return await query.ToArrayAsync();
-        }
+		// ------------------------------ VAT -------------------------------------------
+		public async Task<VAT[]> GetAllVatAsync()
+		{
+			IQueryable<VAT> query = _appDbContext.VAT;
+			return await query.ToArrayAsync();
+		}
 
-        public async Task<VAT> GetVatAsync(int vatId)
-        {
-            IQueryable<VAT> query = _appDbContext.VAT.Where(v => v.VatID == vatId);
-            return await query.FirstOrDefaultAsync();
-        }
+		public async Task<VAT> GetVatAsync(int vatId)
+		{
+			IQueryable<VAT> query = _appDbContext.VAT.Where(v => v.VatID == vatId);
+			return await query.FirstOrDefaultAsync();
+		}
 
-        // ------------------------------ Supplier -------------------------------------------
-        public async Task<Supplier[]> GetAllSuppliersAsync()
-        {
-            IQueryable<Supplier> query = _appDbContext.Supplier;
-            return await query.ToArrayAsync();
-        }
+		// ------------------------------ Supplier -------------------------------------------
+		public async Task<Supplier[]> GetAllSuppliersAsync()
+		{
+			IQueryable<Supplier> query = _appDbContext.Supplier;
+			return await query.ToArrayAsync();
+		}
 
-        public async Task<Supplier> GetSupplierAsync(int supplierId)
-        {
-            IQueryable<Supplier> query = _appDbContext.Supplier.Where(s => s.SupplierID == supplierId);
-            return await query.FirstOrDefaultAsync();
-        }
+		public async Task<Supplier> GetSupplierAsync(int supplierId)
+		{
+			IQueryable<Supplier> query = _appDbContext.Supplier.Where(s => s.SupplierID == supplierId);
+			return await query.FirstOrDefaultAsync();
+		}
 
-        //=================================================================================
-        //Never remove this line of code, code above the line above.
-        public async Task<bool> SaveChangesAsync()
-        {
-            return await _appDbContext.SaveChangesAsync() > 0;
-        }
-  }
+		//=================================================================================
+		//Never remove this line of code, code above the line above.
+		public async Task<bool> SaveChangesAsync()
+		{
+			return await _appDbContext.SaveChangesAsync() > 0;
+		}
+	}
 }
+
+
+
+
 
 

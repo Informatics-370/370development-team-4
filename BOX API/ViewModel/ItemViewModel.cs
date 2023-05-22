@@ -3,7 +3,8 @@
     public class ItemViewModel
     {
         public string ItemDescription { get; set; }
+        public int CategoryID { get; set; }
 
-        //category description as well?
+        
     }
 }

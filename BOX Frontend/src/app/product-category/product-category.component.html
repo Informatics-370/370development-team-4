@@ -41,6 +41,14 @@
     <!-- RIGHT SIDE- i.e. PAGE CONTENT -->
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">View Product Category</h3>
+        <!--Search bar-->
+        <form id="searchbar" (ngSubmit)="searchCategories($event)">
+            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Box" />
+            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>
+            
+        </form>
+
+
         <hr class="hr hr-blurry m-3" />
         <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addCategory">Create Product Category</button>
         <table class="table">
@@ -51,8 +59,12 @@
                 </tr>
             </thead>
             <tbody>
+                <!--Error message if there's no categories in the DB-->
+                <tr *ngIf="categoryCount==0">
+                    <td colspan="2">No categories found. Please add a new category to the system.</td>
+                </tr>
                 <!--Category data from API-->
-                <tr *ngFor="let category of categories">
+                <tr *ngFor="let category of filteredCategories">
                     <td>
                         <button class="CRUD-icon" (click)="openDeleteModal(category.categoryID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
@@ -86,9 +98,9 @@
         <div class="modal-body">
           <form [formGroup]="addCategoryForm">
             <div class="form-group">
-                <label for="description" class="form-label modal-form-label bold">Product Category:</label>
+                <label for="description" class="form-label modal-form-label bold">Product Category:<span class="required-field">*</span></label>
                 <input id="add-description" type="text" formControlName="categoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
-            </div>
+            </div>            
             <div class="form-group">
                 <label class="form-check-label modal-form-label">
                     <input id="add-length" formControlName="length" class="form-check-input modal-form-input" type="checkbox" name="length"> Length
@@ -114,7 +126,7 @@
                     <input id="add-volume" formControlName="volume" class="form-check-input modal-form-input" type="checkbox" name="volume"> Volume
                 </label>
             </div>
-
+            
             <div class="form-submit-div">
                 <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addCategory()">Create</button>
             </div>
