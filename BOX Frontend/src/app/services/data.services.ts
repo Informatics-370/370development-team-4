@@ -133,4 +133,10 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     return this.httpClient.put<any>(`${this.apiUrl}RefundReason/EditCustomerRefundReason/${customerrefundreasonId}`, refundreasonModel, this.httpOptions);
   }
 
+  //----------WRITE-OFF REASON---------------
+  GetWriteOffReasons(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}WriteOffReason/GetAllWriteOffReasons`)
+    .pipe(map(result => result))
+  }
+
 }
