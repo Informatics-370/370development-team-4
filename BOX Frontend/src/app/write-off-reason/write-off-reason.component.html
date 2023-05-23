@@ -45,7 +45,7 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">Write-Off Reasons</h3>
         <!--Search bar-->
-        <form id="searchbar" >
+        <form id="searchbar" (ngSubmit)="searchReasons($event)">
             <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Damaged by water" />
             <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>        
         </form>
@@ -80,5 +80,36 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+</div>
+
+<!--CRUD MODALS-->
+<!--ADD WRITE OFF REASON MODAL-->
+<div class="modal fade" id="addReason" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Create New Write-Off Reason</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="addReasonForm">
+            <div class="form-group">
+                <label for="description" class="form-label modal-form-label bold">Write-Off Reason:</label>
+                <input id="add-description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. Damaged goods" name="description" required>
+            </div>
+
+            <div class="form-submit-div">
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addReason()">Add New Write-Off Reason</button>
+            </div>
+            
+          </form>
+        </div>
+        
+      </div>
     </div>
 </div>

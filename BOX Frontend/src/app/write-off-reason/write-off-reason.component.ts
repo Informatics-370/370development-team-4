@@ -14,7 +14,7 @@ export class WriteOffReasonComponent {
   specificReason!: WriteOffReason; //used to get a specific reason
   reasonCount: number = this.filteredReasons.length; //keep track of how many reasons there are in the DB
   //forms
-  // addReasonForm: FormGroup;
+  addReasonForm: FormGroup;
   // updateReasonForm: FormGroup;
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
@@ -23,7 +23,9 @@ export class WriteOffReasonComponent {
   searchTerm: string = '';
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
-    
+    this.addReasonForm = this.formBuilder.group({
+      description: ['', Validators.required]
+    });
   }
 
   ngOnInit(): void {
@@ -43,6 +45,45 @@ export class WriteOffReasonComponent {
 
       console.log('All write-off reasons array: ', this.filteredReasons);
     });
-  }  
+  }
+  
+  //--------------------SEARCH BAR LOGIC----------------
+  searchReasons(event: Event) {
+    event.preventDefault();
+    this.filteredReasons = []; //clear array
+    for (let i = 0; i < this.writeOffReasons.length; i++) {
+      let currentReasonDescripton: string = this.writeOffReasons[i].description.toLowerCase();
+      if (currentReasonDescripton.includes(this.searchTerm.toLowerCase()))
+      {
+        this.filteredReasons.push(this.writeOffReasons[i]);
+      }
+      console.log(this.filteredReasons);
+    }
+  }
+
+  //--------------------ADD REASON LOGIC----------------
+  addReason() {
+    if (this.addReasonForm.valid) {
+      const formData = this.addReasonForm.value;
+      let newReason = {
+        description: formData.description
+      };
+      console.log(newReason);
+      
+      this.dataService.AddWriteOffReason(newReason).subscribe(
+        (result: any) => {
+          console.log('New reason!', result);
+
+          this.getReasons(); //refresh item list
+          this.addReasonForm.reset();
+        },
+        (error) => {
+          console.error('Error submitting form:', error);
+        }
+      );
+    }
+    else {console.log('Invalid data entered')}
+  }
+
   
 }
