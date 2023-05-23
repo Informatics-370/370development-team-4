@@ -1,12 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, Subject } from 'rxjs';
+import { map, Observable, Observer, Subject } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Size } from '../shared/Size';
 import { CategoryVM } from '../shared/category-vm';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { RefundReason } from '../shared/refund-reason';
+import { WriteOffReason } from '../shared/write-off-reason';
 
 imports:[
   HttpClientModule
@@ -139,4 +140,22 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     .pipe(map(result => result))
   }
 
+  GetWriteReason(writeoffreasonId: number): Observable<WriteOffReason> {
+    return this.httpClient.get<WriteOffReason>(`${this.apiUrl}WriteOffReason/GetWriteOffReason/${writeoffreasonId}`)
+      .pipe(map(result => result));
+  }
+
+  AddWriteOffReason(worvm: any): Observable<WriteOffReason> {
+    return this.httpClient.post<WriteOffReason>(
+      `${this.apiUrl}WriteOffReason/AddWriteOffReason`, worvm, this.httpOptions
+    );
+  }
+
+  DeleteWriteOffReason(writeoffreasonId: number ):Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}WriteOffReason/DeleteWriteOffReason/${writeoffreasonId}`, this.httpOptions);
+  }
+
+  UpdateWriteOffReason(writeoffreasonId: number, writeoffreasonmodel: any): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}WriteOffReason/EditWriteOffReason/${writeoffreasonId}`, writeoffreasonmodel, this.httpOptions);
+  }
 }
