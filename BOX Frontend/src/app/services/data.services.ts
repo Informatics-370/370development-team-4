@@ -125,7 +125,7 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
-  UpdateRefundReasons(customerrefundreasonId: number, refundreasonModel: any): Observable<any> {
+  UpdateRefundReason(customerrefundreasonId: number, refundreasonModel: any): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}RefundReason/EditCustomerRefundReason/${customerrefundreasonId}`, refundreasonModel, this.httpOptions);
   }
 

@@ -124,6 +124,36 @@ export class RefundReasonComponent {
     document.body.style.overflow = 'auto'; //allow scrolling web page body again
   }
 
+  updateReason() {
+    if (this.updateReasonForm.valid) {
+      //get refund reason ID which I stored in modal ID
+      let id = this.updateModal.nativeElement.id;
+      let reasonId = id.substring(id.indexOf('-') + 1);
+      console.log(reasonId);
+
+      //get form data
+      const formValues = this.updateReasonForm.value;
+      let updatedReason = {        
+        description: formValues.uDescription
+      };
+      console.log(updatedReason);
+
+      //update item
+      this.dataService.UpdateRefundReason(reasonId, updatedReason).subscribe(
+        (result: any) => {
+          console.log('Updated reasons', result);
+          this.getReasons(); //refresh item list
+        },
+        (error) => {
+          console.error('Error updating items:', error);
+        }
+      );
+
+      this.closeUpdateModal();
+    }
+    
+  }
+
   
 
 }
