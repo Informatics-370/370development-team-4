@@ -41,8 +41,22 @@ export class RefundReasonComponent {
       this.refundReasons = this.filteredReasons; //store all the categories someplace before I search below
       this.reasonCount = this.filteredReasons.length; //update the number of items
 
-      console.log('All items array: ', this.filteredReasons);
+      console.log('All refund reasons array: ', this.filteredReasons);
     });
+  }
+  
+  //--------------------SEARCH BAR LOGIC----------------
+  searchReasons(event: Event) {
+    event.preventDefault();
+    this.filteredReasons = []; //clear array
+    for (let i = 0; i < this.refundReasons.length; i++) {
+      let currentReasonDescripton: string = this.refundReasons[i].description.toLowerCase();
+      if (currentReasonDescripton.includes(this.searchTerm.toLowerCase()))
+      {
+        this.filteredReasons.push(this.refundReasons[i]);
+      }
+      console.log(this.filteredReasons);
+    }
   }
 
 }

@@ -51,15 +51,10 @@ export class ProductItemTestComponent {
       let allItems: any[] = result;
       this.filteredItems = []; //empty item array
       allItems.forEach((itemFromDB) => {
-        // let item: Item = {
-        //   itemID = itemFromDB.itemID,
-        //   description = itemFromDB.description,
-        //   categoryID = itemFromDB.categoryID
-        // };
         this.filteredItems.push(itemFromDB);
       });
       
-      this.items = this.filteredItems; //store all the categories someplace before I search below
+      this.items = this.filteredItems; //store all the items someplace before I search below
       this.itemCount = this.filteredItems.length; //update the number of items
 
       console.log('All items array: ', this.filteredItems);

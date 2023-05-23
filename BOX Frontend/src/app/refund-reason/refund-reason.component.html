@@ -41,7 +41,7 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">View Customer Refund Reason</h3>
         <!--Search bar-->
-        <form id="searchbar" >
+        <form id="searchbar" (ngSubmit)="searchReasons($event)" >
             <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Single wall" />
             <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>
             
