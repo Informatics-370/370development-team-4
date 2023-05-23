@@ -4,13 +4,13 @@ import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { Category } from '../shared/category';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { error } from 'jquery';
 
 @Component({
   selector: 'app-product-item-test',
   templateUrl: './product-item-test.component.html',
   styleUrls: ['./product-item-test.component.css']
 })
+
 export class ProductItemTestComponent {
   items: Item[] = []; //used to store all items
   filteredItems: Item[] = []; //used to hold all the categories that will be displayed to the user

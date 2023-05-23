@@ -1,1 +1,82 @@
-<p>refund-reason works!</p>
+<div class="row">
+    <!--SIDE NAVBAR-->
+    <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
+        <div class="container">
+            <div class="text-center pt-3">
+                <h2>Menu</h2>
+            </div>
+            <pre></pre>
+            <pre></pre>
+            <pre></pre>
+            
+            <div class="text-center">
+                <button class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
+                    Dashboard
+                </button><pre></pre>
+                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
+                    Product Category
+                </button><pre></pre>
+                <button [routerLink]="['/product-item']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
+                    Product Item
+                </button><pre></pre>
+                <button class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'tape']"></fa-icon>
+                    Size
+                </button><pre></pre>
+                <button class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'box']"></fa-icon>
+                    Product
+                </button><pre></pre>
+                <button class="btn btn-info active text-start">
+                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
+                    Refund reason
+                </button><pre></pre>
+            </div>
+        </div>
+    </div>
+    <!--Right Side-->
+    <div class="col-md-9">
+        <h3 class="p-3" style="color: black;">View Customer Refund Reason</h3>
+        <!--Search bar-->
+        <form id="searchbar" >
+            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Single wall" />
+            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>
+            
+        </form>
+
+
+        <hr class="hr hr-blurry m-3" />
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addItem">Create Refund Reason</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col">Refund Reason</th>
+                </tr>
+            </thead>
+            <tbody>                
+                <!--Error message if there's no items in the DB-->
+                <tr *ngIf="reasonCount==0">
+                    <td colspan="2">No customer refund reasons found. Please add a new reason to the system.</td>
+                </tr>
+                <!--Item data from API-->
+                <tr *ngFor="let reason of filteredReasons">
+                    <td>
+                        <button class="CRUD-icon" >
+                            <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
+                        </button>
+                        <button class="CRUD-icon"  >
+                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                        </button>                                              
+                    </td>
+                    <td>
+                        {{reason.description}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
