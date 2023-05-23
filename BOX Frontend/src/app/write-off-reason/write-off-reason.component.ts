@@ -88,6 +88,47 @@ export class WriteOffReasonComponent {
     }
     else {console.log('Invalid data entered')}
   }
+  
+
+  //--------------------DELETE REASON LOGIC----------------
+  openDeleteModal(writeoffreasonId: number) {
+    //Open the modal manually
+    this.deleteModal.nativeElement.classList.add('show');
+    this.deleteModal.nativeElement.style.display = 'block';
+    this.deleteModal.nativeElement.id = 'deleteReason-' + writeoffreasonId;
+    //Fade background when modal is open.
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "block"};
+    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+  }
+
+  closeDeleteModal() {
+    //Close the modal manually
+    this.deleteModal.nativeElement.classList.remove('show');
+    this.deleteModal.nativeElement.style.display = 'none';
+    //Show background as normal
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "none"};
+    document.body.style.overflow = 'auto'; //allow scrolling web page body again
+  }
+
+  deleteReason() {
+    //get reason ID which I stored in modal ID
+    let id = this.deleteModal.nativeElement.id;
+    let reasonId = id.substring(id.indexOf('-') + 1);
+    console.log(reasonId);
+    this.dataService.DeleteWriteOffReason(reasonId).subscribe(
+      (result) => {
+        console.log("Successfully deleted ", result);
+        this.getReasons(); //refresh item list
+      },
+      (error) => {
+        console.error('Error deleting reason with ID ', reasonId, error);
+      }
+    );
+
+    this.closeDeleteModal();
+  }
 
   //--------------------UPDATE REASON LOGIC----------------
   openUpdateModal(reasonId: number) {
