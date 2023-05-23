@@ -15,7 +15,7 @@ export class RefundReasonComponent {
   reasonCount: number = this.filteredReasons.length; //keep track of how many reasons there are in the DB
   //forms
   addReasonForm: FormGroup;
-  // updateReasonForm: FormGroup;
+  updateReasonForm: FormGroup;
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
@@ -26,6 +26,10 @@ export class RefundReasonComponent {
     this.addReasonForm = this.formBuilder.group({
       description: ['', Validators.required]
     });
+
+    this.updateReasonForm = this.formBuilder.group({
+      uDescription: ['', Validators.required]
+    })
   }
 
   ngOnInit(): void {
@@ -83,6 +87,41 @@ export class RefundReasonComponent {
       );
     }
     else {console.log('Invalid data')}
+  }  
+
+  //--------------------UPDATE REASON LOGIC----------------
+  openUpdateModal(reasonId: number) {
+    //get item and display data
+    this.dataService.GetItem(reasonId).subscribe(
+      (result) => {
+        console.log('Refund reason to update: ', result);        
+        this.updateReasonForm.setValue({          
+          uDescription: result.description
+        }); //display data; Reactive forms are so powerful. All the reason data passed with one method
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+
+    //Open the modal manually
+    this.updateModal.nativeElement.classList.add('show');
+    this.updateModal.nativeElement.style.display = 'block';
+    this.updateModal.nativeElement.id = 'updateReason-' + reasonId; //pass item ID into modal ID so I can use it to update later
+    //Fade background when modal is open.
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "block"};
+    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+  }
+
+  closeUpdateModal() {
+    //Close the modal manually
+    this.updateModal.nativeElement.classList.remove('show');
+    this.updateModal.nativeElement.style.display = 'none';
+    //Show background as normal
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "none"};
+    document.body.style.overflow = 'auto'; //allow scrolling web page body again
   }
 
 }
