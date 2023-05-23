@@ -6,6 +6,7 @@ import { Size } from '../shared/Size';
 import { CategoryVM } from '../shared/category-vm';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
+import { RefundReason } from '../shared/refund-reason';
 
 imports:[
   HttpClientModule
@@ -105,6 +106,27 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   UpdateItem(itemId: number, itemVM: ItemVM): Observable<ItemVM> {
     return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
+  }
+
+  //------------CUSTOMER REFUND REASON------------ [Give it its own service?]
+  GetRefundReasons(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}RefundReason/GetAllCustomerRefundReasons`)
+      .pipe(map(result => result))
+  }
+
+  GetRefundReason(customerrefundreasonId: number): Observable<RefundReason> {
+    return this.httpClient.get<RefundReason>(`${this.apiUrl}RefundReason/GetCustomerRefundReason/${customerrefundreasonId}`)
+      .pipe(map(result => result));
+  }
+
+  AddReason(rrvm: any): Observable<RefundReason> {
+    return this.httpClient.post<RefundReason>(
+      `${this.apiUrl}RefundReason/AddRefundReason`, rrvm, this.httpOptions
+    );
+  }
+
+  UpdateRefundReasons(customerrefundreasonId: number, refundreasonModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}RefundReason/EditCustomerRefundReason/${customerrefundreasonId}`, refundreasonModel, this.httpOptions);
   }
 
 }

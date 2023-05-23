@@ -4,13 +4,13 @@ import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { Category } from '../shared/category';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { error } from 'jquery';
 
 @Component({
   selector: 'app-product-item-test',
   templateUrl: './product-item-test.component.html',
   styleUrls: ['./product-item-test.component.css']
 })
+
 export class ProductItemTestComponent {
   items: Item[] = []; //used to store all items
   filteredItems: Item[] = []; //used to hold all the categories that will be displayed to the user
@@ -51,15 +51,10 @@ export class ProductItemTestComponent {
       let allItems: any[] = result;
       this.filteredItems = []; //empty item array
       allItems.forEach((itemFromDB) => {
-        // let item: Item = {
-        //   itemID = itemFromDB.itemID,
-        //   description = itemFromDB.description,
-        //   categoryID = itemFromDB.categoryID
-        // };
         this.filteredItems.push(itemFromDB);
       });
       
-      this.items = this.filteredItems; //store all the categories someplace before I search below
+      this.items = this.filteredItems; //store all the items someplace before I search below
       this.itemCount = this.filteredItems.length; //update the number of items
 
       console.log('All items array: ', this.filteredItems);

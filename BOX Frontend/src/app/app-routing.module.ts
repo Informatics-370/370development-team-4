@@ -5,6 +5,7 @@ import { RegisterComponent } from './register/register.component';
 import { ProductItemTestComponent } from './product-item-test/product-item-test.component';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
 import { ProductCategoryComponent } from './product-category/product-category.component';
+import { RefundReasonComponent } from './refund-reason/refund-reason.component';
 
 
 const routes: Routes = [
@@ -14,6 +15,7 @@ const routes: Routes = [
       { path: "product-item", component: ProductItemTestComponent },
         { path: "help", component: ViewHelpInventoryComponent },
           { path: "product-category", component: ProductCategoryComponent },
+          {path: "refund-reason", component: RefundReasonComponent}
 
 ];
 

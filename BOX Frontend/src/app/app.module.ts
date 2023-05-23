@@ -16,6 +16,7 @@ import { ProductItemTestComponent } from './product-item-test/product-item-test.
 import { ProductCategoryComponent } from './product-category/product-category.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { RefundReasonComponent } from './refund-reason/refund-reason.component';
 
 @NgModule({
   declarations: [ 
@@ -24,7 +25,8 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
         RegisterComponent,
        ProductItemTestComponent,
         ViewHelpInventoryComponent,
-        ProductCategoryComponent
+        ProductCategoryComponent,
+        RefundReasonComponent
 
   ],
   imports: [
