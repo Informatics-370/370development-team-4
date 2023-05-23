@@ -114,4 +114,10 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
       .pipe(map(result => result))
   }
 
+  AddReason(rrvm: any): Observable<RefundReason> {
+    return this.httpClient.post<RefundReason>(
+      `${this.apiUrl}RefundReason/AddRefundReason`, rrvm, this.httpOptions
+    );
+  }
+
 }

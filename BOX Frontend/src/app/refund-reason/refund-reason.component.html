@@ -39,17 +39,15 @@
     </div>
     <!--Right Side-->
     <div class="col-md-9">
-        <h3 class="p-3" style="color: black;">View Customer Refund Reason</h3>
+        <h3 class="p-3" style="color: black;">Refund Reasons</h3>
         <!--Search bar-->
         <form id="searchbar" (ngSubmit)="searchReasons($event)" >
             <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Single wall" />
-            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>
-            
+            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>        
         </form>
 
-
         <hr class="hr hr-blurry m-3" />
-        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addItem">Create Refund Reason</button>
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addReason">Create Refund Reason</button>
         <table class="table">
             <thead>
                 <tr>
@@ -78,5 +76,36 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+</div>
+
+<!--CRUD MODALS-->
+<!--ADD REFUND REASON MODAL-->
+<div class="modal fade" id="addReason" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Create New Refund Reason</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="addReasonForm">
+            <div class="form-group">
+                <label for="description" class="form-label modal-form-label bold">Refund Reason:</label>
+                <input id="add-description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. Product was damaged on arrival" name="description" required>
+            </div>
+
+            <div class="form-submit-div">
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addReason()">Create</button>
+            </div>
+            
+          </form>
+        </div>
+        
+      </div>
     </div>
 </div>

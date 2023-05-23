@@ -14,7 +14,7 @@ export class RefundReasonComponent {
   specificReason!: RefundReason; //used to get a specific reason
   reasonCount: number = this.filteredReasons.length; //keep track of how many reasons there are in the DB
   //forms
-  // addReasonForm: FormGroup;
+  addReasonForm: FormGroup;
   // updateReasonForm: FormGroup;
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
@@ -23,7 +23,9 @@ export class RefundReasonComponent {
   searchTerm: string = '';
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
-
+    this.addReasonForm = this.formBuilder.group({
+      description: ['', Validators.required]
+    });
   }
 
   ngOnInit(): void {
@@ -57,6 +59,30 @@ export class RefundReasonComponent {
       }
       console.log(this.filteredReasons);
     }
+  }
+
+  //--------------------ADD REASON LOGIC----------------
+  addReason() {
+    if (this.addReasonForm.valid) {
+      const formData = this.addReasonForm.value;
+      let newReason = {
+        description: formData.description
+      };
+      console.log(newReason);
+      
+      this.dataService.AddReason(newReason).subscribe(
+        (result: any) => {
+          console.log('New reason!', result);
+
+          this.getReasons(); //refresh item list
+          this.addReasonForm.reset();
+        },
+        (error) => {
+          console.error('Error submitting form:', error);
+        }
+      );
+    }
+    else {console.log('Invalid data')}
   }
 
 }
