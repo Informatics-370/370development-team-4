@@ -30,7 +30,14 @@ namespace BOX.Models
 		//-----------------------Customer Refund Reason Reason-----------------------
 		Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync();
 		Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
-        
-
-    }
+		//-----------------------VAT-----------------------
+		Task<VAT[]> GetAllVatAsync();
+		Task<VAT> GetVatAsync(int vatId);
+		//-----------------------Raw Material-----------------------
+		Task<Raw_Material[]> GetAllRawMaterialsAsync();
+		Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId);
+		//-----------------------Estimate Duration-----------------------
+		Task<Estimate_Duration[]> GetAllEstimateDurationsAsync();
+		Task<Estimate_Duration> GetEstimateDurationAsync(int estimatedurationId);
+	}
 }
