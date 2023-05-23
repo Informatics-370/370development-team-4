@@ -7,6 +7,6 @@ namespace BOX.Models
 	public class Estimate_Duration
 	{
 		[Key] public int EstimateDurationID { get; set; }
-		[Required] public DateFormat Duration { get; set; }
+		[Required] public int Duration { get; set; }
 	}
 }
