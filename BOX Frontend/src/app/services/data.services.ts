@@ -125,6 +125,10 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
+  DeleteRefundReason(customerrefundreasonId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}RefundReason/DeleteCustomerRefundReason/${customerrefundreasonId}`, this.httpOptions);
+  }
+
   UpdateRefundReason(customerrefundreasonId: number, refundreasonModel: any): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}RefundReason/EditCustomerRefundReason/${customerrefundreasonId}`, refundreasonModel, this.httpOptions);
   }
