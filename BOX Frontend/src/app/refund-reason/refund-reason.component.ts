@@ -92,12 +92,12 @@ export class RefundReasonComponent {
   //--------------------UPDATE REASON LOGIC----------------
   openUpdateModal(reasonId: number) {
     //get item and display data
-    this.dataService.GetItem(reasonId).subscribe(
+    this.dataService.GetRefundReason(reasonId).subscribe(
       (result) => {
         console.log('Refund reason to update: ', result);        
         this.updateReasonForm.setValue({          
           uDescription: result.description
-        }); //display data; Reactive forms are so powerful. All the reason data passed with one method
+        }); //display data;
       },
       (error) => {
         console.error(error);
@@ -123,5 +123,7 @@ export class RefundReasonComponent {
     if (backdrop) {backdrop.style.display = "none"};
     document.body.style.overflow = 'auto'; //allow scrolling web page body again
   }
+
+  
 
 }
