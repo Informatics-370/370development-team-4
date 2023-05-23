@@ -17,6 +17,7 @@ import { ProductCategoryComponent } from './product-category/product-category.co
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RefundReasonComponent } from './refund-reason/refund-reason.component';
+import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.component';
 
 @NgModule({
   declarations: [ 
@@ -26,7 +27,8 @@ import { RefundReasonComponent } from './refund-reason/refund-reason.component';
        ProductItemTestComponent,
         ViewHelpInventoryComponent,
         ProductCategoryComponent,
-        RefundReasonComponent
+        RefundReasonComponent,
+        WriteOffReasonComponent
 
   ],
   imports: [
