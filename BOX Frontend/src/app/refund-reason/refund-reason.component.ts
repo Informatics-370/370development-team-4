@@ -193,8 +193,6 @@ export class RefundReasonComponent {
       this.closeUpdateModal();
     }
     
-  }
-
-  
+  }  
 
 }

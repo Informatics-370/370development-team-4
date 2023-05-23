@@ -140,7 +140,7 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     .pipe(map(result => result))
   }
 
-  GetWriteReason(writeoffreasonId: number): Observable<WriteOffReason> {
+  GetWriteOffReason(writeoffreasonId: number): Observable<WriteOffReason> {
     return this.httpClient.get<WriteOffReason>(`${this.apiUrl}WriteOffReason/GetWriteOffReason/${writeoffreasonId}`)
       .pipe(map(result => result));
   }
