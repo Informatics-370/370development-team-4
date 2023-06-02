@@ -18,6 +18,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RefundReasonComponent } from './refund-reason/refund-reason.component';
 import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.component';
+import { SizeUnitsComponent } from './size-units/size-units.component';
+import { VatComponent } from './vat/vat.component';
 
 @NgModule({
   declarations: [ 
@@ -28,7 +30,9 @@ import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.com
         ViewHelpInventoryComponent,
         ProductCategoryComponent,
         RefundReasonComponent,
-        WriteOffReasonComponent
+        WriteOffReasonComponent,
+        SizeUnitsComponent,
+        VatComponent
 
   ],
   imports: [
