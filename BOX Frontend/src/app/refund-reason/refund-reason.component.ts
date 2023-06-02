@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RefundReason } from '../shared/refund-reason';
+declare var $: any; 
 
 @Component({
   selector: 'app-refund-reason',
@@ -21,6 +22,7 @@ export class RefundReasonComponent {
   @ViewChild('updateModal') updateModal: any;
   //search functionality
   searchTerm: string = '';
+  submitClicked = false; //keep track of when submit button is clicked in forms, for validation errors
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addReasonForm = this.formBuilder.group({
@@ -53,7 +55,7 @@ export class RefundReasonComponent {
   
   //--------------------SEARCH BAR LOGIC----------------
   searchReasons(event: Event) {
-    event.preventDefault();
+    this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredReasons = []; //clear array
     for (let i = 0; i < this.refundReasons.length; i++) {
       let currentReasonDescripton: string = this.refundReasons[i].description.toLowerCase();
@@ -66,7 +68,8 @@ export class RefundReasonComponent {
   }
 
   //--------------------ADD REASON LOGIC----------------
-  addReason() {
+  addReason(event: Event) {
+    this.submitClicked = true;
     if (this.addReasonForm.valid) {
       const formData = this.addReasonForm.value;
       let newReason = {
@@ -80,13 +83,18 @@ export class RefundReasonComponent {
 
           this.getReasons(); //refresh item list
           this.addReasonForm.reset();
+          this.submitClicked = false; //reset submission status
+          $('#addReason').modal('hide');
         },
         (error) => {
           console.error('Error submitting form:', error);
         }
       );
     }
-    else {console.log('Invalid data')}
+    else {
+      event.stopPropagation();
+      console.log('Invalid data');
+    }
   }
   
 
@@ -166,6 +174,7 @@ export class RefundReasonComponent {
   }
 
   updateReason() {
+    this.submitClicked = true;
     if (this.updateReasonForm.valid) {
       //get refund reason ID which I stored in modal ID
       let id = this.updateModal.nativeElement.id;
@@ -184,6 +193,7 @@ export class RefundReasonComponent {
         (result: any) => {
           console.log('Updated reasons', result);
           this.getReasons(); //refresh item list
+          this.submitClicked = false; //rest submission status
         },
         (error) => {
           console.error('Error updating items:', error);
@@ -193,6 +203,12 @@ export class RefundReasonComponent {
       this.closeUpdateModal();
     }
     
-  }  
+  }
+
+  //---------------------------VALIDATION ERRORS LOGIC-----------------------
+  //methods to show validation error messages on reactive forms. NT that the form will not submit if fields are invalid whether or not 
+  //the folowing methods are present. This is just to improve user experience
+  get description() { return this.addReasonForm.get('description'); }
+  get uDescription() { return this.updateReasonForm.get('uDescription'); }
 
 }

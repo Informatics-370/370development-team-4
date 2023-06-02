@@ -45,10 +45,10 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">Refund Reasons</h3>
         <!--Search bar-->
-        <form id="searchbar" (ngSubmit)="searchReasons($event)" >
-            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Single wall" />
-            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>        
-        </form>
+        <div id="searchbar" >
+            <input (keyup)="searchReasons($event)" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Incorrect purchase" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
 
         <hr class="hr hr-blurry m-3" />
         <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addReason">Create Refund Reason</button>
@@ -100,11 +100,16 @@
           <form [formGroup]="addReasonForm">
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Refund Reason:</label>
-                <input id="add-description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. Product was damaged on arrival" name="description" required>
+                <input id="description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. Product was damaged on arrival" name="description" required>
+            </div>
+            <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
+            The message is just for user experience-->
+            <div *ngIf="description?.invalid && (description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
+                This field is required.
             </div>
 
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addReason()">Add New Refund Reason</button>
+                <button class="btn btn-create modal-form-submit" (click)="addReason($event)">Add New Refund Reason</button>
             </div>
             
           </form>
