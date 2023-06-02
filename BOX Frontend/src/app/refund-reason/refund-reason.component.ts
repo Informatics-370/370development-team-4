@@ -63,12 +63,13 @@ export class RefundReasonComponent {
       {
         this.filteredReasons.push(this.refundReasons[i]);
       }
+      this.reasonCount = this.filteredReasons.length; //update reason count so message can be displayed if no reasons are found
       console.log(this.filteredReasons);
     }
   }
 
   //--------------------ADD REASON LOGIC----------------
-  addReason(event: Event) {
+  addReason() {
     this.submitClicked = true;
     if (this.addReasonForm.valid) {
       const formData = this.addReasonForm.value;
@@ -92,7 +93,6 @@ export class RefundReasonComponent {
       );
     }
     else {
-      event.stopPropagation();
       console.log('Invalid data');
     }
   }
@@ -100,24 +100,26 @@ export class RefundReasonComponent {
 
   //--------------------DELETE REASON LOGIC----------------
   openDeleteModal(customerrefundreasonId: number) {
+    $('#deleteReason').modal('show');
     //Open the modal manually
-    this.deleteModal.nativeElement.classList.add('show');
-    this.deleteModal.nativeElement.style.display = 'block';
-    this.deleteModal.nativeElement.id = 'deleteReason-' + customerrefundreasonId;
-    //Fade background when modal is open.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+    // this.deleteModal.nativeElement.classList.add('show');
+    // this.deleteModal.nativeElement.style.display = 'block';
+    this.deleteModal.nativeElement.id = 'deleteReason-' + customerrefundreasonId; //store Id where I can access it again
+    // //Fade background when modal is open.
+    // const backdrop = document.getElementById("backdrop");
+    // if (backdrop) {backdrop.style.display = "block"};
+    // document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeDeleteModal() {
+    $('#deleteReason').modal('hide');
     //Close the modal manually
-    this.deleteModal.nativeElement.classList.remove('show');
-    this.deleteModal.nativeElement.style.display = 'none';
-    //Show background as normal
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "none"};
-    document.body.style.overflow = 'auto'; //allow scrolling web page body again
+    // this.deleteModal.nativeElement.classList.remove('show');
+    // this.deleteModal.nativeElement.style.display = 'none';
+    // //Show background as normal
+    // const backdrop = document.getElementById("backdrop");
+    // if (backdrop) {backdrop.style.display = "none"};
+    // document.body.style.overflow = 'auto'; //allow scrolling web page body again
   }
 
   deleteReason() {

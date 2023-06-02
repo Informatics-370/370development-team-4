@@ -46,7 +46,7 @@
         <h3 class="p-3" style="color: black;">Refund Reasons</h3>
         <!--Search bar-->
         <div id="searchbar" >
-            <input (keyup)="searchReasons($event)" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Incorrect purchase" />
+            <input (keyup)="searchReasons($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Incorrect purchase" />
             <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
         </div>
 
@@ -104,12 +104,12 @@
             </div>
             <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
             The message is just for user experience-->
-            <div *ngIf="description?.invalid && (description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
+            <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
                 This field is required.
             </div>
 
             <div class="form-submit-div">
-                <button class="btn btn-create modal-form-submit" (click)="addReason($event)">Add New Refund Reason</button>
+                <button class="btn btn-create modal-form-submit" (click)="addReason()">Add New Refund Reason</button>
             </div>
             
           </form>
@@ -127,7 +127,7 @@
         <!--HEADER-->
         <div class="modal-header">
           <h4 class="modal-title">Delete Refund Reason</h4>
-          <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
         <!--BODY-->
@@ -138,7 +138,7 @@
         <!-- Modal footer -->
         <div class="modal-footer justify-content-evenly">
             <button class="btn btn-create modal-form-submit" (click)="deleteReason()" >Yes</button>
-            <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
+            <button class="btn btn-create red-btn modal-form-submit" data-bs-dismiss="modal">No</button>
         </div>
       </div>
     </div>

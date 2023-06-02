@@ -3,6 +3,7 @@ import { DataService } from '../services/data.services';
 import { Category } from '../shared/category';
 import { CategoryVM } from '../shared/category-vm';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+declare var $: any; 
 
 @Component({
   selector: 'app-product-category',
@@ -22,6 +23,7 @@ export class ProductCategoryComponent {
   @ViewChild('updateModal') updateModal: any;
   //search functionality
   searchTerm: string = '';
+  submitClicked = false;
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -63,8 +65,8 @@ export class ProductCategoryComponent {
   }
 
   //--------------------SEARCH BAR LOGIC----------------
-  searchCategories(event: Event) {
-    event.preventDefault();
+  searchCategories(event: Event) {    
+    this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredCategories = []; //clear array
     for (let i = 0; i < this.categories.length; i++) {
       let notCaseSensitive: string = this.categories[i].description.toLowerCase();
@@ -72,6 +74,7 @@ export class ProductCategoryComponent {
       {
         this.filteredCategories.push(this.categories[i]);
       }
+      this.categoryCount = this.filteredCategories.length;
       console.log(this.filteredCategories);
     }
   }
@@ -79,6 +82,7 @@ export class ProductCategoryComponent {
   //--------------------ADD CATEGORY LOGIC----------------
 
   addCategory() {
+    this.submitClicked = true;
     if (this.addCategoryForm.valid) {
       let newCategory : CategoryVM = this.addCategoryForm.value;
      
@@ -89,12 +93,10 @@ export class ProductCategoryComponent {
               this.getCategories(); //refresh category list              
               //reset form; NT reset and patchValue methods didn't quite work
               this.addCategoryForm.setValue({categoryDescription: '', length: false, width: false, height: false, weight: false, volume: false });
+              this.submitClicked = false; //reset submission status
+              $('#addCategory').modal('hide');
         }
       );
-    }
-    else {
-      const invalid = document.getElementById('invalid');
-      if(invalid) invalid.style.display = 'block';
     }
   }
   
@@ -249,8 +251,13 @@ export class ProductCategoryComponent {
       );
 
       this.closeUpdateModal();
-    }
-    
+    }    
   }
+
+  //---------------------------VALIDATION ERRORS LOGIC-----------------------
+  //methods to show validation error messages on reactive forms. NT that the form will not submit if fields are invalid whether or not 
+  //the folowing methods are present. This is just to improve user experience
+  get description() { return this.addCategoryForm.get('categoryDescription'); }
+  get uCategoryDescription() { return this.addCategoryForm.get('uCategoryDescription'); }
 
 }

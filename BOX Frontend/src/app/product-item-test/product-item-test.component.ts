@@ -4,6 +4,7 @@ import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { Category } from '../shared/category';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+declare var $: any; 
 
 @Component({
   selector: 'app-product-item-test',
@@ -28,6 +29,7 @@ export class ProductItemTestComponent {
   @ViewChild('updateModal') updateModal: any;
   //search functionality
   searchTerm: string = '';
+  submitClicked = false;
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addItemForm = this.formBuilder.group({
@@ -76,7 +78,7 @@ export class ProductItemTestComponent {
 
   //--------------------SEARCH BAR LOGIC----------------
   searchItems(event: Event) {
-    event.preventDefault();
+    this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredItems = []; //clear array
     for (let i = 0; i < this.items.length; i++) {
       let currentItemDescripton: string = this.items[i].description.toLowerCase();
@@ -84,12 +86,14 @@ export class ProductItemTestComponent {
       {
         this.filteredItems.push(this.items[i]);
       }
+      this.itemCount = this.filteredItems.length;
       console.log(this.filteredItems);
     }
   }
 
   //--------------------ADD ITEM LOGIC----------------
   addItem() {
+    this.submitClicked = true;
     if (this.addItemForm.valid) {
       const formData = this.addItemForm.value;
       let newItem : ItemVM = {
@@ -104,6 +108,8 @@ export class ProductItemTestComponent {
 
           this.getItems(); //refresh item list
           this.addItemForm.reset();
+          this.submitClicked = false;
+          $('#addItem').modal('hide');
         },
         (error) => {
           console.error('Error submitting form:', error);
@@ -230,5 +236,10 @@ export class ProductItemTestComponent {
     }
     
   }
+
+  //---------------------------VALIDATION ERRORS LOGIC-----------------------
+  get itemDescription() { return this.addItemForm.get('itemDescription'); }
+  get uItemDescription() { return this.updateItemForm.get('uItemDescription'); }
+  get categoryID() { return this.addItemForm.get('categoryID'); }
 
 }

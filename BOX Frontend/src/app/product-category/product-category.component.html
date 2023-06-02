@@ -46,11 +46,10 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">View Product Category</h3>
         <!--Search bar-->
-        <form id="searchbar" (ngSubmit)="searchCategories($event)">
-            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Box" />
-            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>
-            
-        </form>
+        <div id="searchbar" >
+            <input (keyup)="searchCategories($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Sellotape" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
 
 
         <hr class="hr hr-blurry m-3" />
@@ -103,7 +102,11 @@
           <form [formGroup]="addCategoryForm">
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Product Category:<span class="required-field">*</span></label>
-                <input id="add-description" type="text" formControlName="categoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
+                <input id="description" type="text" formControlName="categoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
+            </div>
+            <!--Display validation error message-->
+            <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
+                This field is required.
             </div>            
             <div class="form-group">
                 <label class="form-check-label modal-form-label">
@@ -132,7 +135,7 @@
             </div>
             
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addCategory()">Create</button>
+                <button class="btn btn-create modal-form-submit" (click)="addCategory()">Create</button>
             </div>
             
           </form>
