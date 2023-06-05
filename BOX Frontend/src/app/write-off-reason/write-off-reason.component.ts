@@ -65,8 +65,8 @@ export class WriteOffReasonComponent {
       {
         this.filteredReasons.push(this.writeOffReasons[i]);
       }
-      this.reasonCount = this.filteredReasons.length;
     }
+    this.reasonCount = this.filteredReasons.length;
   }
 
   //--------------------ADD REASON LOGIC----------------

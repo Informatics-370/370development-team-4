@@ -131,7 +131,7 @@
         <!--HEADER-->
         <div class="modal-header">
           <h4 class="modal-title">Delete Refund Reason</h4>
-          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+          <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
         <!--BODY-->
@@ -142,7 +142,7 @@
         <!-- Modal footer -->
         <div class="modal-footer justify-content-evenly">
             <button class="btn btn-create modal-form-submit" (click)="deleteReason()" >Yes</button>
-            <button class="btn btn-create red-btn modal-form-submit" data-bs-dismiss="modal">No</button>
+            <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
         </div>
       </div>
     </div>

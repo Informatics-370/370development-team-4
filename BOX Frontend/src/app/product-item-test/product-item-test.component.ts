@@ -88,9 +88,9 @@ export class ProductItemTestComponent {
       {
         this.filteredItems.push(this.items[i]);
       }
-      this.itemCount = this.filteredItems.length;
-      console.log(this.filteredItems);
     }
+    this.itemCount = this.filteredItems.length;
+    console.log(this.filteredItems);
   }
 
   //--------------------ADD ITEM LOGIC----------------

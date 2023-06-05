@@ -76,9 +76,9 @@ export class ProductCategoryComponent {
       {
         this.filteredCategories.push(this.categories[i]);
       }
-      this.categoryCount = this.filteredCategories.length;
-      console.log(this.filteredCategories);
     }
+    this.categoryCount = this.filteredCategories.length;
+    console.log(this.filteredCategories);
   }
 
   //--------------------ADD CATEGORY LOGIC----------------

@@ -64,9 +64,9 @@ export class RefundReasonComponent {
       {
         this.filteredReasons.push(this.refundReasons[i]);
       }
-      this.reasonCount = this.filteredReasons.length; //update reason count so message can be displayed if no reasons are found
-      console.log(this.filteredReasons);
     }
+    this.reasonCount = this.filteredReasons.length; //update reason count so message can be displayed if no reasons are found
+    console.log(this.filteredReasons);
   }
 
   //--------------------ADD REASON LOGIC----------------
