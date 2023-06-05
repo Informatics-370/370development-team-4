@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { WriteOffReason } from '../shared/write-off-reason';
+declare var $:any;
 
 @Component({
   selector: 'app-write-off-reason',
@@ -12,7 +13,7 @@ export class WriteOffReasonComponent {
   writeOffReasons: WriteOffReason[] = []; //used to store all reasons
   filteredReasons: WriteOffReason[] = []; //used to hold all the reasons that will be displayed to the user
   specificReason!: WriteOffReason; //used to get a specific reason
-  reasonCount: number = this.filteredReasons.length; //keep track of how many reasons there are in the DB
+  reasonCount: number = -1; //keep track of how many reasons there are in the DB
   //forms
   addReasonForm: FormGroup;
   updateReasonForm: FormGroup;
@@ -21,6 +22,8 @@ export class WriteOffReasonComponent {
   @ViewChild('updateModal') updateModal: any;
   //search functionality
   searchTerm: string = '';
+  submitClicked = false;
+  loading = true; //show loading message while data loads
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addReasonForm = this.formBuilder.group({
@@ -48,12 +51,13 @@ export class WriteOffReasonComponent {
       this.reasonCount = this.filteredReasons.length; //update the number of items
 
       console.log('All write-off reasons array: ', this.filteredReasons);
+      this.loading = false;
     });
   }
   
   //--------------------SEARCH BAR LOGIC----------------
   searchReasons(event: Event) {
-    event.preventDefault();
+    this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredReasons = []; //clear array
     for (let i = 0; i < this.writeOffReasons.length; i++) {
       let currentReasonDescripton: string = this.writeOffReasons[i].description.toLowerCase();
@@ -61,12 +65,13 @@ export class WriteOffReasonComponent {
       {
         this.filteredReasons.push(this.writeOffReasons[i]);
       }
-      console.log(this.filteredReasons);
     }
+    this.reasonCount = this.filteredReasons.length;
   }
 
   //--------------------ADD REASON LOGIC----------------
   addReason() {
+    this.submitClicked = true;
     if (this.addReasonForm.valid) {
       const formData = this.addReasonForm.value;
       let newReason = {
@@ -80,6 +85,8 @@ export class WriteOffReasonComponent {
 
           this.getReasons(); //refresh item list
           this.addReasonForm.reset();
+          this.submitClicked = false; //reset submission status
+          $('#addReason').modal('hide');
         },
         (error) => {
           console.error('Error submitting form:', error);
@@ -195,5 +202,8 @@ export class WriteOffReasonComponent {
     
   }
 
+  //---------------------------VALIDATION ERRORS LOGIC-----------------------
+  get description() { return this.addReasonForm.get('description'); }
+  get uDescription() { return this.updateReasonForm.get('uDescription'); }
   
 }

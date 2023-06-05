@@ -45,10 +45,10 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">Write-Off Reasons</h3>
         <!--Search bar-->
-        <form id="searchbar" (ngSubmit)="searchReasons($event)">
-            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Damaged by water" />
-            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>        
-        </form>
+        <div id="searchbar" >
+            <input (keyup)="searchReasons($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Damaged by water" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
 
         <hr class="hr hr-blurry m-3" />
         <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addReason">Create Write-Off Reason</button>
@@ -63,6 +63,10 @@
                 <!--Error message if there's no items in the DB-->
                 <tr *ngIf="reasonCount==0">
                     <td colspan="2">No stock write-off reasons found. Please add a new reason to the system.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all write-offreasons...</td>
                 </tr>
                 <!--Item data from API-->
                 <tr *ngFor="let reason of filteredReasons">
@@ -102,9 +106,13 @@
                 <label for="description" class="form-label modal-form-label bold">Write-Off Reason:</label>
                 <input id="add-description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. Damaged goods" name="description" required>
             </div>
+            <!--Display validation error message-->
+            <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
+                This field is required.
+            </div>
 
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addReason()">Add New Write-Off Reason</button>
+                <button class="btn btn-create modal-form-submit" (click)="addReason()">Add New Write-Off Reason</button>
             </div>
             
           </form>
@@ -156,6 +164,10 @@
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Write-OffReason:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="description" required>
+            </div>
+            <!--Display validation error message-->
+            <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
+                This field is required.
             </div>
 
             <div class="form-submit-div">

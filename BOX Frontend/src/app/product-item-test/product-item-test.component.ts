@@ -4,6 +4,7 @@ import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { Category } from '../shared/category';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+declare var $: any; 
 
 @Component({
   selector: 'app-product-item-test',
@@ -15,7 +16,7 @@ export class ProductItemTestComponent {
   items: Item[] = []; //used to store all items
   filteredItems: Item[] = []; //used to hold all the categories that will be displayed to the user
   specificItem!: Item; //used to get a specific item
-  itemCount: number = this.filteredItems.length; //keep track of how many items there are in the DB
+  itemCount: number = -1; //keep track of how many items there are in the DB
   categories: Category[] = []; //used to store all categories
   //forms
   addItemForm: FormGroup;
@@ -28,6 +29,8 @@ export class ProductItemTestComponent {
   @ViewChild('updateModal') updateModal: any;
   //search functionality
   searchTerm: string = '';
+  submitClicked = false;
+  loading = true; //show loading message while data loads
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addItemForm = this.formBuilder.group({
@@ -71,12 +74,13 @@ export class ProductItemTestComponent {
       });
 
       console.log('All categories array: ', this.categories);
+      this.loading = false; //stop displaying loading message
     });
   }  
 
   //--------------------SEARCH BAR LOGIC----------------
   searchItems(event: Event) {
-    event.preventDefault();
+    this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredItems = []; //clear array
     for (let i = 0; i < this.items.length; i++) {
       let currentItemDescripton: string = this.items[i].description.toLowerCase();
@@ -84,12 +88,14 @@ export class ProductItemTestComponent {
       {
         this.filteredItems.push(this.items[i]);
       }
-      console.log(this.filteredItems);
     }
+    this.itemCount = this.filteredItems.length;
+    console.log(this.filteredItems);
   }
 
   //--------------------ADD ITEM LOGIC----------------
   addItem() {
+    this.submitClicked = true;
     if (this.addItemForm.valid) {
       const formData = this.addItemForm.value;
       let newItem : ItemVM = {
@@ -104,6 +110,8 @@ export class ProductItemTestComponent {
 
           this.getItems(); //refresh item list
           this.addItemForm.reset();
+          this.submitClicked = false;
+          $('#addItem').modal('hide');
         },
         (error) => {
           console.error('Error submitting form:', error);
@@ -230,5 +238,10 @@ export class ProductItemTestComponent {
     }
     
   }
+
+  //---------------------------VALIDATION ERRORS LOGIC-----------------------
+  get itemDescription() { return this.addItemForm.get('itemDescription'); }
+  get uItemDescription() { return this.updateItemForm.get('uItemDescription'); }
+  get categoryID() { return this.addItemForm.get('categoryID'); }
 
 }

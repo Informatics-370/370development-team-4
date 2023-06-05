@@ -46,11 +46,10 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">View Product Item</h3>
         <!--Search bar-->
-        <form id="searchbar" (ngSubmit)="searchItems($event)">
-            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Single wall" />
-            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>
-            
-        </form>
+        <div id="searchbar" >
+            <input (keyup)="searchItems($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Single wall box" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
 
 
         <hr class="hr hr-blurry m-3" />
@@ -66,6 +65,10 @@
                 <!--Error message if there's no items in the DB-->
                 <tr *ngIf="itemCount==0">
                     <td colspan="2">No items found. Please add a new item to the system.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all product items...</td>
                 </tr>
                 <!--Item data from API-->
                 <tr *ngFor="let item of filteredItems">
@@ -108,13 +111,21 @@
                     <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.description}}</option>
                 </select>
             </div>
+            <!--Display validation error message-->
+            <div *ngIf="(categoryID?.dirty || categoryID?.touched || submitClicked) && categoryID?.value == 'NA'" class="error-msg">
+                Please select a category
+            </div>
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Product Item:</label>
                 <input id="add-description" type="text" formControlName="itemDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Single wall box" name="description" required>
             </div>
+            <!--Display validation error message-->
+            <div *ngIf="(itemDescription?.dirty || itemDescription?.touched || submitClicked) && itemDescription?.errors?.['required']" class="error-msg">
+                This field is required.
+            </div>
 
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addItem()">Create</button>
+                <button class="btn btn-create modal-form-submit" (click)="addItem()">Create</button>
             </div>
             
           </form>
@@ -173,6 +184,10 @@
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Product Item:</label>
                 <input id="update-description" type="text" formControlName="uItemDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Single wall box" name="description" required>
+            </div>
+            <!--Display validation error message-->
+            <div *ngIf="(uItemDescription?.dirty || uItemDescription?.touched || submitClicked) && uItemDescription?.errors?.['required']" class="error-msg">
+                This field is required.
             </div>
 
             <div class="form-submit-div">
