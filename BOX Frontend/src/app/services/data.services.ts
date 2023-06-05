@@ -160,28 +160,5 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
    return this.httpClient.put<any>(`${this.apiUrl}WriteOffReason/EditWriteOffReason/${writeoffreasonId}`, writeoffreasonmodel, this.httpOptions);
   }
 
-   //------------VAT------------
-   GetAllVAT(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}VAT/GetAllVATs`)
-      .pipe(map(result => result))
-  }
-
-  GetVAT(vatId: number): Observable<VAT> {
-    return this.httpClient.get<VAT>(`${this.apiUrl}vat/GetVat/${vatId}`)
-      .pipe(map(result => result));
-  }
-
-  AddVAT(vvm: any): Observable<VAT> {
-    return this.httpClient.post<VAT>(
-      `${this.apiUrl}VAT/AddVat`, vvm, this.httpOptions
-    );
-  }
-
-  DeleteVAT(vatId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}VAT/DeleteVat/${vatId}`, this.httpOptions);
-  }
-
-  UpdateVAT(vatId: number, vvm: any): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, vvm, this.httpOptions);
-  }
+   
 }

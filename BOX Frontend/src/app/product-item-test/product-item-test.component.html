@@ -66,6 +66,10 @@
                 <tr *ngIf="itemCount==0">
                     <td colspan="2">No items found. Please add a new item to the system.</td>
                 </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all product items...</td>
+                </tr>
                 <!--Item data from API-->
                 <tr *ngFor="let item of filteredItems">
                     <td>
@@ -180,6 +184,10 @@
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Product Item:</label>
                 <input id="update-description" type="text" formControlName="uItemDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Single wall box" name="description" required>
+            </div>
+            <!--Display validation error message-->
+            <div *ngIf="(uItemDescription?.dirty || uItemDescription?.touched || submitClicked) && uItemDescription?.errors?.['required']" class="error-msg">
+                This field is required.
             </div>
 
             <div class="form-submit-div">

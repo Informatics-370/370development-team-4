@@ -66,6 +66,10 @@
                 <tr *ngIf="categoryCount==0">
                     <td colspan="2">No categories found. Please add a new category to the system.</td>
                 </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all product categories...</td>
+                </tr>
                 <!--Category data from API-->
                 <tr *ngFor="let category of filteredCategories">
                     <td>
@@ -194,6 +198,10 @@
                 <label for="description" class="form-label modal-form-label bold">Product Category:</label>
                 <input id="update-description" type="text" formControlName="uCategoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
             </div>
+            <!--Display validation error message-->
+            <div *ngIf="(uCategoryDescription?.dirty || uCategoryDescription?.touched || submitClicked) && uCategoryDescription?.errors?.['required']" class="error-msg">
+                This field is required.
+            </div>   
             <div class="form-group">
                 <label class="form-check-label modal-form-label">
                     <input id="update-length" formControlName="uLength" class="form-check-input modal-form-input" type="checkbox" name="length"> Length

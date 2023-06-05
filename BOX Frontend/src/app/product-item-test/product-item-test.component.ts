@@ -16,7 +16,7 @@ export class ProductItemTestComponent {
   items: Item[] = []; //used to store all items
   filteredItems: Item[] = []; //used to hold all the categories that will be displayed to the user
   specificItem!: Item; //used to get a specific item
-  itemCount: number = this.filteredItems.length; //keep track of how many items there are in the DB
+  itemCount: number = -1; //keep track of how many items there are in the DB
   categories: Category[] = []; //used to store all categories
   //forms
   addItemForm: FormGroup;
@@ -30,6 +30,7 @@ export class ProductItemTestComponent {
   //search functionality
   searchTerm: string = '';
   submitClicked = false;
+  loading = true; //show loading message while data loads
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addItemForm = this.formBuilder.group({
@@ -73,6 +74,7 @@ export class ProductItemTestComponent {
       });
 
       console.log('All categories array: ', this.categories);
+      this.loading = false; //stop displaying loading message
     });
   }  
 

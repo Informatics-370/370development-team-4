@@ -64,6 +64,10 @@
                 <tr *ngIf="reasonCount==0">
                     <td colspan="2">No customer refund reasons found. Please add a new reason to the system.</td>
                 </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all refund reasons...</td>
+                </tr>
                 <!--Item data from API-->
                 <tr *ngFor="let reason of filteredReasons">
                     <td>
@@ -161,6 +165,10 @@
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Refund Reason:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="description" required>
+            </div>
+            <!--Display validation error message-->
+            <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
+                This field is required.
             </div>
 
             <div class="form-submit-div">

@@ -13,7 +13,7 @@ export class RefundReasonComponent {
   refundReasons: RefundReason[] = []; //used to store all reasons
   filteredReasons: RefundReason[] = []; //used to hold all the reasons that will be displayed to the user
   specificReason!: RefundReason; //used to get a specific reason
-  reasonCount: number = this.filteredReasons.length; //keep track of how many reasons there are in the DB
+  reasonCount: number = -1; //keep track of how many reasons there are in the DB
   //forms
   addReasonForm: FormGroup;
   updateReasonForm: FormGroup;
@@ -23,6 +23,7 @@ export class RefundReasonComponent {
   //search functionality
   searchTerm: string = '';
   submitClicked = false; //keep track of when submit button is clicked in forms, for validation errors
+  loading = true; //show loading message while data loads
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addReasonForm = this.formBuilder.group({
@@ -45,11 +46,11 @@ export class RefundReasonComponent {
       allReasons.forEach((reason) => {
         this.filteredReasons.push(reason);
       });
-      
       this.refundReasons = this.filteredReasons; //store all the categories someplace before I search below
       this.reasonCount = this.filteredReasons.length; //update the number of items
 
       console.log('All refund reasons array: ', this.filteredReasons);
+      this.loading = false; //stop displaying loading message
     });
   }
   
@@ -70,7 +71,7 @@ export class RefundReasonComponent {
 
   //--------------------ADD REASON LOGIC----------------
   addReason() {
-    this.submitClicked = true;
+    this.submitClicked = true; //display validation error message if user tried to submit form with no fields filled in correctly
     if (this.addReasonForm.valid) {
       const formData = this.addReasonForm.value;
       let newReason = {
@@ -100,26 +101,24 @@ export class RefundReasonComponent {
 
   //--------------------DELETE REASON LOGIC----------------
   openDeleteModal(customerrefundreasonId: number) {
-    $('#deleteReason').modal('show');
     //Open the modal manually
-    // this.deleteModal.nativeElement.classList.add('show');
-    // this.deleteModal.nativeElement.style.display = 'block';
+    this.deleteModal.nativeElement.classList.add('show');
+    this.deleteModal.nativeElement.style.display = 'block';
     this.deleteModal.nativeElement.id = 'deleteReason-' + customerrefundreasonId; //store Id where I can access it again
-    // //Fade background when modal is open.
-    // const backdrop = document.getElementById("backdrop");
-    // if (backdrop) {backdrop.style.display = "block"};
-    // document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+    //Fade background when modal is open.
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "block"};
+    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeDeleteModal() {
-    $('#deleteReason').modal('hide');
     //Close the modal manually
-    // this.deleteModal.nativeElement.classList.remove('show');
-    // this.deleteModal.nativeElement.style.display = 'none';
-    // //Show background as normal
-    // const backdrop = document.getElementById("backdrop");
-    // if (backdrop) {backdrop.style.display = "none"};
-    // document.body.style.overflow = 'auto'; //allow scrolling web page body again
+    this.deleteModal.nativeElement.classList.remove('show');
+    this.deleteModal.nativeElement.style.display = 'none';
+    //Show background as normal
+    const backdrop = document.getElementById("backdrop");
+    if (backdrop) {backdrop.style.display = "none"};
+    document.body.style.overflow = 'auto'; //allow scrolling web page body again
   }
 
   deleteReason() {

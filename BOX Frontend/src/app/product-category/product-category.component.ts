@@ -14,7 +14,7 @@ export class ProductCategoryComponent {
   categories: Category[] = []; //used to get all categories
   filteredCategories: Category[] = []; //used to hold all the categories that will be displayed to the user
   specificCategory!: CategoryVM; //used to get a specific category
-  categoryCount: number = this.filteredCategories.length; //keep track of how many categories there are in the DB
+  categoryCount: number = -1; //keep track of how many categories there are in the DB
   //forms
   addCategoryForm: FormGroup;
   updateCategoryForm: FormGroup;
@@ -23,7 +23,8 @@ export class ProductCategoryComponent {
   @ViewChild('updateModal') updateModal: any;
   //search functionality
   searchTerm: string = '';
-  submitClicked = false;
+  submitClicked = false; //keep track of when submit button is clicked
+  loading = true; //show loading message while data loads
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -61,6 +62,7 @@ export class ProductCategoryComponent {
       this.categoryCount = this.filteredCategories.length; //update the number of categories
 
       console.log('All categories array: ', this.filteredCategories);
+      this.loading = false;
     });
   }
 
@@ -222,6 +224,7 @@ export class ProductCategoryComponent {
   }
 
   updateCategory() {
+    this.submitClicked = true;
     if (this.updateCategoryForm.valid) {
       //get category ID which I stored in modal ID
       let id = this.updateModal.nativeElement.id;
@@ -244,6 +247,7 @@ export class ProductCategoryComponent {
         (result: any) => {
           console.log('Updated category', result);
           this.getCategories(); //refresh category list
+          this.submitClicked = false;
         },
         (error) => {
           console.error('Error updating category:', error);
@@ -258,6 +262,6 @@ export class ProductCategoryComponent {
   //methods to show validation error messages on reactive forms. NT that the form will not submit if fields are invalid whether or not 
   //the folowing methods are present. This is just to improve user experience
   get description() { return this.addCategoryForm.get('categoryDescription'); }
-  get uCategoryDescription() { return this.addCategoryForm.get('uCategoryDescription'); }
+  get uCategoryDescription() { return this.updateCategoryForm.get('uCategoryDescription'); }
 
 }

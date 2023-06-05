@@ -13,7 +13,7 @@ export class WriteOffReasonComponent {
   writeOffReasons: WriteOffReason[] = []; //used to store all reasons
   filteredReasons: WriteOffReason[] = []; //used to hold all the reasons that will be displayed to the user
   specificReason!: WriteOffReason; //used to get a specific reason
-  reasonCount: number = this.filteredReasons.length; //keep track of how many reasons there are in the DB
+  reasonCount: number = -1; //keep track of how many reasons there are in the DB
   //forms
   addReasonForm: FormGroup;
   updateReasonForm: FormGroup;
@@ -23,6 +23,7 @@ export class WriteOffReasonComponent {
   //search functionality
   searchTerm: string = '';
   submitClicked = false;
+  loading = true; //show loading message while data loads
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addReasonForm = this.formBuilder.group({
@@ -50,6 +51,7 @@ export class WriteOffReasonComponent {
       this.reasonCount = this.filteredReasons.length; //update the number of items
 
       console.log('All write-off reasons array: ', this.filteredReasons);
+      this.loading = false;
     });
   }
   
