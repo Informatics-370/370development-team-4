@@ -103,20 +103,20 @@ export class VatComponent {
         this.updateVATForm.setValue({          
           uPercentage: result.percentage
         }); //display data;
+
+        //Open the modal manually after data is retrieved and displayed
+        this.updateModal.nativeElement.classList.add('show');
+        this.updateModal.nativeElement.style.display = 'block';
+        this.updateModal.nativeElement.id = 'updateVAT-' + vatId; //pass VAT ID into modal ID so I can use it to update later
+        //Fade background when modal is open.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       },
       (error) => {
         console.error(error);
       }
     );
-
-    //Open the modal manually
-    this.updateModal.nativeElement.classList.add('show');
-    this.updateModal.nativeElement.style.display = 'block';
-    this.updateModal.nativeElement.id = 'updateVAT-' + vatId; //pass VAT ID into modal ID so I can use it to update later
-    //Fade background when modal is open.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeUpdateModal() {

@@ -25,6 +25,7 @@ export class ProductCategoryComponent {
   searchTerm: string = '';
   submitClicked = false; //keep track of when submit button is clicked
   loading = true; //show loading message while data loads
+  duplicateFound = false; //boolean to display error message if user tries to create a duplicate category
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -87,21 +88,40 @@ export class ProductCategoryComponent {
     this.submitClicked = true;
     if (this.addCategoryForm.valid) {
       let newCategory : CategoryVM = this.addCategoryForm.value;
-     
-      this.dataService.AddCategory(newCategory).subscribe(
-        (result: any) => {
-              console.log('new category!', result);
 
-              this.getCategories(); //refresh category list              
-              //reset form; NT reset and patchValue methods didn't quite work
-              this.addCategoryForm.setValue({categoryDescription: '', length: false, width: false, height: false, weight: false, volume: false });
-              this.submitClicked = false; //reset submission status
-              $('#addCategory').modal('hide');
-        }
-      );
+      //prevent user from creating duplicate categories (same description)
+      if (this.checkDuplicateDescription(newCategory.categoryDescription)) { //if user is entering duplicate category
+        this.duplicateFound = true;
+        setTimeout(() => {
+          this.duplicateFound = false;
+        }, 5000);
+      }
+      else {
+        this.dataService.AddCategory(newCategory).subscribe(
+          (result: any) => {
+            console.log('new category!', result);
+  
+            this.getCategories(); //refresh category list              
+            //reset form; NT reset and patchValue methods didn't quite work
+            this.addCategoryForm.setValue({categoryDescription: '', length: false, width: false, height: false, weight: false, volume: false });
+            this.submitClicked = false; //reset submission status
+            $('#addCategory').modal('hide');
+          }
+        );
+      }      
     }
   }
   
+  //method to determine if a user tried to enter a new category with same description
+  checkDuplicateDescription(description: string): boolean {
+    description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
+    for (let i = 0; i < this.categories.length; i++) {      
+      if (this.categories[i].description.toLowerCase() == description) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   //--------------------DELETE CATEGORY LOGIC----------------
   openDeleteModal(categoryId: number) {
