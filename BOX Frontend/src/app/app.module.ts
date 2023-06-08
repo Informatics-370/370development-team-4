@@ -20,6 +20,7 @@ import { RefundReasonComponent } from './refund-reason/refund-reason.component';
 import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.component';
 import { SizeUnitsComponent } from './size-units/size-units.component';
 import { VatComponent } from './vat/vat.component';
+import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 
 @NgModule({
   declarations: [ 
@@ -32,7 +33,8 @@ import { VatComponent } from './vat/vat.component';
         RefundReasonComponent,
         WriteOffReasonComponent,
         SizeUnitsComponent,
-        VatComponent
+        VatComponent,
+        EstimateDurationComponent
 
   ],
   imports: [
