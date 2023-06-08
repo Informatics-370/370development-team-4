@@ -144,10 +144,17 @@ namespace BOX.Models
 		{
 			IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(c => c.RawMaterialID == rawmaterialId);
 			return await query.FirstOrDefaultAsync();
-		}
+        }
 
-		//Never remove this line of code, code above the line above.
-		public async Task<bool> SaveChangesAsync()
+        //-----------------------QR CODE-----------------------
+        public async Task<QR_Code> GetQRCodeAsync(int codeId)
+        {
+            IQueryable<QR_Code> query = _appDbContext.QR_Code.Where(c => c.QRCodeID == codeId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        //Never remove this line of code, code above the line above.
+        public async Task<bool> SaveChangesAsync()
 		{
 			return await _appDbContext.SaveChangesAsync() > 0;
 		}

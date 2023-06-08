@@ -39,5 +39,7 @@ namespace BOX.Models
 		//-----------------------Estimate Duration-----------------------
 		Task<Estimate_Duration[]> GetAllEstimateDurationsAsync();
 		Task<Estimate_Duration> GetEstimateDurationAsync(int estimatedurationId);
-	}
+        //-----------------------QR CODE-----------------------
+        Task<QR_Code> GetQRCodeAsync(int codeId);
+    }
 }
