@@ -1,139 +1,124 @@
 ﻿using BOX.Models;
 using BOX.ViewModel;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+//
 namespace BOX.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class VatController : ControllerBase
-    {
-        private readonly IRepository _repository;
 
-        public VatController(IRepository repository)
-        {
-            _repository = repository;
-        }
+	[Route("api/[controller]")]
+	[ApiController]
+	public class VATController : ControllerBase
+	{
+		private readonly IRepository _repository;
 
-        //READ ALL FROM ENTITY
-        [HttpGet]
-        [Route("GetAllVat")]
-        public async Task<IActionResult> GetAllVat()
-        {
-            try
-            {
-                var results = await _repository.GetAllVatAsync();
-                return Ok(results);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error. Please contact B.O.X support services.");
-            }
-        }
+		public VATController(IRepository repository)
+		{
+			_repository = repository;
+		}
 
-        //GET SPECIFIC VAT
-        [HttpGet("{id}")]
-        public async Task<ActionResult<VAT>> GetVat(int vatId)
-        {
-            try
-            {
-                var vat = await _repository.GetVatAsync(vatId);
-                if (vat == null) 
-                    return NotFound("Raw mateorial does not exist on the system");
+		[HttpGet]
+		[Route("GetAllVATs")]
+		public async Task<IActionResult> GetAllVATs()
+		{
+			try
+			{
+				var results = await _repository.GetAllVatAsync();
+				return Ok(results);
+			}
+			catch (Exception)
+			{
+				return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
+			}
+		}
 
-                VatViewModel vatVM = new VatViewModel()
-                {
-                    Percentage = vat.Percentage
-                };
+		[HttpGet]
+		[Route("GetVat/{vatId}")]
+		public async Task<IActionResult> GetVatAsync(int vatId)
+		{
+			try
+			{
+				var result = await _repository.GetVatAsync(vatId);
 
-                return Ok(vatVM);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error. Please contact B.O.X support services.");
-            }
-        }
+				if (result == null) return NotFound("VAT does not exist on system");
 
-        //UPDATE VAT
-        [HttpPut]
-        [Route("UpdateVAT/{vatId}")]
-        public async Task<ActionResult<VatViewModel>> UpdateVat(int vatId, VatViewModel vatVM)
-        {
-            try
-            {
-                //Find the VAT
-                var existingVat = await _repository.GetVatAsync(vatId);
+				return Ok(result);
+			}
+			catch (Exception)
+			{
+				return StatusCode(500, "Internal Server Error. Please contact BOX support");
+			}
+		}
 
-                if (existingVat == null)
-                    return NotFound("The VAT does not exist on the B.O.X System");
+		[HttpPost]
+		[Route("AddVat")]
+		public async Task<IActionResult> AddVat(VATViewModel vvm)
+		{
+			var valt = new VAT { Percentage=vvm.Percentage};
 
-                existingVat.Percentage = vatVM.Percentage;//Update Vat Percentage
-                vatVM.Date = DateTime.Now;
-                existingVat.Date = vatVM.Date;//Update VAT Date
+			try
+			{
+				_repository.Add(valt);
+				await _repository.SaveChangesAsync();
+			}
+			catch (Exception)
+			{
+				return BadRequest("Invalid transaction");
+			}
 
-                //Save Update
-                if (await _repository.SaveChangesAsync())
-                    return Ok(vatVM);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
-            }
+			return Ok(valt);
+		}
 
-            return BadRequest("Your request is invalid.");
-        }
+		[HttpPut]
+		[Route("EditVat/{vatId}")]
+		public async Task<ActionResult<VATViewModel>> EditVat(int vatId, VATViewModel vvm)
+		{
+			try
+			{
+				var existingvat = await _repository.GetVatAsync(vatId);
+				if (existingvat == null) return NotFound($"The VAT does not exist on the BOX System");
 
-        //ADD VAT
-        [HttpPost]
-        [Route("AddVat")]
-        public async Task<IActionResult> AddVat(VatViewModel vatVM)
-        {
-            var vat = new VAT { Percentage = vatVM.Percentage };
 
-            try
-            {
-                _repository.Add(vat);
-                var createVat = new VAT
-                {
-                    Percentage = vatVM.Percentage,
-                    Date = vatVM.Date
+				existingvat.Percentage = vvm.Percentage;
+				
 
-                };
-                _repository.Add(createVat);
-                await _repository.SaveChangesAsync();
+				if (await _repository.SaveChangesAsync())
+				{
+					return Ok(existingvat);
+				}
+			}
+			catch (Exception)
+			{
+				return StatusCode(500, "Internal Server Error. Please contact BOX support.");
+			}
+			return BadRequest("Your request is invalid.");
+		}
 
-                return Ok(vatVM);
-            }
-            catch (Exception)
-            {
-                return BadRequest("Invalid transaction");
-            }
-        }
+		[HttpDelete]
+		[Route("DeleteVat/{vatId}")]
+		public async Task<IActionResult> DeleteVat(int vatId)
+		{
+			try
+			{
+				var existingvat = await _repository.GetVatAsync(vatId);
 
-        //DELETE VAT
-        [HttpDelete]
-        [Route("DeleteVat/{vatId}")]
-        public async Task<IActionResult> DeleteVat(int vatId)
-        {
-            try
-            {
-                //Find the raw material
-                var existingVat = await _repository.GetVatAsync(vatId);
-                if (existingVat == null)
-                    return NotFound("The vat does not exist on the B.O.X System");
-                _repository.Delete(existingVat);//Delete
+				if (existingvat == null) return NotFound($"The Vat does not exist on the BOX System");
 
-                if (await _repository.SaveChangesAsync())
-                    return Ok(existingVat);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
-            }
+				_repository.Delete(existingvat);
 
-            return BadRequest("Your request is invalid.");
-        }
-    }
+				if (await _repository.SaveChangesAsync()) return Ok(existingvat);
+
+			}
+			catch (Exception)
+			{
+				return StatusCode(500, "Internal Server Error. Please contact support.");
+			}
+			return BadRequest("Your request is invalid.");
+		}
+
+
+	}
 }
+
+

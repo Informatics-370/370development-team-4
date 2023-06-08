@@ -1,11 +1,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, Subject } from 'rxjs';
+import { map, Observable, Observer, Subject } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Size } from '../shared/Size';
 import { CategoryVM } from '../shared/category-vm';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
+import { RefundReason } from '../shared/refund-reason';
+import { WriteOffReason } from '../shared/write-off-reason';
+import { VAT } from '../shared/vat';
 
 imports:[
   HttpClientModule
@@ -107,30 +110,81 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
   }
 
+  //------------CUSTOMER REFUND REASON------------ [Give it its own service?]
+  GetRefundReasons(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}RefundReason/GetAllCustomerRefundReasons`)
+      .pipe(map(result => result))
+  }
 
+  GetRefundReason(customerrefundreasonId: number): Observable<RefundReason> {
+    return this.httpClient.get<RefundReason>(`${this.apiUrl}RefundReason/GetCustomerRefundReason/${customerrefundreasonId}`)
+      .pipe(map(result => result));
+  }
 
+  AddReason(rrvm: any): Observable<RefundReason> {
+    return this.httpClient.post<RefundReason>(
+      `${this.apiUrl}RefundReason/AddRefundReason`, rrvm, this.httpOptions
+    );
+  }
 
+  DeleteRefundReason(customerrefundreasonId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}RefundReason/DeleteCustomerRefundReason/${customerrefundreasonId}`, this.httpOptions);
+  }
 
+  UpdateRefundReason(customerrefundreasonId: number, refundreasonModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}RefundReason/EditCustomerRefundReason/${customerrefundreasonId}`, refundreasonModel, this.httpOptions);
+  }
 
+  //----------WRITE-OFF REASON---------------
+  GetWriteOffReasons(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}WriteOffReason/GetAllWriteOffReasons`)
+    .pipe(map(result => result))
+  }
 
+  GetWriteOffReason(writeoffreasonId: number): Observable<WriteOffReason> {
+    return this.httpClient.get<WriteOffReason>(`${this.apiUrl}WriteOffReason/GetWriteOffReason/${writeoffreasonId}`)
+      .pipe(map(result => result));
+  }
 
-  // GetItem(itemId: number): Observable<Item> {
-  //   return this.httpClient.get<Item>(`${this.apiUrl}ProductItem/GetItem/${itemId}`)
-  //     .pipe(map(result => result));
-  // }
+  AddWriteOffReason(worvm: any): Observable<WriteOffReason> {
+    return this.httpClient.post<WriteOffReason>(
+      `${this.apiUrl}WriteOffReason/AddWriteOffReason`, worvm, this.httpOptions
+    );
+  }
 
-  // AddItem(itemVM: ItemVM): Observable<ItemVM> {
-  //   return this.httpClient.post<ItemVM>(
-  //     `${this.apiUrl}ProductItem/AddItem`, itemVM, this.httpOptions
-  //   );
-  // }
+  DeleteWriteOffReason(writeoffreasonId: number ):Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}WriteOffReason/DeleteWriteOffReason/${writeoffreasonId}`, this.httpOptions);
+  }
 
-  // DeleteItem(itemId: number): Observable<any> {    
-  //   return this.httpClient.delete<any>(`${this.apiUrl}ProductItem/DeleteItem/${itemId}`, this.httpOptions);
-  // }
+  UpdateWriteOffReason(writeoffreasonId: number, writeoffreasonmodel: any): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}WriteOffReason/EditWriteOffReason/${writeoffreasonId}`, writeoffreasonmodel, this.httpOptions);
+  }
 
-  // UpdateItem(itemId: number, itemVM: ItemVM): Observable<ItemVM> {
-  //   return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
-  // }
+  
 
+  //------------VAT------------
+  GetAllVAT(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}VAT/GetAllVATs`)
+    .pipe(map(result => result))
+  }
+
+  GetVAT(vatId: number): Observable<VAT> {
+    return this.httpClient.get<VAT>(`${this.apiUrl}VAT/GetVat/${vatId}`)
+      .pipe(map(result => result));
+  }
+
+  AddVAT(vvm: any): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}VAT/AddVat`, vvm, this.httpOptions
+    );
+  }
+
+  DeleteVAT(vatId: number): Observable<any> {    
+    return this.httpClient.delete<any>(`${this.apiUrl}VAT/DeleteVat/${vatId}`, this.httpOptions);
+  }
+
+  UpdateVAT(vatId: number, vvm: any): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, vvm, this.httpOptions);
+  }
+   
 }

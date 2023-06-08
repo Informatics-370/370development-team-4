@@ -30,9 +30,13 @@
                     <fa-icon [icon]="['fas', 'box']"></fa-icon>
                     Product
                 </button><pre></pre>
-                <button [routerLink]="['/raw-material']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'recycle']"></fa-icon>
-                    Raw Material
+                <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
+                    Refund reason
+                </button><pre></pre>
+                <button [routerLink]="['/write-off-reason']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
+                    Write-off reason
                 </button><pre></pre>
             </div>
         </div>
@@ -42,11 +46,10 @@
     <div class="col-md-9">
         <h3 class="p-3" style="color: black;">View Product Category</h3>
         <!--Search bar-->
-        <form id="searchbar" (ngSubmit)="searchCategories($event)">
-            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Box" />
-            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>
-            
-        </form>
+        <div id="searchbar" >
+            <input (keyup)="searchCategories($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Sellotape" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
 
 
         <hr class="hr hr-blurry m-3" />
@@ -62,6 +65,10 @@
                 <!--Error message if there's no categories in the DB-->
                 <tr *ngIf="categoryCount==0">
                     <td colspan="2">No categories found. Please add a new category to the system.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all product categories...</td>
                 </tr>
                 <!--Category data from API-->
                 <tr *ngFor="let category of filteredCategories">
@@ -99,8 +106,15 @@
           <form [formGroup]="addCategoryForm">
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Product Category:<span class="required-field">*</span></label>
-                <input id="add-description" type="text" formControlName="categoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
+                <input id="description" type="text" formControlName="categoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
+            </div>
+            <!--Display validation error message-->
+            <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
+                This field is required.
             </div>            
+            <div *ngIf="duplicateFound && submitClicked" class="error-msg">
+                This category already exists.
+            </div>
             <div class="form-group">
                 <label class="form-check-label modal-form-label">
                     <input id="add-length" formControlName="length" class="form-check-input modal-form-input" type="checkbox" name="length"> Length
@@ -128,7 +142,7 @@
             </div>
             
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addCategory()">Create</button>
+                <button class="btn btn-create modal-form-submit" (click)="addCategory()">Create</button>
             </div>
             
           </form>
@@ -187,6 +201,10 @@
                 <label for="description" class="form-label modal-form-label bold">Product Category:</label>
                 <input id="update-description" type="text" formControlName="uCategoryDescription" class="form-control modal-form-input modal-form-text" placeholder="e.g. Crate" name="description" required>
             </div>
+            <!--Display validation error message-->
+            <div *ngIf="(uCategoryDescription?.dirty || uCategoryDescription?.touched || submitClicked) && uCategoryDescription?.errors?.['required']" class="error-msg">
+                This field is required.
+            </div>   
             <div class="form-group">
                 <label class="form-check-label modal-form-label">
                     <input id="update-length" formControlName="uLength" class="form-check-input modal-form-input" type="checkbox" name="length"> Length
