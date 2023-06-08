@@ -5,7 +5,9 @@ import { RegisterComponent } from './register/register.component';
 import { ProductItemTestComponent } from './product-item-test/product-item-test.component';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
 import { ProductCategoryComponent } from './product-category/product-category.component';
-import { RawMaterialComponent } from './raw-material/raw-material.component';
+import { RefundReasonComponent } from './refund-reason/refund-reason.component';
+import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.component';
+import { SupplierComponent } from './supplier/supplier.component';
 
 
 const routes: Routes = [
@@ -15,7 +17,9 @@ const routes: Routes = [
   { path: "product-item", component: ProductItemTestComponent },
   { path: "help", component: ViewHelpInventoryComponent },
   { path: "product-category", component: ProductCategoryComponent },
-  { path: "raw-material", component: RawMaterialComponent}
+  {path: "refund-reason", component: RefundReasonComponent},
+  {path: "write-off-reason", component: WriteOffReasonComponent},
+  {path: "supplier", component: SupplierComponent}
 
 ];
 

@@ -1,88 +1,158 @@
-<div class="row">
+<!DOCTYPE html>
+<html lang="en">
 
-<!-- Left Divider -->
-<div class="col-md-4" style="background-color: #31AF99; height: 125vh;">
-    <div class="container-fluid">
-    <div class="text-center">
-        <img class="align-center" src="../assets/mega-pack-logo.png" alt="" style="height: 146px; width: 154px; margin-top:30vh">
-    </div>
-    <h2 class="text-center" style="color: #FFFFFF;">Mega Pack</h2>
-    <h6 class="text-center" style="color: #FFFFFF;">All your packaging needs right here in Pretoria</h6>
-    </div>
-</div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bootstrap 5 Side Bar Navigation</title>
+  <!-- bootstrap 5 css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous" />
+  <!-- BOX ICONS CSS-->
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css" rel="stylesheet" />
+  <!-- Poppins -->
+  <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+</head>
 
-<!-- Right Divider (User registration form) -->
-<div class="col-md-8" style="background-color: #373435; height: 125vh;">
-    <h2 class="text-center">Register</h2>
-    <div class="row"><!-- User Info Row -->
-    <div class="col-md-2">
-        <label for="title" class="form-label">Title:</label>
-        <input type="text" class="form-control" id="title" placeholder="Mr/Mrs" />
-    </div>
-    <div class="col-md-5">
-        <label for="firstName" class="form-label">First Name:</label>
-        <input type="text" class="form-control" id="firstName" placeholder="John" />
-    </div>
-    <div class="col-md-5">
-        <label for="lastName" class="form-label">Last Name:</label>
-        <input type="text" class="form-control" id="lastName" placeholder="Doe" />
-    </div>
-    </div><pre></pre>
-    <div class="row"><!-- Contact Details Row -->
-    <div class="col-md-6">
-        <label for="contactNo" class="form-label">Preferred Contact Number:</label>
-        <input type="tel" class="form-control" id="contactNo" placeholder="012 345 6789" />
-    </div>
-    <div class="col-md-6">
-        <label for="email" class="form-label">Email Address:</label>
-        <input type="email" class="form-control" id="email" placeholder="johndoe@email.com" />
-    </div>
-    </div><pre></pre>
-    <div class="row"><!-- Password Row -->
-    <div class="col-md-12">
-        <label for="password" class="form-label">Password:</label>
-        <input type="password" class="form-control" id="password" placeholder="**********" />
-    </div>
-    </div><pre></pre>
-    <div class="row"><!-- Confirm Password Row -->
-    <div class="col-md-12">
-        <label for="confirmPassword" class="form-label">Password:</label>
-        <input type="password" class="form-control" id="confirmPassword" placeholder="**********" />
-    </div>
-    </div><pre></pre>
-    <div class="row"><!-- Address Line -->
-    <div class="col-md-12">
-        <label for="address" class="form-label">Address:</label>
-        <input type="text" class="form-control" id="address" placeholder="123 Box Street" /><pre></pre>
-        <input type="text" class="form-control" id="address" placeholder="" />
-    </div>
-    </div><pre></pre>
-    <div class="row"><!-- isBusiness? -->
-    <div class="col-md-12">
-        <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="isBusiness">
-        <label class="form-check-label" for="isBusiness">
-            Are you a registered business? 
-        </label>
-        </div>
-    </div>
-    </div><pre></pre>
-    <div class="row"><!-- VAT Number -->
-    <div class="col-md-5">
-        <label for="vatNo" class="form-label">VAT Number:</label>
-        <input type="text" class="form-control" id="vatNo" />
-    </div>
-    </div><pre></pre>
-    <pre></pre>
-    <pre></pre>
+<body>
     <div class="row">
-    <div class="text-center">
-        <div class="col-md-12">
-        <button [routerLink]="['/dashboard']" class="btn btn-primary" style="width: 350px; background-color:#31AF99;">
-            <strong>Register</strong>
-        </button>
+        <!-- Left Divider -->
+        <div class="col-md-4" style="background-color: #31AF99; height: 150vh;">
+            <div class="app-startup-div"></div>
+        </div>
+    
+        <div class="col-md-8" style="background-color: #373435; height: 150vh;">
+            <section class="h-100 h-custom">
+                <div class="container py-5">
+                  <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="col-lg-8">
+                      <div class="card rounded-3 overflow-auto shadow">
+                        <!-- Heading -->
+                        <h4 class="text-black text-center pt-4">{{'Create An Account' | uppercase}}</h4>
+                        <div class="card-body">
+                            <form class="px-md-2" (submit)="submitForm()">
+                                <div class="row">
+                                    
+                                    <!-- Details Input Row -->
+                                    <div class="col-2">
+                                        <label class="form-label text-black" for="title">Title:</label>
+                                        <input type="text" id="title" class="form-control" />
+                                    </div>
+    
+                                    <div class="col-5">
+                                        <!-- Name Input -->
+                                        <div class="form-group">
+                                            <label for="firstName" class="form-label text-black">Name:</label>
+                                            <input type="text" id="firstName" class="form-control" />
+                                        </div><pre></pre>
+                                    </div>
+    
+                                    <div class="col-5">
+                                        <!-- Last Name Input -->
+                                <div class="form-group">
+                                    <label for="lastName" class="form-label text-black">Surname:</label>
+                                    <input type="text" id="lastName" class="form-control" />
+                                </div><pre></pre>
+                                    </div>
+                                </div><!-- End Details Input Row -->
+    
+                                <!-- Contact Details Row -->
+                                <div class="row">
+                                    <div class="col-6">
+                                        <!-- Email  Input -->
+                                        <div class="form-group">
+                                            <label class="form-label text-black" for="email">Email:</label>
+                                            <input type="email" id="email" class="form-control" />
+                                        </div><pre></pre>
+                                    </div>
+                                    <div class="col-6">
+                                        <!-- Cell Number Input -->
+                                        <div class="form-group">
+                                            <label for="cellNo" class="form-label text-black">Preferred Contact Number:</label>
+                                            <input type="tel" id="cellNo" class="form-control" />
+                                        </div><pre></pre>
+                                    </div>
+                                </div><!-- End Contact Details Row -->
+    
+                                <!-- Password -->
+                                <div class="form-group">
+                                    <label for="password" class="form-label text-black">Password:</label>
+                                    <div class="input-group">
+                                      <input type="password" id="password" class="form-control" [type]="passwordVisible ? 'text' : 'password'" />
+                                      <div class="input-group-append">
+                                        <span class="input-group-text" (click)="togglePasswordVisibility('password')">
+                                          <fa-icon [icon]="['fas', passwordVisible ? 'eye-slash' : 'eye']"></fa-icon>
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <pre></pre>
+    
+                                <!-- Confirm Password -->
+                                <div class="form-group">
+                                    <label for="confirmPassword" class="form-label text-black">Confirm Password:</label>
+                                    <div class="input-group">
+                                      <input type="password" id="confirmPassword" class="form-control" [type]="confirmPasswordVisible ? 'text' : 'password'" />
+                                      <div class="input-group-append">
+                                        <span class="input-group-text" (click)="togglePasswordVisibility('confirmPassword')">
+                                          <fa-icon [icon]="['fas', confirmPasswordVisible ? 'eye-slash' : 'eye']"></fa-icon>
+                                        </span>
+                                      </div>
+                                    </div>
+                                </div>
+                                <!-- Password validation message -->
+                                <div *ngIf="!passwordsMatch" class="text-danger">
+                                    Passwords do not match
+                                </div>
+                                <pre></pre>
+    
+                                <!-- Address Line 1 -->
+                                <div class="form-group">
+                                    <label for="addressOne" class="form-label text-black">Residential Address:</label>
+                                    <input type="text" id="addressOne" class="form-control" />
+                                </div><pre></pre>
+    
+                                <!-- Address Line 2 -->
+                                <div class="form-group">
+                                    <label for="postalAddress" class="form-label text-black">Postal Address:</label>
+                                    <input type="text" id="postalAddress" class="form-control" />
+                                </div><pre></pre>
+    
+                                <!-- Is Business -->
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="isBusiness" (change)="handleCheckboxChange()">
+                                    <label class="form-check-label text-black" for="isBusiness">
+                                        Are you a registered business?
+                                    </label>
+                                </div><pre></pre>
+    
+    
+                                <!-- VAT No -->
+                                <div class="form-group">
+                                    <label for="vatNo" class="form-label text-black">VAT Number:</label>
+                                    <input type="text" id="vatNo" class="form-control" />
+                                </div><pre></pre>
+
+                                <!-- Error Container -->
+                                <div id="errorContainer"></div>
+
+                                <pre></pre>
+                                <pre></pre>
+                                
+
+                                <!-- Submit Button -->
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-lg text-uppercase text-white ripple shadow" (click)="submitForm()">Submit</button>
+                                </div>
+
+                            </form><!--End of Registration Form -->
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
         </div>
     </div>
-    </div>
-</div>
-</div>
+</body>

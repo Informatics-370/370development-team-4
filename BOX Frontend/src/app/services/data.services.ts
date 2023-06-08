@@ -3,15 +3,11 @@ import { Injectable } from '@angular/core';
 import { map, Observable, Subject } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Size } from '../shared/Size';
-
-
-import { rmVM } from '../shared/rawMaterialVM';
-
-
-import { RawMaterial } from '../shared/rawMaterial';
 import { CategoryVM } from '../shared/category-vm';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
+import { RefundReason } from '../shared/refund-reason';
+import { WriteOffReason } from '../shared/write-off-reason';
 
 imports:[
   HttpClientModule
@@ -94,31 +90,24 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
             .pipe(map(result => result))
     }
 
-    //---------------------------------- Raw Materials ----------------------------------------
-    GetAllRawMaterials(): Observable<any> {
-        return this.httpClient.get(`${this.apiUrl}RawMaterial/GetAllRawMaterials`)
-            .pipe(map(result => result))
-    }
+  GetItem(itemId: number): Observable<Item> {
+    return this.httpClient.get<Item>(`${this.apiUrl}ProductItem/GetItem/${itemId}`)
+      .pipe(map(result => result));
+  }
 
-    GetRawMaterial(id: number): Observable<rmVM> {
-        return this.httpClient.get<rmVM>(`${this.apiUrl}RawMaterial/${id}`)
-            .pipe(map(result => result));
-    }
+  AddItem(itemVM: ItemVM): Observable<ItemVM> {
+    return this.httpClient.post<ItemVM>(
+      `${this.apiUrl}ProductItem/AddItem`, itemVM, this.httpOptions
+    );
+  }
 
-    AddRawMaterial(rmVW: rmVM): Observable<rmVM> {
-        return this.httpClient.post<rmVM>(
-            `${this.apiUrl}RawMaterial/AddRawMaterial`, rmVW, this.httpOptions
-        );
-    }
+  DeleteItem(itemId: number): Observable<any> {    
+    return this.httpClient.delete<any>(`${this.apiUrl}ProductItem/DeleteItem/${itemId}`, this.httpOptions);
+  }
 
-    DeleteRawMaterial(rawMaterialId: number): Observable<any> {
-        return this.httpClient.delete<any>(`${this.apiUrl}RawMaterial/DeleteRawMaterial/${rawMaterialId}`, this.httpOptions);
-    }
-
-    UpdateRawMaterial(rawMaterialId: number, rawVM: rmVM): Observable<rmVM> {
-        return this.httpClient.put<rmVM>(`${this.apiUrl}RawMaterial/UpdateRawMaterial/${rawMaterialId}`, rawVM, this.httpOptions);
-    }
-}
+  UpdateItem(itemId: number, itemVM: ItemVM): Observable<ItemVM> {
+    return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
+  }
 
 
 
