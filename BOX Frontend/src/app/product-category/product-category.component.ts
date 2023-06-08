@@ -25,6 +25,7 @@ export class ProductCategoryComponent {
   searchTerm: string = '';
   submitClicked = false; //keep track of when submit button is clicked
   loading = true; //show loading message while data loads
+  duplicateFound = false; //boolean to display error message if user tries to create a duplicate category
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -87,21 +88,40 @@ export class ProductCategoryComponent {
     this.submitClicked = true;
     if (this.addCategoryForm.valid) {
       let newCategory : CategoryVM = this.addCategoryForm.value;
-     
-      this.dataService.AddCategory(newCategory).subscribe(
-        (result: any) => {
-              console.log('new category!', result);
 
-              this.getCategories(); //refresh category list              
-              //reset form; NT reset and patchValue methods didn't quite work
-              this.addCategoryForm.setValue({categoryDescription: '', length: false, width: false, height: false, weight: false, volume: false });
-              this.submitClicked = false; //reset submission status
-              $('#addCategory').modal('hide');
-        }
-      );
+      //prevent user from creating duplicate categories (same description)
+      if (this.checkDuplicateDescription(newCategory.categoryDescription)) { //if user is entering duplicate category
+        this.duplicateFound = true;
+        setTimeout(() => {
+          this.duplicateFound = false;
+        }, 5000);
+      }
+      else {
+        this.dataService.AddCategory(newCategory).subscribe(
+          (result: any) => {
+            console.log('new category!', result);
+  
+            this.getCategories(); //refresh category list              
+            //reset form; NT reset and patchValue methods didn't quite work
+            this.addCategoryForm.setValue({categoryDescription: '', length: false, width: false, height: false, weight: false, volume: false });
+            this.submitClicked = false; //reset submission status
+            $('#addCategory').modal('hide');
+          }
+        );
+      }      
     }
   }
   
+  //method to determine if a user tried to enter a new category with same description
+  checkDuplicateDescription(description: string): boolean {
+    description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
+    for (let i = 0; i < this.categories.length; i++) {      
+      if (this.categories[i].description.toLowerCase() == description) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   //--------------------DELETE CATEGORY LOGIC----------------
   openDeleteModal(categoryId: number) {
@@ -143,18 +163,18 @@ export class ProductCategoryComponent {
           else deleteVolume.innerHTML = 'Disabled';
         }
 
+        //Open the modal manually, only after data is displayed
+        this.deleteModal.nativeElement.classList.add('show');
+        this.deleteModal.nativeElement.style.display = 'block';
+        this.deleteModal.nativeElement.id = 'deleteCategory-' + categoryId;
+        //Fade background when modal is open.
+        //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error. Angular, my bru, who gives a damn?!!!
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+
       }
     );
-
-    //Open the modal manually
-    this.deleteModal.nativeElement.classList.add('show');
-    this.deleteModal.nativeElement.style.display = 'block';
-    this.deleteModal.nativeElement.id = 'deleteCategory-' + categoryId;
-    //Fade background when modal is open.
-    //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error. Angular, my bru, who gives a damn?!!!
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeDeleteModal() {
@@ -200,17 +220,17 @@ export class ProductCategoryComponent {
           uWeight: this.specificCategory.weight,
           uVolume: this.specificCategory.volume
         }); //display data; Reactive forms are so powerful. All the categoryVM data passed with one method
+
+        //Open the modal manually only after the data is retrieved and displayed
+        this.updateModal.nativeElement.classList.add('show');
+        this.updateModal.nativeElement.style.display = 'block';
+        this.updateModal.nativeElement.id = 'updateCategory-' + categoryId; //pass category ID into modal ID so I can use it to update later
+        //Fade background when modal is open.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       }
     );
-
-    //Open the modal manually
-    this.updateModal.nativeElement.classList.add('show');
-    this.updateModal.nativeElement.style.display = 'block';
-    this.updateModal.nativeElement.id = 'updateCategory-' + categoryId; //pass category ID into modal ID so I can use it to update later
-    //Fade background when modal is open.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeUpdateModal() {

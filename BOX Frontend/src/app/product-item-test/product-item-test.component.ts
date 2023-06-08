@@ -131,18 +131,18 @@ export class ProductItemTestComponent {
         console.log(this.specificItem);
         const deleteDescription = document.getElementById('deleteDescription')
         if (deleteDescription) deleteDescription.innerHTML = this.specificItem.description;
+
+        //Open the modal manually only after data is displayed
+        this.deleteModal.nativeElement.classList.add('show');
+        this.deleteModal.nativeElement.style.display = 'block';
+        this.deleteModal.nativeElement.id = 'deleteItem-' + itemId;
+        //Fade background when modal is open.
+        //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       }
     );
-
-    //Open the modal manually
-    this.deleteModal.nativeElement.classList.add('show');
-    this.deleteModal.nativeElement.style.display = 'block';
-    this.deleteModal.nativeElement.id = 'deleteItem-' + itemId;
-    //Fade background when modal is open.
-    //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeDeleteModal() {
@@ -183,20 +183,20 @@ export class ProductItemTestComponent {
           uCategoryID: result.categoryID,
           uItemDescription: result.description
         }); //display data; Reactive forms are so powerful. All the item data passed with one method
+
+        //Open the modal manually only after the data is retrieved and displayed
+        this.updateModal.nativeElement.classList.add('show');
+        this.updateModal.nativeElement.style.display = 'block';
+        this.updateModal.nativeElement.id = 'updateItem-' + itemId; //pass item ID into modal ID so I can use it to update later
+        //Fade background when modal is open.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       },
       (error) => {
         console.error(error);
       }
     );
-
-    //Open the modal manually
-    this.updateModal.nativeElement.classList.add('show');
-    this.updateModal.nativeElement.style.display = 'block';
-    this.updateModal.nativeElement.id = 'updateItem-' + itemId; //pass item ID into modal ID so I can use it to update later
-    //Fade background when modal is open.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeUpdateModal() {

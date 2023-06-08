@@ -1,6 +1,9 @@
 ﻿using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using QRCoder;
+using System.Drawing;
+using System.IO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 //
