@@ -30,7 +30,7 @@
                     <fa-icon [icon]="['fas', 'box']"></fa-icon>
                     Product
                 </button><pre></pre>
-                <button class="btn btn-info active text-start">
+                <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
                     Refund reason
                 </button><pre></pre>
@@ -38,48 +38,52 @@
                     <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
                     Write-off reason
                 </button><pre></pre>
+                <button class="btn btn-info active text-start">
+                    <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
+                    VAT
+                </button><pre></pre>
             </div>
         </div>
     </div>
     <!--Right Side-->
     <div class="col-md-9">
-        <h3 class="p-3" style="color: black;">Refund Reasons</h3>
+        <h3 class="p-3" style="color: black;">Value Added tax (VAT)</h3>
         <!--Search bar-->
         <div id="searchbar" >
-            <input (keyup)="searchReasons($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Incorrect purchase" />
+            <input (keyup)="searchVAT($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. 15" />
             <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
         </div>
 
         <hr class="hr hr-blurry m-3" />
-        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addReason">Create Refund Reason</button>
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addVAT">Create VAT</button>
         <table class="table">
             <thead>
                 <tr>
                     <th style="width: 110px;" scope="col"></th>
-                    <th scope="col">Refund Reason</th>
+                    <th scope="col">VAT Amount</th>
                 </tr>
             </thead>
             <tbody>                
-                <!--Error message if there's no items in the DB-->
-                <tr *ngIf="reasonCount==0">
-                    <td colspan="2">No customer refund reasons found. Please add a new reason to the system.</td>
+                <!--Error message if there's no VAT in the DB-->
+                <tr *ngIf="vatCount==0">
+                    <td colspan="2">No VAT entries found. Please add a new VAT to the system.</td>
                 </tr>
                 <!--Loading message while data is still being retrieved from the DB-->
                 <tr *ngIf="loading">
-                    <td colspan="2">Please wait while we load all refund reasons...</td>
+                    <td colspan="2">Please wait while we load all VAT entries...</td>
                 </tr>
-                <!--Item data from API-->
-                <tr *ngFor="let reason of filteredReasons">
+                <!--VAT data from API-->
+                <tr *ngFor="let vat of filteredVATs">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(reason.customerRefundReasonID)">
+                        <button class="CRUD-icon" (click)="openDeleteModal(vat.vatID)" >
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(reason.customerRefundReasonID)" >
+                        <button class="CRUD-icon" (click)="openUpdateModal(vat.vatID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
                     <td>
-                        {{reason.description}}
+                        {{vat.percentage}}%
                     </td>
                 </tr>
             </tbody>
@@ -89,31 +93,32 @@
 
 <!--CRUD MODALS-->
 <!--ADD REFUND REASON MODAL-->
-<div class="modal fade" id="addReason" tabindex="-1">
+<div class="modal fade" id="addVAT" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Create New Refund Reason</h4>
+          <h4 class="modal-title">Create VAT</h4>
           <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
         <!--BODY-->
         <div class="modal-body">
-          <form [formGroup]="addReasonForm">
+          <form [formGroup]="addVATForm">
             <div class="form-group">
-                <label for="description" class="form-label modal-form-label bold">Refund Reason:</label>
-                <input id="description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. Product was damaged on arrival" name="description" required>
+                <label for="percentage" class="form-label modal-form-label bold">Value Added Tax</label>
+                <input id="percentage" type="number" formControlName="percentage" class="form-control modal-form-input modal-form-text" placeholder="1" 
+                    name="percentage" required min="0" step="1">
             </div>
-            <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
-            The message is just for user experience-->
-            <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
-                This field is required.
+            <!--Display validation error message-->
+            <div *ngIf="(percentage?.dirty || percentage?.touched || submitClicked) && 
+                percentage?.errors?.['required'] || percentage?.errors?.['min']" class="error-msg">
+                Please enter a VAT amount above 0.
             </div>
 
             <div class="form-submit-div">
-                <button class="btn btn-create modal-form-submit" (click)="addReason()">Add New Refund Reason</button>
+                <button class="btn btn-create modal-form-submit" (click)="addVAT()" >Add New VAT</button>
             </div>
             
           </form>
@@ -124,13 +129,13 @@
 </div>
 
 <!--DELETE REFUND REASON MODAL-->
-<div class="modal fade" id="deleteReason" tabindex="-1" #deleteModal>
+<div class="modal fade" id="deleteVAT" tabindex="-1" #deleteModal>
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Delete Refund Reason</h4>
+          <h4 class="modal-title">Delete VAT</h4>
           <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
@@ -141,7 +146,7 @@
 
         <!-- Modal footer -->
         <div class="modal-footer justify-content-evenly">
-            <button class="btn btn-create modal-form-submit" (click)="deleteReason()" >Yes</button>
+            <button class="btn btn-create modal-form-submit" (click)="deleteVAT()" >Yes</button>
             <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
         </div>
       </div>
@@ -149,30 +154,32 @@
 </div>
 
 <!--UPDATE REFUND REASON MODAL-->
-<div class="modal fade" id="updateReason" tabindex="-1" #updateModal>
+<div class="modal fade" id="updateVAT" tabindex="-1" #updateModal>
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Edit Refund Reason</h4>
+          <h4 class="modal-title">Edit VAT</h4>
           <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
         <!--BODY-->
         <div class="modal-body">
-          <form [formGroup]="updateReasonForm">
+          <form [formGroup]="updateVATForm">
             <div class="form-group">
-                <label for="description" class="form-label modal-form-label bold">Refund Reason:</label>
-                <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="description" required>
+                <label for="uPercentage" class="form-label modal-form-label bold">Value Added Tax</label>
+                <input id="uPercentage" type="number" formControlName="uPercentage" class="form-control modal-form-input modal-form-text" 
+                    name="uPercentage" required min="0" step="1">
             </div>
             <!--Display validation error message-->
-            <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
-                This field is required.
+            <div *ngIf="(uPercentage?.dirty || uPercentage?.touched || submitClicked) && 
+                uPercentage?.errors?.['required'] || uPercentage?.errors?.['min']" class="error-msg">
+                Please enter a VAT amount above 0.
             </div>
 
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateReason()" >Save Changes</button>
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateVAT()" >Save Changes</button>
             </div>            
           </form>
         </div>

@@ -4,6 +4,7 @@ import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { Category } from '../shared/category';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+declare var $: any; 
 
 @Component({
   selector: 'app-product-item-test',
@@ -15,7 +16,7 @@ export class ProductItemTestComponent {
   items: Item[] = []; //used to store all items
   filteredItems: Item[] = []; //used to hold all the categories that will be displayed to the user
   specificItem!: Item; //used to get a specific item
-  itemCount: number = this.filteredItems.length; //keep track of how many items there are in the DB
+  itemCount: number = -1; //keep track of how many items there are in the DB
   categories: Category[] = []; //used to store all categories
   //forms
   addItemForm: FormGroup;
@@ -28,6 +29,8 @@ export class ProductItemTestComponent {
   @ViewChild('updateModal') updateModal: any;
   //search functionality
   searchTerm: string = '';
+  submitClicked = false;
+  loading = true; //show loading message while data loads
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addItemForm = this.formBuilder.group({
@@ -71,12 +74,13 @@ export class ProductItemTestComponent {
       });
 
       console.log('All categories array: ', this.categories);
+      this.loading = false; //stop displaying loading message
     });
   }  
 
   //--------------------SEARCH BAR LOGIC----------------
   searchItems(event: Event) {
-    event.preventDefault();
+    this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredItems = []; //clear array
     for (let i = 0; i < this.items.length; i++) {
       let currentItemDescripton: string = this.items[i].description.toLowerCase();
@@ -84,12 +88,14 @@ export class ProductItemTestComponent {
       {
         this.filteredItems.push(this.items[i]);
       }
-      console.log(this.filteredItems);
     }
+    this.itemCount = this.filteredItems.length;
+    console.log(this.filteredItems);
   }
 
   //--------------------ADD ITEM LOGIC----------------
   addItem() {
+    this.submitClicked = true;
     if (this.addItemForm.valid) {
       const formData = this.addItemForm.value;
       let newItem : ItemVM = {
@@ -104,6 +110,8 @@ export class ProductItemTestComponent {
 
           this.getItems(); //refresh item list
           this.addItemForm.reset();
+          this.submitClicked = false;
+          $('#addItem').modal('hide');
         },
         (error) => {
           console.error('Error submitting form:', error);
@@ -123,18 +131,18 @@ export class ProductItemTestComponent {
         console.log(this.specificItem);
         const deleteDescription = document.getElementById('deleteDescription')
         if (deleteDescription) deleteDescription.innerHTML = this.specificItem.description;
+
+        //Open the modal manually only after data is displayed
+        this.deleteModal.nativeElement.classList.add('show');
+        this.deleteModal.nativeElement.style.display = 'block';
+        this.deleteModal.nativeElement.id = 'deleteItem-' + itemId;
+        //Fade background when modal is open.
+        //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       }
     );
-
-    //Open the modal manually
-    this.deleteModal.nativeElement.classList.add('show');
-    this.deleteModal.nativeElement.style.display = 'block';
-    this.deleteModal.nativeElement.id = 'deleteItem-' + itemId;
-    //Fade background when modal is open.
-    //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeDeleteModal() {
@@ -175,20 +183,20 @@ export class ProductItemTestComponent {
           uCategoryID: result.categoryID,
           uItemDescription: result.description
         }); //display data; Reactive forms are so powerful. All the item data passed with one method
+
+        //Open the modal manually only after the data is retrieved and displayed
+        this.updateModal.nativeElement.classList.add('show');
+        this.updateModal.nativeElement.style.display = 'block';
+        this.updateModal.nativeElement.id = 'updateItem-' + itemId; //pass item ID into modal ID so I can use it to update later
+        //Fade background when modal is open.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       },
       (error) => {
         console.error(error);
       }
     );
-
-    //Open the modal manually
-    this.updateModal.nativeElement.classList.add('show');
-    this.updateModal.nativeElement.style.display = 'block';
-    this.updateModal.nativeElement.id = 'updateItem-' + itemId; //pass item ID into modal ID so I can use it to update later
-    //Fade background when modal is open.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeUpdateModal() {
@@ -230,5 +238,10 @@ export class ProductItemTestComponent {
     }
     
   }
+
+  //---------------------------VALIDATION ERRORS LOGIC-----------------------
+  get itemDescription() { return this.addItemForm.get('itemDescription'); }
+  get uItemDescription() { return this.updateItemForm.get('uItemDescription'); }
+  get categoryID() { return this.addItemForm.get('categoryID'); }
 
 }

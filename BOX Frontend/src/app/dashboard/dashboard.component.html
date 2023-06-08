@@ -21,7 +21,7 @@
                     <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
                     Product Item
                 </button><pre></pre>
-                <button class="btn btn-info text-start">
+                <button [routerLink]="['/size-units']" class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'tape']"></fa-icon>
                     Size
                 </button><pre></pre>
@@ -36,6 +36,10 @@
                 <button [routerLink]="['/write-off-reason']" class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
                     Write-off reason
+                </button><pre></pre>
+                <button [routerLink]="['/vat']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'percent']"></fa-icon>
+                    VAT
                 </button><pre></pre>
             </div>
         </div>
