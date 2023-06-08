@@ -1,16 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BOX.Models
 {
-	public class User
-	{
+	public class User : IdentityUser<Guid>
+    {
 		[Key] public int UserID { get; set; }
-		// Foreign key   
+        // Foreign key   
 
-		[ForeignKey("Role")]
-		public int RoleID { get; set; }
-		public virtual Role Role { get; set; }
+        [ForeignKey("Role")]
+        public Guid RoleId { get; set; }
+
+        public virtual Role Role { get; set; }
 		[Required][MaxLength(50)] public string user_FirstName { get; set; } = string.Empty;
 		[Required][MaxLength(50)] public string user_LastName { get; set; } = string.Empty;
 		[Required][MaxLength(75)] public string user_Email { get; set; } = string.Empty;

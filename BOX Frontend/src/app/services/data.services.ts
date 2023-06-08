@@ -83,13 +83,13 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   UpdateCategory(categoryId: number, categoryVM: CategoryVM): Observable<CategoryVM> {
     return this.httpClient.put<CategoryVM>(`${this.apiUrl}ProductCategory/UpdateCategory/${categoryId}`, categoryVM, this.httpOptions);
-  }
+    }
 
-  //------------PRODUCT ITEM------------ [Give it its own service?]
-  GetItems(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}ProductItem/GetAllItems`)
-    .pipe(map(result => result))
-  }
+    //------------PRODUCT ITEM------------ [Give it its own service?]
+    GetItems(): Observable<any> {
+        return this.httpClient.get(`${this.apiUrl}ProductItem/GetAllItems`)
+            .pipe(map(result => result))
+    }
 
   GetItem(itemId: number): Observable<Item> {
     return this.httpClient.get<Item>(`${this.apiUrl}ProductItem/GetItem/${itemId}`)

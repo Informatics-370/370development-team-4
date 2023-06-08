@@ -9,6 +9,7 @@ import { RefundReasonComponent } from './refund-reason/refund-reason.component';
 import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.component';
 import { SizeUnitsComponent } from './size-units/size-units.component';
 import { VatComponent } from './vat/vat.component';
+import { SupplierComponent } from './supplier/supplier.component';
 
 
 const routes: Routes = [
@@ -21,7 +22,8 @@ const routes: Routes = [
           {path: "refund-reason", component: RefundReasonComponent},
           {path: "write-off-reason", component: WriteOffReasonComponent},
           {path: 'size-units', component: SizeUnitsComponent},
-          {path: 'vat', component: VatComponent}
+    { path: 'vat', component: VatComponent },
+    { path: "supplier", component: SupplierComponent }
 
 ];
 
