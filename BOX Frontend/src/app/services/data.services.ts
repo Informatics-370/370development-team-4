@@ -6,8 +6,6 @@ import { Size } from '../shared/Size';
 import { CategoryVM } from '../shared/category-vm';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
-import { RefundReason } from '../shared/refund-reason';
-import { WriteOffReason } from '../shared/write-off-reason';
 
 imports:[
   HttpClientModule
@@ -116,23 +114,23 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
 
 
-  GetItem(itemId: number): Observable<Item> {
-    return this.httpClient.get<Item>(`${this.apiUrl}ProductItem/GetItem/${itemId}`)
-      .pipe(map(result => result));
-  }
+  // GetItem(itemId: number): Observable<Item> {
+  //   return this.httpClient.get<Item>(`${this.apiUrl}ProductItem/GetItem/${itemId}`)
+  //     .pipe(map(result => result));
+  // }
 
-  AddItem(itemVM: ItemVM): Observable<ItemVM> {
-    return this.httpClient.post<ItemVM>(
-      `${this.apiUrl}ProductItem/AddItem`, itemVM, this.httpOptions
-    );
-  }
+  // AddItem(itemVM: ItemVM): Observable<ItemVM> {
+  //   return this.httpClient.post<ItemVM>(
+  //     `${this.apiUrl}ProductItem/AddItem`, itemVM, this.httpOptions
+  //   );
+  // }
 
-  DeleteItem(itemId: number): Observable<any> {    
-    return this.httpClient.delete<any>(`${this.apiUrl}ProductItem/DeleteItem/${itemId}`, this.httpOptions);
-  }
+  // DeleteItem(itemId: number): Observable<any> {    
+  //   return this.httpClient.delete<any>(`${this.apiUrl}ProductItem/DeleteItem/${itemId}`, this.httpOptions);
+  // }
 
-  UpdateItem(itemId: number, itemVM: ItemVM): Observable<ItemVM> {
-    return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
-  }
+  // UpdateItem(itemId: number, itemVM: ItemVM): Observable<ItemVM> {
+  //   return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
+  // }
 
 }

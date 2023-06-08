@@ -127,7 +127,7 @@ namespace BOX.Models
 		//Get Al VAT
         public async Task<VAT[]> GetAllVatAsync()
 		{
-			IQueryable<Raw_Material> query = _appDbContext.Raw_Material;
+			IQueryable<VAT> query = _appDbContext.VAT;
 			return await query.ToArrayAsync();
 		}
 
@@ -144,11 +144,11 @@ namespace BOX.Models
 
         public async Task<Estimate_Duration[]> GetAllEstimateDurationsAsync()
 		{
-			IQueryable<VAT> query = _appDbContext.VAT;
+			IQueryable<Estimate_Duration> query = _appDbContext.Estimate_Duration;
 			return await query.ToArrayAsync();
 		}
 
-		public async Task<VAT> GetVatAsync(int vatId)
+		public async Task<Estimate_Duration> GetEstimateDurationAsync(int estimatedurationId)
 		{
             //Query to select estimate duration where the ID passing through the API matches the ID in the Database
             IQueryable<Estimate_Duration> query = _appDbContext.Estimate_Duration.Where(c => c.EstimateDurationID == estimatedurationId);
@@ -159,11 +159,11 @@ namespace BOX.Models
 
         public async Task<Raw_Material[]> GetAllRawMaterialsAsync()
 		{
-			IQueryable<Supplier> query = _appDbContext.Supplier;
+			IQueryable<Raw_Material> query = _appDbContext.Raw_Material;
 			return await query.ToArrayAsync();
 		}
 
-		public async Task<Supplier> GetSupplierAsync(int supplierId)
+		public async Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId)
 		{
             //Query to select raw material where the ID passing through the API matches the ID in the Database
             IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(c => c.RawMaterialID == rawmaterialId);

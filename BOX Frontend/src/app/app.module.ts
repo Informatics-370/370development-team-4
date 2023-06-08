@@ -13,8 +13,6 @@ import { ProductItemTestComponent } from './product-item-test/product-item-test.
 import { ProductCategoryComponent } from './product-category/product-category.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { RefundReasonComponent } from './refund-reason/refund-reason.component';
-import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.component';
 import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
@@ -27,8 +25,6 @@ import { StartupDivComponent } from './startup-div/startup-div.component';
        ProductItemTestComponent,
         ViewHelpInventoryComponent,
         ProductCategoryComponent,
-        RefundReasonComponent,
-        WriteOffReasonComponent,
         MenuComponent,
         SupplierComponent,
         StartupDivComponent
