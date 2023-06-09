@@ -41,7 +41,7 @@ namespace BOX.Controllers
 						RawMaterialID = rawMat.RawMaterialID,
 						Description = rawMat.Description,
 						QRCodeID = rawMat.QRCodeID,
-                        QRCodeBytes = qrCode.QR_Code_Photo
+                        QRCodeB64 = qrCode.QR_Code_Photo
 					};
 					rawMatVMList.Add(rawMatVM);
 				}
@@ -74,7 +74,7 @@ namespace BOX.Controllers
                         RawMaterialID = result.RawMaterialID,
                         Description = result.Description,
                         QRCodeID = result.QRCodeID,
-                        QRCodeBytes = qrCode.QR_Code_Photo
+                        QRCodeB64 = qrCode.QR_Code_Photo
                     };
 					return Ok(rawMatVM);
                 }
@@ -98,12 +98,11 @@ namespace BOX.Controllers
                 //QR Code logic
                 var qrCodeBytes = GenerateQRCode(rawMaterialDescription); //generate QR code
 
-				// Create a new QR_Code instance and assign the generated QR code bytes
-				string b64string = qrCodeBytes.Remove(0, 22); //remove 'data:image/png;base64,' from string so I can call FromBase64String method
+				// Create a new QR_Code instance and assign the generated QR code bytes				
                 var qrCode = new QR_Code
                 {
                     //covert to byte array because I was getting casting error (can't implicitly convert from string to byte[])
-                    QR_Code_Photo = Convert.FromBase64String(b64string)
+                    QR_Code_Photo = qrCodeBytes
                 };
 
                 // Associate the QR code with the fixed product
@@ -133,23 +132,20 @@ namespace BOX.Controllers
 
                 //QR Code logic
                 var qrCodeBytes = GenerateQRCode(rawMaterialDescription); //generate QR code
-                //remove 'data:image/png;base64,' from string so I can call FromBase64String method and
-				//covert to byte array because I was getting casting error (can't implicitly convert from string to byte[])
-                byte[] byteArr = Convert.FromBase64String(qrCodeBytes.Remove(0, 22));
-
+                
                 // Check if the existing raw material has a QR_Code instance
                 if (existingrawmaterial.QR_Code == null)
 				{
                     //If it doesn't, create a new QR_Code instance and assign the generated QR code bytes
                     existingrawmaterial.QR_Code = new QR_Code
                     {
-                        QR_Code_Photo = byteArr
+                        QR_Code_Photo = qrCodeBytes
                     };
 
                 }
 				else
 				{
-					existingrawmaterial.QR_Code.QR_Code_Photo = byteArr;
+					existingrawmaterial.QR_Code.QR_Code_Photo = qrCodeBytes;
                 }
 
                 existingrawmaterial.Description = rawMaterialDescription;

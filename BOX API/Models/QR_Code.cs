@@ -8,7 +8,7 @@ namespace BOX.Models
 	public class QR_Code
 	{
 		[Key] public int QRCodeID { get; set; }
-		[Required] public byte[] QR_Code_Photo { get; set; }
+		[Required] public string QR_Code_Photo { get; set; }
 
 	}
 }
