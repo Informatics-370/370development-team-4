@@ -1,13 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-
-
 namespace BOX.Models
 {
 
-
-	public class Repository : IRepository
-	{
-		private readonly AppDbContext _appDbContext;
+  
+  public class Repository : IRepository
+  {
+        private readonly AppDbContext _appDbContext;
 
 		public Repository(AppDbContext appDbContext)
 		{
@@ -24,8 +22,10 @@ namespace BOX.Models
 			_appDbContext.Remove(entity);
 		}
 
-		//Gets all Sizes
-		public async Task<Size_Units[]> GetAllSizesAsync()
+        //----------------------------------------------------------- SIZES -------------------------------------------------------------------
+
+        //Gets all Sizes
+        public async Task<Size_Units[]> GetAllSizesAsync()
 		{
 			IQueryable<Size_Units> query = _appDbContext.Size_Units;
 			return await query.ToArrayAsync();
@@ -33,22 +33,29 @@ namespace BOX.Models
 		//Gets one Size according to the ID
 		public async Task<Size_Units> GetSizeAsync(int sizeId)
 		{
-			IQueryable<Size_Units> query = _appDbContext.Size_Units.Where(c => c.SizeID == sizeId);
+            //Query to select product item where the ID passing through the API matches the ID in the Database
+            IQueryable<Size_Units> query = _appDbContext.Size_Units.Where(c => c.SizeID == sizeId);
 			return await query.FirstOrDefaultAsync();
 		}
 
-		//-----------------------PRODUCT CATEGORY-----------------------
-		public async Task<Product_Category[]> GetAllCategoriesAsync() //Gets all categories
+        //-------------------------------------------------------- PRODUCT CATEGORY -----------------------------------------------------------
+
+		//Get All Categories
+        public async Task<Product_Category[]> GetAllCategoriesAsync()
 		{
 			IQueryable<Product_Category> query = _appDbContext.Product_Category;
 			return await query.ToArrayAsync();
 		}
 
-		public async Task<Product_Category> GetCategoryAsync(int categoryId) //Get category by ID
+		//Get Category By ID
+		public async Task<Product_Category> GetCategoryAsync(int categoryId)
 		{
-			IQueryable<Product_Category> query = _appDbContext.Product_Category.Where(c => c.CategoryID == categoryId);
+            //Query to select product item where the ID passing through the API matches the ID in the Database
+            IQueryable<Product_Category> query = _appDbContext.Product_Category.Where(c => c.CategoryID == categoryId);
 			return await query.FirstOrDefaultAsync();
 		}
+
+
 
 		public async Task<Size_Variables> GetSizeVariableAsync(int sizeVarId) //Get size variable by ID
 		{
@@ -58,92 +65,151 @@ namespace BOX.Models
 
 		public async Task<Category_Size_Variables> GetCategorySizeVariablesAsync(int catId) //Get category_size_variable by category ID
 		{
-			IQueryable<Category_Size_Variables> query = _appDbContext.Category_Size_Variables.Where(c => c.CategoryID == catId);
+            //Query to select product item where the ID passing through the API matches the ID in the Database
+            IQueryable<Category_Size_Variables> query = _appDbContext.Category_Size_Variables.Where(c => c.CategoryID == catId);
 			return await query.FirstOrDefaultAsync();
 		}
 
-		//-----------------------PRODUCT ITEM-----------------------
-		public async Task<Product_Item[]> GetAllItemsAsync() //Gets all items
+        //---------------------------------------------------------- PRODUCT ITEM -------------------------------------------------------------
+		//Get All Product Items
+        public async Task<Product_Item[]> GetAllItemsAsync()
 		{
 			IQueryable<Product_Item> query = _appDbContext.Product_Item;
 			return await query.ToArrayAsync();
 		}
 
-		public async Task<Product_Item> GetItemAsync(int itemId) //Get item by ID
+		//Get Product Item By ID
+		public async Task<Product_Item> GetItemAsync(int itemId)
 		{
+			//Query to select product item where the ID passing through the API matches the ID in the Database
 			IQueryable<Product_Item> query = _appDbContext.Product_Item.Where(c => c.ItemID == itemId);
-			return await query.FirstOrDefaultAsync();
+			return await query.FirstOrDefaultAsync();//Return first occurance of product item with a specific ID
 		}
 
-		//------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------------- WRITE OFF REASON -----------------------------------------------------------
 
-		//------------------------------Write OFF Reason------------------------------------------
-
-		//Gets all Write Off Reasons
-		public async Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync()
+        //Gets all Write Off Reasons
+        public async Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync()
 		{
 			IQueryable<Write_Off_Reason> query = _appDbContext.Write_Off_Reason;
 			return await query.ToArrayAsync();
 		}
-		//Gets one Size according to the ID
+
+		//Gets Write Off Reason By ID
 		public async Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeoffreasonId)
 		{
-			IQueryable<Write_Off_Reason> query = _appDbContext.Write_Off_Reason.Where(c => c.WriteOffReasonID == writeoffreasonId);
+            //Query to select write off reason where the ID passing through the API matches the ID in the Database
+            IQueryable<Write_Off_Reason> query = _appDbContext.Write_Off_Reason.Where(c => c.WriteOffReasonID == writeoffreasonId);
 			return await query.FirstOrDefaultAsync();
 		}
 
-		//------------------------------Customer Refund Reason------------------------------------------
-		public async Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync()
+        //--------------------------------------------------------- REFUND REASON -------------------------------------------------------------
+
+		//Get All Refund Reasons
+        public async Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync()
 		{
 			IQueryable<Customer_Refund_Reason> query = _appDbContext.Customer_Refund_Reason;
 			return await query.ToArrayAsync();
 		}
-		//Gets one Customer Refund Reason according to the ID
+
+		//Gets one Refund Reason according to the ID
 		public async Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int customerrefundreasonId)
 		{
-			IQueryable<Customer_Refund_Reason> query = _appDbContext.Customer_Refund_Reason.Where(c => c.CustomerRefundReasonID == customerrefundreasonId);
+            //Query to select refund reason where the ID passing through the API matches the ID in the Database
+            IQueryable<Customer_Refund_Reason> query = _appDbContext.Customer_Refund_Reason.Where(c => c.CustomerRefundReasonID == customerrefundreasonId);
 			return await query.FirstOrDefaultAsync();
 		}
 
 
 
-		//------------------------------VAT------------------------------------------
-		public async Task<VAT[]> GetAllVatAsync()
+        //------------------------------------------------------------- VAT -------------------------------------------------------------------
+
+		//Get Al VAT
+        public async Task<VAT[]> GetAllVatAsync()
 		{
 			IQueryable<VAT> query = _appDbContext.VAT;
 			return await query.ToArrayAsync();
 		}
-		//Gets one VAT according to the ID
+
+		//Get VAT By ID
 		public async Task<VAT> GetVatAsync(int vatId)
 		{
-			IQueryable<VAT> query = _appDbContext.VAT.Where(c => c.VatID == vatId);
+            //Query to select vat where the ID passing through the API matches the ID in the Database
+            IQueryable<VAT> query = _appDbContext.VAT.Where(c => c.VatID == vatId);
 			return await query.FirstOrDefaultAsync();
 		}
 
-		//------------------------------Estimate Duration------------------------------------------
-		public async Task<Estimate_Duration[]> GetAllEstimateDurationsAsync()
+        //------------------------------------------------------ ESTIMATE DURATION ------------------------------------------------------------
+
+
+        public async Task<Estimate_Duration[]> GetAllEstimateDurationsAsync()
 		{
 			IQueryable<Estimate_Duration> query = _appDbContext.Estimate_Duration;
 			return await query.ToArrayAsync();
 		}
-		//Gets one Estimate Duration according to the ID
+
 		public async Task<Estimate_Duration> GetEstimateDurationAsync(int estimatedurationId)
 		{
-			IQueryable<Estimate_Duration> query = _appDbContext.Estimate_Duration.Where(c => c.EstimateDurationID == estimatedurationId);
+            //Query to select estimate duration where the ID passing through the API matches the ID in the Database
+            IQueryable<Estimate_Duration> query = _appDbContext.Estimate_Duration.Where(c => c.EstimateDurationID == estimatedurationId);
 			return await query.FirstOrDefaultAsync();
 		}
 
-		//------------------------------Raw Material------------------------------------------
-		public async Task<Raw_Material[]> GetAllRawMaterialsAsync()
+        //-------------------------------------------------------- RAW MATERIAL ---------------------------------------------------------------
+
+        public async Task<Raw_Material[]> GetAllRawMaterialsAsync()
 		{
 			IQueryable<Raw_Material> query = _appDbContext.Raw_Material;
 			return await query.ToArrayAsync();
 		}
-		//Gets one Raw Material according to the ID
+
 		public async Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId)
 		{
-			IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(c => c.RawMaterialID == rawmaterialId);
+            //Query to select raw material where the ID passing through the API matches the ID in the Database
+            IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(c => c.RawMaterialID == rawmaterialId);
 			return await query.FirstOrDefaultAsync();
+		}
+
+        //---------------------------------------------------------- SUPPLIER -----------------------------------------------------------------
+
+		//Get All Suppliers
+        public async Task<Supplier[]> GetAllSuppliersAsync()
+        {
+			IQueryable<Supplier> query = _appDbContext.Supplier;
+            return await query.ToArrayAsync();
+        }
+
+        //Gets one Supplier according to the ID
+        public async Task<Supplier> GetSupplierAsync(int supplierId)
+        {
+            //Query to select supplier where the ID passing through the API matches the ID in the Database
+            IQueryable<Supplier> query = _appDbContext.Supplier.Where(c => c.SupplierID == supplierId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        //------------------------------------------------------- FIXED PRODUCT -----------------------------------------------------------------
+
+        //Get All Fixed Products
+        public async Task<Fixed_Product[]> GetAllFixedProductsAsync()
+        {
+            IQueryable<Fixed_Product> query = _appDbContext.Fixed_Product;
+            return await query.ToArrayAsync();
+        }
+
+        //Gets one Fixed Product according to the ID
+        public async Task<Fixed_Product> GetFixedProductAsync(int fixedProductId)
+        {
+            //Query to select fixed product where the ID passing through the API matches the ID in the Database
+            IQueryable<Fixed_Product> query = _appDbContext.Fixed_Product.Where(c => c.FixedProductID == fixedProductId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task UpdateFixedProductAsync(Fixed_Product fixedProduct)
+        {
+            // Update the fixed product entity in the data storage
+            _appDbContext.Update(fixedProduct);
+
+            await _appDbContext.SaveChangesAsync();
         }
 
         //-----------------------QR CODE-----------------------
@@ -153,12 +219,17 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
+        //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
         //Never remove this line of code, code above the line above.
         public async Task<bool> SaveChangesAsync()
 		{
 			return await _appDbContext.SaveChangesAsync() > 0;
 		}
-	} 
+	}
 }
+
+
+
+
 
 
