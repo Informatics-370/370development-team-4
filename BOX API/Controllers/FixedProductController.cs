@@ -96,11 +96,13 @@ namespace BOX.Controllers
                 // Generate the QR code for the fixed product
                 var qrCodeText = fixedProductViewModel.Description; // Use the description as the QR code data
                 var qrCodeBytes = GenerateQRCode(qrCodeText);
-
                 // Create a new QR_Code instance and assign the generated QR code bytes
+                string b64string = qrCodeBytes.Remove(0, 22); //remove 'data:image/png;base64,' from string so I can call FromBase64String method
+
                 var qrCode = new QR_Code
                 {
-                    QR_Code_Photo = qrCodeBytes
+                    //covert to byte array to prevent casting error
+                    QR_Code_Photo = Convert.FromBase64String(b64string)
                 };
 
                 // Associate the QR code with the fixed product
@@ -149,20 +151,22 @@ namespace BOX.Controllers
                 // Generate the QR code for the fixed product
                 var qrCodeText = fixedProductViewModel.Description;
                 var qrCodeBytes = GenerateQRCode(qrCodeText);
+                //remove 'data:image/png;base64,' from string and convert to byte array to prevent casting error
+                byte[] byteArr = Convert.FromBase64String(qrCodeBytes.Remove(0, 22));
 
                 // Check if the existing fixed product has a QR_Code instance
                 if (existingFixedProduct.QR_Code == null)
                 {
-                    // Create a new QR_Code instance and assign the generated QR code bytes
+                    //If it doesn't, create a new QR_Code instance and assign the generated QR code bytes
                     existingFixedProduct.QR_Code = new QR_Code
                     {
-                        QR_Code_Photo = qrCodeBytes
+                        QR_Code_Photo = byteArr
                     };
+
                 }
                 else
                 {
-                    // Update the QR_Code_Photo property of the existing QR_Code instance
-                    existingFixedProduct.QR_Code.QR_Code_Photo = qrCodeBytes;
+                    existingFixedProduct.QR_Code.QR_Code_Photo = byteArr;
                 }
 
                 // Update the other properties of the fixed product
