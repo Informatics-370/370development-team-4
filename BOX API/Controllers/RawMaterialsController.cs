@@ -116,7 +116,7 @@ namespace BOX.Controllers
             }
 			catch (Exception ex)
 			{
-				return BadRequest("Invalid transaction: " + ex.Message);
+				return BadRequest("Invalid transaction: " + ex.Message + "Extra info: " + ex.InnerException);
 			}
 		}
 

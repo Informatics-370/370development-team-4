@@ -32,7 +32,7 @@ import { StartupDivComponent } from './startup-div/startup-div.component';
         RefundReasonComponent,
         WriteOffReasonComponent,
         SizeUnitsComponent,
-        VatComponent
+        VatComponent,
         ProductCategoryComponent,
         MenuComponent,
         SupplierComponent,
