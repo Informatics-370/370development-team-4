@@ -20,6 +20,7 @@ import { VatComponent } from './vat/vat.component';
 import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
+import { FixedProductComponent } from './fixed-product/fixed-product.component';
 
 @NgModule({
   declarations: [ 
@@ -36,7 +37,8 @@ import { StartupDivComponent } from './startup-div/startup-div.component';
         ProductCategoryComponent,
         MenuComponent,
         SupplierComponent,
-        StartupDivComponent
+        StartupDivComponent,
+        FixedProductComponent
   ],
   imports: [
     BrowserModule,

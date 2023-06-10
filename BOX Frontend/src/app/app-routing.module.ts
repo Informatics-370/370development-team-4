@@ -10,6 +10,7 @@ import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.com
 import { SizeUnitsComponent } from './size-units/size-units.component';
 import { VatComponent } from './vat/vat.component';
 import { SupplierComponent } from './supplier/supplier.component';
+import { FixedProductComponent } from './fixed-product/fixed-product.component';
 
 
 const routes: Routes = [
@@ -23,7 +24,8 @@ const routes: Routes = [
           {path: "write-off-reason", component: WriteOffReasonComponent},
           {path: 'size-units', component: SizeUnitsComponent},
     { path: 'vat', component: VatComponent },
-    { path: "supplier", component: SupplierComponent }
+    { path: "supplier", component: SupplierComponent },
+    { path: "fixed-product", component: FixedProductComponent }
 
 ];
 

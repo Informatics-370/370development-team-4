@@ -197,6 +197,32 @@ namespace BOX.Controllers
             }
         }
 
+        [HttpDelete]
+        [Route("DeleteFixedProduct/{fixedProductId}")]
+        public async Task<IActionResult> DeleteFixedProduct(int fixedProductId)
+        {
+            try
+            {
+                var existingFixedProduct = await _repository.GetFixedProductAsync(fixedProductId);
+
+                if (existingFixedProduct == null) return NotFound($"The fixed product does not exist on the B.O.X System");
+
+                _repository.Delete(existingFixedProduct);
+
+                //delete associated QR code cos we aren't reusing it or retrieving historical data in any way
+                var existingQRCode = await _repository.GetQRCodeAsync(existingFixedProduct.QRCodeID);
+                _repository.Delete(existingQRCode);
+
+                if (await _repository.SaveChangesAsync()) return Ok(existingFixedProduct);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
+            }
+            return BadRequest("Your request is invalid.");
+        }
+
         //Generating the QR Code
         private string GenerateQRCode(string data)
         {
