@@ -5,5 +5,5 @@ export interface Size {
     length: number;
     volume: number;
     weight: number;
-    categoryID: number;
+    description: string; //later change to category ID when Kuziwa merges his code
 };

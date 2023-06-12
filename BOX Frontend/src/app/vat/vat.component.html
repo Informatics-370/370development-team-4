@@ -75,10 +75,10 @@
                 <!--VAT data from API-->
                 <tr *ngFor="let vat of filteredVATs">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(vat.vatID)" >
+                        <button title="Delete this VAT amount" class="CRUD-icon" (click)="openDeleteModal(vat.vatID)" >
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(vat.vatID)" >
+                        <button title="Update this VAT amount" class="CRUD-icon" (click)="openUpdateModal(vat.vatID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>

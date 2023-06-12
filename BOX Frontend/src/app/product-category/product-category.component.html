@@ -77,10 +77,10 @@
                 <!--Category data from API-->
                 <tr *ngFor="let category of filteredCategories">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(category.categoryID)">
+                        <button title="Delete this product category" class="CRUD-icon" (click)="openDeleteModal(category.categoryID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(category.categoryID)">
+                        <button title="Update this product category" class="CRUD-icon" (click)="openUpdateModal(category.categoryID)">
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>

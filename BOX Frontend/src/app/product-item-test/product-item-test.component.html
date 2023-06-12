@@ -73,10 +73,10 @@
                 <!--Item data from API-->
                 <tr *ngFor="let item of filteredItems">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(item.itemID)" >
+                        <button title="Delete this product item" class="CRUD-icon" (click)="openDeleteModal(item.itemID)" >
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(item.itemID)" >
+                        <button title="Update this product item" class="CRUD-icon" (click)="openUpdateModal(item.itemID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
@@ -108,7 +108,7 @@
                 <label for="category" class="form-label modal-form-label bold">Product Category:</label>
                 <select id="add-categoryID" [(ngModel)]="selectedValue" formControlName="categoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text">                    
                     <option disabled value="NA">Choose a category</option>
-                    <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.description}}</option>
+                    <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.categoryDescription}}</option>
                 </select>
             </div>
             <!--Display validation error message-->
@@ -178,7 +178,7 @@
             <div class="form-group">
                 <label for="category" class="form-label modal-form-label bold">Product Category:</label>
                 <select id="update-categoryID" [(ngModel)]="selectedValue" formControlName="uCategoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
-                    <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.description}}</option>
+                    <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.categoryDescription}}</option>
                 </select>
             </div>
             <div class="form-group">

@@ -71,10 +71,10 @@
                 <!--Reason data from API-->
                 <tr *ngFor="let reason of filteredReasons">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(reason.customerRefundReasonID)">
+                        <button title="Delete this customer refund reason" class="CRUD-icon" (click)="openDeleteModal(reason.customerRefundReasonID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(reason.customerRefundReasonID)" >
+                        <button title="Update this customer refund reason" class="CRUD-icon" (click)="openUpdateModal(reason.customerRefundReasonID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
