@@ -1,1 +1,5 @@
-@import "node_modules/bootstrap/dist/css/bootstrap.css"
+@import "node_modules/bootstrap/dist/css/bootstrap.css";
+
+.page-content {
+    margin-left: 260px;
+}

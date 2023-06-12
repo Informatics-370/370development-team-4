@@ -154,7 +154,7 @@
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Edit Write-Off Reason</h4>
+          <h4 class="modal-title">Update Write-Off Reason</h4>
           <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
@@ -162,7 +162,7 @@
         <div class="modal-body">
           <form [formGroup]="updateReasonForm">
             <div class="form-group">
-                <label for="description" class="form-label modal-form-label bold">Write-OffReason:</label>
+                <label for="description" class="form-label modal-form-label bold">Write-Off Reason:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="description" required>
             </div>
             <!--Display validation error message-->

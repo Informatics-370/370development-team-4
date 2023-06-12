@@ -9,6 +9,7 @@ import { ItemVM } from '../shared/item-vm';
 import { RefundReason } from '../shared/refund-reason';
 import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
+import { FixedProductVM } from '../shared/fixed-product-vm';
 
 imports:[
   HttpClientModule
@@ -158,9 +159,7 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   UpdateWriteOffReason(writeoffreasonId: number, writeoffreasonmodel: any): Observable<any> {
    return this.httpClient.put<any>(`${this.apiUrl}WriteOffReason/EditWriteOffReason/${writeoffreasonId}`, writeoffreasonmodel, this.httpOptions);
-  }
-
-  
+  }  
 
   //------------VAT------------
   GetAllVAT(): Observable<any> {
@@ -185,6 +184,31 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   UpdateVAT(vatId: number, vvm: any): Observable<any> {
    return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, vvm, this.httpOptions);
+  }
+
+  //-------------------------------------------------------FIXED PRODUCT-------------------------------------------------------
+  GetAllFixedProducts(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}FixedProduct/GetAllFixedProducts`)
+    .pipe(map(result => result))
+  }
+
+  GetFixedProduct(fixedProductId: number): Observable<FixedProductVM> {
+    return this.httpClient.get<FixedProductVM>(`${this.apiUrl}FixedProduct/GetFixedProduct/${fixedProductId}`)
+      .pipe(map(result => result));
+  }
+
+  AddFixedProduct(fixedProductViewModel: FixedProductVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}FixedProduct/CreateFixedProduct`, fixedProductViewModel, this.httpOptions
+    );
+  }
+
+  UpdateFixedProduct(fixedProductId: number, fixedProductViewModel: FixedProductVM): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}FixedProduct/UpdateFixedProduct/${fixedProductId}`, fixedProductViewModel, this.httpOptions);
+  }
+
+  DeleteFixedProduct(fixedProductId: number): Observable<any> {    
+    return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
   }
    
 }

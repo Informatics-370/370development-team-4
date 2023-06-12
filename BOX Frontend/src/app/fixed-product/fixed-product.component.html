@@ -4,7 +4,63 @@
         <div class="app-menu"></div>
     </div>
     <!--PAGE CONTENT-->
-    <div class="col-md-9">
-        Fixed product works!
+    <div class="col-md-9 page-content">
+        <h3 class="p-3" style="color: black;">View Products</h3>
+        <!--Search bar-->
+        <div id="searchbar" >
+            <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Box" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
+
+        <hr class="hr hr-blurry m-3" />
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addFixedProduct">Create New Product</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col">Product Category</th>
+                    <th scope="col">Product Item</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Product Size</th>
+                    <th scope="col">Price</th>
+                </tr>
+            </thead>
+            <tbody>                
+                <!--Error message if there's no products in the DB-->
+                <tr *ngIf="productCount==0">
+                    <td colspan="6">No fixed products found. Please add a new products to the system.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="6">Please wait while we load all fixed products...</td>
+                </tr>
+                <!--Products from API-->
+                <tr *ngFor="let prod of filteredProducts">
+                    <td>
+                        <button class="CRUD-icon" >
+                            <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
+                        </button>
+                        <button class="CRUD-icon" >
+                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                        </button>                                              
+                    </td>
+                    <td>
+                        Category name
+                    </td>
+                    <td>
+                        {{prod.itemID}}
+                    </td>
+                    <td>
+                        {{prod.description}}
+                    </td>
+                    <td>
+                        {{prod.sizeID}}
+                    </td>
+                    <td>
+                        {{prod.price}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
