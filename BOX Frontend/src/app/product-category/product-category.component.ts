@@ -11,8 +11,8 @@ declare var $: any;
   styleUrls: ['./product-category.component.css']
 })
 export class ProductCategoryComponent {
-  categories: Category[] = []; //used to get all categories
-  filteredCategories: Category[] = []; //used to hold all the categories that will be displayed to the user
+  categories: CategoryVM[] = []; //used to get all categories
+  filteredCategories: CategoryVM[] = []; //used to hold all the categories that will be displayed to the user
   specificCategory!: CategoryVM; //used to get a specific category
   categoryCount: number = -1; //keep track of how many categories there are in the DB
   //forms
@@ -72,7 +72,7 @@ export class ProductCategoryComponent {
     this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredCategories = []; //clear array
     for (let i = 0; i < this.categories.length; i++) {
-      let notCaseSensitive: string = this.categories[i].description.toLowerCase();
+      let notCaseSensitive: string = this.categories[i].categoryDescription.toLowerCase();
       if (notCaseSensitive.includes(this.searchTerm.toLowerCase()))
       {
         this.filteredCategories.push(this.categories[i]);
@@ -88,6 +88,7 @@ export class ProductCategoryComponent {
     this.submitClicked = true;
     if (this.addCategoryForm.valid) {
       let newCategory : CategoryVM = this.addCategoryForm.value;
+      newCategory.categoryID = 0;
 
       //prevent user from creating duplicate categories (same description)
       if (this.checkDuplicateDescription(newCategory.categoryDescription)) { //if user is entering duplicate category
@@ -116,7 +117,7 @@ export class ProductCategoryComponent {
   checkDuplicateDescription(description: string): boolean {
     description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
     for (let i = 0; i < this.categories.length; i++) {      
-      if (this.categories[i].description.toLowerCase() == description) {
+      if (this.categories[i].categoryDescription.toLowerCase() == description) {
         return true;
       }
     }
@@ -254,6 +255,7 @@ export class ProductCategoryComponent {
       //get form data
       const formValues = this.updateCategoryForm.value;
       let updatedCategory : CategoryVM = {
+        categoryID: 0,
         categoryDescription: formValues.uCategoryDescription,
         width: formValues.uWidth,
         length: formValues.uLength,

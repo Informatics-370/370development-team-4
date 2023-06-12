@@ -23,16 +23,17 @@
                     <th scope="col">Description</th>
                     <th scope="col">Product Size</th>
                     <th scope="col">Price</th>
+                    <th style="text-align: center;" scope="col">Download QR Code</th>
                 </tr>
             </thead>
             <tbody>                
                 <!--Error message if there's no products in the DB-->
                 <tr *ngIf="productCount==0">
-                    <td colspan="6">No fixed products found. Please add a new products to the system.</td>
+                    <td colspan="7">No fixed products found. Please add a new products to the system.</td>
                 </tr>
                 <!--Loading message while data is still being retrieved from the DB-->
                 <tr *ngIf="loading">
-                    <td colspan="6">Please wait while we load all fixed products...</td>
+                    <td colspan="7">Please wait while we load all fixed products...</td>
                 </tr>
                 <!--Products from API-->
                 <tr *ngFor="let prod of filteredProducts">
@@ -58,6 +59,12 @@
                     </td>
                     <td>
                         {{prod.price}}
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="CRUD-icon">
+                            <fa-icon [icon]="['fas', 'download']" style="margin-right: 5px;"></fa-icon>
+                            <fa-icon [icon]="['fas', 'qrcode']"></fa-icon>
+                        </button>
                     </td>
                 </tr>
             </tbody>
