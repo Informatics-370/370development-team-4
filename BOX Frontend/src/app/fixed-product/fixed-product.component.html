@@ -8,7 +8,7 @@
         <h3 class="p-3" style="color: black;">View Products</h3>
         <!--Search bar-->
         <div id="searchbar" >
-            <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Box" />
+            <input (keyup)="searchProducts($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="Search by size, price, etc." />
             <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
         </div>
 
@@ -29,6 +29,10 @@
                 <!--Use this row to display messages about data retrieval to the user e.g. error, loading, or no entries found messages-->
                 <tr *ngIf="showMessage">
                     <td id="message" colspan="4">Please wait while we load all fixed products...</td>
+                </tr>
+                <!--Use this row to display message if there's no search results-->
+                <tr *ngIf="search">
+                    <td id="searchMessage" colspan="4">No fixed products found. Please add a new product to the system.</td>
                 </tr>
                 <!--Products from API-->
                 <tr *ngFor="let prod of filteredTableProducts">

@@ -30,11 +30,14 @@ export class FixedProductComponent {
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
+
   //search functionality
   searchTerm: string = '';
   submitClicked = false; //keep track of when submit button is clicked in forms, for validation errors
-  loading = true; //show loading message while data loads
-  showMessage = true; //show messages to user in message row
+  search = false; //used to show message if no search results found
+
+  //error, loading and other messages
+  showMessage = true; //show messages to user in message row like loading message, error message, etc.
   messageRow!: HTMLTableCellElement; //it's called messageRow, but it's just a cell that spans a row
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
@@ -84,7 +87,6 @@ export class FixedProductComponent {
       this.sizes = sizes;
       console.log('All sizes for fixed products:', this.sizes);
       this.fixedProducts = products;
-      console.log('All fixed products array:', this.fixedProducts);  
 
       this.formatProducts(); // Execute only after data has been retrieved from the DB otherwise error
     } catch (error) {
@@ -114,13 +116,11 @@ export class FixedProductComponent {
         }
       });
 
-      //get size
+      /*get size and concatenate size string logic; I could have achieved this with 7 if statements and no extra variables buuuuuuuuut
+      I found an article that explains how to loop through the properties of the size object like it's an array:
+      refer to this article: https://www.freecodecamp.org/news/how-to-iterate-over-objects-in-javascript/ */
       this.sizes.forEach(currentSize => {
         if (currentSize.sizeID == currentProduct.sizeID) {
-          /*concatenate size string logic; I could have achieved this with 7 if statements and no extra variables buuuuuuuuut
-          I found an article that explains how to loop through the properties of the size object like it's an array:
-          refer to this article: https://www.freecodecamp.org/news/how-to-iterate-over-objects-in-javascript/*/
-
           //treat currentSize like an array with the properties as values in the array
           let sizeAsArr = Object.entries(currentSize);
           //description is the last property in the size object and sizeID is the first property; I don't want to use them, only the sizes
@@ -135,9 +135,11 @@ export class FixedProductComponent {
           }
         }
       });
-      console.log('size string:', sizeString);
+      
       //trim() gets rid of trailing spaces e.g. turn '150 150 150 ' to '150 150 150'. replaceAll() turns '150 150 150' to '150x150x150'
       sizeString = sizeString.trim().replaceAll(' ', 'x');
+
+      //get QR code and product photo
 
       //create new tablefixedproductVM and push to global array
       let tableProductVM: TableFixedProductVM = {
@@ -166,5 +168,33 @@ export class FixedProductComponent {
       this.messageRow.innerHTML = 'No fixed products found. Please add a new product to the system.';
     else
       this.showMessage = false; //stop displaying loading message
+  }
+  
+  //--------------------SEARCH BAR LOGIC----------------
+  searchProducts(event: Event) {    
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.filteredTableProducts = []; //clear array
+    for (let i = 0; i < this.tableProducts.length; i++) {
+      //concatenate all the product info in one variable so user can search using any of them even if they aren't displayed in the table
+      let prodInformation: string = String(this.tableProducts[i].categoryDescription + 
+                                    this.tableProducts[i].itemDescription +
+                                    this.tableProducts[i].sizeString +
+                                    this.tableProducts[i].description +
+                                    this.tableProducts[i].price).toLowerCase();
+      
+      if (prodInformation.includes(this.searchTerm.toLowerCase()))
+      {
+        this.filteredTableProducts.push(this.tableProducts[i]);
+      }
+    }
+
+    this.productCount = this.filteredTableProducts.length; //update product count
+    
+    if (this.productCount == 0)
+      this.search = true;
+    else
+      this.search = false;    
+
+    console.log('Search results:', this.filteredTableProducts);
   }
 }
