@@ -16,8 +16,8 @@ import { TableFixedProductVM } from '../shared/table-fixed-product-vm';
   styleUrls: ['./fixed-product.component.css']
 })
 export class FixedProductComponent {
-  fixedProducts: FixedProductVM[] = []; //used to store all fixed products
-  filteredProducts: FixedProductVM[] = []; //used to hold all the fixed products that will be displayed to the user
+  fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
+  filteredTableProducts: TableFixedProductVM[] = []; //used to hold all the fixed products that will be displayed to the user
   tableProducts: TableFixedProductVM[] = []; //store all fixed products in format to display in table
   categories: CategoryVM[] = []; //store all categories for view, search, update and delete
   items: Item[] = []; //store all items for view, search, update and delete
@@ -83,12 +83,10 @@ export class FixedProductComponent {
       console.log('All product items for fixed products:', this.items);
       this.sizes = sizes;
       console.log('All sizes for fixed products:', this.sizes);
-      this.filteredProducts = products;
-      this.fixedProducts = this.filteredProducts;
-      console.log('All fixed products array:', this.filteredProducts);  
+      this.fixedProducts = products;
+      console.log('All fixed products array:', this.fixedProducts);  
 
       this.formatProducts(); // Execute only after data has been retrieved from the DB otherwise error
-      console.log('All data fetched successfully.');
     } catch (error) {
       console.error('An error occurred:', error);
       this.messageRow.innerHTML = 'An error occured while retrieving from the database. Please contact B.O.X. support services.';
@@ -99,7 +97,7 @@ export class FixedProductComponent {
   formatProducts(): void {
     let item: Item;
     let category: CategoryVM;
-    let size: Size;
+    let sizeString: string = '';
 
     this.fixedProducts.forEach(currentProduct => {
       //get item description
@@ -107,7 +105,7 @@ export class FixedProductComponent {
         if (currentItem.itemID == currentProduct.itemID) {
           item = currentItem;
 
-          //get category description, using the item found
+          //get category description, using the category ID in item found
           this.categories.forEach(currentCat => {
             if (currentItem.categoryID == currentCat.categoryID) {
               category = currentCat;
@@ -115,29 +113,54 @@ export class FixedProductComponent {
           });
         }
       });
-      console.log('Prod item: ', item, 'and product category: ', category);
 
       //get size
+      this.sizes.forEach(currentSize => {
+        if (currentSize.sizeID == currentProduct.sizeID) {
+          /*concatenate size string logic; I could have achieved this with 7 if statements and no extra variables buuuuuuuuut
+          I found an article that explains how to loop through the properties of the size object like it's an array:
+          refer to this article: https://www.freecodecamp.org/news/how-to-iterate-over-objects-in-javascript/*/
+
+          //treat currentSize like an array with the properties as values in the array
+          let sizeAsArr = Object.entries(currentSize);
+          //description is the last property in the size object and sizeID is the first property; I don't want to use them, only the sizes
+          for (let i = 1; i < sizeAsArr.length - 1; i++) {
+            if (sizeAsArr[i][1] > 0) {
+              sizeString += sizeAsArr[i][1] + ' ';
+            }
+
+            //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, make it NA
+            if (i == sizeAsArr.length - 1 && sizeString == '')
+              sizeString = 'N/A';
+          }
+        }
+      });
+      console.log('size string:', sizeString);
+      //trim() gets rid of trailing spaces e.g. turn '150 150 150 ' to '150 150 150'. replaceAll() turns '150 150 150' to '150x150x150'
+      sizeString = sizeString.trim().replaceAll(' ', 'x');
 
       //create new tablefixedproductVM and push to global array
       let tableProductVM: TableFixedProductVM = {
         fixedProductID: currentProduct.fixedProductID,
-        qRCodeID: 0,
+        qRCodeID: currentProduct.qRCodeID,
         qRCode: '',
         categoryID: category.categoryID,
         categoryDescription: category.categoryDescription,
-        itemID: item.itemID,
+        itemID: currentProduct.itemID,
         itemDescription: item.description,
-        sizeID: 0,
-        sizeString: '',
+        sizeID: currentProduct.sizeID,
+        sizeString: sizeString,
         description: currentProduct.description,
         price: currentProduct.price,
         productPhoto: ''
       };
 
-      this.productCount = this.tableProducts.push(tableProductVM); //update product count; push method returns new length of the array
+      this.filteredTableProducts.push(tableProductVM);
       console.log('Table product VM list', this.tableProducts);
     });
+
+    this.tableProducts = this.filteredTableProducts; //store all the products someplace before I search below
+    this.productCount = this.tableProducts.length; //update product count
 
     if (this.productCount == 0)
       this.messageRow.innerHTML = 'No fixed products found. Please add a new product to the system.';

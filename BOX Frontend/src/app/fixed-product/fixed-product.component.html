@@ -18,20 +18,20 @@
             <thead>
                 <tr>
                     <th style="width: 165px;" scope="col"></th>
+                    <!--Should be product photo, description and product item/price because the user knows where to go to manage
+                        the category and item. But they came here to modify products so they should see product specific info-->
                     <th scope="col">Product Category</th>
                     <th scope="col">Product Item</th>
-                    <th scope="col">Description</th>
                     <th scope="col">Product Size</th>
-                    <th scope="col">Price</th>
                 </tr>
             </thead>
             <tbody>                
                 <!--Use this row to display messages about data retrieval to the user e.g. error, loading, or no entries found messages-->
                 <tr *ngIf="showMessage">
-                    <td id="message" colspan="6">Please wait while we load all fixed products...</td>
+                    <td id="message" colspan="4">Please wait while we load all fixed products...</td>
                 </tr>
                 <!--Products from API-->
-                <tr *ngFor="let prod of filteredProducts">
+                <tr *ngFor="let prod of filteredTableProducts">
                     <td style="text-align: center;">
                         <button title="View product details" class="CRUD-icon" >
                             <fa-icon [icon]="['fas', 'circle-info']" ></fa-icon>
@@ -44,19 +44,13 @@
                         </button>                                              
                     </td>
                     <td>
-                        Category name
+                        {{prod.categoryDescription}}
                     </td>
                     <td>
-                        {{prod.itemID}}
+                        {{prod.itemDescription}}
                     </td>
                     <td>
-                        {{prod.description}}
-                    </td>
-                    <td>
-                        {{prod.sizeID}}
-                    </td>
-                    <td>
-                        {{prod.price}}
+                        {{prod.sizeString}}
                     </td>
                 </tr>
             </tbody>
