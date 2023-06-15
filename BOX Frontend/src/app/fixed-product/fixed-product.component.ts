@@ -87,6 +87,7 @@ export class FixedProductComponent {
       this.sizes = sizes;
       console.log('All sizes for fixed products:', this.sizes);
       this.fixedProducts = products;
+      console.log('All products', this.fixedProducts);
 
       this.formatProducts(); // Execute only after data has been retrieved from the DB otherwise error
     } catch (error) {
@@ -99,9 +100,10 @@ export class FixedProductComponent {
   formatProducts(): void {
     let item: Item;
     let category: CategoryVM;
-    let sizeString: string = '';
 
     this.fixedProducts.forEach(currentProduct => {
+    let sizeString: string = ''; //reset string
+
       //get item description
       this.items.forEach(currentItem => {
         if (currentItem.itemID == currentProduct.itemID) {
@@ -144,7 +146,7 @@ export class FixedProductComponent {
       //create new tablefixedproductVM and push to global array
       let tableProductVM: TableFixedProductVM = {
         fixedProductID: currentProduct.fixedProductID,
-        qRCodeID: currentProduct.qRCodeID,
+        qRCodeID: currentProduct.qrCodeID,
         qRCode: '',
         categoryID: category.categoryID,
         categoryDescription: category.categoryDescription,
@@ -154,14 +156,14 @@ export class FixedProductComponent {
         sizeString: sizeString,
         description: currentProduct.description,
         price: currentProduct.price,
-        productPhoto: ''
+        productPhoto: currentProduct.productPhotoB64
       };
 
       this.filteredTableProducts.push(tableProductVM);
-      console.log('Table product VM list', this.tableProducts);
     });
 
     this.tableProducts = this.filteredTableProducts; //store all the products someplace before I search below
+    console.log('Table product VM list', this.tableProducts);
     this.productCount = this.tableProducts.length; //update product count
 
     if (this.productCount == 0)

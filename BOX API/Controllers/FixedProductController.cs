@@ -36,7 +36,8 @@ namespace BOX.Controllers
                     ItemID = fp.ItemID,
                     SizeID = fp.SizeID,
                     Description = fp.Description,
-                    Price = fp.Price
+                    Price = fp.Price,
+                    ProductPhotoB64 = Convert.ToBase64String(fp.Product_Photo)
                 }).ToArray();
 
                 return Ok(fixedProductViewModels);
@@ -66,7 +67,8 @@ namespace BOX.Controllers
                     ItemID = fixedProduct.ItemID,
                     SizeID = fixedProduct.SizeID,
                     Description = fixedProduct.Description,
-                    Price = fixedProduct.Price
+                    Price = fixedProduct.Price,
+                    ProductPhotoB64 = Convert.ToBase64String(fixedProduct.Product_Photo)
                 };
 
                 return Ok(fixedProductViewModel);
@@ -90,7 +92,8 @@ namespace BOX.Controllers
                     ItemID = fixedProductViewModel.ItemID,
                     SizeID = fixedProductViewModel.SizeID,
                     Description = fixedProductViewModel.Description,
-                    Price = fixedProductViewModel.Price
+                    Price = fixedProductViewModel.Price,
+                    Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64)
                 };
 
                 // Generate the QR code for the fixed product
@@ -174,6 +177,7 @@ namespace BOX.Controllers
                 existingFixedProduct.SizeID = fixedProductViewModel.SizeID;
                 existingFixedProduct.Description = fixedProductViewModel.Description;
                 existingFixedProduct.Price = fixedProductViewModel.Price;
+                existingFixedProduct.Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64);
 
                 // Update the fixed product in the repository
                 await _repository.UpdateFixedProductAsync(existingFixedProduct);
