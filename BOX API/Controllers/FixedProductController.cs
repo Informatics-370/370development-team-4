@@ -28,17 +28,25 @@ namespace BOX.Controllers
             try
             {
                 var fixedProducts = await _repository.GetAllFixedProductsAsync();
-
-                var fixedProductViewModels = fixedProducts.Select(fp => new FixedProductViewModel
+                
+                List<FixedProductViewModel> fixedProductViewModels = new List<FixedProductViewModel>();
+                foreach (var fp in fixedProducts) 
                 {
-                    FixedProductID = fp.FixedProductID,
-                    QRCodeID = fp.QRCodeID,
-                    ItemID = fp.ItemID,
-                    SizeID = fp.SizeID,
-                    Description = fp.Description,
-                    Price = fp.Price,
-                    ProductPhotoB64 = Convert.ToBase64String(fp.Product_Photo)
-                }).ToArray();
+                    var qrCode = await _repository.GetQRCodeAsync(fp.QRCodeID); //get QR code byte array; GetAllFixedMaterialsAsync returns null for QR code
+
+                    FixedProductViewModel fpVM = new FixedProductViewModel()
+                    {
+                        FixedProductID = fp.FixedProductID,
+                        QRCodeID = fp.QRCodeID,
+                        QRCodeBytes = qrCode.QR_Code_Photo,
+                        ItemID = fp.ItemID,
+                        SizeID = fp.SizeID,
+                        Description = fp.Description,
+                        Price = fp.Price,
+                        ProductPhotoB64 = Convert.ToBase64String(fp.Product_Photo)
+                    };
+                    fixedProductViewModels.Add(fpVM);
+                }
 
                 return Ok(fixedProductViewModels);
             }
