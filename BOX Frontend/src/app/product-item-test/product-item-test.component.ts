@@ -21,8 +21,7 @@ export class ProductItemTestComponent {
   //forms
   addItemForm: FormGroup;
   updateItemForm: FormGroup;
-  //I need these two variables below just to display a default, disabled option in the caetgory dropdown. Can you imagine?!!
-  isDisabled = true;
+  //I need these two variables below just to display a default, disabled option in the category dropdown. Can you imagine?!!
   public selectedValue = 'NA';
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
@@ -110,6 +109,7 @@ export class ProductItemTestComponent {
 
           this.getItems(); //refresh item list
           this.addItemForm.reset();
+          this.selectedValue = 'NA'; //reset selected value
           this.submitClicked = false;
           $('#addItem').modal('hide');
         },

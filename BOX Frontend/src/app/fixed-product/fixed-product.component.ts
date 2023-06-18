@@ -8,6 +8,7 @@ import { Size } from '../shared/Size';
 import { Item } from '../shared/item';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { TableFixedProductVM } from '../shared/table-fixed-product-vm';
+import { Category } from '../shared/category';
 //import discount, VAT, supplier
 
 @Component({
@@ -22,14 +23,20 @@ export class FixedProductComponent {
   categories: CategoryVM[] = []; //store all categories for view, search, update and delete
   items: Item[] = []; //store all items for view, search, update and delete
   sizes: Size[] = []; //store all sizes for view, search, update and delete
+  categorySizes: any[] = []; //store all sizes associated with a specific category
+  categoryItems: Item[] = []; //store all product items associated with a specific category
   specificProduct!: FixedProductVM; //used to get a specific product
   productCount: number = -1; //keep track of how many products there are in the DB
   //view product variables
   viewProduct!: TableFixedProductVM;
 
   //forms
-  // addProductForm: FormGroup;
+  addProductForm: FormGroup;
   // updateProductForm: FormGroup;
+  //select elements value
+  public selectedCatValue = 'NA';
+  public selectedItemValue = 'NA';
+  public selectedSizeValue = 'NA';
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
@@ -44,11 +51,16 @@ export class FixedProductComponent {
   messageRow!: HTMLTableCellElement; //it's called messageRow, but it's just a cell that spans a row
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
-    /* this.addProductForm = this.formBuilder.group({
-      description: ['', Validators.required]
+    this.addProductForm = this.formBuilder.group({
+      description: ['', Validators.required],
+      categoryID: [{ value: 'NA' }, Validators.required],
+      itemID: [{ value: 'NA' }, Validators.required],
+      sizeID: [{ value: 'NA' }, Validators.required],
+      price: [1.00, Validators.required],
+      productPhoto: []
     });
 
-    this.updateProductForm = this.formBuilder.group({
+    /*this.updateProductForm = this.formBuilder.group({
       uDescription: ['', Validators.required]
     }) */
   }
@@ -134,7 +146,7 @@ export class FixedProductComponent {
             }
 
             //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, make it NA
-            if (i == sizeAsArr.length - 1 && sizeString == '')
+            if (i == sizeAsArr.length - 2 && sizeString == '')
               sizeString = 'N/A';
           }
         }
@@ -173,7 +185,7 @@ export class FixedProductComponent {
       this.showMessage = false; //stop displaying loading message
   }
 
-  //--------------------SEARCH BAR LOGIC----------------
+  //--------------------------------------------------------SEARCH BAR LOGIC--------------------------------------------------------
   searchProducts(event: Event) {
     this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredTableProducts = []; //clear array
@@ -200,7 +212,7 @@ export class FixedProductComponent {
     console.log('Search results:', this.filteredTableProducts);
   }
 
-  //--------------------VIEW SPECIFIC PRODUCT----------------
+  //--------------------------------------------------------VIEW SPECIFIC PRODUCT LOGIC--------------------------------------------------------
   openViewProduct(prod: TableFixedProductVM) {
     console.log(prod);
     this.viewProduct = prod;
@@ -226,10 +238,135 @@ export class FixedProductComponent {
     var binaryLength = binaryString.length;
     var byteArray = new Uint8Array(binaryLength);
     for (var i = 0; i < binaryLength; i++) {
-       var ascii = binaryString.charCodeAt(i); //retrieve the ASCII code of the character in the binary string
-       byteArray[i] = ascii; //assigns ASCII code to corresponding character in byte array
+      var ascii = binaryString.charCodeAt(i); //retrieve the ASCII code of the character in the binary string
+      byteArray[i] = ascii; //assigns ASCII code to corresponding character in byte array
     }
     return byteArray;
- }
+  }
 
+  //--------------------------------------------------------ADD PRODUCT LOGIC--------------------------------------------------------
+  changedCategory() {
+    this.categorySizes = []; //reset array
+    this.categoryItems = [];
+
+    //get category with index that matches value selected in select
+    let index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValue));
+    let cat = this.categories[index];
+
+    //populate product item dropdown
+    this.items.forEach(item => {
+      if (cat.categoryID == item.categoryID) {
+        this.categoryItems.push(item);
+      }
+    });
+
+    //populate size dropdown
+    for (let i = 0; i < this.sizes.length; i++) {
+      let sizeStr: string = ''; //reset string
+
+      if (cat.categoryDescription == this.sizes[i].description) {
+        //treat size like an array with the properties as values in the array
+        let sizeAsArray = Object.entries(this.sizes[i]);
+        //description is the last property in the size object and sizeID is the first property; don't use them, only the sizes
+        for (let j = 1; j < sizeAsArray.length - 1; j++) {
+          if (sizeAsArray[j][1] > 0) {
+            sizeStr += sizeAsArray[j][1] + ' ';
+          }
+
+          //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, N/A
+          if (j == sizeAsArray.length - 2 && sizeStr == '')
+            sizeStr = 'N/A';
+        }
+
+        sizeStr = sizeStr.trim().replaceAll(' ', 'x'); //turn '150 150 150 ' to '150 150 150' and then to '150x150x150'
+
+        //put in size dropdown array
+        var catSize: any = {
+          sizeID: this.sizes[i].sizeID,
+          sizeString: sizeStr
+        }
+
+        this.categorySizes.push(catSize);
+      }
+    }
+  }
+
+  /*not yet sure how to handle the fact that angular says the description field isn't filled and thus won't fill the form if I concatenate
+  the product description using the item and size. Atm, the only solution is to, after getting the product name and description entered for you,
+  go backspace and then reenter the last character in description field*/
+  changedItem() {
+    var descriptionInput = document.getElementById('description') as HTMLInputElement; //get description input
+    //get selected product item
+    let i = this.categoryItems.findIndex(item => item.itemID === parseInt(this.selectedItemValue));
+    descriptionInput.value += this.categoryItems[i].description;
+  }
+
+  changedSize() {
+    var descriptionInput = document.getElementById('description') as HTMLInputElement; //get description input
+    //get selected size
+    let i = this.categorySizes.findIndex(catSize => catSize.sizeID === parseInt(this.selectedSizeValue));
+    descriptionInput.value += ' ' + this.categorySizes[i].sizeString;
+  }
+
+  //function to display image name since I decided to be fancy with a custom input button
+  showImageName(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const chosenFile = inputElement.files?.[0];
+    let imageElement = document.getElementById('display-img') as HTMLImageElement;
+    let imgIcon = document.getElementById('no-img');
+
+    if (chosenFile) { //if there is a file chosen
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imageElement.src = e.target?.result as string; // Set the src attribute of the image element
+      };
+      reader.readAsDataURL(chosenFile);
+      imageElement.alt = chosenFile.name;
+
+      if (imgIcon) {
+        imgIcon.style.display = "none"; //hide the font awesome icon that shows that no image was selected
+      }
+
+      document.getElementById('imageName')!.innerHTML = '<br/>' + chosenFile.name; //display file name
+    }
+    else {
+      // Reset the image source and name
+      imageElement.src = '';
+      imageElement.alt = '';
+      document.getElementById('imageName')!.innerHTML = 'No image chosen';
+      if (imgIcon) {
+        imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
+      }
+    }
+  }
+
+  addFixedProduct() {
+    this.submitClicked = true;
+    if (this.addProductForm.valid) {
+      //reset form
+      this.submitClicked = false;
+      this.addProductForm.reset();
+      this.categoryItems = [];
+      this.categorySizes = [];
+      this.selectedCatValue = 'NA';
+      this.selectedItemValue = "NA";
+      this.selectedSizeValue = 'NA';
+      let imageElement = document.getElementById('display-img') as HTMLImageElement;
+      imageElement.src = '';
+      imageElement.alt = '';
+      document.getElementById('imageName')!.innerHTML = 'No image chosen';
+      let imgIcon = document.getElementById('no-img'); //get image font awesome icon
+      if (imgIcon) {
+        imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
+      }
+    }
+  }
+
+  //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------
+  get description() { return this.addProductForm.get('description'); }
+  get categoryID() { return this.addProductForm.get('categoryID'); }
+  get itemID() { return this.addProductForm.get('itemID'); }
+  get sizeID() { return this.addProductForm.get('sizeID'); }
+  get price() { return this.addProductForm.get('price'); }
+  /*get uDescription() { return this.updateProductForm.get('uDescription'); }*/
 }
