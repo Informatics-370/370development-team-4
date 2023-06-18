@@ -3,11 +3,18 @@
 
 .view-photo {
     width: 20%;
-    max-width: 30%;
+    max-width: 25%;
     height: auto;
-    max-height: 30%;
+    max-height: 25%;
 }
 
 .display-photo {
     text-align: center;
+    margin-top: 10px;
+}
+
+.download, .download:hover {
+    background-color: #00F2C8;
+    color: #373435;
+    margin-left: 0;
 }

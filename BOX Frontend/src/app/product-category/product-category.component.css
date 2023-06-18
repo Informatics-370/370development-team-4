@@ -68,6 +68,7 @@
 .modal-form-submit {
     padding-left: 100px;
     padding-right: 100px;
+    margin-left: 0;
 }
 
 .form-submit-div { text-align: center;}

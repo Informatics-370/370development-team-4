@@ -82,13 +82,16 @@
             <span class="bold">Product Item: </span>{{viewProduct.itemDescription}}<br/>
             <span class="bold">Size: </span>{{viewProduct.sizeString}}<br/>
             <span class="bold">Price (per unit): </span>{{viewProduct.price}}<br/>
+            <span class="bold">Quantity on hand: </span>{{viewProduct.quantityOnHand}}<br/>
             <span class="bold">Discount: </span>Placeholder 10%<br/>
             <span class="bold">Supplier: </span>Placeholder Boxes and Stuff Co.<br/>
-            <div class="display-photo">
-                <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{viewProduct.qRCodeB64}}" alt="" />
+            <div class="display-photo" >
+                <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{viewProduct.qRCodeB64}}" alt={{viewProduct.description}} /><br/>
+                <button class="btn btn-create download" (click)="downloadQRCodeAsImage()">
+                    <fa-icon style="margin-right: 0.5rem;" [icon]="['fas', 'download']" ></fa-icon>Download QR code
+                </button>
             </div>
-            <div>
-                <button (click)="downloadQRCodeAsImage()">Download QR code</button>
+            <div style="text-align: center;">
             </div>
         </div>        
   

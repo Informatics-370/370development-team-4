@@ -143,8 +143,6 @@ export class FixedProductComponent {
       //trim() gets rid of trailing spaces e.g. turn '150 150 150 ' to '150 150 150'. replaceAll() turns '150 150 150' to '150x150x150'
       sizeString = sizeString.trim().replaceAll(' ', 'x');
 
-      //get QR code and product photo
-
       //create new tablefixedproductVM and push to global array
       let tableProductVM: TableFixedProductVM = {
         fixedProductID: currentProduct.fixedProductID,
