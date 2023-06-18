@@ -30,5 +30,8 @@ namespace BOX.Models
 
         [Required]
         public byte[] Product_Photo { get; set; }
+
+        [Required]
+        public int Quantity_On_Hand { get; set; }
     }
 }

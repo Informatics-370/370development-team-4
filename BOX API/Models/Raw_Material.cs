@@ -13,6 +13,9 @@ namespace BOX.Models
 
         public virtual QR_Code QR_Code { get; set; }
 
+        [Required]
+        public int Quantity_On_Hand { get; set; }
+
 
     }
 }
