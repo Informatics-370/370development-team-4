@@ -37,7 +37,7 @@
                 <!--Products from API-->
                 <tr *ngFor="let prod of filteredTableProducts">
                     <td style="text-align: center;">
-                        <button title="View product details" class="CRUD-icon" >
+                        <button title="View product details" class="CRUD-icon" (click)="openViewProduct(prod)" >
                             <fa-icon [icon]="['fas', 'circle-info']" ></fa-icon>
                         </button>
                         <button title="Delete this product" class="CRUD-icon" >
@@ -59,5 +59,44 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+</div>
+
+<!--CRUD MODALS-->
+<!--VIEW PRODUCT DETAILS MODAL-->
+<div class="modal fade" id="viewProduct" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" *ngIf="viewProduct != null">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 id="modal-title" class="modal-title">{{viewProduct.description}}</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+            <div class="display-photo">
+                <img id="view-product-photo" class="view-photo" src="data:image/png;base64,{{viewProduct.productPhoto}}" alt=""/>
+            </div>
+            <span class="bold">Product Item: </span>{{viewProduct.itemDescription}}<br/>
+            <span class="bold">Size: </span>{{viewProduct.sizeString}}<br/>
+            <span class="bold">Price (per unit): </span>{{viewProduct.price}}<br/>
+            <span class="bold">Discount: </span>Placeholder 10%<br/>
+            <span class="bold">Supplier: </span>Placeholder Boxes and Stuff Co.<br/>
+            <div class="display-photo">
+                <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{viewProduct.qRCodeB64}}" alt="" />
+            </div>
+            <div>
+                <button (click)="downloadQRCodeAsImage()">Download QR code</button>
+            </div>
+        </div>        
+  
+        <!-- Modal footer -->
+        <div class="modal-footer justify-content-evenly">
+            <button class="btn btn-create modal-form-submit" data-bs-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
     </div>
 </div>

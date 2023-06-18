@@ -9,6 +9,6 @@
         public string Description { get; set; }
         public decimal Price { get; set; }
         public string ProductPhotoB64 { get; set; }
-        public byte[] QRCodeBytes { get; set; }
+        public string QRCodeBytesB64 { get; set; }
     }
 }

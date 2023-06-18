@@ -24,6 +24,9 @@ export class FixedProductComponent {
   sizes: Size[] = []; //store all sizes for view, search, update and delete
   specificProduct!: FixedProductVM; //used to get a specific product
   productCount: number = -1; //keep track of how many products there are in the DB
+  //view product variables
+  viewProduct!: TableFixedProductVM;
+
   //forms
   // addProductForm: FormGroup;
   // updateProductForm: FormGroup;
@@ -54,7 +57,7 @@ export class FixedProductComponent {
     this.getDataFromDB();
   }
 
-  ngAfterViewInit(): void {    
+  ngAfterViewInit(): void {
     this.messageRow = document.getElementById('message') as HTMLTableCellElement; //get message row only after view has been intialised and there's a message row to get
   }
 
@@ -87,7 +90,6 @@ export class FixedProductComponent {
       this.sizes = sizes;
       console.log('All sizes for fixed products:', this.sizes);
       this.fixedProducts = products;
-      console.log('All products', this.fixedProducts);
 
       this.formatProducts(); // Execute only after data has been retrieved from the DB otherwise error
     } catch (error) {
@@ -102,7 +104,7 @@ export class FixedProductComponent {
     let category: CategoryVM;
 
     this.fixedProducts.forEach(currentProduct => {
-    let sizeString: string = ''; //reset string
+      let sizeString: string = ''; //reset string
 
       //get item description
       this.items.forEach(currentItem => {
@@ -137,7 +139,7 @@ export class FixedProductComponent {
           }
         }
       });
-      
+
       //trim() gets rid of trailing spaces e.g. turn '150 150 150 ' to '150 150 150'. replaceAll() turns '150 150 150' to '150x150x150'
       sizeString = sizeString.trim().replaceAll(' ', 'x');
 
@@ -147,7 +149,7 @@ export class FixedProductComponent {
       let tableProductVM: TableFixedProductVM = {
         fixedProductID: currentProduct.fixedProductID,
         qRCodeID: currentProduct.qrCodeID,
-        qRCode: '',
+        qRCodeB64: currentProduct.qrCodeBytesB64,
         categoryID: category.categoryID,
         categoryDescription: category.categoryDescription,
         itemID: currentProduct.itemID,
@@ -171,32 +173,64 @@ export class FixedProductComponent {
     else
       this.showMessage = false; //stop displaying loading message
   }
-  
+
   //--------------------SEARCH BAR LOGIC----------------
-  searchProducts(event: Event) {    
+  searchProducts(event: Event) {
     this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredTableProducts = []; //clear array
     for (let i = 0; i < this.tableProducts.length; i++) {
       //concatenate all the product info in one variable so user can search using any of them even if they aren't displayed in the table
-      let prodInformation: string = String(this.tableProducts[i].categoryDescription + 
-                                    this.tableProducts[i].itemDescription +
-                                    this.tableProducts[i].sizeString +
-                                    this.tableProducts[i].description +
-                                    this.tableProducts[i].price).toLowerCase();
-      
-      if (prodInformation.includes(this.searchTerm.toLowerCase()))
-      {
+      let prodInformation: string = String(this.tableProducts[i].categoryDescription +
+        this.tableProducts[i].itemDescription +
+        this.tableProducts[i].sizeString +
+        this.tableProducts[i].description +
+        this.tableProducts[i].price).toLowerCase();
+
+      if (prodInformation.includes(this.searchTerm.toLowerCase())) {
         this.filteredTableProducts.push(this.tableProducts[i]);
       }
     }
 
     this.productCount = this.filteredTableProducts.length; //update product count
-    
+
     if (this.productCount == 0)
       this.search = true;
     else
-      this.search = false;    
+      this.search = false;
 
     console.log('Search results:', this.filteredTableProducts);
   }
+
+  //--------------------VIEW SPECIFIC PRODUCT----------------
+  openViewProduct(prod: TableFixedProductVM) {
+    console.log(prod);
+    this.viewProduct = prod;
+    $('#viewProduct').modal('show');
+  }
+
+  //Download QR code as image
+  downloadQRCodeAsImage() {
+    var arrayBuffer = this.B64ToArrayBuffer(this.viewProduct.qRCodeB64)
+    const blob = new Blob([arrayBuffer], { type: 'image/png' });
+
+    //Create link; apparently, I need this even though I have a download button
+    const QRCodeImage = document.createElement('a');
+    QRCodeImage.href = URL.createObjectURL(blob);
+    QRCodeImage.download = this.viewProduct.description + ' QR code';
+    QRCodeImage.click(); // Simulate a click on the link to start the download
+    URL.revokeObjectURL(QRCodeImage.href); // Clean up the URL object
+  }
+
+  //need to convert to array buffer first otherwise file is corrupted
+  B64ToArrayBuffer(B64String: string) {
+    var binaryString = window.atob(B64String); //decodes a Base64 string into a binary string
+    var binaryLength = binaryString.length;
+    var byteArray = new Uint8Array(binaryLength);
+    for (var i = 0; i < binaryLength; i++) {
+       var ascii = binaryString.charCodeAt(i); //retrieve the ASCII code of the character in the binary string
+       byteArray[i] = ascii; //assigns ASCII code to coressponding character in byte array
+    }
+    return byteArray;
+ }
+
 }

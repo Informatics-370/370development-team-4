@@ -38,7 +38,7 @@ namespace BOX.Controllers
                     {
                         FixedProductID = fp.FixedProductID,
                         QRCodeID = fp.QRCodeID,
-                        QRCodeBytes = qrCode.QR_Code_Photo,
+                        QRCodeBytesB64 = Convert.ToBase64String(qrCode.QR_Code_Photo),
                         ItemID = fp.ItemID,
                         SizeID = fp.SizeID,
                         Description = fp.Description,

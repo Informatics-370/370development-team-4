@@ -1,7 +1,7 @@
 export interface FixedProductVM {
     fixedProductID: number;
     qrCodeID: number;
-    qrCodeBytes: Uint8Array; //hopefully stores byte array as bytes
+    qrCodeBytesB64: string;
     itemID: number;
     sizeID: number;
     description: string;

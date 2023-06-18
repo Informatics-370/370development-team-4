@@ -1,2 +1,13 @@
 @import "../dashboard/dashboard.component.css";
 @import "../product-category/product-category.component.css";
+
+.view-photo {
+    width: 20%;
+    max-width: 30%;
+    height: auto;
+    max-height: 30%;
+}
+
+.display-photo {
+    text-align: center;
+}
