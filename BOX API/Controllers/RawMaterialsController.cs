@@ -41,7 +41,8 @@ namespace BOX.Controllers
 						RawMaterialID = rawMat.RawMaterialID,
 						Description = rawMat.Description,
 						QRCodeID = rawMat.QRCodeID,
-                        QRCodeBytes = qrCode.QR_Code_Photo
+                        QRCodeBytesB64 = Convert.ToBase64String(qrCode.QR_Code_Photo),
+						QuantityOnHand = rawMat.Quantity_On_Hand
 					};
 					rawMatVMList.Add(rawMatVM);
 				}
@@ -74,7 +75,7 @@ namespace BOX.Controllers
                         RawMaterialID = result.RawMaterialID,
                         Description = result.Description,
                         QRCodeID = result.QRCodeID,
-                        QRCodeBytes = qrCode.QR_Code_Photo
+                        QuantityOnHand = result.Quantity_On_Hand
                     };
 					return Ok(rawMatVM);
                 }
@@ -94,7 +95,7 @@ namespace BOX.Controllers
 		{
             try
             {
-                var rawmaterial = new Raw_Material { Description = rawMaterialDescription };
+                var rawmaterial = new Raw_Material { Description = rawMaterialDescription, Quantity_On_Hand = 0 };
                 //QR Code logic
                 var qrCodeBytes = GenerateQRCode(rawMaterialDescription); //generate QR code
 

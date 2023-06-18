@@ -43,7 +43,8 @@ namespace BOX.Controllers
                         SizeID = fp.SizeID,
                         Description = fp.Description,
                         Price = fp.Price,
-                        ProductPhotoB64 = Convert.ToBase64String(fp.Product_Photo)
+                        ProductPhotoB64 = Convert.ToBase64String(fp.Product_Photo),
+                        QuantityOnHand = fp.Quantity_On_Hand
                     };
                     fixedProductViewModels.Add(fpVM);
                 }
@@ -76,7 +77,8 @@ namespace BOX.Controllers
                     SizeID = fixedProduct.SizeID,
                     Description = fixedProduct.Description,
                     Price = fixedProduct.Price,
-                    ProductPhotoB64 = Convert.ToBase64String(fixedProduct.Product_Photo)
+                    ProductPhotoB64 = Convert.ToBase64String(fixedProduct.Product_Photo),
+                    QuantityOnHand = fixedProduct.Quantity_On_Hand
                 };
 
                 return Ok(fixedProductViewModel);
@@ -101,7 +103,8 @@ namespace BOX.Controllers
                     SizeID = fixedProductViewModel.SizeID,
                     Description = fixedProductViewModel.Description,
                     Price = fixedProductViewModel.Price,
-                    Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64)
+                    Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64),
+                    Quantity_On_Hand = 0
                 };
 
                 // Generate the QR code for the fixed product

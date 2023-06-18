@@ -10,5 +10,6 @@
         public decimal Price { get; set; }
         public string ProductPhotoB64 { get; set; }
         public string QRCodeBytesB64 { get; set; }
+        public int QuantityOnHand { get; set; }
     }
 }

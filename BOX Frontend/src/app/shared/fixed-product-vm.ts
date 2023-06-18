@@ -7,4 +7,5 @@ export interface FixedProductVM {
     description: string;
     price: number;
     productPhotoB64: string;
+    quantityOnHand: number;
 }

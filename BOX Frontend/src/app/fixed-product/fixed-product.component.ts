@@ -158,7 +158,8 @@ export class FixedProductComponent {
         sizeString: sizeString,
         description: currentProduct.description,
         price: currentProduct.price,
-        productPhoto: currentProduct.productPhotoB64
+        productPhoto: currentProduct.productPhotoB64,
+        quantityOnHand: currentProduct.quantityOnHand
       };
 
       this.filteredTableProducts.push(tableProductVM);
@@ -217,8 +218,8 @@ export class FixedProductComponent {
     const QRCodeImage = document.createElement('a');
     QRCodeImage.href = URL.createObjectURL(blob);
     QRCodeImage.download = this.viewProduct.description + ' QR code';
-    QRCodeImage.click(); // Simulate a click on the link to start the download
-    URL.revokeObjectURL(QRCodeImage.href); // Clean up the URL object
+    QRCodeImage.click(); //click link to start downloading
+    URL.revokeObjectURL(QRCodeImage.href); //clean up URL object
   }
 
   //need to convert to array buffer first otherwise file is corrupted
@@ -228,7 +229,7 @@ export class FixedProductComponent {
     var byteArray = new Uint8Array(binaryLength);
     for (var i = 0; i < binaryLength; i++) {
        var ascii = binaryString.charCodeAt(i); //retrieve the ASCII code of the character in the binary string
-       byteArray[i] = ascii; //assigns ASCII code to coressponding character in byte array
+       byteArray[i] = ascii; //assigns ASCII code to corresponding character in byte array
     }
     return byteArray;
  }

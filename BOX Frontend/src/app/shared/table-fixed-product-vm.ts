@@ -3,7 +3,7 @@ export interface TableFixedProductVM {
     fixedProductID: number;
     //QR code
     qRCodeID: number;
-    qRCodeB64: string; //hopefully stores byte array as bytes
+    qRCodeB64: string;
     //Category
     categoryID: number;
     categoryDescription: string;
@@ -17,4 +17,5 @@ export interface TableFixedProductVM {
     description: string;
     price: number;
     productPhoto: string; //already converted to base64 string from the backend
+    quantityOnHand: number;
   }
