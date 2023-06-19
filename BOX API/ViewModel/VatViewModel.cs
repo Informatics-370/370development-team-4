@@ -2,9 +2,9 @@
 
 namespace BOX.ViewModel
 {
-    public class VatViewModel
+	public class VATViewModel
     {
-        public DateTime Date { get; set; }
         public int Percentage { get; set; }
+
     }
 }
