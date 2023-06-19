@@ -45,7 +45,7 @@
                         <button title="Delete this product" class="CRUD-icon">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']"></fa-icon>
                         </button>
-                        <button title="Update this product" class="CRUD-icon">
+                        <button title="Update this product" class="CRUD-icon" (click)="openUpdateModal(prod)">
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>
                     </td>
@@ -208,5 +208,34 @@
             </div>
 
         </div>
+    </div>
+</div>
+
+<!--UPDATE product MODAL-->
+<div class="modal fade" id="updateFixedProduct" tabindex="-1" #updateModal>
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Edit Product</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="updateProductForm">
+            <div class="form-group">
+                <label for="uDescription" class="form-label modal-form-label bold">Product Description:</label>
+                <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="uDescription" required>
+            </div>
+
+            <div class="form-submit-div">
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit"  >Save Changes</button>
+            </div>            
+          </form>
+        </div>
+        
+      </div>
     </div>
 </div>

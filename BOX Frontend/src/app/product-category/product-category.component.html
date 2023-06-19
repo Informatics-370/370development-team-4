@@ -115,7 +115,7 @@
             <!--Display validation error message-->
             <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
                 This field is required.
-            </div>            
+            </div>
             <div *ngIf="duplicateFound && submitClicked" class="error-msg">
                 This category already exists.
             </div>
@@ -208,7 +208,10 @@
             <!--Display validation error message-->
             <div *ngIf="(uCategoryDescription?.dirty || uCategoryDescription?.touched || submitClicked) && uCategoryDescription?.errors?.['required']" class="error-msg">
                 This field is required.
-            </div>   
+            </div>
+            <div *ngIf="duplicateFoundUpdate && submitClicked" class="error-msg">
+                This category already exists.
+            </div>
             <div class="form-group">
                 <label class="form-check-label modal-form-label">
                     <input id="update-length" formControlName="uLength" class="form-check-input modal-form-input" type="checkbox" name="length"> Length

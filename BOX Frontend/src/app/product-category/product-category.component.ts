@@ -26,6 +26,7 @@ export class ProductCategoryComponent {
   submitClicked = false; //keep track of when submit button is clicked
   loading = true; //show loading message while data loads
   duplicateFound = false; //boolean to display error message if user tries to create a duplicate category
+  duplicateFoundUpdate = false; //used to display error message if user tries to update category to have duplicate description
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -113,7 +114,7 @@ export class ProductCategoryComponent {
     }
   }
   
-  //method to determine if a user tried to enter a new category with same description
+  //method to determine if a user tried to enter a category with same description
   checkDuplicateDescription(description: string): boolean {
     description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
     for (let i = 0; i < this.categories.length; i++) {      
@@ -254,29 +255,39 @@ export class ProductCategoryComponent {
 
       //get form data
       const formValues = this.updateCategoryForm.value;
-      let updatedCategory : CategoryVM = {
-        categoryID: 0,
-        categoryDescription: formValues.uCategoryDescription,
-        width: formValues.uWidth,
-        length: formValues.uLength,
-        height: formValues.uHeight,
-        weight: formValues.uWeight,
-        volume: formValues.uVolume
-      };
 
-      //update category
-      this.dataService.UpdateCategory(categoryId, updatedCategory).subscribe(
-        (result: any) => {
-          console.log('Updated category', result);
-          this.getCategories(); //refresh category list
-          this.submitClicked = false;
-        },
-        (error) => {
-          console.error('Error updating category:', error);
-        }
-      );
-
-      this.closeUpdateModal();
+      //prevent user from updating category to have duplicate descriptions
+      if (this.checkDuplicateDescription(formValues.uCategoryDescription)) { //if user is entering duplicate category
+        this.duplicateFoundUpdate = true;
+        setTimeout(() => {
+          this.duplicateFoundUpdate = false;
+        }, 5000);
+      }
+      else {
+        let updatedCategory : CategoryVM = {
+          categoryID: 0,
+          categoryDescription: formValues.uCategoryDescription,
+          width: formValues.uWidth,
+          length: formValues.uLength,
+          height: formValues.uHeight,
+          weight: formValues.uWeight,
+          volume: formValues.uVolume
+        };
+  
+        //update category
+        this.dataService.UpdateCategory(categoryId, updatedCategory).subscribe(
+          (result: any) => {
+            console.log('Updated category', result);
+            this.getCategories(); //refresh category list
+            this.submitClicked = false;
+          },
+          (error) => {
+            console.error('Error updating category:', error);
+          }
+        );
+  
+        this.closeUpdateModal();
+      }      
     }    
   }
 

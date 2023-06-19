@@ -32,7 +32,7 @@ export class FixedProductComponent {
 
   //forms
   addProductForm: FormGroup;
-  // updateProductForm: FormGroup;
+  updateProductForm: FormGroup;
   //select elements value
   public selectedCatValue = 'NA';
   public selectedItemValue = 'NA';
@@ -49,6 +49,7 @@ export class FixedProductComponent {
   //error, loading and other messages
   showMessage = true; //show messages to user in message row like loading message, error message, etc.
   messageRow!: HTMLTableCellElement; //it's called messageRow, but it's just a cell that spans a row
+  duplicateFound = false; //boolean to display error message if user tries to create a product with duplicate description
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addProductForm = this.formBuilder.group({
@@ -60,9 +61,9 @@ export class FixedProductComponent {
       productPhoto: []
     });
 
-    /*this.updateProductForm = this.formBuilder.group({
+    this.updateProductForm = this.formBuilder.group({
       uDescription: ['', Validators.required]
-    }) */
+    })
   }
 
   ngOnInit(): void {
@@ -228,7 +229,6 @@ export class FixedProductComponent {
 
   //--------------------------------------------------------VIEW SPECIFIC PRODUCT LOGIC--------------------------------------------------------
   openViewProduct(prod: TableFixedProductVM) {
-    console.log(prod);
     this.viewProduct = prod;
     $('#viewFixedProduct').modal('show');
   }
@@ -322,38 +322,6 @@ export class FixedProductComponent {
     descriptionInput.value += ' ' + this.categorySizes[i].sizeString;
   }
 
-  //function to display image name since I decided to be fancy with a custom input button
-  showImageName(event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    const chosenFile = inputElement.files?.[0];
-    let imageElement = document.getElementById('display-img') as HTMLImageElement;
-    let imgIcon = document.getElementById('no-img');
-
-    if (chosenFile) { //if there is a file chosen
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        imageElement.src = e.target?.result as string; // Set the src attribute of the image element
-      };
-      reader.readAsDataURL(chosenFile);
-      imageElement.alt = chosenFile.name;
-
-      if (imgIcon) {
-        imgIcon.style.display = "none"; //hide the font awesome icon that shows that no image was selected
-      }
-
-      document.getElementById('imageName')!.innerHTML = '<br/>' + chosenFile.name; //display file name
-    }
-    else {
-      // Reset the image source and name
-      imageElement.src = '';
-      imageElement.alt = '';
-      document.getElementById('imageName')!.innerHTML = 'No image chosen';
-      if (imgIcon) {
-        imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
-      }
-    }
-  }
-
   async addFixedProduct() {
     this.submitClicked = true;
     if (this.addProductForm.valid) {
@@ -410,6 +378,68 @@ export class FixedProductComponent {
     }
   }
 
+  //--------------------------------------------------------UPDATE PRODUCT LOGIC--------------------------------------------------------
+  openUpdateModal(prod: TableFixedProductVM) {
+    //get product and display data
+    console.log(prod);
+
+    $('#updateFixedProduct').modal('show');
+    /* this.dataService.GetItem(itemId).subscribe(
+      (result) => {
+        console.log('Item to update: ', result);        
+        this.updateItemForm.setValue({
+          uCategoryID: result.categoryID,
+          uItemDescription: result.description
+        }); //display data; Reactive forms are so powerful. All the item data passed with one method
+
+        //Open the modal manually only after the data is retrieved and displayed
+        this.updateModal.nativeElement.classList.add('show');
+        this.updateModal.nativeElement.style.display = 'block';
+        this.updateModal.nativeElement.id = 'updateItem-' + itemId; //pass item ID into modal ID so I can use it to update later
+        //Fade background when modal is open.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+      },
+      (error) => {
+        console.error(error);
+      }
+    ); */
+  }
+
+  //--------------------------------------------------------MULTI-PURPOSE METHODS--------------------------------------------------------
+  //function to display image name since I decided to be fancy with a custom input button
+  showImageName(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const chosenFile = inputElement.files?.[0];
+    let imageElement = document.getElementById('display-img') as HTMLImageElement;
+    let imgIcon = document.getElementById('no-img');
+
+    if (chosenFile) { //if there is a file chosen
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imageElement.src = e.target?.result as string; // Set the src attribute of the image element
+      };
+      reader.readAsDataURL(chosenFile);
+      imageElement.alt = chosenFile.name;
+
+      if (imgIcon) {
+        imgIcon.style.display = "none"; //hide the font awesome icon that shows that no image was selected
+      }
+
+      document.getElementById('imageName')!.innerHTML = '<br/>' + chosenFile.name; //display file name
+    }
+    else {
+      // Reset the image source and name
+      imageElement.src = '';
+      imageElement.alt = '';
+      document.getElementById('imageName')!.innerHTML = 'No image chosen';
+      if (imgIcon) {
+        imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
+      }
+    }
+  }
+
   //convert image to B64
   convertToBase64(img: File): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -423,6 +453,16 @@ export class FixedProductComponent {
       };
       reader.readAsDataURL(img);
     });
+  }
+  //method to determine if a user tried to enter a new category with same description
+  checkDuplicateDescription(description: string): boolean {
+    description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
+    for (let i = 0; i < this.categories.length; i++) {      
+      if (this.categories[i].categoryDescription.toLowerCase() == description) {
+        return true;
+      }
+    }
+    return false;
   }
 
   //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------
