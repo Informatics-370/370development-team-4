@@ -8,7 +8,6 @@ import { Size } from '../shared/Size';
 import { Item } from '../shared/item';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { TableFixedProductVM } from '../shared/table-fixed-product-vm';
-import { Category } from '../shared/category';
 //import discount, VAT, supplier
 
 @Component({
@@ -27,8 +26,8 @@ export class FixedProductComponent {
   categoryItems: Item[] = []; //store all product items associated with a specific category
   specificProduct!: FixedProductVM; //used to get a specific product
   productCount: number = -1; //keep track of how many products there are in the DB
-  //view product variables
-  viewProduct!: TableFixedProductVM;
+  viewProduct!: TableFixedProductVM; //VIEW PRODUCT VARIABLE
+  prodToUpdate!: TableFixedProductVM; //holds product that user wants to update when clicking update button
 
   //forms
   addProductForm: FormGroup;
@@ -37,6 +36,7 @@ export class FixedProductComponent {
   public selectedCatValue = 'NA';
   public selectedItemValue = 'NA';
   public selectedSizeValue = 'NA';
+  public selectedCatValueUpdate = ''; //select category element in update form
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
@@ -50,6 +50,7 @@ export class FixedProductComponent {
   showMessage = true; //show messages to user in message row like loading message, error message, etc.
   messageRow!: HTMLTableCellElement; //it's called messageRow, but it's just a cell that spans a row
   duplicateFound = false; //boolean to display error message if user tries to create a product with duplicate description
+  duplicateFoundUpdate = false; //used to display error message if user tries to update a product to have duplicate description
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addProductForm = this.formBuilder.group({
@@ -62,7 +63,12 @@ export class FixedProductComponent {
     });
 
     this.updateProductForm = this.formBuilder.group({
-      uDescription: ['', Validators.required]
+      uDescription: ['', Validators.required],
+      uCategoryID: [{ value: 'NA' }, Validators.required],
+      uItemID: [{ value: 'NA' }, Validators.required],
+      uSizeID: [{ value: 'NA' }, Validators.required],
+      uPrice: [1.00, Validators.required],
+      uProductPhoto: []
     })
   }
 
@@ -92,7 +98,7 @@ export class FixedProductComponent {
         getItemsPromise,
         getSizesPromise
       ]);
-      
+
       //put results from DB in global arrays
       this.categories = categories;
       console.log('All categories array for fixed products:', this.categories);
@@ -259,12 +265,18 @@ export class FixedProductComponent {
   }
 
   //--------------------------------------------------------ADD PRODUCT LOGIC--------------------------------------------------------
-  changedCategory() {
+  changedCategory(crudAction: string) {
     this.categorySizes = []; //reset array
     this.categoryItems = [];
 
-    //get category with index that matches value selected in select
-    let index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValue));
+    //get category with index that matches value selected in select field in add/update form modal
+    let index: number;
+    if (crudAction == 'add')
+      { index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValue)); } //add modal
+    else
+      { index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValueUpdate)); } //update modal
+    
+    
     let cat = this.categories[index];
 
     //populate product item dropdown
@@ -308,15 +320,23 @@ export class FixedProductComponent {
   /*not yet sure how to handle the fact that angular says the description field isn't filled and thus won't fill the form if I concatenate
   the product description using the item and size. Atm, the only solution is to, after getting the product name and description entered for you,
   go backspace and then reenter the last character in description field*/
-  changedItem() {
-    var descriptionInput = document.getElementById('description') as HTMLInputElement; //get description input
+  changedItem(crudAction: string) {
+    //get description input from add/update form modal
+    if (crudAction == 'add')
+      var descriptionInput = document.getElementById('description') as HTMLInputElement;
+    else
+      var descriptionInput = document.getElementById('update-description') as HTMLInputElement;
     //get selected product item
     let i = this.categoryItems.findIndex(item => item.itemID === parseInt(this.selectedItemValue));
     descriptionInput.value += this.categoryItems[i].description;
   }
 
-  changedSize() {
-    var descriptionInput = document.getElementById('description') as HTMLInputElement; //get description input
+  changedSize(crudAction: string) {
+    //get description input from add/update form modal
+    if (crudAction == 'add')
+      var descriptionInput = document.getElementById('description') as HTMLInputElement;
+    else
+      var descriptionInput = document.getElementById('update-description') as HTMLInputElement;
     //get selected size
     let i = this.categorySizes.findIndex(catSize => catSize.sizeID === parseInt(this.selectedSizeValue));
     descriptionInput.value += ' ' + this.categorySizes[i].sizeString;
@@ -329,91 +349,115 @@ export class FixedProductComponent {
         //get form data
         const formData = this.addProductForm.value;
 
-        //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
-        const inputElement = document.getElementById('productPhoto') as HTMLInputElement;
-        const formImage = inputElement.files?.[0];
-
-        let newProduct: FixedProductVM = {
-          fixedProductID: 0,
-          qrCodeID: 0,
-          qrCodeBytesB64: '',
-          itemID: formData.itemID,
-          sizeID: formData.sizeID,
-          description: formData.description,
-          price: formData.price,
-          quantityOnHand: 0,
-          productPhotoB64: formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
+        //prevent user from creating multiple products with same description
+        if (this.checkDuplicateDescription(formData.description)) {
+          this.duplicateFound = true;
+          setTimeout(() => {
+            this.duplicateFound = false;
+          }, 5000);
         }
-        console.log(newProduct);
+        else {
+          //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
+          const inputElement = document.getElementById('productPhoto') as HTMLInputElement;
+          const formImage = inputElement.files?.[0];
 
-        this.dataService.AddFixedProduct(newProduct).subscribe(
-          (result: any) => {
-            console.log('New product successfully created!', result);
-  
-            this.getProductsPromise(); //refresh only product list excluding item, category, etc.
-
-            $('#addFixedProduct').modal('hide');
-
-            //reset form
-            this.submitClicked = false;
-            this.addProductForm.reset();
-            this.categoryItems = [];
-            this.categorySizes = [];
-            this.selectedCatValue = 'NA';
-            this.selectedItemValue = "NA";
-            this.selectedSizeValue = 'NA';
-            //reset display image div
-            let imageElement = document.getElementById('display-img') as HTMLImageElement;
-            imageElement.src = '';
-            imageElement.alt = '';
-            document.getElementById('imageName')!.innerHTML = 'No image chosen';
-            let imgIcon = document.getElementById('no-img'); //get image font awesome icon
-            if (imgIcon) imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
+          let newProduct: FixedProductVM = {
+            fixedProductID: 0,
+            qrCodeID: 0,
+            qrCodeBytesB64: '',
+            itemID: formData.itemID,
+            sizeID: formData.sizeID,
+            description: formData.description,
+            price: formData.price,
+            quantityOnHand: 0,
+            productPhotoB64: formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
           }
-        );
-      } 
+          console.log(newProduct);
+
+          this.dataService.AddFixedProduct(newProduct).subscribe(
+            (result: any) => {
+              console.log('New product successfully created!', result);
+
+              this.getProductsPromise(); //refresh only product list excluding item, category, etc.
+
+              $('#addFixedProduct').modal('hide');
+
+              //reset form
+              this.submitClicked = false;
+              this.addProductForm.reset();
+              this.categoryItems = [];
+              this.categorySizes = [];
+              this.selectedCatValue = 'NA';
+              this.selectedItemValue = "NA";
+              this.selectedSizeValue = 'NA';
+              //reset display image div
+              let imageElement = document.getElementById('display-img') as HTMLImageElement;
+              imageElement.src = '';
+              imageElement.alt = '';
+              document.getElementById('imageName')!.innerHTML = 'No image chosen';
+              let imgIcon = document.getElementById('no-img'); //get image font awesome icon
+              if (imgIcon) imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
+            }
+          );
+        }
+      }
       catch (error) {
         console.log('Error submitting form', error)
-      }      
+      }
     }
   }
 
   //--------------------------------------------------------UPDATE PRODUCT LOGIC--------------------------------------------------------
   openUpdateModal(prod: TableFixedProductVM) {
     //get product and display data
-    console.log(prod);
+    this.updateProductForm.setValue({ //display data
+      uDescription: prod.description
+    })
 
-    $('#updateFixedProduct').modal('show');
-    /* this.dataService.GetItem(itemId).subscribe(
-      (result) => {
-        console.log('Item to update: ', result);        
-        this.updateItemForm.setValue({
-          uCategoryID: result.categoryID,
-          uItemDescription: result.description
-        }); //display data; Reactive forms are so powerful. All the item data passed with one method
 
-        //Open the modal manually only after the data is retrieved and displayed
-        this.updateModal.nativeElement.classList.add('show');
-        this.updateModal.nativeElement.style.display = 'block';
-        this.updateModal.nativeElement.id = 'updateItem-' + itemId; //pass item ID into modal ID so I can use it to update later
-        //Fade background when modal is open.
-        const backdrop = document.getElementById("backdrop");
-        if (backdrop) {backdrop.style.display = "block"};
-        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
-      },
-      (error) => {
-        console.error(error);
+    $('#updateFixedProduct').modal('show');    
+  }
+
+  async updateFixedProduct() {
+    this.submitClicked = true;
+    if (this.updateProductForm.valid) {
+      try {
+        //get form data
+        const formData = this.updateProductForm.value;
+
+        //prevent user from creating multiple products with same description
+        if (this.checkDuplicateDescription(formData.uDescription)) {
+          this.duplicateFoundUpdate = true;
+          setTimeout(() => {
+            this.duplicateFoundUpdate = false;
+          }, 5000);
+        }
+        else {
+          this.submitClicked = false;
+        }
       }
-    ); */
+      catch (error) {
+        console.log('Error submitting form', error)
+      }
+    }
   }
 
   //--------------------------------------------------------MULTI-PURPOSE METHODS--------------------------------------------------------
   //function to display image name since I decided to be fancy with a custom input button
-  showImageName(event: Event): void {
+  showImageName(event: Event, crudAction: string): void {
     const inputElement = event.target as HTMLInputElement;
     const chosenFile = inputElement.files?.[0];
-    let imageElement = document.getElementById('display-img') as HTMLImageElement;
-    let imgIcon = document.getElementById('no-img');
+    //get image element and font awesome icon from add/update form modal
+    let imageElement: HTMLImageElement;
+    let imgIcon: any;
+    if (crudAction == 'add') {
+      imageElement = document.getElementById('display-img') as HTMLImageElement;
+      imgIcon = document.getElementById('no-img');
+    }
+    else { //update form
+      imageElement = document.getElementById('display-img-update') as HTMLImageElement;
+      imgIcon = document.getElementById('no-img-update');
+    }
 
     if (chosenFile) { //if there is a file chosen
       const reader = new FileReader();
@@ -454,11 +498,11 @@ export class FixedProductComponent {
       reader.readAsDataURL(img);
     });
   }
-  //method to determine if a user tried to enter a new category with same description
+  //method to determine if a user tried to enter a fixed product with same description as existing fixed product
   checkDuplicateDescription(description: string): boolean {
     description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
-    for (let i = 0; i < this.categories.length; i++) {      
-      if (this.categories[i].categoryDescription.toLowerCase() == description) {
+    for (let i = 0; i < this.fixedProducts.length; i++) {
+      if (this.fixedProducts[i].description.toLowerCase() == description) {
         return true;
       }
     }
@@ -471,5 +515,5 @@ export class FixedProductComponent {
   get itemID() { return this.addProductForm.get('itemID'); }
   get sizeID() { return this.addProductForm.get('sizeID'); }
   get price() { return this.addProductForm.get('price'); }
-  /*get uDescription() { return this.updateProductForm.get('uDescription'); }*/
+  get uDescription() { return this.updateProductForm.get('uDescription'); }
 }

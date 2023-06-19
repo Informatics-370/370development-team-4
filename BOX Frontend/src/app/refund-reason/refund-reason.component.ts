@@ -189,12 +189,12 @@ export class RefundReasonComponent {
       };
       console.log(updatedReason);
 
-      //update item
+      //update reason
       this.dataService.UpdateRefundReason(reasonId, updatedReason).subscribe(
         (result: any) => {
           console.log('Updated reasons', result);
-          this.getReasons(); //refresh item list
-          this.submitClicked = false; //rest submission status
+          this.getReasons(); //refresh list
+          this.submitClicked = false; //reset submission status
         },
         (error) => {
           console.error('Error updating items:', error);

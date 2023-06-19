@@ -131,11 +131,14 @@
                             class="error-msg">
                             This field is required.
                         </div>
+                        <div *ngIf="duplicateFound && submitClicked" class="error-msg">
+                            A fixed product with this description already exists.
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label for="category" class="form-label modal-form-label bold">Product Category:</label>
-                        <select id="add-categoryID" [(ngModel)]="selectedCatValue" (change)="changedCategory()"
+                        <select id="add-categoryID" [(ngModel)]="selectedCatValue" (change)="changedCategory('add')"
                             formControlName="categoryID" name="category"
                             class="form-select modal-form-input modal-form-text">
                             <option disabled value="NA">Choose a category</option>
@@ -151,7 +154,7 @@
 
                     <div class="form-group">
                         <label for="item" class="form-label modal-form-label bold">Product Item:</label>
-                        <select id="add-itemID" [(ngModel)]="selectedItemValue" (change)="changedItem()"
+                        <select id="add-itemID" [(ngModel)]="selectedItemValue" (change)="changedItem('add')"
                             formControlName="itemID" name="item" class="form-select modal-form-input modal-form-text">
                             <option disabled value="NA">Choose product item</option>
                             <option *ngFor="let item of categoryItems" value={{item.itemID}}>{{item.description}}
@@ -167,7 +170,7 @@
                         Please specify the dimensions of the product<br />
                         <label for="size" class="form-label modal-form-label bold">Size:</label>
                         <select id="add-sizeID" [(ngModel)]="selectedSizeValue" formControlName="sizeID"
-                            (change)="changedSize()" name="size" class="form-select modal-form-input modal-form-text">
+                            (change)="changedSize('add')" name="size" class="form-select modal-form-input modal-form-text">
                             <option disabled value="NA">Choose size</option>
                             <option *ngFor="let catSize of categorySizes" value={{catSize.sizeID}}>
                                 {{catSize.sizeString}}</option>
@@ -195,7 +198,7 @@
                         </div>
                         <label class="form-label btn btn-create download">
                             <input id="productPhoto" type="file" accept="image/*" formControlName="productPhoto" name="productPhoto"
-                                style="display: none;" (change)="showImageName($event)" />
+                                style="display: none;" (change)="showImageName($event, 'add')" />
                             Upload product image
                         </label>
                     </div>
@@ -211,7 +214,7 @@
     </div>
 </div>
 
-<!--UPDATE product MODAL-->
+<!--UPDATE PRODUCT MODAL-->
 <div class="modal fade" id="updateFixedProduct" tabindex="-1" #updateModal>
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -224,15 +227,22 @@
 
         <!--BODY-->
         <div class="modal-body">
-          <form [formGroup]="updateProductForm">
+          <form [formGroup]="updateProductForm"  *ngIf="prodToUpdate != null">
             <div class="form-group">
                 <label for="uDescription" class="form-label modal-form-label bold">Product Description:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="uDescription" required>
+                <!--Validation message-->
+                    <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
+                    This field is required.
+                </div>
+                <div *ngIf="duplicateFoundUpdate && submitClicked" class="error-msg">
+                    A fixed product with this description already exists.
+                </div>
             </div>
 
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit"  >Save Changes</button>
-            </div>            
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateFixedProduct()" >Save Changes</button>
+            </div>
           </form>
         </div>
         
