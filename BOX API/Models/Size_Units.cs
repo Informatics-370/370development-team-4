@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BOX.Models
@@ -7,13 +7,19 @@ namespace BOX.Models
 	{
 		[Key] public int SizeID { get; set; }
 
-		[Required] public decimal Width { get; set; }
+    [ForeignKey("Product_Category")]
+    public int CategoryID { get; set; }
+    public virtual Product_Category Product_Category { get; set; }
+    [Required] public decimal Width { get; set; }
 		[Required] public decimal Height { get; set; }
 		[Required] public decimal Length { get; set; }
 		[Required] public decimal Weight { get; set; }
 		[Required] public decimal Volume { get; set; }
-		[Required][MaxLength(50)] public string Description { get; set; } = string.Empty;
-	}
+
+    
+
+
+  }
 }
 //For the sake of simplicity I will be editing the Size class with a comment so that it does not change the integrity or data of anything in this class. I will be pushing this to dev but there must be a whole pull request process, which I am still figuring out-- Kuziwa
 
