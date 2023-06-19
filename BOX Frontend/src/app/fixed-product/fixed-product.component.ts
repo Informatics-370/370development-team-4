@@ -80,20 +80,18 @@ export class FixedProductComponent {
       const getCategoriesPromise = lastValueFrom(this.dataService.GetCategories().pipe(take(1)));
       const getItemsPromise = lastValueFrom(this.dataService.GetItems().pipe(take(1)));
       const getSizesPromise = lastValueFrom(this.dataService.GetSizes().pipe(take(1)));
-      const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing. However, the console logs are executing in order, which raises questions.
       But that could just be because they're outside the Promise.all. IDC!!!!! I'm tired of trying to find alternatives for this. 
       And data is being retrieved faster that how I had it work before so I'm moving on with my life
       get all products, categories, items and sizes and put in categories, items, sizes and products array*/
-      const [categories, items, sizes, products] = await Promise.all([
+      const [categories, items, sizes] = await Promise.all([
         getCategoriesPromise,
         getItemsPromise,
-        getSizesPromise,
-        getProductsPromise
+        getSizesPromise
       ]);
-
+      
       //put results from DB in global arrays
       this.categories = categories;
       console.log('All categories array for fixed products:', this.categories);
@@ -101,17 +99,33 @@ export class FixedProductComponent {
       console.log('All product items for fixed products:', this.items);
       this.sizes = sizes;
       console.log('All sizes for fixed products:', this.sizes);
-      this.fixedProducts = products;
 
-      this.formatProducts(); // Execute only after data has been retrieved from the DB otherwise error
+      await this.getProductsPromise(); //get products; I love the await keyword
     } catch (error) {
       console.error('An error occurred:', error);
       this.messageRow.innerHTML = 'An error occured while retrieving from the database. Please contact B.O.X. support services.';
     }
   }
 
+  //get products separately so I can update only products list, and not categories, items, etc. when product is CRUDed to save time
+  async getProductsPromise(): Promise<any> {
+    try {
+      this.fixedProducts = await lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+
+      this.formatProducts(); //Execute only after data has been retrieved from the DB otherwise error; put products in format to display in table
+
+      return 'Successfully retrieved product from the database';
+    } catch (error) {
+      console.log('An error occurred while retrieving products: ' + error);
+      throw new Error('An error occurred while retrieving products: ' + error);
+    }
+  }
+
   //put products in format to display in table
   formatProducts(): void {
+    //reset arrays
+    this.filteredTableProducts = [];
+    this.tableProducts = [];
     let item: Item;
     let category: CategoryVM;
 
@@ -216,7 +230,7 @@ export class FixedProductComponent {
   openViewProduct(prod: TableFixedProductVM) {
     console.log(prod);
     this.viewProduct = prod;
-    $('#viewProduct').modal('show');
+    $('#viewFixedProduct').modal('show');
   }
 
   //Download QR code as image
@@ -340,26 +354,75 @@ export class FixedProductComponent {
     }
   }
 
-  addFixedProduct() {
+  async addFixedProduct() {
     this.submitClicked = true;
     if (this.addProductForm.valid) {
-      //reset form
-      this.submitClicked = false;
-      this.addProductForm.reset();
-      this.categoryItems = [];
-      this.categorySizes = [];
-      this.selectedCatValue = 'NA';
-      this.selectedItemValue = "NA";
-      this.selectedSizeValue = 'NA';
-      let imageElement = document.getElementById('display-img') as HTMLImageElement;
-      imageElement.src = '';
-      imageElement.alt = '';
-      document.getElementById('imageName')!.innerHTML = 'No image chosen';
-      let imgIcon = document.getElementById('no-img'); //get image font awesome icon
-      if (imgIcon) {
-        imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
-      }
+      try {
+        //get form data
+        const formData = this.addProductForm.value;
+
+        //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
+        const inputElement = document.getElementById('productPhoto') as HTMLInputElement;
+        const formImage = inputElement.files?.[0];
+
+        let newProduct: FixedProductVM = {
+          fixedProductID: 0,
+          qrCodeID: 0,
+          qrCodeBytesB64: '',
+          itemID: formData.itemID,
+          sizeID: formData.sizeID,
+          description: formData.description,
+          price: formData.price,
+          quantityOnHand: 0,
+          productPhotoB64: formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
+        }
+        console.log(newProduct);
+
+        this.dataService.AddFixedProduct(newProduct).subscribe(
+          (result: any) => {
+            console.log('New product successfully created!', result);
+  
+            this.getProductsPromise(); //refresh only product list excluding item, category, etc.
+
+            $('#addFixedProduct').modal('hide');
+
+            //reset form
+            this.submitClicked = false;
+            this.addProductForm.reset();
+            this.categoryItems = [];
+            this.categorySizes = [];
+            this.selectedCatValue = 'NA';
+            this.selectedItemValue = "NA";
+            this.selectedSizeValue = 'NA';
+            //reset display image div
+            let imageElement = document.getElementById('display-img') as HTMLImageElement;
+            imageElement.src = '';
+            imageElement.alt = '';
+            document.getElementById('imageName')!.innerHTML = 'No image chosen';
+            let imgIcon = document.getElementById('no-img'); //get image font awesome icon
+            if (imgIcon) imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
+          }
+        );
+      } 
+      catch (error) {
+        console.log('Error submitting form', error)
+      }      
     }
+  }
+
+  //convert image to B64
+  convertToBase64(img: File): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target?.result as string;
+        resolve(base64String.substring(base64String.indexOf(',') + 1)); // Resolve the promise with the base64 string; get rid of the data:image/... that auto appends itself to the B64 string
+      };
+      reader.onerror = (error) => {
+        reject(error); // Reject the promise if an error occurs
+      };
+      reader.readAsDataURL(img);
+    });
   }
 
   //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------
