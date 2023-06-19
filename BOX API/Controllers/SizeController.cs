@@ -63,8 +63,20 @@ namespace BOX.Controllers
         var result = await _repository.GetSizeAsync(sizeId);
 
         if (result == null) return NotFound("Size of product does not exist on system");
+        var Category = await _repository.GetCategoryAsync(result.CategoryID);
+        SizeViewModel svm = new SizeViewModel()
+        {
+          SizeID = result.SizeID,
+          Width = result.Width,
+          Height = result.Height,
+          Weight = result.Weight,
+          Length = result.Length,
+          Volume = result.Volume,
+          CategoryID = result.CategoryID,
+          CategoryDescription = Category.Description,
+        };
 
-        return Ok(result);
+        return Ok(svm);
       }
       catch (Exception)
       {
