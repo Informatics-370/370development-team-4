@@ -27,7 +27,8 @@ export class FixedProductComponent {
   specificProduct!: FixedProductVM; //used to get a specific product
   productCount: number = -1; //keep track of how many products there are in the DB
   viewProduct!: TableFixedProductVM; //VIEW PRODUCT VARIABLE
-  prodToUpdate!: TableFixedProductVM; //holds product that user wants to update when clicking update button
+  //store product that user wants to update especially ID and product photo b64 string because browser won't let me assign value to file input from code
+  prodToUpdate!: TableFixedProductVM;
 
   //forms
   addProductForm: FormGroup;
@@ -36,7 +37,10 @@ export class FixedProductComponent {
   public selectedCatValue = 'NA';
   public selectedItemValue = 'NA';
   public selectedSizeValue = 'NA';
-  public selectedCatValueUpdate = ''; //select category element in update form
+  //update form dropdown elements values
+  public selectedCatValueUpdate = '';
+  public selectedItemValueUpdate = '';
+  public selectedSizeValueUpdate = '';
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
   @ViewChild('updateModal') updateModal: any;
@@ -265,83 +269,6 @@ export class FixedProductComponent {
   }
 
   //--------------------------------------------------------ADD PRODUCT LOGIC--------------------------------------------------------
-  changedCategory(crudAction: string) {
-    this.categorySizes = []; //reset array
-    this.categoryItems = [];
-
-    //get category with index that matches value selected in select field in add/update form modal
-    let index: number;
-    if (crudAction == 'add')
-      { index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValue)); } //add modal
-    else
-      { index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValueUpdate)); } //update modal
-    
-    
-    let cat = this.categories[index];
-
-    //populate product item dropdown
-    this.items.forEach(item => {
-      if (cat.categoryID == item.categoryID) {
-        this.categoryItems.push(item);
-      }
-    });
-
-    //populate size dropdown
-    for (let i = 0; i < this.sizes.length; i++) {
-      let sizeStr: string = ''; //reset string
-
-      if (cat.categoryDescription == this.sizes[i].description) {
-        //treat size like an array with the properties as values in the array
-        let sizeAsArray = Object.entries(this.sizes[i]);
-        //description is the last property in the size object and sizeID is the first property; don't use them, only the sizes
-        for (let j = 1; j < sizeAsArray.length - 1; j++) {
-          if (sizeAsArray[j][1] > 0) {
-            sizeStr += sizeAsArray[j][1] + ' ';
-          }
-
-          //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, N/A
-          if (j == sizeAsArray.length - 2 && sizeStr == '')
-            sizeStr = 'N/A';
-        }
-
-        sizeStr = sizeStr.trim().replaceAll(' ', 'x'); //turn '150 150 150 ' to '150 150 150' and then to '150x150x150'
-
-        //put in size dropdown array
-        var catSize: any = {
-          sizeID: this.sizes[i].sizeID,
-          sizeString: sizeStr
-        }
-
-        this.categorySizes.push(catSize);
-      }
-    }
-  }
-
-  /*not yet sure how to handle the fact that angular says the description field isn't filled and thus won't fill the form if I concatenate
-  the product description using the item and size. Atm, the only solution is to, after getting the product name and description entered for you,
-  go backspace and then reenter the last character in description field*/
-  changedItem(crudAction: string) {
-    //get description input from add/update form modal
-    if (crudAction == 'add')
-      var descriptionInput = document.getElementById('description') as HTMLInputElement;
-    else
-      var descriptionInput = document.getElementById('update-description') as HTMLInputElement;
-    //get selected product item
-    let i = this.categoryItems.findIndex(item => item.itemID === parseInt(this.selectedItemValue));
-    descriptionInput.value += this.categoryItems[i].description;
-  }
-
-  changedSize(crudAction: string) {
-    //get description input from add/update form modal
-    if (crudAction == 'add')
-      var descriptionInput = document.getElementById('description') as HTMLInputElement;
-    else
-      var descriptionInput = document.getElementById('update-description') as HTMLInputElement;
-    //get selected size
-    let i = this.categorySizes.findIndex(catSize => catSize.sizeID === parseInt(this.selectedSizeValue));
-    descriptionInput.value += ' ' + this.categorySizes[i].sizeString;
-  }
-
   async addFixedProduct() {
     this.submitClicked = true;
     if (this.addProductForm.valid) {
@@ -408,16 +335,46 @@ export class FixedProductComponent {
   }
 
   //--------------------------------------------------------UPDATE PRODUCT LOGIC--------------------------------------------------------
-  openUpdateModal(prod: TableFixedProductVM) {
-    //get product and display data
-    this.updateProductForm.setValue({ //display data
-      uDescription: prod.description
-    })
+  async openUpdateModal(prod: TableFixedProductVM) {
+    this.prodToUpdate = prod; //store image b64 string and other info; idc if it's better to only store string. I should be in bed rn
+    //set category ID first cos it's used to populate size and item dropdown
+    this.selectedCatValueUpdate = String(prod.categoryID);
 
+    this.changedCategory('update'); //populate dropdowns
+    //get item and size values
+    let index = this.categoryItems.findIndex(item => item.itemID === prod.itemID);
+    let selectedItem = this.categoryItems[index];
+    index = this.categorySizes.findIndex(size => size.sizeID === prod.sizeID);
+    let selectedSize = this.categorySizes[index];
+
+    //display data in form
+    this.updateProductForm.setValue({
+      uDescription: prod.description,
+      uCategoryID: prod.categoryID,
+      uItemID: selectedItem.itemID,
+      uSizeID: selectedSize.sizeID,
+      uPrice: prod.price,
+      uProductPhoto: ''
+    });
+
+    //show image if user added image when creating product
+    var imageElement = document.getElementById('display-img-update') as HTMLImageElement;
+    var imageNameSpan = document.getElementById('imageNameUpdate') as HTMLSpanElement;
+    if (prod.productPhoto) {
+      imageElement.src = 'data:image/png;base64,' + prod.productPhoto;
+      imageElement.alt = prod.description + '.png';
+      imageNameSpan.innerHTML = '<br/>' + prod.description + '.png'; //display file name
+    }
+    else {
+      imageElement.src ='';
+      imageElement.alt = 'No image found for this product.';
+      imageNameSpan.innerHTML = '';
+    }
 
     $('#updateFixedProduct').modal('show');    
   }
 
+  //REMEMBER TO GET IMAGE B64 STRING FROM GLOBAL productToUpdate variable if file input wasn't changed; determine this using boolean changedImage variable (not created yet)
   async updateFixedProduct() {
     this.submitClicked = true;
     if (this.updateProductForm.valid) {
@@ -426,7 +383,7 @@ export class FixedProductComponent {
         const formData = this.updateProductForm.value;
 
         //prevent user from creating multiple products with same description
-        if (this.checkDuplicateDescription(formData.uDescription)) {
+        if (this.checkDuplicateDescription(formData.uDescription, this.prodToUpdate.fixedProductID)) {
           this.duplicateFoundUpdate = true;
           setTimeout(() => {
             this.duplicateFoundUpdate = false;
@@ -434,6 +391,7 @@ export class FixedProductComponent {
         }
         else {
           this.submitClicked = false;
+          $('#updateFixedProduct').modal('hide');  
         }
       }
       catch (error) {
@@ -443,20 +401,104 @@ export class FixedProductComponent {
   }
 
   //--------------------------------------------------------MULTI-PURPOSE METHODS--------------------------------------------------------
+  changedCategory(crudAction: string) {
+    this.categorySizes = []; //reset array
+    this.categoryItems = [];
+
+    //get category with index that matches value selected in select field in add/update form modal
+    let index: number;
+    if (crudAction == 'add') {  //add modal
+      index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValue));
+      //reset values for size and item dropdowns in case user had already selected something
+      this.selectedItemValue = 'NA';
+      this.selectedSizeValue = 'NA';
+    }
+    else {  //update modal
+      index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValueUpdate));      
+      //reset values for size and item dropdowns in case user had already selected something
+      this.selectedItemValueUpdate = 'NA';
+      this.selectedSizeValueUpdate = 'NA';
+    }
+    
+    let cat = this.categories[index];
+
+    //populate product item dropdown
+    this.items.forEach(item => {
+      if (cat.categoryID == item.categoryID) {
+        this.categoryItems.push(item);
+      }
+    });
+
+    //populate size dropdown
+    for (let i = 0; i < this.sizes.length; i++) {
+      let sizeStr: string = ''; //reset string
+
+      if (cat.categoryDescription == this.sizes[i].description) {
+        //treat size like an array with the properties as values in the array
+        let sizeAsArray = Object.entries(this.sizes[i]);
+        //description is the last property in the size object and sizeID is the first property; don't use them, only the sizes
+        for (let j = 1; j < sizeAsArray.length - 1; j++) {
+          if (sizeAsArray[j][1] > 0) {
+            sizeStr += sizeAsArray[j][1] + ' ';
+          }
+
+          //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, N/A
+          if (j == sizeAsArray.length - 2 && sizeStr == '')
+            sizeStr = 'N/A';
+        }
+
+        sizeStr = sizeStr.trim().replaceAll(' ', 'x'); //turn '150 150 150 ' to '150 150 150' and then to '150x150x150'
+
+        //put in size dropdown array
+        var catSize: any = {
+          sizeID: this.sizes[i].sizeID,
+          sizeString: sizeStr
+        }
+
+        this.categorySizes.push(catSize);
+      }
+    }
+  }
+
+  /*not yet sure how to handle the fact that angular says the description field isn't filled and thus won't fill the form if I concatenate
+  the product description using the item and size. Atm, the only solution is to, after getting the product name and description entered for you,
+  go backspace and then reenter the last character in description field*/
+  changedItem(crudAction: string) {
+    //get description input from add/update form modal
+    if (crudAction == 'add')
+      var descriptionInput = document.getElementById('description') as HTMLInputElement;
+    else
+      var descriptionInput = document.getElementById('update-description') as HTMLInputElement;
+    //get selected product item
+    let i = this.categoryItems.findIndex(item => item.itemID === parseInt(this.selectedItemValue));
+    descriptionInput.value = this.categoryItems[i].description;
+  }
+
+  changedSize(crudAction: string) {
+    //get description input from add/update form modal
+    if (crudAction == 'add')
+      var descriptionInput = document.getElementById('description') as HTMLInputElement;
+    else
+      var descriptionInput = document.getElementById('update-description') as HTMLInputElement;
+    //get selected size
+    let i = this.categorySizes.findIndex(catSize => catSize.sizeID === parseInt(this.selectedSizeValue));
+    descriptionInput.value += ' ' + this.categorySizes[i].sizeString;
+  }
+  
   //function to display image name since I decided to be fancy with a custom input button
   showImageName(event: Event, crudAction: string): void {
     const inputElement = event.target as HTMLInputElement;
     const chosenFile = inputElement.files?.[0];
     //get image element and font awesome icon from add/update form modal
     let imageElement: HTMLImageElement;
-    let imgIcon: any;
+    let imageName: HTMLSpanElement;
     if (crudAction == 'add') {
       imageElement = document.getElementById('display-img') as HTMLImageElement;
-      imgIcon = document.getElementById('no-img');
+      imageName = document.getElementById('imageName') as HTMLSpanElement;
     }
     else { //update form
       imageElement = document.getElementById('display-img-update') as HTMLImageElement;
-      imgIcon = document.getElementById('no-img-update');
+      imageName = document.getElementById('imageNameUpdate') as HTMLSpanElement;
     }
 
     if (chosenFile) { //if there is a file chosen
@@ -466,21 +508,12 @@ export class FixedProductComponent {
       };
       reader.readAsDataURL(chosenFile);
       imageElement.alt = chosenFile.name;
-
-      if (imgIcon) {
-        imgIcon.style.display = "none"; //hide the font awesome icon that shows that no image was selected
-      }
-
-      document.getElementById('imageName')!.innerHTML = '<br/>' + chosenFile.name; //display file name
+      imageName.innerHTML = '<br/>' + chosenFile.name; //display file name
     }
     else {
       // Reset the image source and name
       imageElement.src = '';
-      imageElement.alt = '';
-      document.getElementById('imageName')!.innerHTML = 'No image chosen';
-      if (imgIcon) {
-        imgIcon.style.display = "block"; //show the font awesome icon that shows that no image was selected
-      }
+      imageElement.alt = 'No image found. Please select a product image.';
     }
   }
 
@@ -499,10 +532,11 @@ export class FixedProductComponent {
     });
   }
   //method to determine if a user tried to enter a fixed product with same description as existing fixed product
-  checkDuplicateDescription(description: string): boolean {
+  checkDuplicateDescription(description: string, ID?: number): boolean {
     description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
     for (let i = 0; i < this.fixedProducts.length; i++) {
-      if (this.fixedProducts[i].description.toLowerCase() == description) {
+      //if description matches but they're updating a product, don't count it as a duplicate if they kept the product description the same
+      if (this.fixedProducts[i].description.toLowerCase() == description && ID != this.fixedProducts[i].fixedProductID) {
         return true;
       }
     }
@@ -515,5 +549,9 @@ export class FixedProductComponent {
   get itemID() { return this.addProductForm.get('itemID'); }
   get sizeID() { return this.addProductForm.get('sizeID'); }
   get price() { return this.addProductForm.get('price'); }
+  //update form
   get uDescription() { return this.updateProductForm.get('uDescription'); }
+  get uPrice() { return this.addProductForm.get('uPrice'); }
+  get uItemID() { return this.addProductForm.get('uItemID'); }
+  get uSizeID() { return this.addProductForm.get('uSizeID'); }
 }

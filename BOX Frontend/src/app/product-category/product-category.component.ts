@@ -115,10 +115,11 @@ export class ProductCategoryComponent {
   }
   
   //method to determine if a user tried to enter a category with same description
-  checkDuplicateDescription(description: string): boolean {
+  checkDuplicateDescription(description: string, ID?: number): boolean {
     description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
-    for (let i = 0; i < this.categories.length; i++) {      
-      if (this.categories[i].categoryDescription.toLowerCase() == description) {
+    for (let i = 0; i < this.categories.length; i++) {
+      //if description matches but they're updating a category, don't count it as a duplicate if they kept the category description the same
+      if (this.categories[i].categoryDescription.toLowerCase() == description && ID != this.categories[i].categoryID) {         
         return true;
       }
     }
@@ -257,7 +258,7 @@ export class ProductCategoryComponent {
       const formValues = this.updateCategoryForm.value;
 
       //prevent user from updating category to have duplicate descriptions
-      if (this.checkDuplicateDescription(formValues.uCategoryDescription)) { //if user is entering duplicate category
+      if (this.checkDuplicateDescription(formValues.uCategoryDescription, categoryId)) { //if user is entering duplicate category
         this.duplicateFoundUpdate = true;
         setTimeout(() => {
           this.duplicateFoundUpdate = false;

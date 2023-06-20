@@ -79,7 +79,7 @@
             <!--BODY-->
             <div class="modal-body">
                 <div class="display-photo">
-                    <img id="view-product-photo" class="view-photo" src="data:image/png;base64,{{viewProduct.productPhoto}}" alt="" />
+                    <img id="view-product-photo" class="view-photo" src="data:image/png;base64,{{viewProduct.productPhoto}}" alt="No product image chosen" />
                 </div>
                 <span class="bold">Product Item: </span>{{viewProduct.itemDescription}}<br />
                 <span class="bold">Size: </span>{{viewProduct.sizeString}}<br />
@@ -175,8 +175,7 @@
                             <option *ngFor="let catSize of categorySizes" value={{catSize.sizeID}}>
                                 {{catSize.sizeString}}</option>
                         </select>
-                        <div *ngIf="(sizeID?.dirty || sizeID?.touched || submitClicked) && sizeID?.value == 'NA'"
-                            class="error-msg">
+                        <div *ngIf="(sizeID?.dirty || sizeID?.touched || submitClicked) && sizeID?.value == 'NA'" class="error-msg">
                             Please select the size of the product
                         </div>
                     </div>
@@ -192,9 +191,8 @@
                     
                     <div class="form-group" id="choose-img" class="display-photo">
                         <div>
-                            <img id="display-img" src="" alt="" class="view-photo" />
-                            <fa-icon id="no-img" [icon]="['fas', 'file-image']"></fa-icon>
-                            <span id="imageName" style="font-size: 90%;">No product image chosen</span>
+                            <img id="display-img" src="" alt="No image found. Please select a product image." class="view-photo" />
+                            <span id="imageName" style="font-size: 90%;"></span>
                         </div>
                         <label class="form-label btn btn-create download">
                             <input id="productPhoto" type="file" accept="image/*" formControlName="productPhoto" name="productPhoto"
@@ -203,7 +201,7 @@
                         </label>
                     </div>
 
-                    <div class="form-submit-div mt-4">
+                    <div class="form-submit-div">
                         <button class="btn btn-create modal-form-submit" (click)="addFixedProduct()">Add New Product</button>
                     </div>
 
@@ -227,7 +225,7 @@
 
         <!--BODY-->
         <div class="modal-body">
-          <form [formGroup]="updateProductForm"  *ngIf="prodToUpdate != null">
+          <form [formGroup]="updateProductForm">
             <div class="form-group">
                 <label for="uDescription" class="form-label modal-form-label bold">Product Description:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="uDescription" required>
@@ -240,8 +238,62 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label for="uCategoryID" class="form-label modal-form-label bold">Product Category:</label>
+                <select id="uodate-categoryID" [(ngModel)]="selectedCatValueUpdate" (change)="changedCategory('update')"
+                    formControlName="uCategoryID" name="uCategoryID" class="form-select modal-form-input modal-form-text">
+                    <option *ngFor="let cat of categories" value={{cat.categoryID}}>{{cat.categoryDescription}}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="uItemID" class="form-label modal-form-label bold">Product Item:</label>
+                <select id="update-itemID" [(ngModel)]="selectedItemValueUpdate" (change)="changedItem('update')"
+                    formControlName="uItemID" name="uItemID" class="form-select modal-form-input modal-form-text">
+                    <option disabled value="NA">Choose product item</option>
+                    <option *ngFor="let item of categoryItems" value={{item.itemID}}>{{item.description}}</option>
+                </select>
+                <div *ngIf="(uItemID?.dirty || uItemID?.touched || submitClicked) && uItemID?.value == 'NA'" class="error-msg">
+                    Please select a product item
+                </div>
+            </div>
+
+            <div class="form-group">
+                Please specify the dimensions of the product<br />
+                <label for="uSizeID" class="form-label modal-form-label bold">Size:</label>
+                <select id="update-sizeID" formControlName="uSizeID" [(ngModel)]="selectedSizeValueUpdate" (change)="changedSize('update')" 
+                    name="uSizeID" class="form-select modal-form-input modal-form-text">
+                    <option disabled value="NA">Choose size</option>
+                    <option *ngFor="let catSize of categorySizes" value={{catSize.sizeID}}>{{catSize.sizeString}}</option>
+                </select>
+                <div *ngIf="(uSizeID?.dirty || uSizeID?.touched || submitClicked) && uSizeID?.value == 'NA'" class="error-msg">
+                    Please select the size of the product
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="uPrice" class="form-label modal-form-label bold">Price:</label>
+                <input id="uPrice" type="number" formControlName="uPrice" class="form-control modal-form-input modal-form-text" 
+                    placeholder="0.00" name="uPrice" required min="0" step="0.01">
+                <div *ngIf="(uPrice?.dirty || uPrice?.touched || submitClicked) && uPrice?.errors?.['required'] || uPrice?.errors?.['min']" class="error-msg">
+                    Please enter an amount above 0.
+                </div>
+            </div>
+                    
+            <div class="form-group" class="display-photo">
+                <div>
+                    <img id="display-img-update" src="" alt="" class="view-photo" />
+                    <span id="imageNameUpdate" style="font-size: 90%;"></span>
+                </div>
+                <label class="form-label btn btn-create download">
+                    <input id="uProductPhoto" type="file" accept="image/*" formControlName="uProductPhoto" name="uProductPhoto"
+                        style="display: none;" (change)="showImageName($event, 'update')" />
+                    Upload product image
+                </label>
+            </div>
+
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateFixedProduct()" >Save Changes</button>
+                <button class="btn btn-create modal-form-submit" (click)="updateFixedProduct()" >Save Changes</button>
             </div>
           </form>
         </div>
