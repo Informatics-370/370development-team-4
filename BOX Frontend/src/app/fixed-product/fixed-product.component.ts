@@ -26,9 +26,7 @@ export class FixedProductComponent {
   categoryItems: Item[] = []; //store all product items associated with a specific category
   specificProduct!: FixedProductVM; //used to get a specific product
   productCount: number = -1; //keep track of how many products there are in the DB
-  viewProduct!: TableFixedProductVM; //VIEW PRODUCT VARIABLE
-  //store product that user wants to update especially ID and product photo b64 string because browser won't let me assign value to file input from code
-  prodToUpdate!: TableFixedProductVM;
+  selectedProduct!: TableFixedProductVM; //used to store a specific product
   changedImage = false; //keep track of if user changed image when updating product details
 
   //forms
@@ -44,7 +42,6 @@ export class FixedProductComponent {
   public selectedSizeValueUpdate = '';
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
-  @ViewChild('updateModal') updateModal: any;
 
   //search functionality
   searchTerm: string = '';
@@ -240,19 +237,19 @@ export class FixedProductComponent {
 
   //--------------------------------------------------------VIEW SPECIFIC PRODUCT LOGIC--------------------------------------------------------
   openViewProduct(prod: TableFixedProductVM) {
-    this.viewProduct = prod;
+    this.selectedProduct = prod;
     $('#viewFixedProduct').modal('show');
   }
 
   //Download QR code as image
   downloadQRCodeAsImage() {
-    var arrayBuffer = this.B64ToArrayBuffer(this.viewProduct.qRCodeB64)
+    var arrayBuffer = this.B64ToArrayBuffer(this.selectedProduct.qRCodeB64)
     const blob = new Blob([arrayBuffer], { type: 'image/png' });
 
     //Create link; apparently, I need this even though I have a download button
     const QRCodeImage = document.createElement('a');
     QRCodeImage.href = URL.createObjectURL(blob);
-    QRCodeImage.download = this.viewProduct.description + ' QR code';
+    QRCodeImage.download = this.selectedProduct.description + ' QR code';
     QRCodeImage.click(); //click link to start downloading
     URL.revokeObjectURL(QRCodeImage.href); //clean up URL object
   }
@@ -337,7 +334,7 @@ export class FixedProductComponent {
 
   //--------------------------------------------------------UPDATE PRODUCT LOGIC--------------------------------------------------------
   openUpdateModal(prod: TableFixedProductVM) {
-    this.prodToUpdate = prod; //store image b64 string and other info; idc if it's better to only store string. I should be in bed rn
+    this.selectedProduct = prod; //store image b64 string and other info; idc if it's better to only store string. I should be in bed rn
     //set category ID first cos it's used to populate size and item dropdown
     this.selectedCatValueUpdate = String(prod.categoryID);
 
@@ -384,7 +381,7 @@ export class FixedProductComponent {
         const formData = this.updateProductForm.value;
 
         //prevent user from creating multiple products with same description
-        if (this.checkDuplicateDescription(formData.uDescription, this.prodToUpdate.fixedProductID)) {
+        if (this.checkDuplicateDescription(formData.uDescription, this.selectedProduct.fixedProductID)) {
           this.duplicateFoundUpdate = true;
           setTimeout(() => {
             this.duplicateFoundUpdate = false;
@@ -392,7 +389,7 @@ export class FixedProductComponent {
         }
         else {
           //get image
-          let productImgB64 = this.prodToUpdate.productPhoto;
+          let productImgB64 = this.selectedProduct.productPhoto;
           var formImage;
           if (this.changedImage) { 
             //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
@@ -403,7 +400,7 @@ export class FixedProductComponent {
 
           //put form data in VM
           let updatedProduct : FixedProductVM = {
-            fixedProductID: this.prodToUpdate.fixedProductID,
+            fixedProductID: this.selectedProduct.fixedProductID,
             qrCodeID: 0,
             qrCodeBytesB64: '',
             itemID: parseInt(formData.uItemID),
@@ -411,12 +408,12 @@ export class FixedProductComponent {
             description: formData.uDescription,
             price: formData.uPrice,
             productPhotoB64: productImgB64,
-            quantityOnHand: this.prodToUpdate.quantityOnHand
+            quantityOnHand: this.selectedProduct.quantityOnHand
           }
 
           console.log('form data', updatedProduct);
 
-          this.dataService.UpdateFixedProduct(this.prodToUpdate.fixedProductID, updatedProduct).subscribe(
+          this.dataService.UpdateFixedProduct(this.selectedProduct.fixedProductID, updatedProduct).subscribe(
             (result: any) => {
               console.log('Successfully updated product! ', result);
               this.getProductsPromise(); //refresh products list
@@ -432,6 +429,22 @@ export class FixedProductComponent {
         console.log('Error submitting form', error)
       }
     }
+  }
+
+  //--------------------DELETE REASON LOGIC----------------
+  openDeleteModal(prod: TableFixedProductVM) {
+    this.selectedProduct = prod;
+    $('#deleteFixedProduct').modal('show');
+  }
+
+  deleteFixedProduct() {
+    this.dataService.DeleteFixedProduct(this.selectedProduct.fixedProductID).subscribe(
+      (result) => {
+        console.log("Successfully deleted ", result);
+        this.getProductsPromise(); //refresh products
+        $('#deleteFixedProduct').modal('hide');
+      }
+    );    
   }
 
   //--------------------------------------------------------MULTI-PURPOSE METHODS--------------------------------------------------------

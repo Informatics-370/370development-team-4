@@ -130,13 +130,12 @@ export class RefundReasonComponent {
       (result) => {
         console.log("Successfully deleted ", result);
         this.getReasons(); //refresh item list
+        this.closeDeleteModal();
       },
       (error) => {
         console.error('Error deleting reason with ID ', reasonId, error);
       }
     );
-
-    this.closeDeleteModal();
   }
 
   //--------------------UPDATE REASON LOGIC----------------
