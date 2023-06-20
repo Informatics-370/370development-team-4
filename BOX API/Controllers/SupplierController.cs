@@ -51,7 +51,7 @@ namespace BOX.Controllers
 
     [HttpPost]
     [Route("AddSupplier")]
-    public async Task<IActionResult> AddRefundReason(SupplierViewModel svm)
+    public async Task<IActionResult> AddSupplier(SupplierViewModel svm)
     {
       var supplier = new Supplier {Name=svm.Name, Address=svm.Address,Email=svm.Email,Contact_Number=svm.Phone_Number };
 
@@ -76,7 +76,10 @@ namespace BOX.Controllers
             {
                 var existingSupplier = await _repository.GetSupplierAsync(supplierId);
                 if (existingSupplier == null)
-                    return NotFound("Supplier does not exist in the system");
+        {
+          return NotFound("Supplier does not exist in the system");
+        }
+                   
 
                 existingSupplier.Name = updatedSupplier.Name;
                 existingSupplier.Address = updatedSupplier.Address;
