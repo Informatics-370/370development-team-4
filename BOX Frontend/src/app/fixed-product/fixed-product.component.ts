@@ -29,6 +29,7 @@ export class FixedProductComponent {
   viewProduct!: TableFixedProductVM; //VIEW PRODUCT VARIABLE
   //store product that user wants to update especially ID and product photo b64 string because browser won't let me assign value to file input from code
   prodToUpdate!: TableFixedProductVM;
+  changedImage = false; //keep track of if user changed image when updating product details
 
   //forms
   addProductForm: FormGroup;
@@ -292,14 +293,14 @@ export class FixedProductComponent {
             fixedProductID: 0,
             qrCodeID: 0,
             qrCodeBytesB64: '',
-            itemID: formData.itemID,
-            sizeID: formData.sizeID,
+            itemID: parseInt(formData.itemID),
+            sizeID: parseInt(formData.sizeID),
             description: formData.description,
             price: formData.price,
             quantityOnHand: 0,
             productPhotoB64: formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
           }
-          console.log(newProduct);
+          console.log('Unposted new product', newProduct);
 
           this.dataService.AddFixedProduct(newProduct).subscribe(
             (result: any) => {
@@ -335,7 +336,7 @@ export class FixedProductComponent {
   }
 
   //--------------------------------------------------------UPDATE PRODUCT LOGIC--------------------------------------------------------
-  async openUpdateModal(prod: TableFixedProductVM) {
+  openUpdateModal(prod: TableFixedProductVM) {
     this.prodToUpdate = prod; //store image b64 string and other info; idc if it's better to only store string. I should be in bed rn
     //set category ID first cos it's used to populate size and item dropdown
     this.selectedCatValueUpdate = String(prod.categoryID);
@@ -374,7 +375,7 @@ export class FixedProductComponent {
     $('#updateFixedProduct').modal('show');    
   }
 
-  //REMEMBER TO GET IMAGE B64 STRING FROM GLOBAL productToUpdate variable if file input wasn't changed; determine this using boolean changedImage variable (not created yet)
+  //update product
   async updateFixedProduct() {
     this.submitClicked = true;
     if (this.updateProductForm.valid) {
@@ -387,11 +388,44 @@ export class FixedProductComponent {
           this.duplicateFoundUpdate = true;
           setTimeout(() => {
             this.duplicateFoundUpdate = false;
-          }, 5000);
+          }, 8000);
         }
         else {
-          this.submitClicked = false;
-          $('#updateFixedProduct').modal('hide');  
+          //get image
+          let productImgB64 = this.prodToUpdate.productPhoto;
+          var formImage;
+          if (this.changedImage) { 
+            //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
+            const inputElement = document.getElementById('uProductPhoto') as HTMLInputElement;
+            formImage = inputElement.files?.[0];
+            productImgB64 = formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
+          }
+
+          //put form data in VM
+          let updatedProduct : FixedProductVM = {
+            fixedProductID: this.prodToUpdate.fixedProductID,
+            qrCodeID: 0,
+            qrCodeBytesB64: '',
+            itemID: parseInt(formData.uItemID),
+            sizeID: parseInt(formData.uSizeID),
+            description: formData.uDescription,
+            price: formData.uPrice,
+            productPhotoB64: productImgB64,
+            quantityOnHand: this.prodToUpdate.quantityOnHand
+          }
+
+          console.log('form data', updatedProduct);
+
+          this.dataService.UpdateFixedProduct(this.prodToUpdate.fixedProductID, updatedProduct).subscribe(
+            (result: any) => {
+              console.log('Successfully updated product! ', result);
+              this.getProductsPromise(); //refresh products list
+              //reset form (kind of)
+              this.changedImage = false;
+              this.submitClicked = false;
+              $('#updateFixedProduct').modal('hide');
+            }
+          );
         }
       }
       catch (error) {
@@ -406,18 +440,18 @@ export class FixedProductComponent {
     this.categoryItems = [];
 
     //get category with index that matches value selected in select field in add/update form modal
-    let index: number;
+    let index: number = -1;
     if (crudAction == 'add') {  //add modal
       index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValue));
       //reset values for size and item dropdowns in case user had already selected something
-      this.selectedItemValue = 'NA';
-      this.selectedSizeValue = 'NA';
+      this.itemID?.setValue('NA');
+      this.sizeID?.setValue('NA');
     }
-    else {  //update modal
+    else if (crudAction == 'update') {  //update modal
       index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValueUpdate));      
       //reset values for size and item dropdowns in case user had already selected something
-      this.selectedItemValueUpdate = 'NA';
-      this.selectedSizeValueUpdate = 'NA';
+      this.uSizeID?.setValue("NA");
+      this.uItemID?.setValue('NA');
     }
     
     let cat = this.categories[index];
@@ -463,26 +497,20 @@ export class FixedProductComponent {
   /*not yet sure how to handle the fact that angular says the description field isn't filled and thus won't fill the form if I concatenate
   the product description using the item and size. Atm, the only solution is to, after getting the product name and description entered for you,
   go backspace and then reenter the last character in description field*/
-  changedItem(crudAction: string) {
-    //get description input from add/update form modal
+  changedItem(selected: any, crudAction: string) {
+    //set description input value for add/update form modal
     if (crudAction == 'add')
-      var descriptionInput = document.getElementById('description') as HTMLInputElement;
+    this.description?.setValue(selected.target[selected.target.selectedIndex].text);
     else
-      var descriptionInput = document.getElementById('update-description') as HTMLInputElement;
-    //get selected product item
-    let i = this.categoryItems.findIndex(item => item.itemID === parseInt(this.selectedItemValue));
-    descriptionInput.value = this.categoryItems[i].description;
+      this.uDescription?.setValue(selected.target[selected.target.selectedIndex].text);
   }
 
-  changedSize(crudAction: string) {
-    //get description input from add/update form modal
+  changedSize(selected: any, crudAction: string) {
+    //set description input value for add/update form modal
     if (crudAction == 'add')
-      var descriptionInput = document.getElementById('description') as HTMLInputElement;
+      this.description?.setValue(this.description.value + ' ' + selected.target[selected.target.selectedIndex].text);
     else
-      var descriptionInput = document.getElementById('update-description') as HTMLInputElement;
-    //get selected size
-    let i = this.categorySizes.findIndex(catSize => catSize.sizeID === parseInt(this.selectedSizeValue));
-    descriptionInput.value += ' ' + this.categorySizes[i].sizeString;
+      this.uDescription?.setValue(this.uDescription.value + ' ' + selected.target[selected.target.selectedIndex].text);
   }
   
   //function to display image name since I decided to be fancy with a custom input button
@@ -499,6 +527,7 @@ export class FixedProductComponent {
     else { //update form
       imageElement = document.getElementById('display-img-update') as HTMLImageElement;
       imageName = document.getElementById('imageNameUpdate') as HTMLSpanElement;
+      this.changedImage = true;
     }
 
     if (chosenFile) { //if there is a file chosen
@@ -551,7 +580,7 @@ export class FixedProductComponent {
   get price() { return this.addProductForm.get('price'); }
   //update form
   get uDescription() { return this.updateProductForm.get('uDescription'); }
-  get uPrice() { return this.addProductForm.get('uPrice'); }
-  get uItemID() { return this.addProductForm.get('uItemID'); }
-  get uSizeID() { return this.addProductForm.get('uSizeID'); }
+  get uPrice() { return this.updateProductForm.get('uPrice'); }
+  get uItemID() { return this.updateProductForm.get('uItemID'); }
+  get uSizeID() { return this.updateProductForm.get('uSizeID'); }
 }

@@ -114,7 +114,7 @@
             <!--Display validation error message-->
             <div *ngIf="(percentage?.dirty || percentage?.touched || submitClicked) && 
                 percentage?.errors?.['required'] || percentage?.errors?.['min']" class="error-msg">
-                Please enter a VAT amount above 0.
+                Please enter a whole number above 0.
             </div>
 
             <div class="form-submit-div">
@@ -175,7 +175,7 @@
             <!--Display validation error message-->
             <div *ngIf="(uPercentage?.dirty || uPercentage?.touched || submitClicked) && 
                 uPercentage?.errors?.['required'] || uPercentage?.errors?.['min']" class="error-msg">
-                Please enter a VAT amount above 0.
+                Please enter a whole number above 0.
             </div>
 
             <div class="form-submit-div">

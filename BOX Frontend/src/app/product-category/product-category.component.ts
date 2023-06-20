@@ -262,7 +262,7 @@ export class ProductCategoryComponent {
         this.duplicateFoundUpdate = true;
         setTimeout(() => {
           this.duplicateFoundUpdate = false;
-        }, 5000);
+        }, 8000);
       }
       else {
         let updatedCategory : CategoryVM = {
@@ -281,13 +281,13 @@ export class ProductCategoryComponent {
             console.log('Updated category', result);
             this.getCategories(); //refresh category list
             this.submitClicked = false;
+            //close modal only if updated successfully
+            this.closeUpdateModal();
           },
           (error) => {
             console.error('Error updating category:', error);
           }
         );
-  
-        this.closeUpdateModal();
       }      
     }    
   }

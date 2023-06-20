@@ -79,7 +79,7 @@
             <!--BODY-->
             <div class="modal-body">
                 <div class="display-photo">
-                    <img id="view-product-photo" class="view-photo" src="data:image/png;base64,{{viewProduct.productPhoto}}" alt="No product image chosen" />
+                    <img id="view-product-photo" class="view-photo" src="data:image/png;base64,{{viewProduct.productPhoto}}" alt="No product image" />
                 </div>
                 <span class="bold">Product Item: </span>{{viewProduct.itemDescription}}<br />
                 <span class="bold">Size: </span>{{viewProduct.sizeString}}<br />
@@ -154,14 +154,13 @@
 
                     <div class="form-group">
                         <label for="item" class="form-label modal-form-label bold">Product Item:</label>
-                        <select id="add-itemID" [(ngModel)]="selectedItemValue" (change)="changedItem('add')"
+                        <select id="add-itemID" [(ngModel)]="selectedItemValue" (change)="changedItem($event, 'add')"
                             formControlName="itemID" name="item" class="form-select modal-form-input modal-form-text">
                             <option disabled value="NA">Choose product item</option>
                             <option *ngFor="let item of categoryItems" value={{item.itemID}}>{{item.description}}
                             </option>
                         </select>
-                        <div *ngIf="(itemID?.dirty || itemID?.touched || submitClicked) && itemID?.value == 'NA'"
-                            class="error-msg">
+                        <div *ngIf="(itemID?.dirty || itemID?.touched || submitClicked) && itemID?.value == 'NA'" class="error-msg">
                             Please select a product item
                         </div>
                     </div>
@@ -170,7 +169,7 @@
                         Please specify the dimensions of the product<br />
                         <label for="size" class="form-label modal-form-label bold">Size:</label>
                         <select id="add-sizeID" [(ngModel)]="selectedSizeValue" formControlName="sizeID"
-                            (change)="changedSize('add')" name="size" class="form-select modal-form-input modal-form-text">
+                            (change)="changedSize($event, 'add')" name="size" class="form-select modal-form-input modal-form-text">
                             <option disabled value="NA">Choose size</option>
                             <option *ngFor="let catSize of categorySizes" value={{catSize.sizeID}}>
                                 {{catSize.sizeString}}</option>
@@ -190,9 +189,9 @@
                     </div>
                     
                     <div class="form-group" id="choose-img" class="display-photo">
-                        <div>
+                        <div style="font-size: 90%;">
                             <img id="display-img" src="" alt="No image found. Please select a product image." class="view-photo" />
-                            <span id="imageName" style="font-size: 90%;"></span>
+                            <span id="imageName"></span>
                         </div>
                         <label class="form-label btn btn-create download">
                             <input id="productPhoto" type="file" accept="image/*" formControlName="productPhoto" name="productPhoto"
@@ -240,7 +239,7 @@
 
             <div class="form-group">
                 <label for="uCategoryID" class="form-label modal-form-label bold">Product Category:</label>
-                <select id="uodate-categoryID" [(ngModel)]="selectedCatValueUpdate" (change)="changedCategory('update')"
+                <select id="update-categoryID" [(ngModel)]="selectedCatValueUpdate" (change)="changedCategory('update')"
                     formControlName="uCategoryID" name="uCategoryID" class="form-select modal-form-input modal-form-text">
                     <option *ngFor="let cat of categories" value={{cat.categoryID}}>{{cat.categoryDescription}}</option>
                 </select>
@@ -248,7 +247,7 @@
 
             <div class="form-group">
                 <label for="uItemID" class="form-label modal-form-label bold">Product Item:</label>
-                <select id="update-itemID" [(ngModel)]="selectedItemValueUpdate" (change)="changedItem('update')"
+                <select id="update-itemID" [(ngModel)]="selectedItemValueUpdate" (change)="changedItem($event, 'update')"
                     formControlName="uItemID" name="uItemID" class="form-select modal-form-input modal-form-text">
                     <option disabled value="NA">Choose product item</option>
                     <option *ngFor="let item of categoryItems" value={{item.itemID}}>{{item.description}}</option>
@@ -261,7 +260,7 @@
             <div class="form-group">
                 Please specify the dimensions of the product<br />
                 <label for="uSizeID" class="form-label modal-form-label bold">Size:</label>
-                <select id="update-sizeID" formControlName="uSizeID" [(ngModel)]="selectedSizeValueUpdate" (change)="changedSize('update')" 
+                <select id="update-sizeID" formControlName="uSizeID" [(ngModel)]="selectedSizeValueUpdate" (change)="changedSize($event, 'update')" 
                     name="uSizeID" class="form-select modal-form-input modal-form-text">
                     <option disabled value="NA">Choose size</option>
                     <option *ngFor="let catSize of categorySizes" value={{catSize.sizeID}}>{{catSize.sizeString}}</option>
@@ -281,9 +280,9 @@
             </div>
                     
             <div class="form-group" class="display-photo">
-                <div>
+                <div style="font-size: 90%;">
                     <img id="display-img-update" src="" alt="" class="view-photo" />
-                    <span id="imageNameUpdate" style="font-size: 90%;"></span>
+                    <span id="imageNameUpdate"></span>
                 </div>
                 <label class="form-label btn btn-create download">
                     <input id="uProductPhoto" type="file" accept="image/*" formControlName="uProductPhoto" name="uProductPhoto"
