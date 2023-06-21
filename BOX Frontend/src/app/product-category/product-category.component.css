@@ -86,3 +86,11 @@
 .red-btn:hover {background-color: #bc2a2a; }
 
 .required-field { color: red; font-weight: bold; }
+.fa-icon-large {
+    color: white;
+    font-size: 75px;
+}
+
+.menu-card {
+    box-shadow:inset;
+}

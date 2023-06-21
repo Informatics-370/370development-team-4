@@ -38,8 +38,8 @@ export class DataService {
     .pipe(map(result => result))
   }
 
-  getSize(sizeId: number): Observable<Size> {
-    return this.httpClient.get<Size>(`${this.apiUrl}Size/GetSize/${sizeId}`)
+  getSize(sizeId: number): Observable<SizeVM> {
+    return this.httpClient.get<SizeVM>(`${this.apiUrl}Size/GetSize/${sizeId}`)
       .pipe(map(result => result));
   }
 
