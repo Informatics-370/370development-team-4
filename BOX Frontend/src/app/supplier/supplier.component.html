@@ -207,15 +207,14 @@
                 uaddress?.errors?.['required'] || uaddress?.errors?.['min']" class="error-msg">
                 Please enter a valid Supplier address.
             </div> 
-            <label for="unumber" class="form-label modal-form-label bold">Number</label>
-            <input id="unumber" type="text" formControlName="unumber" class="form-control modal-form-input modal-form-text" placeholder="e.g. 0782554371" name="unumber" required maxlength="10" minlength="10">
-            <div *ngIf="(unumber?.dirty || unumber?.touched || submitClicked) && unumber?.errors?.['required']" class="error-msg">
-              Please enter a Supplier Phone Number.
-            </div>
-            <div *ngIf="unumber?.value?.length < 10 && unumber?.value !== '' && (unumber?.dirty || unumber?.touched)" class="error-msg">
-              Phone Number must have 10 characters.
-            </div>
-            
+                <label for="unumber" class="form-label modal-form-label bold">Number</label>
+                <input id="unumber" type="text" formControlName="unumber" class="form-control modal-form-input modal-form-text" placeholder="e.g. 0782554371"name="unumber"  required maxlength="10" minlength="10">
+                <div *ngIf="(unumber?.dirty || unumber?.touched || submitClicked) && unumber?.errors?.['required']" class="error-msg">
+                    Please enter a Supplier Phone Number.
+                  </div>
+                  <div *ngIf="(unumber?.value?.length < 10 && (unumber?.dirty || unumber?.touched))" class="error-msg">
+                    Phone Number must have 10 characters.
+                  </div> 
                   
             </div>
 
