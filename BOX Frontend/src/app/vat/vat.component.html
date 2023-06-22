@@ -109,7 +109,7 @@
             <div class="form-group">
                 <label for="percentage" class="form-label modal-form-label bold">Value Added Tax</label>
                 <input id="percentage" type="number" formControlName="percentage" class="form-control modal-form-input modal-form-text" placeholder="1" 
-                    name="percentage" required min="0" step="1">
+                    name="percentage" required min="0" max="100" step="1">
             </div>
             <!--Display validation error message-->
             <div *ngIf="(percentage?.dirty || percentage?.touched || submitClicked) && 
@@ -170,7 +170,7 @@
             <div class="form-group">
                 <label for="uPercentage" class="form-label modal-form-label bold">Value Added Tax</label>
                 <input id="uPercentage" type="number" formControlName="uPercentage" class="form-control modal-form-input modal-form-text" 
-                    name="uPercentage" required min="0" step="1">
+                    name="uPercentage" required min="0" max="100" step="1">
             </div>
             <!--Display validation error message-->
             <div *ngIf="(uPercentage?.dirty || uPercentage?.touched || submitClicked) && 

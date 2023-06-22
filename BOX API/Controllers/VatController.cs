@@ -1,6 +1,7 @@
 ﻿using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 //
@@ -53,9 +54,9 @@ namespace BOX.Controllers
 
 		[HttpPost]
 		[Route("AddVat")]
-		public async Task<IActionResult> AddVat(VatViewModel vvm)
+		public async Task<IActionResult> AddVat(VAT newVAT)
 		{
-			var valt = new VAT { Percentage=vvm.Percentage};
+			var valt = new VAT { Percentage=newVAT.Percentage};
 
 			try
 			{
@@ -72,7 +73,7 @@ namespace BOX.Controllers
 
 		[HttpPut]
 		[Route("EditVat/{vatId}")]
-		public async Task<ActionResult<VatViewModel>> EditVat(int vatId, VatViewModel vvm)
+		public async Task<ActionResult<VAT>> EditVat(int vatId, VAT updatedVAT)
 		{
 			try
 			{
@@ -80,7 +81,7 @@ namespace BOX.Controllers
 				if (existingvat == null) return NotFound($"The VAT does not exist on the BOX System");
 
 
-				existingvat.Percentage = vvm.Percentage;
+				existingvat.Percentage = updatedVAT.Percentage;
 				
 
 				if (await _repository.SaveChangesAsync())

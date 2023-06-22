@@ -172,9 +172,9 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
       .pipe(map(result => result));
   }
 
-  AddVAT(vvm: any): Observable<any> {
+  AddVAT(newVAT: VAT): Observable<any> {
     return this.httpClient.post<any>(
-      `${this.apiUrl}VAT/AddVat`, vvm, this.httpOptions
+      `${this.apiUrl}VAT/AddVat`, newVAT, this.httpOptions
     );
   }
 
@@ -182,8 +182,8 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     return this.httpClient.delete<any>(`${this.apiUrl}VAT/DeleteVat/${vatId}`, this.httpOptions);
   }
 
-  UpdateVAT(vatId: number, vvm: any): Observable<any> {
-   return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, vvm, this.httpOptions);
+  UpdateVAT(vatId: number, updatedVAT: VAT): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, updatedVAT, this.httpOptions);
   }
 
   //-------------------------------------------------------FIXED PRODUCT-------------------------------------------------------
