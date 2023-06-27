@@ -82,6 +82,7 @@ export class FixedProductComponent {
     this.messageRow = document.getElementById('message') as HTMLTableCellElement; //get message row only after view has been intialised and there's a message row to get
   }
 
+  //--------------------------------------------------VIEW ALL PRODUCTS LOGIC--------------------------------------------------
   //function to get data from DB asynchronously (and simultaneously)
   async getDataFromDB() {
     try {
@@ -358,10 +359,18 @@ export class FixedProductComponent {
     //show image if user added image when creating product
     var imageElement = document.getElementById('display-img-update') as HTMLImageElement;
     var imageNameSpan = document.getElementById('imageNameUpdate') as HTMLSpanElement;
+    //create button to remove an uploaded pic
+    let removeBtn: HTMLButtonElement = document.createElement('button');
+    removeBtn.classList.add('remove-pic');
+    removeBtn.setAttribute('title', 'Remove image')
+    removeBtn.innerHTML = 'Remove';
+    removeBtn.addEventListener('click', this.removeImage.bind(this, 'update'));
+
     if (prod.productPhoto) {
       imageElement.src = 'data:image/png;base64,' + prod.productPhoto;
       imageElement.alt = prod.description + '.png';
-      imageNameSpan.innerHTML = '<br/>' + prod.description + '.png'; //display file name
+      imageNameSpan.innerHTML = prod.description; //display file name
+      imageNameSpan.appendChild(removeBtn);
     }
     else {
       imageElement.src ='';
@@ -530,16 +539,24 @@ export class FixedProductComponent {
   showImageName(event: Event, crudAction: string): void {
     const inputElement = event.target as HTMLInputElement;
     const chosenFile = inputElement.files?.[0];
-    //get image element and font awesome icon from add/update form modal
+    //get image element from add/update form modal
     let imageElement: HTMLImageElement;
     let imageName: HTMLSpanElement;
+    //create button to remove an uploaded pic
+    let removeBtn: HTMLButtonElement = document.createElement('button');
+    removeBtn.classList.add('remove-pic');
+    removeBtn.setAttribute('title', 'Remove image')
+    removeBtn.innerHTML = 'Remove';
+
     if (crudAction == 'add') {
       imageElement = document.getElementById('display-img') as HTMLImageElement;
       imageName = document.getElementById('imageName') as HTMLSpanElement;
+      removeBtn.addEventListener('click', this.removeImage.bind(this, 'add'));
     }
     else { //update form
       imageElement = document.getElementById('display-img-update') as HTMLImageElement;
       imageName = document.getElementById('imageNameUpdate') as HTMLSpanElement;
+      removeBtn.addEventListener('click', this.removeImage.bind(this, 'update'));
       this.changedImage = true;
     }
 
@@ -550,12 +567,9 @@ export class FixedProductComponent {
       };
       reader.readAsDataURL(chosenFile);
       imageElement.alt = chosenFile.name;
-      imageName.innerHTML = '<br/>' + chosenFile.name; //display file name
-    }
-    else {
-      // Reset the image source and name
-      imageElement.src = '';
-      imageElement.alt = 'No image found. Please select a product image.';
+      imageName.style.display = 'block';
+      imageName.innerHTML = chosenFile.name; //display file name
+      imageName.appendChild(removeBtn);      
     }
   }
 
@@ -573,6 +587,33 @@ export class FixedProductComponent {
       reader.readAsDataURL(img);
     });
   }
+
+  removeImage(crudAction: string) {
+    //get image element, name span and file input from add/update form modal
+    let imageElement: HTMLImageElement;
+    let imageName: HTMLSpanElement;
+    let imageInput : HTMLInputElement;
+
+    if (crudAction == 'add') {
+      imageInput = document.getElementById('productPhoto') as HTMLInputElement;
+      imageElement = document.getElementById('display-img') as HTMLImageElement;
+      imageName = document.getElementById('imageName') as HTMLSpanElement;
+    }
+    else { //update form
+      imageInput = document.getElementById('uProductPhoto') as HTMLInputElement;
+      imageElement = document.getElementById('display-img-update') as HTMLImageElement;
+      imageName = document.getElementById('imageNameUpdate') as HTMLSpanElement;
+      this.changedImage = true;
+    }
+
+    //remove image from file input
+    imageInput.value = '';
+    // Reset the image source and name
+    imageElement.src = '';
+    imageElement.alt = 'No image found. Please select a product image.';
+    imageName.innerHTML = '';
+  }
+
   //method to determine if a user tried to enter a fixed product with same description as existing fixed product
   checkDuplicateDescription(description: string, ID?: number): boolean {
     description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
