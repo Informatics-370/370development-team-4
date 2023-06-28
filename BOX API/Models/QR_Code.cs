@@ -12,6 +12,6 @@ namespace BOX.Models
         public int QRCodeID { get; set; }
 
         [Required]
-        public string QR_Code_Photo { get; set; }
+        public byte[] QR_Code_Photo { get; set; }
     }
 }

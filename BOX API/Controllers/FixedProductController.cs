@@ -28,16 +28,26 @@ namespace BOX.Controllers
             try
             {
                 var fixedProducts = await _repository.GetAllFixedProductsAsync();
-
-                var fixedProductViewModels = fixedProducts.Select(fp => new FixedProductViewModel
+                
+                List<FixedProductViewModel> fixedProductViewModels = new List<FixedProductViewModel>();
+                foreach (var fp in fixedProducts) 
                 {
-                    FixedProductID = fp.FixedProductID,
-                    QRCodeID = fp.QRCodeID,
-                    ItemID = fp.ItemID,
-                    SizeID = fp.SizeID,
-                    Description = fp.Description,
-                    Price = fp.Price
-                }).ToArray();
+                    var qrCode = await _repository.GetQRCodeAsync(fp.QRCodeID); //get QR code byte array; GetAllFixedMaterialsAsync returns null for QR code
+
+                    FixedProductViewModel fpVM = new FixedProductViewModel()
+                    {
+                        FixedProductID = fp.FixedProductID,
+                        QRCodeID = fp.QRCodeID,
+                        QRCodeBytesB64 = Convert.ToBase64String(qrCode.QR_Code_Photo),
+                        ItemID = fp.ItemID,
+                        SizeID = fp.SizeID,
+                        Description = fp.Description,
+                        Price = fp.Price,
+                        ProductPhotoB64 = Convert.ToBase64String(fp.Product_Photo),
+                        QuantityOnHand = fp.Quantity_On_Hand
+                    };
+                    fixedProductViewModels.Add(fpVM);
+                }
 
                 return Ok(fixedProductViewModels);
             }
@@ -66,7 +76,9 @@ namespace BOX.Controllers
                     ItemID = fixedProduct.ItemID,
                     SizeID = fixedProduct.SizeID,
                     Description = fixedProduct.Description,
-                    Price = fixedProduct.Price
+                    Price = fixedProduct.Price,
+                    ProductPhotoB64 = Convert.ToBase64String(fixedProduct.Product_Photo),
+                    QuantityOnHand = fixedProduct.Quantity_On_Hand
                 };
 
                 return Ok(fixedProductViewModel);
@@ -90,17 +102,21 @@ namespace BOX.Controllers
                     ItemID = fixedProductViewModel.ItemID,
                     SizeID = fixedProductViewModel.SizeID,
                     Description = fixedProductViewModel.Description,
-                    Price = fixedProductViewModel.Price
+                    Price = fixedProductViewModel.Price,
+                    Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64),
+                    Quantity_On_Hand = 0
                 };
 
                 // Generate the QR code for the fixed product
                 var qrCodeText = fixedProductViewModel.Description; // Use the description as the QR code data
                 var qrCodeBytes = GenerateQRCode(qrCodeText);
-
                 // Create a new QR_Code instance and assign the generated QR code bytes
+                string b64string = qrCodeBytes.Remove(0, 22); //remove 'data:image/png;base64,' from string so I can call FromBase64String method
+
                 var qrCode = new QR_Code
                 {
-                    QR_Code_Photo = qrCodeBytes
+                    //covert to byte array to prevent casting error
+                    QR_Code_Photo = Convert.FromBase64String(b64string)
                 };
 
                 // Associate the QR code with the fixed product
@@ -149,20 +165,22 @@ namespace BOX.Controllers
                 // Generate the QR code for the fixed product
                 var qrCodeText = fixedProductViewModel.Description;
                 var qrCodeBytes = GenerateQRCode(qrCodeText);
+                //remove 'data:image/png;base64,' from string and convert to byte array to prevent casting error
+                byte[] byteArr = Convert.FromBase64String(qrCodeBytes.Remove(0, 22));
 
                 // Check if the existing fixed product has a QR_Code instance
                 if (existingFixedProduct.QR_Code == null)
                 {
-                    // Create a new QR_Code instance and assign the generated QR code bytes
+                    //If it doesn't, create a new QR_Code instance and assign the generated QR code bytes
                     existingFixedProduct.QR_Code = new QR_Code
                     {
-                        QR_Code_Photo = qrCodeBytes
+                        QR_Code_Photo = byteArr
                     };
+
                 }
                 else
                 {
-                    // Update the QR_Code_Photo property of the existing QR_Code instance
-                    existingFixedProduct.QR_Code.QR_Code_Photo = qrCodeBytes;
+                    existingFixedProduct.QR_Code.QR_Code_Photo = byteArr;
                 }
 
                 // Update the other properties of the fixed product
@@ -170,6 +188,7 @@ namespace BOX.Controllers
                 existingFixedProduct.SizeID = fixedProductViewModel.SizeID;
                 existingFixedProduct.Description = fixedProductViewModel.Description;
                 existingFixedProduct.Price = fixedProductViewModel.Price;
+                existingFixedProduct.Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64);
 
                 // Update the fixed product in the repository
                 await _repository.UpdateFixedProductAsync(existingFixedProduct);
@@ -191,6 +210,32 @@ namespace BOX.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
             }
+        }
+
+        [HttpDelete]
+        [Route("DeleteFixedProduct/{fixedProductId}")]
+        public async Task<IActionResult> DeleteFixedProduct(int fixedProductId)
+        {
+            try
+            {
+                var existingFixedProduct = await _repository.GetFixedProductAsync(fixedProductId);
+
+                if (existingFixedProduct == null) return NotFound($"The fixed product does not exist on the B.O.X System");
+
+                _repository.Delete(existingFixedProduct);
+
+                //delete associated QR code cos we aren't reusing it or retrieving historical data in any way
+                var existingQRCode = await _repository.GetQRCodeAsync(existingFixedProduct.QRCodeID);
+                _repository.Delete(existingQRCode);
+
+                if (await _repository.SaveChangesAsync()) return Ok(existingFixedProduct);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
+            }
+            return BadRequest("Your request is invalid.");
         }
 
         //Generating the QR Code

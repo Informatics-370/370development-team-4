@@ -26,7 +26,7 @@
                     <fa-icon [icon]="['fas', 'tape']"></fa-icon>
                     Size
                 </button><pre></pre>
-                <button class="btn btn-info text-start">
+                <button [routerLink]="['/fixed-product']" class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'box']"></fa-icon>
                     Product
                 </button><pre></pre>
@@ -75,10 +75,10 @@
                 <!--VAT data from API-->
                 <tr *ngFor="let vat of filteredVATs">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(vat.vatID)" >
+                        <button title="Delete this VAT amount" class="CRUD-icon" (click)="openDeleteModal(vat.vatID)" >
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(vat.vatID)" >
+                        <button title="Update this VAT amount" class="CRUD-icon" (click)="openUpdateModal(vat.vatID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
@@ -92,7 +92,7 @@
 </div>
 
 <!--CRUD MODALS-->
-<!--ADD REFUND REASON MODAL-->
+<!--ADD VAT MODAL-->
 <div class="modal fade" id="addVAT" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
@@ -109,12 +109,12 @@
             <div class="form-group">
                 <label for="percentage" class="form-label modal-form-label bold">Value Added Tax</label>
                 <input id="percentage" type="number" formControlName="percentage" class="form-control modal-form-input modal-form-text" placeholder="1" 
-                    name="percentage" required min="0" step="1">
+                    name="percentage" required min="0" max="100" step="1">
             </div>
             <!--Display validation error message-->
             <div *ngIf="(percentage?.dirty || percentage?.touched || submitClicked) && 
                 percentage?.errors?.['required'] || percentage?.errors?.['min']" class="error-msg">
-                Please enter a VAT amount above 0.
+                Please enter a whole number above 0.
             </div>
 
             <div class="form-submit-div">
@@ -128,7 +128,7 @@
     </div>
 </div>
 
-<!--DELETE REFUND REASON MODAL-->
+<!--DELETE VAT MODAL-->
 <div class="modal fade" id="deleteVAT" tabindex="-1" #deleteModal>
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
@@ -153,7 +153,7 @@
     </div>
 </div>
 
-<!--UPDATE REFUND REASON MODAL-->
+<!--UPDATE VAT MODAL-->
 <div class="modal fade" id="updateVAT" tabindex="-1" #updateModal>
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
@@ -170,12 +170,12 @@
             <div class="form-group">
                 <label for="uPercentage" class="form-label modal-form-label bold">Value Added Tax</label>
                 <input id="uPercentage" type="number" formControlName="uPercentage" class="form-control modal-form-input modal-form-text" 
-                    name="uPercentage" required min="0" step="1">
+                    name="uPercentage" required min="0" max="100" step="1">
             </div>
             <!--Display validation error message-->
             <div *ngIf="(uPercentage?.dirty || uPercentage?.touched || submitClicked) && 
                 uPercentage?.errors?.['required'] || uPercentage?.errors?.['min']" class="error-msg">
-                Please enter a VAT amount above 0.
+                Please enter a whole number above 0.
             </div>
 
             <div class="form-submit-div">

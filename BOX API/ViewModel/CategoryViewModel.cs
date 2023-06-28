@@ -2,6 +2,7 @@
 {
     public class CategoryViewModel
     {
+        public int categoryID { get; set; }
         public string categoryDescription { get; set; }
         public bool width { get; set; }
         public bool height { get; set; }
