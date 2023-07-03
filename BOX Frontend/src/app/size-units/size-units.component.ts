@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.services';
-import { Category } from '../shared/category';
+import { CategoryVM } from '../shared/category-vm';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Size } from '../shared/Size';
 import { SizeVM } from '../shared/size-vm';
@@ -20,7 +20,7 @@ export class SizeUnitsComponent {
   specificSize!: Size; //used to get a specific size (not always necessary)
   sizeCount: number = -1; //keep track of how many sizes there are in the DB
   categoryCount:number=-1 //Keep tracks of how many categories are in the DB
-  categories:Category[]=[]//Used to store all categories
+  categories:CategoryVM[]=[]//Used to store all categories
   //forms
    addSizeForm: FormGroup;
   updateSizeForm: FormGroup; 
