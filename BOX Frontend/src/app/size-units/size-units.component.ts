@@ -112,6 +112,7 @@ addSize() {
   if (this.addSizeForm.valid) {
     const formData = this.addSizeForm.value;
     let newSize : SizeVM = {
+      sizeID: 0,
       width: formData.sizeWidth,
       length: formData.sizeLength,
       weight: formData.sizeWeight,
@@ -241,6 +242,7 @@ updateSizeUnit() {
     //get form data
     const formValues = this.updateSizeForm.value;
     let updatedSize : SizeVM = {
+      sizeID: 0,
       categoryID: formValues.uCategoryID,
       length: formValues.usizeLength,
       width:formValues.usizeWidth,

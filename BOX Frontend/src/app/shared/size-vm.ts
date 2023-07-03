@@ -6,5 +6,5 @@ export interface SizeVM {
     volume:number;
     categoryID: number;
     categoryDescription:string;
-
+    sizeID: number;
 }

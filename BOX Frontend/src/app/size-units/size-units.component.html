@@ -112,7 +112,7 @@
                 <label for="category" class="form-label modal-form-label bold">Product Category:</label>
                 <select id="add-categoryID" [(ngModel)]="selectedValue" formControlName="categoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text">                    
                     <option disabled value="NA">Choose a category</option>
-                    <option style="color:rgb(182, 16, 16);" *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.categoryDescription}}</option>
+                    <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.categoryDescription}}</option>
                 </select>
             </div>
             <!--Display validation error message-->

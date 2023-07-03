@@ -701,8 +701,10 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeID"), 1L, 1);
 
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Height")
                         .HasColumnType("decimal(18,2)");
@@ -720,8 +722,6 @@ namespace BOX.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("SizeID");
-
-                    b.HasIndex("CategoryID");
 
                     b.ToTable("Size_Units", (string)null);
                 });
@@ -1494,17 +1494,6 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("QR_Code");
-                });
-
-            modelBuilder.Entity("BOX.Models.Size_Units", b =>
-                {
-                    b.HasOne("BOX.Models.Product_Category", "Product_Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product_Category");
                 });
 
             modelBuilder.Entity("BOX.Models.Stock_Take", b =>

@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { take, lastValueFrom } from 'rxjs';
 declare var $: any;
 import { CategoryVM } from '../shared/category-vm';
-import { Size } from '../shared/Size';
+import { SizeVM } from '../shared/size-vm';
 import { Item } from '../shared/item';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { TableFixedProductVM } from '../shared/table-fixed-product-vm';
@@ -21,7 +21,7 @@ export class FixedProductComponent {
   tableProducts: TableFixedProductVM[] = []; //store all fixed products in format to display in table
   categories: CategoryVM[] = []; //store all categories for view, search, update and delete
   items: Item[] = []; //store all items for view, search, update and delete
-  sizes: Size[] = []; //store all sizes for view, search, update and delete
+  sizes: SizeVM[] = []; //store all sizes for view, search, update and delete
   categorySizes: any[] = []; //store all sizes associated with a specific category
   categoryItems: Item[] = []; //store all product items associated with a specific category
   specificProduct!: FixedProductVM; //used to get a specific product
@@ -163,15 +163,19 @@ export class FixedProductComponent {
         if (currentSize.sizeID == currentProduct.sizeID) {
           //treat currentSize like an array with the properties as values in the array
           let sizeAsArr = Object.entries(currentSize);
+          console.log('sizeAsArray: ', sizeAsArr)
           //description is the last property in the size object and sizeID is the first property; I don't want to use them, only the sizes
-          for (let i = 1; i < sizeAsArr.length - 1; i++) {
-            if (sizeAsArr[i][1] > 0) {
-              sizeString += sizeAsArr[i][1] + ' ';
-            }
-
-            //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, make it NA
-            if (i == sizeAsArr.length - 2 && sizeString == '')
-              sizeString = 'N/A';
+          for (let i = 0; i < sizeAsArr.length; i++) {
+            if (sizeAsArr[i][0] != 'sizeID' && sizeAsArr[i][0] != 'categoryID' && sizeAsArr[i][0] != 'categoryDescription')
+            {
+              if (sizeAsArr[i][1] > 0) {
+                sizeString += sizeAsArr[i][1] + ' ';
+              }
+  
+              //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, make it NA
+              if (i == sizeAsArr.length && sizeString == '')
+                sizeString = 'N/A'; 
+            }            
           }
         }
       });
@@ -489,18 +493,21 @@ export class FixedProductComponent {
     for (let i = 0; i < this.sizes.length; i++) {
       let sizeStr: string = ''; //reset string
 
-      if (cat.categoryDescription == this.sizes[i].description) {
+      if (cat.categoryID == this.sizes[i].categoryID) {
         //treat size like an array with the properties as values in the array
         let sizeAsArray = Object.entries(this.sizes[i]);
         //description is the last property in the size object and sizeID is the first property; don't use them, only the sizes
-        for (let j = 1; j < sizeAsArray.length - 1; j++) {
-          if (sizeAsArray[j][1] > 0) {
-            sizeStr += sizeAsArray[j][1] + ' ';
-          }
-
-          //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, N/A
-          if (j == sizeAsArray.length - 2 && sizeStr == '')
-            sizeStr = 'N/A';
+        for (let j = 0; j < sizeAsArray.length; j++) {
+          if (sizeAsArray[j][0] != 'sizeID' && sizeAsArray[j][0] != 'categoryID' && sizeAsArray[j][0] != 'categoryDescription')
+          {
+            if (sizeAsArray[j][1] > 0) {
+              sizeStr += sizeAsArray[j][1] + ' ';
+            }
+  
+            //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, N/A
+            if (j == sizeAsArray.length && sizeStr == '')
+              sizeStr = 'N/A';
+          }          
         }
 
         sizeStr = sizeStr.trim().replaceAll(' ', 'x'); //turn '150 150 150 ' to '150 150 150' and then to '150x150x150'
