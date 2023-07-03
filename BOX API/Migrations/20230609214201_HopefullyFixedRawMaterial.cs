@@ -4,7 +4,7 @@
 
 namespace BOX.Migrations
 {
-    public partial class addVAT : Migration
+    public partial class HopefullyFixedRawMaterial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

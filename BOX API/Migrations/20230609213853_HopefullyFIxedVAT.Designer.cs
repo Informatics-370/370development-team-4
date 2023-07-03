@@ -4,6 +4,7 @@ using BOX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230609213853_HopefullyFIxedVAT")]
+    partial class HopefullyFIxedVAT
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -527,14 +529,7 @@ namespace BOX.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<byte[]>("Product_Photo")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
                     b.Property<int>("QRCodeID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity_On_Hand")
                         .HasColumnType("int");
 
                     b.Property<int>("SizeID")
@@ -668,9 +663,9 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QRCodeID"), 1L, 1);
 
-                    b.Property<byte[]>("QR_Code_Photo")
+                    b.Property<string>("QR_Code_Photo")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("QRCodeID");
 
@@ -693,9 +688,6 @@ namespace BOX.Migrations
                     b.Property<int>("QRCodeID")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity_On_Hand")
-                        .HasColumnType("int");
-
                     b.HasKey("RawMaterialID");
 
                     b.HasIndex("QRCodeID");
@@ -711,8 +703,10 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeID"), 1L, 1);
 
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Height")
                         .HasColumnType("decimal(18,2)");
@@ -730,8 +724,6 @@ namespace BOX.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("SizeID");
-
-                    b.HasIndex("CategoryID");
 
                     b.ToTable("Size_Units");
                 });
@@ -808,12 +800,17 @@ namespace BOX.Migrations
                         .HasMaxLength(75)
                         .HasColumnType("nvarchar(75)");
 
+                    b.Property<int>("FixedProductID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("SupplierID");
+
+                    b.HasIndex("FixedProductID");
 
                     b.ToTable("Supplier");
                 });
@@ -1508,17 +1505,6 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Stock_Take", b =>
                 {
-                    b.HasOne("BOX.Models.Product_Category", "Product_Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product_Category");
-                });
-
-            modelBuilder.Entity("BOX.Models.Stock_Take", b =>
-                {
                     b.HasOne("BOX.Models.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeID")
@@ -1526,6 +1512,17 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("BOX.Models.Supplier", b =>
+                {
+                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
+                        .WithMany()
+                        .HasForeignKey("FixedProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fixed_Product");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_Order", b =>

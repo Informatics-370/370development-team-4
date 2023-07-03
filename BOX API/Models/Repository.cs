@@ -212,6 +212,13 @@ namespace BOX.Models
             await _appDbContext.SaveChangesAsync();
         }
 
+        //-----------------------QR CODE-----------------------
+        public async Task<QR_Code> GetQRCodeAsync(int codeId)
+        {
+            IQueryable<QR_Code> query = _appDbContext.QR_Code.Where(c => c.QRCodeID == codeId);
+            return await query.FirstOrDefaultAsync();
+        }
+
         //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
         //Never remove this line of code, code above the line above.
         public async Task<bool> SaveChangesAsync()

@@ -27,5 +27,11 @@ namespace BOX.Models
 
         [Required]
         public decimal Price { get; set; }
+
+        [Required]
+        public byte[] Product_Photo { get; set; }
+
+        [Required]
+        public int Quantity_On_Hand { get; set; }
     }
 }

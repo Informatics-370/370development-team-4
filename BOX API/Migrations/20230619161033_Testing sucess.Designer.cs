@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
+<<<<<<<< HEAD:BOX API/Migrations/20230619161033_Testing sucess.Designer.cs
     [Migration("20230619161033_Testing sucess")]
     partial class Testingsucess
+========
+    [Migration("20230610092208_FixVAT")]
+    partial class FixVAT
+>>>>>>>> Internal-Testing-2:BOX API/Migrations/20230610092208_FixVAT.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
