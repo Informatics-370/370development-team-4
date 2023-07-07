@@ -9,6 +9,7 @@ import { ItemVM } from '../shared/item-vm';
 import { RefundReason } from '../shared/refund-reason';
 import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
+import { RawMaterials } from '../shared/raw-material';
 
 imports:[
   HttpClientModule
@@ -187,4 +188,28 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
    return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, vvm, this.httpOptions);
   }
    
+  //----------RAW MATERIAL---------------
+  GetAllRawMaterials(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}RawMaterials/GetAllRawMaterials`)
+    .pipe(map(result => result))
+  }
+
+  GetRawMaterial(rawmaterialId: number): Observable<RawMaterials> {
+    return this.httpClient.get<RawMaterials>(`${this.apiUrl}RawMaterials/GetRawMaterial/${rawmaterialId}`)
+      .pipe(map(result => result));
+  }
+
+  AddRawMaterial(worvm: any): Observable<RawMaterials> {
+    return this.httpClient.post<RawMaterials>(
+      `${this.apiUrl}RawMaterial/AddRawMaterial`, worvm, this.httpOptions
+    );
+  }
+
+  DeleteRawMaterial(rawmaterialId: number ):Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}RawMaterial/DeleteRawMaterial/${rawmaterialId}`, this.httpOptions);
+  }
+
+  UpdateRawMaterial(rawmaterialId: number, rmvm: any): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}RawMaterial/EditRawMaterial/${rawmaterialId}`, rmvm, this.httpOptions);
+  }
 }
