@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
-import { EditScreenComponent } from './edit-screen/edit-screen.component';
 
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +17,10 @@ import { RefundReasonComponent } from './refund-reason/refund-reason.component';
 import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.component';
 import { SizeUnitsComponent } from './size-units/size-units.component';
 import { VatComponent } from './vat/vat.component';
+import { MenuComponent } from './menu/menu.component';
+import { SupplierComponent } from './supplier/supplier.component';
+import { StartupDivComponent } from './startup-div/startup-div.component';
+import { FixedProductComponent } from './fixed-product/fixed-product.component';
 import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 
 @NgModule({
@@ -33,6 +34,12 @@ import { EstimateDurationComponent } from './estimate-duration/estimate-duration
         RefundReasonComponent,
         WriteOffReasonComponent,
         SizeUnitsComponent,
+        VatComponent,
+        ProductCategoryComponent,
+        MenuComponent,
+        SupplierComponent,
+        StartupDivComponent,
+        FixedProductComponent
         VatComponent,
         EstimateDurationComponent
 

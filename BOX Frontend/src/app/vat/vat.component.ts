@@ -73,9 +73,10 @@ export class VatComponent {
   addVAT() {
     this.submitClicked = true; //display validation error message if user tried to submit form with no fields filled in correctly
     if (this.addVATForm.valid) {
-      const formData = this.addVATForm.value;
-      let newVAT: any = {
-        'percentage': formData.percentage
+     const formData = this.addVATForm.value;
+      let newVAT: VAT = {
+        vatID: 0,
+        percentage: formData.percentage
       };
       
       this.dataService.AddVAT(newVAT).subscribe(
@@ -103,20 +104,20 @@ export class VatComponent {
         this.updateVATForm.setValue({          
           uPercentage: result.percentage
         }); //display data;
+
+        //Open the modal manually after data is retrieved and displayed
+        this.updateModal.nativeElement.classList.add('show');
+        this.updateModal.nativeElement.style.display = 'block';
+        this.updateModal.nativeElement.id = 'updateVAT-' + vatId; //pass VAT ID into modal ID so I can use it to update later
+        //Fade background when modal is open.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       },
       (error) => {
         console.error(error);
       }
     );
-
-    //Open the modal manually
-    this.updateModal.nativeElement.classList.add('show');
-    this.updateModal.nativeElement.style.display = 'block';
-    this.updateModal.nativeElement.id = 'updateVAT-' + vatId; //pass VAT ID into modal ID so I can use it to update later
-    //Fade background when modal is open.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeUpdateModal() {
@@ -139,9 +140,11 @@ export class VatComponent {
 
       //get form data
       const formValues = this.updateVATForm.value;
-      let updatedVAT: any = {        
-        'percentage': formValues.uPercentage
+      let updatedVAT: VAT = {
+        vatID: 0,    
+        percentage: formValues.uPercentage
       };
+
       console.log(updatedVAT);
 
       //update item

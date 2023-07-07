@@ -130,13 +130,12 @@ export class RefundReasonComponent {
       (result) => {
         console.log("Successfully deleted ", result);
         this.getReasons(); //refresh item list
+        this.closeDeleteModal();
       },
       (error) => {
         console.error('Error deleting reason with ID ', reasonId, error);
       }
     );
-
-    this.closeDeleteModal();
   }
 
   //--------------------UPDATE REASON LOGIC----------------
@@ -148,20 +147,20 @@ export class RefundReasonComponent {
         this.updateReasonForm.setValue({          
           uDescription: result.description
         }); //display data;
+
+        //Open the modal manually only after data is retrieved and displayed
+        this.updateModal.nativeElement.classList.add('show');
+        this.updateModal.nativeElement.style.display = 'block';
+        this.updateModal.nativeElement.id = 'updateReason-' + reasonId; //pass item ID into modal ID so I can use it to update later
+        //Fade background when modal is open.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       },
       (error) => {
         console.error(error);
       }
     );
-
-    //Open the modal manually
-    this.updateModal.nativeElement.classList.add('show');
-    this.updateModal.nativeElement.style.display = 'block';
-    this.updateModal.nativeElement.id = 'updateReason-' + reasonId; //pass item ID into modal ID so I can use it to update later
-    //Fade background when modal is open.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeUpdateModal() {
@@ -189,12 +188,12 @@ export class RefundReasonComponent {
       };
       console.log(updatedReason);
 
-      //update item
+      //update reason
       this.dataService.UpdateRefundReason(reasonId, updatedReason).subscribe(
         (result: any) => {
           console.log('Updated reasons', result);
-          this.getReasons(); //refresh item list
-          this.submitClicked = false; //rest submission status
+          this.getReasons(); //refresh list
+          this.submitClicked = false; //reset submission status
         },
         (error) => {
           console.error('Error updating items:', error);

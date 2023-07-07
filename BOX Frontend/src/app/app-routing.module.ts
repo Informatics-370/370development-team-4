@@ -9,6 +9,8 @@ import { RefundReasonComponent } from './refund-reason/refund-reason.component';
 import { WriteOffReasonComponent } from './write-off-reason/write-off-reason.component';
 import { SizeUnitsComponent } from './size-units/size-units.component';
 import { VatComponent } from './vat/vat.component';
+import { SupplierComponent } from './supplier/supplier.component';
+import { FixedProductComponent } from './fixed-product/fixed-product.component';
 import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 
 
@@ -22,6 +24,9 @@ const routes: Routes = [
           {path: "refund-reason", component: RefundReasonComponent},
           {path: "write-off-reason", component: WriteOffReasonComponent},
           {path: 'size-units', component: SizeUnitsComponent},
+    { path: 'vat', component: VatComponent },
+    { path: "supplier", component: SupplierComponent },
+    { path: "fixed-product", component: FixedProductComponent }
           {path: 'vat', component: VatComponent},
           {path: 'estimate-duration', component: EstimateDurationComponent}
 

@@ -11,8 +11,8 @@ declare var $: any;
   styleUrls: ['./product-category.component.css']
 })
 export class ProductCategoryComponent {
-  categories: Category[] = []; //used to get all categories
-  filteredCategories: Category[] = []; //used to hold all the categories that will be displayed to the user
+  categories: CategoryVM[] = []; //used to get all categories
+  filteredCategories: CategoryVM[] = []; //used to hold all the categories that will be displayed to the user
   specificCategory!: CategoryVM; //used to get a specific category
   categoryCount: number = -1; //keep track of how many categories there are in the DB
   //forms
@@ -25,6 +25,8 @@ export class ProductCategoryComponent {
   searchTerm: string = '';
   submitClicked = false; //keep track of when submit button is clicked
   loading = true; //show loading message while data loads
+  duplicateFound = false; //boolean to display error message if user tries to create a duplicate category
+  duplicateFoundUpdate = false; //used to display error message if user tries to update category to have duplicate description
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -71,7 +73,7 @@ export class ProductCategoryComponent {
     this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredCategories = []; //clear array
     for (let i = 0; i < this.categories.length; i++) {
-      let notCaseSensitive: string = this.categories[i].description.toLowerCase();
+      let notCaseSensitive: string = this.categories[i].categoryDescription.toLowerCase();
       if (notCaseSensitive.includes(this.searchTerm.toLowerCase()))
       {
         this.filteredCategories.push(this.categories[i]);
@@ -87,21 +89,42 @@ export class ProductCategoryComponent {
     this.submitClicked = true;
     if (this.addCategoryForm.valid) {
       let newCategory : CategoryVM = this.addCategoryForm.value;
-     
-      this.dataService.AddCategory(newCategory).subscribe(
-        (result: any) => {
-              console.log('new category!', result);
+      newCategory.categoryID = 0;
 
-              this.getCategories(); //refresh category list              
-              //reset form; NT reset and patchValue methods didn't quite work
-              this.addCategoryForm.setValue({categoryDescription: '', length: false, width: false, height: false, weight: false, volume: false });
-              this.submitClicked = false; //reset submission status
-              $('#addCategory').modal('hide');
-        }
-      );
+      //prevent user from creating duplicate categories (same description)
+      if (this.checkDuplicateDescription(newCategory.categoryDescription)) { //if user is entering duplicate category
+        this.duplicateFound = true;
+        setTimeout(() => {
+          this.duplicateFound = false;
+        }, 5000);
+      }
+      else {
+        this.dataService.AddCategory(newCategory).subscribe(
+          (result: any) => {
+            console.log('new category!', result);
+  
+            this.getCategories(); //refresh category list              
+            //reset form; NT reset and patchValue methods didn't quite work
+            this.addCategoryForm.setValue({categoryDescription: '', length: false, width: false, height: false, weight: false, volume: false });
+            this.submitClicked = false; //reset submission status
+            $('#addCategory').modal('hide');
+          }
+        );
+      }      
     }
   }
   
+  //method to determine if a user tried to enter a category with same description
+  checkDuplicateDescription(description: string, ID?: number): boolean {
+    description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
+    for (let i = 0; i < this.categories.length; i++) {
+      //if description matches but they're updating a category, don't count it as a duplicate if they kept the category description the same
+      if (this.categories[i].categoryDescription.toLowerCase() == description && ID != this.categories[i].categoryID) {         
+        return true;
+      }
+    }
+    return false;
+  }
 
   //--------------------DELETE CATEGORY LOGIC----------------
   openDeleteModal(categoryId: number) {
@@ -143,18 +166,18 @@ export class ProductCategoryComponent {
           else deleteVolume.innerHTML = 'Disabled';
         }
 
+        //Open the modal manually, only after data is displayed
+        this.deleteModal.nativeElement.classList.add('show');
+        this.deleteModal.nativeElement.style.display = 'block';
+        this.deleteModal.nativeElement.id = 'deleteCategory-' + categoryId;
+        //Fade background when modal is open.
+        //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error. Angular, my bru, who gives a damn?!!!
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
+
       }
     );
-
-    //Open the modal manually
-    this.deleteModal.nativeElement.classList.add('show');
-    this.deleteModal.nativeElement.style.display = 'block';
-    this.deleteModal.nativeElement.id = 'deleteCategory-' + categoryId;
-    //Fade background when modal is open.
-    //I wanted to do this in 1 line but Angular was giving a 'Object is possibly null' error. Angular, my bru, who gives a damn?!!!
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeDeleteModal() {
@@ -200,17 +223,17 @@ export class ProductCategoryComponent {
           uWeight: this.specificCategory.weight,
           uVolume: this.specificCategory.volume
         }); //display data; Reactive forms are so powerful. All the categoryVM data passed with one method
+
+        //Open the modal manually only after the data is retrieved and displayed
+        this.updateModal.nativeElement.classList.add('show');
+        this.updateModal.nativeElement.style.display = 'block';
+        this.updateModal.nativeElement.id = 'updateCategory-' + categoryId; //pass category ID into modal ID so I can use it to update later
+        //Fade background when modal is open.
+        const backdrop = document.getElementById("backdrop");
+        if (backdrop) {backdrop.style.display = "block"};
+        document.body.style.overflow = 'hidden'; //prevent scrolling web page body
       }
     );
-
-    //Open the modal manually
-    this.updateModal.nativeElement.classList.add('show');
-    this.updateModal.nativeElement.style.display = 'block';
-    this.updateModal.nativeElement.id = 'updateCategory-' + categoryId; //pass category ID into modal ID so I can use it to update later
-    //Fade background when modal is open.
-    const backdrop = document.getElementById("backdrop");
-    if (backdrop) {backdrop.style.display = "block"};
-    document.body.style.overflow = 'hidden'; //prevent scrolling web page body
   }
 
   closeUpdateModal() {
@@ -233,28 +256,39 @@ export class ProductCategoryComponent {
 
       //get form data
       const formValues = this.updateCategoryForm.value;
-      let updatedCategory : CategoryVM = {
-        categoryDescription: formValues.uCategoryDescription,
-        width: formValues.uWidth,
-        length: formValues.uLength,
-        height: formValues.uHeight,
-        weight: formValues.uWeight,
-        volume: formValues.uVolume
-      };
 
-      //update category
-      this.dataService.UpdateCategory(categoryId, updatedCategory).subscribe(
-        (result: any) => {
-          console.log('Updated category', result);
-          this.getCategories(); //refresh category list
-          this.submitClicked = false;
-        },
-        (error) => {
-          console.error('Error updating category:', error);
-        }
-      );
-
-      this.closeUpdateModal();
+      //prevent user from updating category to have duplicate descriptions
+      if (this.checkDuplicateDescription(formValues.uCategoryDescription, categoryId)) { //if user is entering duplicate category
+        this.duplicateFoundUpdate = true;
+        setTimeout(() => {
+          this.duplicateFoundUpdate = false;
+        }, 8000);
+      }
+      else {
+        let updatedCategory : CategoryVM = {
+          categoryID: 0,
+          categoryDescription: formValues.uCategoryDescription,
+          width: formValues.uWidth,
+          length: formValues.uLength,
+          height: formValues.uHeight,
+          weight: formValues.uWeight,
+          volume: formValues.uVolume
+        };
+  
+        //update category
+        this.dataService.UpdateCategory(categoryId, updatedCategory).subscribe(
+          (result: any) => {
+            console.log('Updated category', result);
+            this.getCategories(); //refresh category list
+            this.submitClicked = false;
+            //close modal only if updated successfully
+            this.closeUpdateModal();
+          },
+          (error) => {
+            console.error('Error updating category:', error);
+          }
+        );
+      }      
     }    
   }
 

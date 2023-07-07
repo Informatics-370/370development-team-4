@@ -26,7 +26,7 @@
                     <fa-icon [icon]="['fas', 'tape']"></fa-icon>
                     Size
                 </button><pre></pre>
-                <button class="btn btn-info text-start">
+                <button [routerLink]="['/fixed-product']" class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'box']"></fa-icon>
                     Product
                 </button><pre></pre>
@@ -65,7 +65,7 @@
                 </tr>
             </thead>
             <tbody>                
-                <!--Error message if there's no items in the DB-->
+                <!--Error message if there's no reasons in the DB-->
                 <tr *ngIf="reasonCount==0">
                     <td colspan="2">No customer refund reasons found. Please add a new reason to the system.</td>
                 </tr>
@@ -73,13 +73,13 @@
                 <tr *ngIf="loading">
                     <td colspan="2">Please wait while we load all refund reasons...</td>
                 </tr>
-                <!--Item data from API-->
+                <!--Reason data from API-->
                 <tr *ngFor="let reason of filteredReasons">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(reason.customerRefundReasonID)">
+                        <button title="Delete this customer refund reason" class="CRUD-icon" (click)="openDeleteModal(reason.customerRefundReasonID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(reason.customerRefundReasonID)" >
+                        <button title="Update this customer refund reason" class="CRUD-icon" (click)="openUpdateModal(reason.customerRefundReasonID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>

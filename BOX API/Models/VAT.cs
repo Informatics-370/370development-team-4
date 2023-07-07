@@ -8,5 +8,5 @@ namespace BOX.Models
 	{
 		[Key] public int VatID { get; set; }
 		[Required] public int Percentage { get; set; }
-	}
+    }
 }

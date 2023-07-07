@@ -11,10 +11,10 @@
             
             <div class="text-center">
                 <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
+                    <fa-icon [icon]="['fas', 'industry']"></fa-icon>
                     Dashboard
                 </button><pre></pre>
-                <button class="btn btn-info active text-start">
+                <button [routerLink]="['/product-category']" class="btn btn-info active text-start">
                     <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
                     Product Category
                 </button><pre></pre>
@@ -26,7 +26,7 @@
                     <fa-icon [icon]="['fas', 'tape']"></fa-icon>
                     Size
                 </button><pre></pre>
-                <button class="btn btn-info text-start">
+                <button [routerLink]="['/fixed-product']" class="btn btn-info text-start">
                     <fa-icon [icon]="['fas', 'box']"></fa-icon>
                     Product
                 </button><pre></pre>
@@ -38,9 +38,9 @@
                     <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
                     Write-off reason
                 </button><pre></pre>
-                <button [routerLink]="['/estimate-duration']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Estimate Duration
+                <button [routerLink]="['/vat']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
+                    VAT
                 </button><pre></pre>
             </div>
         </div>
@@ -77,15 +77,15 @@
                 <!--Category data from API-->
                 <tr *ngFor="let category of filteredCategories">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(category.categoryID)">
+                        <button title="Delete this product category" class="CRUD-icon" (click)="openDeleteModal(category.categoryID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(category.categoryID)">
+                        <button title="Update this product category" class="CRUD-icon" (click)="openUpdateModal(category.categoryID)">
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
                     <td>
-                        {{category.description}}
+                        {{category.categoryDescription}}
                     </td>
                 </tr>
             </tbody>
@@ -115,7 +115,10 @@
             <!--Display validation error message-->
             <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
                 This field is required.
-            </div>            
+            </div>
+            <div *ngIf="duplicateFound && submitClicked" class="error-msg">
+                A category with this description already exists.
+            </div>
             <div class="form-group">
                 <label class="form-check-label modal-form-label">
                     <input id="add-length" formControlName="length" class="form-check-input modal-form-input" type="checkbox" name="length"> Length
@@ -205,7 +208,10 @@
             <!--Display validation error message-->
             <div *ngIf="(uCategoryDescription?.dirty || uCategoryDescription?.touched || submitClicked) && uCategoryDescription?.errors?.['required']" class="error-msg">
                 This field is required.
-            </div>   
+            </div>
+            <div *ngIf="duplicateFoundUpdate && submitClicked" class="error-msg">
+                A category with this description already exists.
+            </div>
             <div class="form-group">
                 <label class="form-check-label modal-form-label">
                     <input id="update-length" formControlName="uLength" class="form-check-input modal-form-input" type="checkbox" name="length"> Length

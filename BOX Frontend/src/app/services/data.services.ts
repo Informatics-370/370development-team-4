@@ -9,6 +9,7 @@ import { ItemVM } from '../shared/item-vm';
 import { RefundReason } from '../shared/refund-reason';
 import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
+import { FixedProductVM } from '../shared/fixed-product-vm';
 import { EstimateDuration } from '../shared/estimate-duration';
 
 imports:[
@@ -84,13 +85,13 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   UpdateCategory(categoryId: number, categoryVM: CategoryVM): Observable<CategoryVM> {
     return this.httpClient.put<CategoryVM>(`${this.apiUrl}ProductCategory/UpdateCategory/${categoryId}`, categoryVM, this.httpOptions);
-  }
+    }
 
-  //------------PRODUCT ITEM------------ [Give it its own service?]
-  GetItems(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}ProductItem/GetAllItems`)
-    .pipe(map(result => result))
-  }
+    //------------PRODUCT ITEM------------ [Give it its own service?]
+    GetItems(): Observable<any> {
+        return this.httpClient.get(`${this.apiUrl}ProductItem/GetAllItems`)
+            .pipe(map(result => result))
+    }
 
   GetItem(itemId: number): Observable<Item> {
     return this.httpClient.get<Item>(`${this.apiUrl}ProductItem/GetItem/${itemId}`)
@@ -159,9 +160,7 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   UpdateWriteOffReason(writeoffreasonId: number, writeoffreasonmodel: any): Observable<any> {
    return this.httpClient.put<any>(`${this.apiUrl}WriteOffReason/EditWriteOffReason/${writeoffreasonId}`, writeoffreasonmodel, this.httpOptions);
-  }
-
-  
+  }  
 
   //------------VAT------------
   GetAllVAT(): Observable<any> {
@@ -174,9 +173,9 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
       .pipe(map(result => result));
   }
 
-  AddVAT(vvm: any): Observable<any> {
+  AddVAT(newVAT: VAT): Observable<any> {
     return this.httpClient.post<any>(
-      `${this.apiUrl}VAT/AddVat`, vvm, this.httpOptions
+      `${this.apiUrl}VAT/AddVat`, newVAT, this.httpOptions
     );
   }
 
@@ -184,8 +183,33 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     return this.httpClient.delete<any>(`${this.apiUrl}VAT/DeleteVat/${vatId}`, this.httpOptions);
   }
 
-  UpdateVAT(vatId: number, vvm: any): Observable<any> {
-   return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, vvm, this.httpOptions);
+  UpdateVAT(vatId: number, updatedVAT: VAT): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, updatedVAT, this.httpOptions);
+  }
+
+  //-------------------------------------------------------FIXED PRODUCT-------------------------------------------------------
+  GetAllFixedProducts(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}FixedProduct/GetAllFixedProducts`)
+    .pipe(map(result => result))
+  }
+
+  GetFixedProduct(fixedProductId: number): Observable<FixedProductVM> {
+    return this.httpClient.get<FixedProductVM>(`${this.apiUrl}FixedProduct/GetFixedProduct/${fixedProductId}`)
+      .pipe(map(result => result));
+  }
+
+  AddFixedProduct(fixedProductViewModel: FixedProductVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}FixedProduct/CreateFixedProduct`, fixedProductViewModel, this.httpOptions
+    );
+  }
+
+  UpdateFixedProduct(fixedProductId: number, fixedProductViewModel: FixedProductVM): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}FixedProduct/UpdateFixedProduct/${fixedProductId}`, fixedProductViewModel, this.httpOptions);
+  }
+
+  DeleteFixedProduct(fixedProductId: number): Observable<any> {    
+    return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
   }
 
   //------------ESTIMATE DURATION------------ 
