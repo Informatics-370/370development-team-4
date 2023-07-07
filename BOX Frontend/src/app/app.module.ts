@@ -39,8 +39,7 @@ import { EstimateDurationComponent } from './estimate-duration/estimate-duration
         MenuComponent,
         SupplierComponent,
         StartupDivComponent,
-        FixedProductComponent
-        VatComponent,
+        FixedProductComponent,
         EstimateDurationComponent
 
   ],

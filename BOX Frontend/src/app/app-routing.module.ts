@@ -26,8 +26,7 @@ const routes: Routes = [
           {path: 'size-units', component: SizeUnitsComponent},
     { path: 'vat', component: VatComponent },
     { path: "supplier", component: SupplierComponent },
-    { path: "fixed-product", component: FixedProductComponent }
-          {path: 'vat', component: VatComponent},
+    { path: "fixed-product", component: FixedProductComponent },
           {path: 'estimate-duration', component: EstimateDurationComponent}
 
 
