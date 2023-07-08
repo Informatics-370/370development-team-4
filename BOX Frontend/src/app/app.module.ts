@@ -21,6 +21,7 @@ import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
+import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 
 @NgModule({
   declarations: [ 
@@ -38,7 +39,9 @@ import { FixedProductComponent } from './fixed-product/fixed-product.component';
         MenuComponent,
         SupplierComponent,
         StartupDivComponent,
-        FixedProductComponent
+        FixedProductComponent,
+        EstimateDurationComponent
+
   ],
   imports: [
     BrowserModule,

@@ -10,6 +10,7 @@ import { RefundReason } from '../shared/refund-reason';
 import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
+import { EstimateDuration } from '../shared/estimate-duration';
 
 imports:[
   HttpClientModule
@@ -209,6 +210,31 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   DeleteFixedProduct(fixedProductId: number): Observable<any> {    
     return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
+  }
+
+  //------------ESTIMATE DURATION------------ 
+  GetEstimateDurations(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}EstimateDuration/GetAllEstimateDurations`)
+      .pipe(map(result => result))
+  }
+
+  GetEstimateDuration(estimatedurationId: number): Observable<EstimateDuration> {
+    return this.httpClient.get<EstimateDuration>(`${this.apiUrl}EstimateDuration/GetEstiateDuration/${estimatedurationId}`)
+      .pipe(map(result => result));
+  }
+
+  AddEstimateDuration(rrvm: any): Observable<EstimateDuration> {
+    return this.httpClient.post<EstimateDuration>(
+      `${this.apiUrl}EstimateDuration/AddEstimateDuration`, rrvm, this.httpOptions
+    );
+  }
+
+  DeleteEstimateDurationn(estimatedurationId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}EstimateDuration/DeleteEstimateDuration/${estimatedurationId}`, this.httpOptions);
+  }
+
+  UpdateEstimateDuration(estimatedurationId: number, estimatedurationModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}EstimateDuration/EditEstimateDuration/${estimatedurationId}`, estimatedurationModel, this.httpOptions);
   }
    
 }
