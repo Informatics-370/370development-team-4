@@ -219,7 +219,7 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
   }
 
   GetEstimateDuration(estimatedurationId: number): Observable<EstimateDuration> {
-    return this.httpClient.get<EstimateDuration>(`${this.apiUrl}EstimateDuration/GetEstiateDuration/${estimatedurationId}`)
+    return this.httpClient.get<EstimateDuration>(`${this.apiUrl}EstimateDuration/GetEstimateDuration/${estimatedurationId}`)
       .pipe(map(result => result));
   }
 
