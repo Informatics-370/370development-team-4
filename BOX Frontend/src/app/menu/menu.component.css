@@ -1,0 +1,75 @@
+/* ---------------------------------------- Sidebar ------------------------------------------ */
+
+.sidebar {
+    /* From https://css.glass */
+    background: rgba(55, 52, 53, 1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10.2px);
+    -webkit-backdrop-filter: blur(10.2px);
+    border: 1px solid rgba(55, 52, 53, 0.09);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 240px;
+    z-index: 600;
+}
+
+/* .sidebar .active {
+    background: rgba(3, 71, 134, 1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(3, 71, 134, 0.09);
+} */
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+/* ---------------------------------------- Menu Items ------------------------------------------ */
+a {
+    /*Navigation Item Color*/
+    background: rgba(55, 52, 53, 1);
+    border: 1px solid rgba(55, 52, 53, 0.09);
+
+    /*Text*/
+    color: #FFFFFF;
+    font-weight: 500;
+}
+
+a:hover {
+    /*Navigation Item Color*/
+    background: rgba(221,221,221, 0.38);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10.2px);
+    -webkit-backdrop-filter: blur(10.2px);
+    border: 1px solid rgba(6, 72, 132, 0.09);
+
+    /*Text*/
+    color: #FFFFFF;
+}
+
+.item-active {
+    background: #00F2C8;
+    color: #373435;
+    .fa-icon-large {
+        color: #373435;
+    }
+}
+
+/* ---------------------------------------- Buttons ------------------------------------------ */
+#settings {
+    background: #00F2C8;
+    color: #373435;
+    font-weight: 500;
+
+    .fa-icon-large {
+        color: #373435;
+    }
+}

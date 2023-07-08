@@ -55,7 +55,14 @@ namespace BOX.Controllers
     [Route("AddSize")]
     public async Task<IActionResult> AddSize(SizeViewModel svm)
     {
-      var size = new Size_Units { Width = svm.Width,Height=svm.Height,Length=svm.Length,Weight=svm.Weight,Volume=svm.Volume };
+      var size = new Size_Units {
+          Width = svm.Width,
+          Height = svm.Height,
+          Length = svm.Length,
+          Weight = svm.Weight,
+          Volume = svm.Volume,
+          Description = svm.Description
+      };
 
       try
       {
@@ -85,6 +92,7 @@ namespace BOX.Controllers
         existingSize.Length= sizeModel.Length;
         existingSize.Weight = sizeModel.Weight;
         existingSize.Volume = sizeModel.Volume;
+        existingSize.Description = sizeModel.Description;
 
         if (await _repository.SaveChangesAsync())
         {

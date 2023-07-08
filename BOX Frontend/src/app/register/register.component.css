@@ -1,3 +1,16 @@
-h1, h2, h3, h4, h5, h6, label {
-    color: #FFFFFF;
+body {
+    font-family: 'Poppins';
+}
+
+h4 {
+    font-weight: 700;
+}
+
+button {
+    background-color: #32AF99;
+    width: 200px;
+}
+
+button:hover {
+    background-color: #2b927f;
 }
