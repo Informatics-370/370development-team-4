@@ -249,17 +249,17 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
       .pipe(map(result => result));
   }
 
-  AddRawMaterial(worvm: any): Observable<RawMaterials> {
-    return this.httpClient.post<RawMaterials>(
-      `${this.apiUrl}RawMaterial/AddRawMaterial`, worvm, this.httpOptions
+  AddRawMaterial(rawMaterialDescription: string): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}RawMaterials/AddRawMaterial`, rawMaterialDescription, this.httpOptions
     );
   }
 
   DeleteRawMaterial(rawmaterialId: number ):Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}RawMaterial/DeleteRawMaterial/${rawmaterialId}`, this.httpOptions);
+    return this.httpClient.delete<any>(`${this.apiUrl}RawMaterials/DeleteRawMaterial/${rawmaterialId}`, this.httpOptions);
   }
 
-  UpdateRawMaterial(rawmaterialId: number, rmvm: any): Observable<any> {
-   return this.httpClient.put<any>(`${this.apiUrl}RawMaterial/EditRawMaterial/${rawmaterialId}`, rmvm, this.httpOptions);
+  UpdateRawMaterial(rawmaterialId: number, rawMaterialDescription: string): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}`, rawMaterialDescription, this.httpOptions);
   }
 }
