@@ -11,22 +11,23 @@ import { SizeUnitsComponent } from './size-units/size-units.component';
 import { VatComponent } from './vat/vat.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
+import { ProductsComponent } from './customer-view/products/products.component';
 
 
 const routes: Routes = [
-  { path:"", redirectTo:'register', pathMatch:'full' },
-  { path:"dashboard", component: DashboardComponent },
-    { path: "register", component: RegisterComponent },
-      { path: "product-item", component: ProductItemTestComponent },
-        { path: "help", component: ViewHelpInventoryComponent },
-          { path: "product-category", component: ProductCategoryComponent },
-          {path: "refund-reason", component: RefundReasonComponent},
-          {path: "write-off-reason", component: WriteOffReasonComponent},
-          {path: 'size-units', component: SizeUnitsComponent},
-    { path: 'vat', component: VatComponent },
-    { path: "supplier", component: SupplierComponent },
-    { path: "fixed-product", component: FixedProductComponent }
-
+  { path: "", redirectTo: 'register', pathMatch: 'full' },
+  { path: "dashboard", component: DashboardComponent },
+  { path: "register", component: RegisterComponent },
+  { path: "product-item", component: ProductItemTestComponent },
+  { path: "help", component: ViewHelpInventoryComponent },
+  { path: "product-category", component: ProductCategoryComponent },
+  { path: "refund-reason", component: RefundReasonComponent },
+  { path: "write-off-reason", component: WriteOffReasonComponent },
+  { path: 'size-units', component: SizeUnitsComponent },
+  { path: 'vat', component: VatComponent },
+  { path: "supplier", component: SupplierComponent },
+  { path: "fixed-product", component: FixedProductComponent },
+  { path: 'products', component: ProductsComponent}
 ];
 
 @NgModule({

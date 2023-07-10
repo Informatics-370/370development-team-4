@@ -21,6 +21,8 @@ import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
+import { ProductsComponent } from './customer-view/products/products.component';
+import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
 
 @NgModule({
   declarations: [ 
@@ -38,7 +40,9 @@ import { FixedProductComponent } from './fixed-product/fixed-product.component';
         MenuComponent,
         SupplierComponent,
         StartupDivComponent,
-        FixedProductComponent
+        FixedProductComponent,
+        ProductsComponent,
+        CategoriesMenuComponent
   ],
   imports: [
     BrowserModule,
