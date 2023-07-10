@@ -47,7 +47,7 @@
         <h3 class="p-3" style="color: black;">View Size Units</h3>
         <!--Search bar-->
         <div id="searchbar" >
-            <input (keyup)="searchCategories($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Single wall box" />
+            <input (keyup)="searchSizeUnits($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Single wall box" />
             <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
         </div>
 
@@ -65,11 +65,11 @@
             <tbody>                
               <!--Error message if there's no items in the DB-->
               <tr *ngIf="sizeCount==0">
-                <td colspan="2">No items found. Please add a new item to the system.</td>
+                <td colspan="2">No Size Units found. Please add a new size unit to the system.</td>
             </tr>
             <!--Loading message while data is still being retrieved from the DB-->
             <tr *ngIf="loading">
-                <td colspan="2">Please wait while we load all product items...</td>
+                <td colspan="2">Please wait while we load all Size Units...</td>
             </tr>
                 <!--Item data from API-->
                 <tr *ngFor="let size of filteredSizeUnits">
@@ -85,7 +85,7 @@
                         {{size.categoryDescription}}
                     </td>
                     <td>
-                        {{size.length}}x{{size.width}}x{{size.height}}x{{size.weight}}x{{size.volume}}
+                        {{size.sizeString}}
                     </td>
                 </tr>
             </tbody>
@@ -110,60 +110,59 @@
           <form [formGroup]="addSizeForm">
             <div class="form-group">
                 <label for="category" class="form-label modal-form-label bold">Product Category:</label>
-                <select id="add-categoryID" [(ngModel)]="selectedValue" formControlName="categoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text">                    
+                <select id="add-categoryID" [(ngModel)]="selectedValue" formControlName="categoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text" (change)="formatInputFieldsAdd()">
                     <option disabled value="NA">Choose a category</option>
-                    <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.categoryDescription}}</option>
-                </select>
+                    <option *ngFor="let cat of categories" value="{{cat.categoryID}}">{{cat.categoryDescription}}</option>
+                  </select>
+
             </div>
+<!-- Display validation error message -->
+<div *ngIf="(categoryID?.dirty || categoryID?.touched || submitClicked) && categoryID?.value == 'NA'" class="error-msg">
+    Please select a category
+  </div>
+  
+  <div class="form-group">
+    <label for="length" class="form-label modal-form-label bold">Length:</label>
+    <input id="length" type="number" formControlName="sizeLength" class="form-control modal-form-input modal-form-text" placeholder="10" 
+      name="length" required min="0" step="1">
+    <div *ngIf="(sizeLength?.dirty || sizeLength?.touched || submitClicked) && sizeLength?.errors?.['required']" class="error-msg">
+      Please input a valid Length quantity.
+    </div>
+  
+    <label for="width" class="form-label modal-form-label bold">Width:</label>
+    <input id="width" type="number" formControlName="sizeWidth" class="form-control modal-form-input modal-form-text" placeholder="20" 
+      name="width" required min="0" step="1">
+    <div *ngIf="(sizeWidth?.dirty || sizeWidth?.touched || submitClicked) && sizeWidth?.errors?.['required']" class="error-msg">
+      Please input a valid Width quantity.
+    </div>
+  
+    <label for="height" class="form-label modal-form-label bold">Height:</label>
+    <input id="height" type="number" formControlName="sizeHeight" class="form-control modal-form-input modal-form-text" placeholder="30" 
+      name="height" required min="0" step="1" allowZero="true">
+    <div *ngIf="(sizeHeight?.dirty || sizeHeight?.touched || submitClicked) && sizeHeight?.errors?.['required']" class="error-msg">
+      Please enter a valid Height quantity.
+    </div>
+  
+    <label for="weight" class="form-label modal-form-label bold">Weight:</label>
+    <input id="weight" type="number" formControlName="sizeWeight" class="form-control modal-form-input modal-form-text" placeholder="40" 
+      name="weight" required min="0" step="1">
+    <div *ngIf="(sizeWeight?.dirty || sizeWeight?.touched || submitClicked) && sizeWeight?.errors?.['required']" class="error-msg">
+      Please enter a valid Weight quantity.
+    </div>
+  
+    <label for="volume" class="form-label modal-form-label bold">Volume:</label>
+    <input id="volume" type="number" formControlName="sizeVolume" class="form-control modal-form-input modal-form-text" placeholder="50" 
+      name="volume" required min="0" step="1">
+    <div *ngIf="(sizeVolume?.dirty || sizeVolume?.touched || submitClicked) && sizeVolume?.errors?.['required']" class="error-msg">
+      Please enter a valid Volume.
+    </div>
+  </div>
+  
+
             <!--Display validation error message-->
-            <div *ngIf="(categoryID?.dirty || categoryID?.touched || submitClicked) && categoryID?.value == 'NA'" class="error-msg">
-                Please select a category
-            </div>
-            <div class="form-group">
-                <label for="description" class="form-label modal-form-label bold">Length:</label>
-
-                <input id="length" type="number" formControlName="sizeLength" class="form-control modal-form-input modal-form-text" placeholder="10" 
-                name="length" required min="0" step="1">
-                <div *ngIf="(sizeLength?.dirty || sizeLength?.touched || submitClicked) && sizeLength?.errors?.['required']" class="error-msg">
-                    Please input a valid Length quantity.
-                </div>
-
-                <label for="description" class="form-label modal-form-label bold">Width:</label>
-                <input id="width" type="number" formControlName="sizeWidth" class="form-control modal-form-input modal-form-text" placeholder="20" 
-                name="length" required min="0" step="1">
-                <div *ngIf="(sizeWidth?.dirty || sizeWidth?.touched || submitClicked) && sizeWidth?.errors?.['required']" class="error-msg">
-                    Please input a valid Width quantity.
-                </div>
-                <label for="description" class="form-label modal-form-label bold">Height:</label>
-                <input id="height" type="number" formControlName="sizeHeight" class="form-control modal-form-input modal-form-text" placeholder="30" 
-                name="length" required min="0" step="1">
-                <div *ngIf="(sizeHeight?.dirty || sizeHeight?.touched || submitClicked) && sizeHeight?.errors?.['required']" class="error-msg">
-                    Please enter a valid Height quantity.
-                </div>
-                <label for="description" class="form-label modal-form-label bold">Weight:</label>
-                <input id="weight" type="number" formControlName="sizeWeight" class="form-control modal-form-input modal-form-text" placeholder="40" 
-                name="length" required min="0" step="1">
-                
-            <div *ngIf="(sizeWeight?.dirty || sizeWeight?.touched || submitClicked) && sizeWeight?.errors?.['required']" class="error-msg">
-                Please enter a valid Weight quantity.
-            </div>
-
-                <label for="description" class="form-label modal-form-label bold">Volume:</label>
-                <input id="volume" type="number" formControlName="sizeVolume" class="form-control modal-form-input modal-form-text" placeholder="50" 
-                name="length" required min="0" step="1">
-                <div *ngIf="(sizeVolume?.dirty || sizeVolume?.touched || submitClicked) && sizeVolume?.errors?.['required']" class="error-msg">
-                    Please enter a valid Volume.
-                </div>
-            </div>
-            <!--Display validation error message-->
            
 
-           
-
-           
-
-            
-
+      
 
             <div class="form-submit-div">
                 <button class="btn btn-create modal-form-submit" (click)="addSize()">Create</button>
@@ -191,28 +190,46 @@
         <div class="modal-body">
           <form [formGroup]="updateSizeForm">
             <div class="form-group">
-                <label for="category" class="form-label modal-form-label bold">Size Unit:</label>
-                <select id="update-categoryID" [(ngModel)]="selectedValue" formControlName="uCategoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
+                <label for="category" class="form-label modal-form-label bold">Product Category</label>
+                <select id="update-categoryID" [(ngModel)]="selectedValue" formControlName="uCategoryID" name="category" aria-label="Default select example" class="form-select modal-form-input modal-form-text" (change)="formatInputFieldsUpdate()">
                     <option *ngFor="let cat of categories" value={{cat.categoryID}} >{{cat.categoryDescription}}</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="ulength" class="form-label modal-form-label bold">Sizes:</label>
-
+                <label for="uheight3" class="form-label modal-form-label bold">Length:</label>
                 <input id="ulength" type="number" formControlName="usizeLength" class="form-control modal-form-input modal-form-text" placeholder="10" 
                 name="ulength" required min="0" step="1">
+                <div *ngIf="(usizeLength?.dirty || usizeLength?.touched || submitClicked) && usizeLength?.errors?.['required']" class="error-msg">
+                    Please input a valid Length quantity.
+                </div>
 
+                <label for="uwidth" class="form-label modal-form-label bold">Width:</label>
                 <input id="uwidth" type="number" formControlName="usizeWidth" class="form-control modal-form-input modal-form-text" placeholder="20" 
-                name="ulength" required min="0" step="1">
+                name="uwidth" required min="0" step="1">
+                <div *ngIf="(usizeWidth?.dirty || usizeWidth?.touched || submitClicked) && usizeWidth?.errors?.['required']" class="error-msg">
+                    Please input a valid Width quantity.
+                </div>
 
+                <label for="uheight" class="form-label modal-form-label bold">Height:</label>
                 <input id="uheight" type="number" formControlName="usizeHeight" class="form-control modal-form-input modal-form-text" placeholder="30" 
-                name="ulength" required min="0" step="1">
+                name="uheight" required min="0" step="1">
+                <div *ngIf="(usizeHeight?.dirty || usizeHeight?.touched || submitClicked) && usizeHeight?.errors?.['required']" class="error-msg">
+                    Please enter a valid Height quantity.
+                </div>
 
+          <label for="uweight" class="form-label modal-form-label bold">Weight:</label>
                 <input id="uweight" type="number" formControlName="usizeWeight" class="form-control modal-form-input modal-form-text" placeholder="40" 
                 name="uweight" required min="0" step="1">
+            <div *ngIf="(usizeWeight?.dirty || usizeWeight?.touched || submitClicked) && usizeWeight?.errors?.['required']" class="error-msg">
+                Please enter a valid Weight quantity.
+            </div>
 
+            <label for="uvolume" class="form-label modal-form-label bold">Volume:</label>
                 <input id="uvolume" type="number" formControlName="usizeVolume" class="form-control modal-form-input modal-form-text" placeholder="50" 
                 name="uvolume" required min="0" step="1">
+                <div *ngIf="(usizeVolume?.dirty || usizeVolume?.touched || submitClicked) && usizeVolume?.errors?.['required']" class="error-msg">
+                    Please enter a valid Volume quantity.
+                </div>
             </div>
 
             <div class="form-submit-div">
@@ -234,8 +251,10 @@
         <!--HEADER-->
         <div class="modal-header">
           <h4 class="modal-title">Delete Size Unit</h4>
-          <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
-        </div>
+          <button class="close-modal" (click)="closeDeleteModal()">
+            <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+           </button>
+          </div>
 
         <!--BODY-->
         <div class="modal-body">
@@ -245,9 +264,11 @@
 
         <!-- Modal footer -->
         <div class="modal-footer justify-content-evenly">
-            <button class="btn btn-create modal-form-submit" (click)="deleteSize()" >Yes</button>
             <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
+            <button class="btn btn-create modal-form-submit" (click)="deleteSize()" >Yes</button>
+
         </div>
       </div>
     </div>
 </div>
+<div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>

@@ -141,7 +141,7 @@ export class FixedProductComponent {
 
     this.fixedProducts.forEach(currentProduct => {
       let sizeString: string = ''; //reset string
-
+// we instantiate the current product variable. By using a foreach loop, we go through each fixed product, eventually we will get to a certain ID
       //get item description
       this.items.forEach(currentItem => {
         if (currentItem.itemID == currentProduct.itemID) {
@@ -159,11 +159,15 @@ export class FixedProductComponent {
       /*get size and concatenate size string logic; I could have achieved this with 7 if statements and no extra variables buuuuuuuuut
       I found an article that explains how to loop through the properties of the size object like it's an array:
       refer to this article: https://www.freecodecamp.org/news/how-to-iterate-over-objects-in-javascript/ */
+
+      //Line 167 is actually the crux of the code
       this.sizes.forEach(currentSize => {
         if (currentSize.sizeID == currentProduct.sizeID) {
           //treat currentSize like an array with the properties as values in the array
           let sizeAsArr = Object.entries(currentSize);
           console.log('sizeAsArray: ', sizeAsArr)
+          // console line 168 and from there you can see the position of each array
+          
           //description is the last property in the size object and sizeID is the first property; I don't want to use them, only the sizes
           for (let i = 0; i < sizeAsArr.length; i++) {
             if (sizeAsArr[i][0] != 'sizeID' && sizeAsArr[i][0] != 'categoryID' && sizeAsArr[i][0] != 'categoryDescription')
