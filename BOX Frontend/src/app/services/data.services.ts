@@ -237,4 +237,28 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     return this.httpClient.put<any>(`${this.apiUrl}EstimateDuration/EditEstimateDuration/${estimatedurationId}`, estimatedurationModel, this.httpOptions);
   }
    
+  //----------RAW MATERIAL---------------
+  GetAllRawMaterials(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}RawMaterials/GetAllRawMaterials`)
+    .pipe(map(result => result))
+  }
+
+  GetRawMaterial(rawmaterialId: number): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}RawMaterials/GetRawMaterial/${rawmaterialId}`)
+      .pipe(map(result => result));
+  }
+
+  AddRawMaterial(rawMaterialDescription: string): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}RawMaterials/AddRawMaterial/${rawMaterialDescription}`, this.httpOptions
+    );
+  }
+
+  DeleteRawMaterial(rawmaterialId: number ):Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}RawMaterials/DeleteRawMaterial/${rawmaterialId}`, this.httpOptions);
+  }
+
+  UpdateRawMaterial(rawmaterialId: number, rawMaterialDescription: string): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
+  }
 }
