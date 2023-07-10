@@ -24,6 +24,9 @@ export class RawMaterialComponent {
   searchTerm: string = '';
   submitClicked = false; //keep track of when submit button is clicked in forms, for validation errors
   loading = true; //show loading message while data loads
+  //these variables track whether a user is trying to create duplicate raw materials
+  duplicateFound = false;
+  duplicateFoundUpdate = false;
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addRawMaterialForm = this.formBuilder.group({
@@ -54,7 +57,6 @@ export class RawMaterialComponent {
     });
   }
 
-
   //--------------------SEARCH BAR LOGIC----------------
   searchRawMaterials(event: Event) {
     this.searchTerm = (event.target as HTMLInputElement).value;
@@ -72,23 +74,33 @@ export class RawMaterialComponent {
   //--------------------ADD RAW MATERIAL LOGIC----------------
   addRawMaterial() {
     this.submitClicked = true; //display validation error message if user tried to submit form with no fields filled in correctly
-    if (this.addRawMaterialForm.valid) {
-      try {
-        const formData = this.addRawMaterialForm.value;
-        let rawMaterialDescription: string = formData.description;
-        console.log('form data', rawMaterialDescription);
+    if (this.addRawMaterialForm.valid) {      
+      const formData = this.addRawMaterialForm.value;
 
-        this.dataService.AddRawMaterial(rawMaterialDescription).subscribe(
-          (result: any) => {
-            console.log('New raw material successfully created!', result);
-            this.getRawMaterials(); //refresh list
-            this.addRawMaterialForm.reset(); //reset form
-            $('#addRawMaterial').modal('hide'); //close modal
-          }
-        );
+      //prevent user from creating multiple raw materials with same description
+      if (this.checkDuplicateDescription(formData.description)) {
+        this.duplicateFound = true;
+        setTimeout(() => {
+          this.duplicateFound = false;
+        }, 5000);
       }
-      catch (error) {
-        console.log('Error submitting form', error)
+      else {
+        try {
+          let rawMaterialDescription: string = formData.description;
+          console.log('form data', rawMaterialDescription);
+
+          this.dataService.AddRawMaterial(rawMaterialDescription).subscribe(
+            (result: any) => {
+              console.log('New raw material successfully created!', result);
+              this.getRawMaterials(); //refresh list
+              this.addRawMaterialForm.reset(); //reset form
+              $('#addRawMaterial').modal('hide'); //close modal
+            }
+          );
+        }
+        catch (error) {
+          console.log('Error submitting form', error)
+        }
       }
     }
     else {
@@ -182,20 +194,28 @@ export class RawMaterialComponent {
       //get form data
       const formValues = this.updateRawMaterialForm.value;
       let rawMaterialDescription: string = formValues.uDescription;
-      console.log('form data', rawMaterialDescription);
 
-      try {
-        //update material
-        this.dataService.UpdateRawMaterial(rawmaterialId, rawMaterialDescription).subscribe(
-          (result: any) => {
-            console.log('Updated raw material', result);
-            this.getRawMaterials(); //refresh list
-            this.submitClicked = false; //rest submission status
-            this.closeUpdateModal(); //close modal
-          }
-      );
-      } catch (error) {
-        console.log('Error submitting form', error);
+      //prevent user from creating multiple products with same description
+      if (this.checkDuplicateDescription(rawMaterialDescription, rawmaterialId)) {
+        this.duplicateFoundUpdate = true;
+        setTimeout(() => {
+          this.duplicateFoundUpdate = false;
+        }, 5000);
+      }
+      else{
+        try {
+          //update material
+          this.dataService.UpdateRawMaterial(rawmaterialId, rawMaterialDescription).subscribe(
+            (result: any) => {
+              console.log('Updated raw material', result);
+              this.getRawMaterials(); //refresh list
+              this.submitClicked = false; //reset submission status
+              this.closeUpdateModal(); //close modal
+            }
+        );
+        } catch (error) {
+          console.log('Error submitting form', error);
+        }
       }      
     }
 

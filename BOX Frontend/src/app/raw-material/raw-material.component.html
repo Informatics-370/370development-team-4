@@ -146,11 +146,14 @@
                 <label for="description" class="form-label modal-form-label bold">Raw Material:</label>
                 <input id="description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" 
                     placeholder="e.g. brown sheets" name="description" maxlength="70" required>
-            </div>
-            <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
-            The message is just for user experience-->
-            <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
-                This field is required.
+                    <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
+                    The message is just for user experience-->
+                    <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
+                        This field is required.
+                    </div>                    
+                    <div *ngIf="duplicateFound && submitClicked" class="error-msg">
+                        A raw material with this description already exists.
+                    </div>
             </div>
 
             <div class="form-submit-div">
@@ -206,10 +209,13 @@
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Raw Material:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="description" required>
-            </div>
-            <!--Display validation error message-->
-            <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
-                This field is required.
+                <!--Display validation error message-->
+                <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
+                    This field is required.
+                </div>
+                <div *ngIf="duplicateFoundUpdate && submitClicked" class="error-msg">
+                    A raw material with this description already exists.
+                </div>
             </div>
 
             <div class="form-submit-div">
