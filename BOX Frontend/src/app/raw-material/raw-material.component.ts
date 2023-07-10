@@ -75,12 +75,15 @@ export class RawMaterialComponent {
     if (this.addRawMaterialForm.valid) {
       try {
         const formData = this.addRawMaterialForm.value;
-        let description = formData.description;
+        let rawMaterialDescription: string = formData.description;
+        console.log(rawMaterialDescription);
 
-        this.dataService.AddRawMaterial(description).subscribe(
+        this.dataService.AddRawMaterial(rawMaterialDescription).subscribe(
           (result: any) => {
             console.log('New raw material successfully created!', result);
             this.getRawMaterials(); //refresh list
+            this.addRawMaterialForm.reset(); //reset form
+            $('#addRawMaterial').modal('hide'); //close modal
           }
         );
       }
@@ -198,6 +201,50 @@ export class RawMaterialComponent {
       this.closeUpdateModal();
     }
 
+  }
+
+  //------------------------------------VIEW SPECIFIC RAW MATERIAL METHODS------------------------------------
+  openViewRawMaterial(material: RawMaterialVM) {
+    this.specificrawmaterial = material;
+    $('#viewRawMaterial').modal('show');
+  }
+
+  //Download QR code as image
+  downloadQRCodeAsImage() {
+    var arrayBuffer = this.B64ToArrayBuffer(this.specificrawmaterial.qrCodeBytesB64)
+    const blob = new Blob([arrayBuffer], { type: 'image/png' });
+
+    //Create link; apparently, I need this even though I have a download button
+    const QRCodeImage = document.createElement('a');
+    QRCodeImage.href = URL.createObjectURL(blob);
+    QRCodeImage.download = this.specificrawmaterial.description + ' QR code';
+    QRCodeImage.click(); //click link to start downloading
+    URL.revokeObjectURL(QRCodeImage.href); //clean up URL object
+  }
+
+  //need to convert to array buffer first otherwise file is corrupted
+  B64ToArrayBuffer(B64String: string) {
+    var binaryString = window.atob(B64String); //decodes a Base64 string into a binary string
+    var binaryLength = binaryString.length;
+    var byteArray = new Uint8Array(binaryLength);
+    for (var i = 0; i < binaryLength; i++) {
+      var ascii = binaryString.charCodeAt(i); //retrieve the ASCII code of the character in the binary string
+      byteArray[i] = ascii; //assigns ASCII code to corresponding character in byte array
+    }
+    return byteArray;
+  }
+
+  //------------------------------------GENERAL PURPOSE METHODS------------------------------------
+  //method to determine if a user tried to enter a raw material with same description as existing material
+  checkDuplicateDescription(description: string, ID?: number): boolean {
+    description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
+    for (let i = 0; i < this.rawmaterials.length; i++) {
+      //if description matches but they're updating a raw material, don't count it as a duplicate if they kept the description the same
+      if (this.rawmaterials[i].description.toLowerCase() == description && ID != this.rawmaterials[i].rawMaterialID) {
+        return true;
+      }
+    }
+    return false;
   }
 
   //---------------------------VALIDATION ERRORS LOGIC-----------------------
