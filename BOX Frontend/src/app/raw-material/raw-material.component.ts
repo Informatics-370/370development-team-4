@@ -76,7 +76,7 @@ export class RawMaterialComponent {
       try {
         const formData = this.addRawMaterialForm.value;
         let rawMaterialDescription: string = formData.description;
-        console.log(rawMaterialDescription);
+        console.log('form data', rawMaterialDescription);
 
         this.dataService.AddRawMaterial(rawMaterialDescription).subscribe(
           (result: any) => {
@@ -177,33 +177,31 @@ export class RawMaterialComponent {
       //get refund reason ID which I stored in modal ID
       let id = this.updateModal.nativeElement.id;
       let rawmaterialId = id.substring(id.indexOf('-') + 1);
-      console.log(rawmaterialId);
+      console.log('rawmaterialId', rawmaterialId);
 
       //get form data
       const formValues = this.updateRawMaterialForm.value;
-      let updatedmaterial = {
-        description: formValues.uDescription
-      };
-      console.log(updatedmaterial);
+      let rawMaterialDescription: string = formValues.uDescription;
+      console.log('form data', rawMaterialDescription);
 
-      //update item
-      this.dataService.UpdateRawMaterial(rawmaterialId, updatedmaterial.description).subscribe(
-        (result: any) => {
-          console.log('Updated raw materials', result);
-          this.getRawMaterials(); //refresh item list
-          this.submitClicked = false; //rest submission status
-        },
-        (error) => {
-          console.error('Error updating items:', error);
-        }
+      try {
+        //update material
+        this.dataService.UpdateRawMaterial(rawmaterialId, rawMaterialDescription).subscribe(
+          (result: any) => {
+            console.log('Updated raw material', result);
+            this.getRawMaterials(); //refresh list
+            this.submitClicked = false; //rest submission status
+            this.closeUpdateModal(); //close modal
+          }
       );
-
-      this.closeUpdateModal();
+      } catch (error) {
+        console.log('Error submitting form', error);
+      }      
     }
 
   }
 
-  //------------------------------------VIEW SPECIFIC RAW MATERIAL METHODS------------------------------------
+  //------------------------------------VIEW SPECIFIC RAW MATERIAL LOGIC------------------------------------
   openViewRawMaterial(material: RawMaterialVM) {
     this.specificrawmaterial = material;
     $('#viewRawMaterial').modal('show');

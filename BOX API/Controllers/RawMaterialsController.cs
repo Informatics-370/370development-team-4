@@ -89,8 +89,9 @@ namespace BOX.Controllers
 		}
 
 		[HttpPost]
-		[Route("AddRawMaterial")]
+		[Route("AddRawMaterial/{rawMaterialDescription}")]
 		//changed it from expecting viewmodel to string because the VM needed extra properties for the Get methods and that was causing issues
+		//note that, when a parameter isn't an object, it needs to be passed in the URL, like rawMaterialDescription rn
 		public async Task<IActionResult> AddRawMaterial(string rawMaterialDescription)
 		{
             try
@@ -124,7 +125,7 @@ namespace BOX.Controllers
 		}
 
 		[HttpPut]
-		[Route("EditRawMaterial/{rawmaterialId}")]
+		[Route("EditRawMaterial/{rawmaterialId}/{rawMaterialDescription}")]
         //changed it from expecting viewmodel to string because the VM needed extra properties for the Get methods and that was causing issues
         public async Task<ActionResult<RawMaterialViewModel>> EditRawMaterial(int rawmaterialId, string rawMaterialDescription)
 		{

@@ -251,7 +251,7 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   AddRawMaterial(rawMaterialDescription: string): Observable<any> {
     return this.httpClient.post<any>(
-      `${this.apiUrl}RawMaterials/AddRawMaterial`, rawMaterialDescription, this.httpOptions
+      `${this.apiUrl}RawMaterials/AddRawMaterial/${rawMaterialDescription}`, this.httpOptions
     );
   }
 
@@ -260,6 +260,6 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
   }
 
   UpdateRawMaterial(rawmaterialId: number, rawMaterialDescription: string): Observable<any> {
-   return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}`, rawMaterialDescription, this.httpOptions);
+   return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
   }
 }
