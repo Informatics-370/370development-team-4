@@ -11,7 +11,6 @@ import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { EstimateDuration } from '../shared/estimate-duration';
-import { RawMaterials } from '../shared/raw-material';
 
 imports:[
   HttpClientModule
@@ -244,8 +243,8 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     .pipe(map(result => result))
   }
 
-  GetRawMaterial(rawmaterialId: number): Observable<RawMaterials> {
-    return this.httpClient.get<RawMaterials>(`${this.apiUrl}RawMaterials/GetRawMaterial/${rawmaterialId}`)
+  GetRawMaterial(rawmaterialId: number): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}RawMaterials/GetRawMaterial/${rawmaterialId}`)
       .pipe(map(result => result));
   }
 
