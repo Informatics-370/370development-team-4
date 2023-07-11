@@ -25,6 +25,7 @@ import { EstimateDurationComponent } from './estimate-duration/estimate-duration
 import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
+import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 
 @NgModule({
   declarations: [ 
@@ -46,7 +47,8 @@ import { CategoriesMenuComponent } from './customer-view/categories-menu/categor
         EstimateDurationComponent,
         RawMaterialComponent,
         ProductsComponent,
-        CategoriesMenuComponent
+        CategoriesMenuComponent,
+        ProductDetailsComponent
   ],
   imports: [
     BrowserModule,

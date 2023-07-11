@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
+import { Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
@@ -23,7 +24,7 @@ export class ProductsComponent {
   items: Item[] = []; //used to store all items
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, private router: Router, private renderer: Renderer2) { }
 
   ngOnInit(): void {
     this.getDataFromDB();
@@ -62,7 +63,6 @@ export class ProductsComponent {
       let prodVM: ProductVM;
       //get product photo to use with product item because items don't have photos, products do.
       let foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID);
-      console.log('product we use to get photo: ', foundProd);
 
       //put item and product photo info in 1 VM object
       if (foundProd) {
@@ -81,7 +81,7 @@ export class ProductsComponent {
           productPhotoB64: ''
         }
       }
-      
+
       this.filteredProductVM.push(prodVM); //populate list that we'll use to display products to the user
     });
 
@@ -92,26 +92,90 @@ export class ProductsComponent {
     this.displayProducts();
   }
 
-  //used to display products to user; can filter if necessary
+  //used to display products to user; can filter if necessary; will add filtering later
   displayProducts(categoryID?: number, sortString?: string) {
     let productCardsContainer = document.getElementById('product-cards') as HTMLElement;
-    let cardsContainerInnerHTML = '';
+    productCardsContainer.innerHTML = '';
 
     this.filteredProductVM.forEach(prod => {
-      //create card
-      cardsContainerInnerHTML += '<div class="col-md-3 col-sm-6 card-container">' +
-                                    '<div class="card product-card" style="border: 0.5px solid rgba(219, 219, 219, 0.25);">' +
-                                      '<div class="card-img-top">' +
-                                        '<img class="card-img product-card-img" style="width: auto;" src="data:image/png;base64,'
-                                           + prod.productPhotoB64 +'"' + 'alt="' + prod.description + '">' +
-                                      '</div>' +
-                                      '<div class="card-body product-card-body">' +
-                                        '<p class="card-text">' + prod.description + '</p>' +
-                                      '</div>' +
-                                    '</div>' +
-                                  '</div>';
-    });      
+      //create card dynamically
+      const cardContainer = this.renderer.createElement('div');
+      this.renderer.addClass(cardContainer, 'col-md-3');
+      this.renderer.addClass(cardContainer, 'col-sm-6');
+      this.renderer.addClass(cardContainer, 'card-container');
 
-    productCardsContainer.innerHTML = cardsContainerInnerHTML;
+      const card = this.renderer.createElement('div');
+      this.renderer.addClass(card, 'card');
+      this.renderer.addClass(card, 'product-card');
+      this.renderer.setStyle(card, 'border', '0.5px solid rgba(219, 219, 219, 0.25)');
+
+      const cardImgTop = this.renderer.createElement('div');
+      this.renderer.addClass(cardImgTop, 'card-img-top');
+
+      const img = this.renderer.createElement('img');
+      this.renderer.addClass(img, 'card-img');
+      this.renderer.addClass(img, 'product-card-img');
+      this.renderer.setStyle(img, 'width', 'auto');
+      this.renderer.setAttribute(img, 'src', 'data:image/png;base64,' + prod.productPhotoB64);
+      this.renderer.setAttribute(img, 'alt', prod.description);
+
+      const cardBody = this.renderer.createElement('div');
+      this.renderer.addClass(cardBody, 'card-body');
+      this.renderer.addClass(cardBody, 'product-card-body');
+
+      const cardText = this.renderer.createElement('p');
+      this.renderer.addClass(cardText, 'card-text');
+      const text = this.renderer.createText(prod.description);
+      this.renderer.appendChild(cardText, text);
+
+      this.renderer.appendChild(cardImgTop, img);
+      this.renderer.appendChild(cardBody, cardText);
+      this.renderer.appendChild(card, cardImgTop);
+      this.renderer.appendChild(card, cardBody);
+      this.renderer.appendChild(cardContainer, card);
+      this.renderer.appendChild(productCardsContainer, cardContainer);
+
+      this.renderer.listen(cardContainer, 'click', () => {
+        this.redirectToProductDetails(prod.itemID, prod.description);
+      });
+
+      /*The resulting code looks like this:
+      <div id="product-cards" class="row">
+            <!--CARD-->
+            <div class="col-md-3 col-sm-6 card-container">
+                <div class="card product-card">
+                    <div class="card-img-top">
+                        <img class="card-img product-card-img" src="data:image/png;base64,Base64String" alt="Single wall box">
+                    </div>
+                    <div class="card-body product-card-body">
+                        <p class="card-text">Single Wall Box</p>
+                    </div>
+                </div>
+            </div>
+      */
+    });
+  }
+
+  /*OG DISPLAY PRODUCTS CODE:
+  let cardsContainerInnerHTML = '';
+  this.filteredProductVM.forEach(prod => { 
+    cardsContainerInnerHTML += 
+        '<div class="col-md-3 col-sm-6 card-container">' +
+          '<div class="card product-card" style="border: 0.5px solid rgba(219, 219, 219, 0.25);">' +
+            '<div class="card-img-top">' +
+              '<img class="card-img product-card-img" style="width: auto;" src="data:image/png;base64,'
+                + prod.productPhotoB64 + '"' + 'alt="' + prod.description + '">' +
+            '</div>' +
+            '<div class="card-body product-card-body">' +
+              '<p class="card-text">' + prod.description + '</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>'; 
+    });
+    //productCardsContainer.innerHTML = cardsContainerInnerHTML;
+  */
+
+  redirectToProductDetails(itemID: number, itemDescription: string) {
+    this.router.navigate(['product-details', itemID, itemDescription]);
   }
 }

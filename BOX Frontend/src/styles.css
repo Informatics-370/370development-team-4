@@ -42,15 +42,23 @@
 /*CARDS ON PRODUCTS PAGE (CUSTOMER VIEW PRODUCTS)*/
 .card-container {
   padding: 20px 0 20px 50px;
+  max-width: 50% !important;
 }
 
 .product-card {
+  cursor: pointer;
   box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px;
   text-align: center;
   padding-top: 20px;
   display: inline-block;
   width: 95%;
   margin: auto;
+  transition: all ease 0.5s;
+}
+
+.product-card:hover { 
+  transform: translateY(-10px);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; 
 }
 
 .card-img-top {
