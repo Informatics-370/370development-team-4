@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230610092208_FixVAT")]
-    partial class FixVAT
+    [Migration("20230619162231_Added Product Category to Size Units")]
+    partial class AddedProductCategorytoSizeUnits
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -703,10 +703,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeID"), 1L, 1);
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Height")
                         .HasColumnType("decimal(18,2)");
@@ -724,6 +722,8 @@ namespace BOX.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("SizeID");
+
+                    b.HasIndex("CategoryID");
 
                     b.ToTable("Size_Units");
                 });
@@ -800,17 +800,12 @@ namespace BOX.Migrations
                         .HasMaxLength(75)
                         .HasColumnType("nvarchar(75)");
 
-                    b.Property<int>("FixedProductID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("SupplierID");
-
-                    b.HasIndex("FixedProductID");
 
                     b.ToTable("Supplier");
                 });
@@ -1503,6 +1498,17 @@ namespace BOX.Migrations
                     b.Navigation("QR_Code");
                 });
 
+            modelBuilder.Entity("BOX.Models.Size_Units", b =>
+                {
+                    b.HasOne("BOX.Models.Product_Category", "Product_Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product_Category");
+                });
+
             modelBuilder.Entity("BOX.Models.Stock_Take", b =>
                 {
                     b.HasOne("BOX.Models.Employee", "Employee")
@@ -1512,17 +1518,6 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("BOX.Models.Supplier", b =>
-                {
-                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
-                        .WithMany()
-                        .HasForeignKey("FixedProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Fixed_Product");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_Order", b =>

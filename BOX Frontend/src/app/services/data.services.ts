@@ -11,6 +11,8 @@ import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { EstimateDuration } from '../shared/estimate-duration';
+import { SizeVM } from '../shared/size-vm';
+import { Supplier } from '../shared/supplier';
 
 imports:[
   HttpClientModule
@@ -31,33 +33,34 @@ export class DataService {
   constructor(private httpClient: HttpClient) { 
   }
 
+  //--------------------------------Size Units------------------------------------//
+
   GetSizes(): Observable<any>{
     return this.httpClient.get(`${this.apiUrl}Size/GetAllSizes`)
     .pipe(map(result => result))
   }
 
-  getSize(sizeId: number): Observable<Size> {
-    return this.httpClient.get<Size>(`${this.apiUrl}Size/GetSize/${sizeId}`)
+  getSize(sizeId: number): Observable<SizeVM> {
+    return this.httpClient.get<SizeVM>(`${this.apiUrl}Size/GetSize/${sizeId}`)
       .pipe(map(result => result));
   }
 
-  AddSize(size: Size): Observable<Size> {
-    return this.httpClient.post<Size>(
-      `${this.apiUrl}Size/AddSize`,
-      size,
+  AddSize(SizeVM: SizeVM): Observable<SizeVM> {
+    return this.httpClient.post<SizeVM>(
+      `${this.apiUrl}Size/AddSizeUnit`,
+      SizeVM,
       this.httpOptions
     );
   }
-  
 
 DeleteSize(sizeId:number):Observable<Size[]>{
   console.log(sizeId);
   return this.httpClient.delete<Size[]>(`${this.apiUrl}Size/DeleteSize/${sizeId}`,this.httpOptions)
 }
-EditSize(sizeId: number, size: Size): Observable<Size[]> {
-  return this.httpClient.put<Size[]>(
+EditSize(sizeId: number, SizeVM: SizeVM): Observable<SizeVM> {
+  return this.httpClient.put<SizeVM>(
     `${this.apiUrl}Size/EditSize/${sizeId}`,
-    size,
+    SizeVM,
     this.httpOptions
   );
 }
@@ -261,4 +264,30 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
   UpdateRawMaterial(rawmaterialId: number, rawMaterialDescription: string): Observable<any> {
    return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
   }
+
+
+  //------------------------------Supplier--------------------------//
+  GetAllSuppliers(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Supplier/GetAllSuppliers`)
+    .pipe(map(result => result))
+  }
+
+  GetSupplier(supplierId: number): Observable<Supplier> {
+    return this.httpClient.get<Supplier>(`${this.apiUrl}Supplier/GetSupplier/${supplierId}`)
+      .pipe(map(result => result));
+  }
+
+  AddSupplier(svm: any): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}Supplier/AddSupplier`, svm, this.httpOptions
+    );
+  }
+
+  DeleteSupplier(supplierId: number): Observable<any> {    
+    return this.httpClient.delete<any>(`${this.apiUrl}Supplier/DeleteSupplier/${supplierId}`, this.httpOptions);
+  }
+
+  UpdateSupplier(supplierId: number, svm: any): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}Supplier/UpdateSupplier/${supplierId}`, svm, this.httpOptions);
+  }  
 }
