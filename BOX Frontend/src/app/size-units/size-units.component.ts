@@ -55,7 +55,7 @@ export class SizeUnitsComponent {
       usizeHeight: [0, Validators.required],
       usizeWeight: [0, Validators.required],
       usizeVolume: [0, Validators.required],
-      uCategoryID: [{ value: '7' }, Validators.required]
+      uCategoryID: [{ value: '7', disabled: true }, Validators.required]
     });
   }
 

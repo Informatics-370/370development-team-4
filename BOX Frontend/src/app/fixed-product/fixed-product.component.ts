@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { take, lastValueFrom } from 'rxjs';
@@ -40,17 +40,13 @@ export class FixedProductComponent {
   public selectedCatValueUpdate = '';
   public selectedItemValueUpdate = '';
   public selectedSizeValueUpdate = '';
-  //modals 
-  @ViewChild('deleteModal') deleteModal: any;
 
   //search functionality
   searchTerm: string = '';
   submitClicked = false; //keep track of when submit button is clicked in forms, for validation errors
-  search = false; //used to show message if no search results found
 
   //error, loading and other messages
-  showMessage = true; //show messages to user in message row like loading message, error message, etc.
-  messageRow!: HTMLTableCellElement; //it's called messageRow, but it's just a cell that spans a row
+  loading = true; //show loading message while data loads
   duplicateFound = false; //boolean to display error message if user tries to create a product with duplicate description
   duplicateFoundUpdate = false; //used to display error message if user tries to update a product to have duplicate description
 
@@ -76,10 +72,6 @@ export class FixedProductComponent {
 
   ngOnInit(): void {
     this.getDataFromDB();
-  }
-
-  ngAfterViewInit(): void {
-    this.messageRow = document.getElementById('message') as HTMLTableCellElement; //get message row only after view has been intialised and there's a message row to get
   }
 
   //--------------------------------------------------VIEW ALL PRODUCTS LOGIC--------------------------------------------------
@@ -113,7 +105,6 @@ export class FixedProductComponent {
       await this.getProductsPromise(); //get products; I love the await keyword
     } catch (error) {
       console.error('An error occurred:', error);
-      this.messageRow.innerHTML = 'An error occured while retrieving from the database. Please contact B.O.X. support services.';
     }
   }
 
@@ -209,12 +200,8 @@ export class FixedProductComponent {
 
     this.tableProducts = this.filteredTableProducts; //store all the products someplace before I search below
     console.log('Table product VM list', this.tableProducts);
+    this.loading = false; //stop displaying loading message
     this.productCount = this.tableProducts.length; //update product count
-
-    if (this.productCount == 0)
-      this.messageRow.innerHTML = 'No fixed products found. Please add a new product to the system.';
-    else
-      this.showMessage = false; //stop displaying loading message
   }
 
   //--------------------------------------------------------SEARCH BAR LOGIC--------------------------------------------------------
@@ -235,11 +222,6 @@ export class FixedProductComponent {
     }
 
     this.productCount = this.filteredTableProducts.length; //update product count
-
-    if (this.productCount == 0)
-      this.search = true;
-    else
-      this.search = false;
 
     console.log('Search results:', this.filteredTableProducts);
   }
