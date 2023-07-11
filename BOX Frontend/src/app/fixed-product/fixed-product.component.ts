@@ -154,29 +154,20 @@ export class FixedProductComponent {
       //Line 167 is actually the crux of the code
       this.sizes.forEach(currentSize => {
         if (currentSize.sizeID == currentProduct.sizeID) {
-          //treat currentSize like an array with the properties as values in the array
-          let sizeAsArr = Object.entries(currentSize);
-          console.log('sizeAsArray: ', sizeAsArr)
-          // console line 168 and from there you can see the position of each array
-          
-          //description is the last property in the size object and sizeID is the first property; I don't want to use them, only the sizes
-          for (let i = 0; i < sizeAsArr.length; i++) {
-            if (sizeAsArr[i][0] != 'sizeID' && sizeAsArr[i][0] != 'categoryID' && sizeAsArr[i][0] != 'categoryDescription')
-            {
-              if (sizeAsArr[i][1] > 0) {
-                sizeString += sizeAsArr[i][1] + ' ';
-              }
-  
-              //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, make it NA
-              if (i == sizeAsArr.length && sizeString == '')
-                sizeString = 'N/A'; 
-            }            
+          //treat size like an array with the properties as values in the array but ignore categoryID, description, sizeID and any size that's = 0
+          let sizeAsArr = Object.entries(currentSize).filter(([key, value]) => {
+            return typeof value === 'number' && value > 0 && key !== 'categoryID' && key !== 'sizeID';
+          });
+    
+          //concatenate the sizes into a string joined by 'x' '150x150x150'
+          sizeString = sizeAsArr.map(([key, value]) => value).join('x');
+    
+          //if it's empty, N/A
+          if (sizeString.trim() === '') {
+            sizeString = 'N/A';
           }
         }
       });
-
-      //trim() gets rid of trailing spaces e.g. turn '150 150 150 ' to '150 150 150'. replaceAll() turns '150 150 150' to '150x150x150'
-      sizeString = sizeString.trim().replaceAll(' ', 'x');
 
       //create new tablefixedproductVM and push to global array
       let tableProductVM: TableFixedProductVM = {
@@ -480,23 +471,18 @@ export class FixedProductComponent {
       let sizeStr: string = ''; //reset string
 
       if (cat.categoryID == this.sizes[i].categoryID) {
-        //treat size like an array with the properties as values in the array
-        let sizeAsArray = Object.entries(this.sizes[i]);
-        //description is the last property in the size object and sizeID is the first property; don't use them, only the sizes
-        for (let j = 0; j < sizeAsArray.length; j++) {
-          if (sizeAsArray[j][0] != 'sizeID' && sizeAsArray[j][0] != 'categoryID' && sizeAsArray[j][0] != 'categoryDescription')
-          {
-            if (sizeAsArray[j][1] > 0) {
-              sizeStr += sizeAsArray[j][1] + ' ';
-            }
+        //treat size like an array with the properties as values in the array but ignore categoryID, description, sizeID and any size that's = 0
+        let sizeAsArray = Object.entries(this.sizes[i]).filter(([key, value]) => {
+          return typeof value === 'number' && value > 0 && key !== 'categoryID' && key !== 'sizeID';
+        });
   
-            //if no sizes are greater than 0, i.e. looped through all the properties that are sizes and string is still empty, N/A
-            if (j == sizeAsArray.length && sizeStr == '')
-              sizeStr = 'N/A';
-          }          
+        //concatenate the sizes into a string joined by 'x' '150x150x150'
+        sizeStr = sizeAsArray.map(([key, value]) => value).join('x');
+  
+        //if it's empty, N/A
+        if (sizeStr.trim() === '') {
+          sizeStr = 'N/A';
         }
-
-        sizeStr = sizeStr.trim().replaceAll(' ', 'x'); //turn '150 150 150 ' to '150 150 150' and then to '150x150x150'
 
         //put in size dropdown array
         var catSize: any = {
