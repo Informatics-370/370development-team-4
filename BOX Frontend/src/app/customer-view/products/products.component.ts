@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
+import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { take, lastValueFrom } from 'rxjs';
 
 @Component({
@@ -9,10 +10,17 @@ import { take, lastValueFrom } from 'rxjs';
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.css']
 })
+
+/*A NOTE:
+The product tree is: category -> item -> product. But products are differentiated by sizes and it doesn't make sense to have 
+15 cards for all the 15 different sizes of single wall box so it's better to have a card represent a product item. 
+Then clicking on it takes the user to the specific product page which list all the possible sizes for that item. */
+
 export class ProductsComponent {
+  allProductVM: ProductVM[] = []; //all products
+  filteredProductVM: ProductVM[] = []; //used to hold all the products that will be displayed to the user
+  productCount = -1; //keep track of how many product items there are in the DB
   items: Item[] = []; //used to store all items
-  filteredItems: Item[] = []; //used to hold all the product items that will be displayed to the user
-  itemCount = -1; //keep track of how many product items there are in the DB
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
 
   constructor(private dataService: DataService) {}
@@ -39,35 +47,70 @@ export class ProductsComponent {
 
       //put results from DB in global arrays
       this.items = allItems;
-      this.filteredItems = this.items
-      this.itemCount = this.items.length;
-      console.log('All product items:', this.items);
       this.fixedProducts = fixedProducts;
-      console.log('All fixed products:', this.fixedProducts);
 
-      //this.displayProducts();
+      this.populateProductList();
     } catch (error) {
       console.error('An error occurred:', error);
     }
   }
 
+  /*the list displayed to the user is the filteredProdList which contains item info from prod items and product photo info 
+  from fixed products. This method takes that data from the various entites and puts it in the list*/
+  populateProductList() {
+    this.items.forEach(item => {
+      let prodVM: ProductVM;
+      //get product photo to use with product item because items don't have photos, products do.
+      let foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID);
+      console.log('product we use to get photo: ', foundProd);
+
+      //put item and product photo info in 1 VM object
+      if (foundProd) {
+        prodVM = {
+          itemID: item.itemID,
+          categoryID: item.categoryID,
+          description: item.description,
+          productPhotoB64: foundProd.productPhotoB64
+        }
+      }
+      else {
+        prodVM = {
+          itemID: item.itemID,
+          categoryID: item.categoryID,
+          description: item.description,
+          productPhotoB64: ''
+        }
+      }
+      
+      this.filteredProductVM.push(prodVM); //populate list that we'll use to display products to the user
+    });
+
+    this.allProductVM = this.filteredProductVM; //store all product someplace before I sort and filter later
+    this.productCount = this.filteredProductVM.length;
+    console.log('all products: ', this.allProductVM, ' and filtered products: ', this.filteredProductVM)
+
+    this.displayProducts();
+  }
+
+  //used to display products to user; can filter if necessary
   displayProducts(categoryID?: number, sortString?: string) {
     let productCardsContainer = document.getElementById('product-cards') as HTMLElement;
     let cardsContainerInnerHTML = '';
 
-    this.filteredItems.forEach(item => {
-      /* cardsContainerInnerHTML += '<div class="col-md-3 col-sm-6 card-container">' +
+    this.filteredProductVM.forEach(prod => {
+      //create card
+      cardsContainerInnerHTML += '<div class="col-md-3 col-sm-6 card-container">' +
                                     '<div class="card product-card" style="border: 0.5px solid rgba(219, 219, 219, 0.25);">' +
                                       '<div class="card-img-top">' +
                                         '<img class="card-img product-card-img" style="width: auto;" src="data:image/png;base64,'
-                                           + product.productPhotoB64 +'"' + 'alt="' + product.description + '">' +
+                                           + prod.productPhotoB64 +'"' + 'alt="' + prod.description + '">' +
                                       '</div>' +
                                       '<div class="card-body product-card-body">' +
-                                        '<p class="card-text">' + product.description + '</p>' +
+                                        '<p class="card-text">' + prod.description + '</p>' +
                                       '</div>' +
                                     '</div>' +
-                                  '</div>'; */
-    });
+                                  '</div>';
+    });      
 
     productCardsContainer.innerHTML = cardsContainerInnerHTML;
   }
