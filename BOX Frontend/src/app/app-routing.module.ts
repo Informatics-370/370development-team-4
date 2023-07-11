@@ -11,6 +11,8 @@ import { SizeUnitsComponent } from './size-units/size-units.component';
 import { VatComponent } from './vat/vat.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
+import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
+import { RawMaterialComponent } from './raw-material/raw-material.component';
 
 
 const routes: Routes = [
@@ -25,7 +27,9 @@ const routes: Routes = [
           {path: 'size-units', component: SizeUnitsComponent},
     { path: 'vat', component: VatComponent },
     { path: "supplier", component: SupplierComponent },
-    { path: "fixed-product", component: FixedProductComponent }
+    { path: "fixed-product", component: FixedProductComponent },
+          {path: 'estimate-duration', component: EstimateDurationComponent},
+          {path: 'raw-material', component:RawMaterialComponent}
 
 ];
 

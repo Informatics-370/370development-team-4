@@ -9,8 +9,8 @@ import { ItemVM } from '../shared/item-vm';
 import { RefundReason } from '../shared/refund-reason';
 import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
-
 import { FixedProductVM } from '../shared/fixed-product-vm';
+import { EstimateDuration } from '../shared/estimate-duration';
 import { SizeVM } from '../shared/size-vm';
 import { Supplier } from '../shared/supplier';
 
@@ -213,6 +213,56 @@ EditSize(sizeId: number, SizeVM: SizeVM): Observable<SizeVM> {
 
   DeleteFixedProduct(fixedProductId: number): Observable<any> {    
     return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
+  }
+
+  //------------ESTIMATE DURATION------------ 
+  GetEstimateDurations(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}EstimateDuration/GetAllEstimateDurations`)
+      .pipe(map(result => result))
+  }
+
+  GetEstimateDuration(estimatedurationId: number): Observable<EstimateDuration> {
+    return this.httpClient.get<EstimateDuration>(`${this.apiUrl}EstimateDuration/GetEstimateDuration/${estimatedurationId}`)
+      .pipe(map(result => result));
+  }
+
+  AddEstimateDuration(rrvm: any): Observable<EstimateDuration> {
+    return this.httpClient.post<EstimateDuration>(
+      `${this.apiUrl}EstimateDuration/AddEstimateDuration`, rrvm, this.httpOptions
+    );
+  }
+
+  DeleteEstimateDurationn(estimatedurationId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}EstimateDuration/DeleteEstimateDuration/${estimatedurationId}`, this.httpOptions);
+  }
+
+  UpdateEstimateDuration(estimatedurationId: number, estimatedurationModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}EstimateDuration/EditEstimateDuration/${estimatedurationId}`, estimatedurationModel, this.httpOptions);
+  }
+   
+  //----------RAW MATERIAL---------------
+  GetAllRawMaterials(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}RawMaterials/GetAllRawMaterials`)
+    .pipe(map(result => result))
+  }
+
+  GetRawMaterial(rawmaterialId: number): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}RawMaterials/GetRawMaterial/${rawmaterialId}`)
+      .pipe(map(result => result));
+  }
+
+  AddRawMaterial(rawMaterialDescription: string): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}RawMaterials/AddRawMaterial/${rawMaterialDescription}`, this.httpOptions
+    );
+  }
+
+  DeleteRawMaterial(rawmaterialId: number ):Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}RawMaterials/DeleteRawMaterial/${rawmaterialId}`, this.httpOptions);
+  }
+
+  UpdateRawMaterial(rawmaterialId: number, rawMaterialDescription: string): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
   }
 
 
