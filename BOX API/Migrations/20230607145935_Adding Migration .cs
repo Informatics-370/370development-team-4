@@ -4,7 +4,7 @@
 
 namespace BOX.Migrations
 {
-    public partial class FixVAT : Migration
+    public partial class AddingMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

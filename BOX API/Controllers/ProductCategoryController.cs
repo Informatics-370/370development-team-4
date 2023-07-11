@@ -1,4 +1,4 @@
-﻿    using BOX.Models;
+    using BOX.Models;
     using BOX.ViewModel;
     using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
@@ -106,6 +106,7 @@ using Microsoft.EntityFrameworkCore;
                     Length = catVM.length,
                     Weight = catVM.weight,
                     Volume = catVM.volume
+
                 };
 
                 try
