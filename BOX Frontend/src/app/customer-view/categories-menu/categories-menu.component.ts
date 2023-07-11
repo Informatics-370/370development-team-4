@@ -41,7 +41,7 @@ export class CategoriesMenuComponent {
           categoryLink.classList.add('category-link');
 
           categoryLink.innerHTML = cat.categoryDescription;
-          categoryLink.href = '#';
+          categoryLink.href = '/products';
 
           //add to categories menu
           categoryListItem.appendChild(categoryLink);

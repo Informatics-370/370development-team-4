@@ -70,7 +70,10 @@ export class ProductsComponent {
           itemID: item.itemID,
           categoryID: item.categoryID,
           description: item.description,
-          productPhotoB64: foundProd.productPhotoB64
+          productPhotoB64: foundProd.productPhotoB64,
+          prices: [],
+          availableSizes: [],
+          qtyOnHand: foundProd.quantityOnHand
         }
       }
       else {
@@ -78,7 +81,10 @@ export class ProductsComponent {
           itemID: item.itemID,
           categoryID: item.categoryID,
           description: item.description,
-          productPhotoB64: ''
+          productPhotoB64: '',
+          prices: [],
+          availableSizes: [],
+          qtyOnHand: 0
         }
       }
 
@@ -107,10 +113,12 @@ export class ProductsComponent {
       const card = this.renderer.createElement('div');
       this.renderer.addClass(card, 'card');
       this.renderer.addClass(card, 'product-card');
+      this.renderer.addClass(card, 'hover-animation');
       this.renderer.setStyle(card, 'border', '0.5px solid rgba(219, 219, 219, 0.25)');
 
       const cardImgTop = this.renderer.createElement('div');
       this.renderer.addClass(cardImgTop, 'card-img-top');
+      this.renderer.addClass(cardImgTop, 'product-card-img-top');
 
       const img = this.renderer.createElement('img');
       this.renderer.addClass(img, 'card-img');
@@ -140,18 +148,16 @@ export class ProductsComponent {
       });
 
       /*The resulting code looks like this:
-      <div id="product-cards" class="row">
-            <!--CARD-->
-            <div class="col-md-3 col-sm-6 card-container">
-                <div class="card product-card">
-                    <div class="card-img-top">
-                        <img class="card-img product-card-img" src="data:image/png;base64,Base64String" alt="Single wall box">
-                    </div>
-                    <div class="card-body product-card-body">
-                        <p class="card-text">Single Wall Box</p>
-                    </div>
-                </div>
-            </div>
+          <div class="col-md-3 col-sm-6 card-container">
+              <div class="card product-card hover-animation" style="border: 0.5px solid rgba(219, 219, 219, 0.25);">
+                  <div class="card-img-top">
+                      <img class="card-img product-card-img" style="width: auto;" src="data:image/png;base64,Base64String" alt="Single wall box">
+                  </div>
+                  <div class="card-body product-card-body">
+                      <p class="card-text">Single Wall Box</p>
+                  </div>
+              </div>
+          </div>
       */
     });
   }

@@ -1,1 +1,53 @@
-<p>product-details works!</p>
+<div class="row">
+    <div class="col-md-3 col-sm-12 all-categories-menu">
+        <app-categories-menu></app-categories-menu>
+    </div>
+    <!--PAGE CONTENT-->
+    <div class="col-md-9 col-sm-12 p-4">
+        <div class="row">
+            <div class="card product-card col-11">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6 product-img" style="border: 1px solid brown;">
+                            <img class="card-img product-card-img" src="data:image/png;base64,Base64String" alt="Single wall box">
+                        </div>
+                        <div class="col-sm-12 col-md-6 card-body product-card-body" style="border: 1px solid brown;">
+                            <h5 class="card-text">Single Wall Box (Standard)</h5>
+                            <p id="sizes-p">Available sizes:
+                                <ul id="sizes-list">
+                                    <li>150cm x 150cm x 100cm x 1298g x 30l</li>
+                                    <li>150cm x 150cm x 100.5cm x 1298g x 30l</li>
+                                    <li>200cm x 150cm x 100cm x 1298g x 30l</li>
+                                </ul>
+
+                            <p><span class="price">Estimated price</span><br/> (150cm x 150cm x 100cm x 1298g x 30l): <br/>
+                                <strong class="price">R19.99</strong>
+                            </p>
+
+                            <div *ngIf="outOfStock" class="out-of-stock">OUT OF STOCK</div>
+
+                            <div *ngIf="!outOfStock" class="container">
+                                <form class="row form-inline">
+                                    <div class="form-group col-6">
+                                        <label for="add-sizeID" class="form-label modal-form-label bold">Size:</label>
+                                        <select id="add-sizeID" name="size" class="form-select modal-form-input modal-form-text">
+                                            <option disabled value="NA">Choose size</option>
+                                        </select>
+                                    </div>
+                
+                                    <div class="form-group col-6">
+                                        <label for="qty" class="form-label modal-form-label bold">Quantity:</label>
+                                        <input id="qty" type="number" class="form-control modal-form-input modal-form-text" 
+                                            placeholder="0" name="qty" required min="1" [max]="qtyOnHand" step="1">
+                                    </div>
+                                    
+                                    <input type="submit" class="btn btn-add-cart" [disabled]="disableAddToCart" value="Add to Cart" />
+                                </form> 
+                            </div>                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
