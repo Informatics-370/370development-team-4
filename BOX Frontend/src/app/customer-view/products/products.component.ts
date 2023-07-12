@@ -66,7 +66,7 @@ export class ProductsComponent {
       let foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID);
 
       //put item and product photo info in 1 VM object
-      if (foundProd) {
+      if (foundProd) { //prevent users from trying to view product details of product items for which there are no fixed products
         prodVM = {
           itemID: item.itemID,
           categoryID: item.categoryID,
@@ -75,19 +75,8 @@ export class ProductsComponent {
           sizeStringArray: [],
           qtyOnHand: foundProd.quantityOnHand
         }
+        this.filteredProductVM.push(prodVM); //populate list that we'll use to display products to the user
       }
-      else {
-        prodVM = {
-          itemID: item.itemID,
-          categoryID: item.categoryID,
-          description: item.description,
-          productPhotoB64: '',
-          sizeStringArray: [],
-          qtyOnHand: 0
-        }
-      }
-
-      this.filteredProductVM.push(prodVM); //populate list that we'll use to display products to the user
     });
 
     this.allProductVM = this.filteredProductVM; //store all product someplace before I sort and filter later
