@@ -27,10 +27,14 @@ export class ProductDetailsComponent {
   sizeStringAndPricesArr: any[] = []; //array used to populate size dropdown
   selectedSizeID = 1; //holds the ID of size currently selected
   selectedSizeIndex = 0; //holds index of size currently selected in array
-  loading = true;
-  discountList: standInDiscount[] = [];
+  loading = true; //display loading message
+  discountList: standInDiscount[] = []; //hold all bulk discounts
+  total = 0; //hold total cost
+  discount = 0; //hold discount e.g 20 for 20% discount
   //form
   addToCartForm: FormGroup;
+  //validation error logic
+  invalidQty = false;
 
   constructor(private dataService: DataService ,private route: ActivatedRoute, private formBuilder: FormBuilder) {
     this.addToCartForm = this.formBuilder.group({
@@ -47,18 +51,15 @@ export class ProductDetailsComponent {
       if (id) this.itemID = parseInt(id);
     });
 
-    //static discount list
+    // generate static discount list
     for (let i = 0; i < 4; i++) {
-      /* let newDiscount: standInDiscount = {
+      let min = 5 + i * 5;  // Calculate the lower bound for percentage
+      let newDiscount: standInDiscount = {
         discountID: i + 1,
-        percentage: Math.floor((Math.random() * ((i + 2) * 5 - 1)) + ((i + 1 ) * 5)), //random whole number between 5-9, then 10-14, 15-19 then 20-24
-        quantity: Math.floor(Math.random() * 9 + 1) * Math.pow(10, i + 1) //random multiple of 10 between 10-90, then 100-900, 1 000-9 000 then 10 000-90 000
+        percentage: Math.floor(Math.random() * ((9 + i * 5) - min + 1)) + min, //random whole number between 5-9, then 10-14, 15-19 then 20-24
+        quantity: (Math.floor(Math.random() * 9) + 1) * Math.pow(10, i + 1) //random multiple of 10 between 10-90, then 100-900, 1 000-9 000 then 10 000-90 000
       }
-      this.discountList.push(newDiscount); */
-      /* console.log('Percentage:');
-      console.log('Start no: ', (i+1)*5, ' End no: ', (i+2)*5 - 1);*/
-      console.log('Qty:');
-      console.log('Start no: ', Math.pow(10, i + 1), ' End no: ', Math.pow(10, i + 1)*9);
+      this.discountList.push(newDiscount);
     }
     console.log('All discounts: ', this.discountList);
   }
@@ -108,7 +109,6 @@ export class ProductDetailsComponent {
       matchingFixedProducts.forEach(fixedProd => {
         //get size using size ID
         let foundSize = this.sizes.find(size => size.sizeID == fixedProd.sizeID);
-        console.log(foundSize);
 
         //CONCATENATE SIZE STRINGS; later add sorting of sizes from smallest to largest
         if (foundSize) {
@@ -161,19 +161,79 @@ export class ProductDetailsComponent {
         qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000
       }
 
+      console.log('Display: ', this.selectedProductVM);
       this.selectedSizeID = this.sizeStringAndPricesArr[0]['sizeID']; //set value of size dropdown to first size
-
       this.quantityOnHand = this.selectedProductVM.qtyOnHand; //set max on qty number input
+
       if (this.selectedProductVM.qtyOnHand == 0) this.outOfStock = true; //show if product is out of stock
+
       this.loading = false; //stop showing loading message
     }
   }
 
   changedSize() {
     this.selectedSizeIndex = this.sizeStringAndPricesArr.findIndex(element => element.sizeID == this.selectedSizeID);
+    this.changedQty();
+  }
+
+  changedQty() {
+    this.invalidQty = false; //hide validation error msg
+    let qtyInputValue = this.addToCartForm.get("qty")?.value; //get value enered in qty number input
+    if (qtyInputValue > 0) { //if it's a valid number
+      //don't allow orders greater than what we got on hand
+      if (qtyInputValue > this.quantityOnHand) { 
+        this.addToCartForm.get("qty")?.setValue(this.quantityOnHand);
+        this.invalidQty = true;
+
+        setTimeout(() => {
+          this.invalidQty = false;
+        }, 10000);
+      }
+
+      //apply discount; keep iterating through the loop until a) reach end of discount list or b) find correct discount to apply
+      let i = this.discountList.length - 1;
+      while (i >= 0 && qtyInputValue < this.discountList[i].quantity) { i--; }
+
+      if (i >= 0) { //if while loop stopped because I found correct discount not because I ran out of discounts to check
+        console.log('i', i);
+        this.applyDiscount(this.discountList[i], qtyInputValue);
+      }
+      else
+        this.discountApplied = false; //remove all previously applied discounts
+        this.total = this.sizeStringAndPricesArr[this.selectedSizeIndex].price * qtyInputValue; //set product total
+    }
+    else if (qtyInputValue == 0) {        
+      this.addToCartForm.get("qty")?.setValue(1);
+      this.invalidQty = true;
+
+      setTimeout(() => {
+        this.invalidQty = false;
+      }, 10000);
+    }
+  }
+
+  applyDiscount(discountToApply: standInDiscount, qty: number) {
+    this.discount = discountToApply.percentage;
+    let unitPrice = this.sizeStringAndPricesArr[this.selectedSizeIndex].price;
+    let totalBeforeDiscount = unitPrice * qty;
+    this.total = totalBeforeDiscount - (totalBeforeDiscount * this.discount / 100);
+
+    console.log('total', this.total, ' and discount is ', this.discount, '%');
+    this.discountApplied = true; //display discount
+    
   }
 
   /*APPLY DISCOUNT:
+  BEFORE
+  <span id="estimated-price">Unit price (estimate):<br/>
+                                    <strong class="price">{{sizeStringAndPricesArr[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
+                                </span>
+                                <span id="discount-applied" *ngIf="discountApplied"> <br/>
+                                    Total: <strong class="price"><br/>R19.99</strong>                                    
+                                    <strong id="discount">20% OFF!</strong>
+                                </span>
+
+  AFTER
   <span id="estimated-price" class="strikethrough">Unit price (estimate):<br/>
                                     <strong>R19.99</strong>
                                 </span>

@@ -24,12 +24,12 @@
                                     <li *ngFor="let sizeListString of selectedProductVM.sizeStringArray"><em>{{sizeListString}}</em></li>
                                 </ul>
 
-                            <p><span id="estimated-price">Unit price (estimate):<br/>
-                                    <strong class="price">{{sizeStringAndPricesArr[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
+                            <p><span id="estimated-price" [className]="discountApplied ? 'strikethrough' : ''">Unit price (estimate):<br/>
+                                    <strong [className]="!discountApplied ? 'price' : ''">{{sizeStringAndPricesArr[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
                                 </span>
-                                <span id="discount-applied" *ngIf="discountApplied"> <br/>
-                                    Total: <strong class="price"><br/>R19.99</strong>                                    
-                                    <strong id="discount">20% OFF!</strong>
+                                <span id="discount-applied" *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br/>
+                                    Total: <strong class="price"><br/>{{total | currency: 'ZAR':'symbol-narrow'}}</strong>                                    
+                                    <strong id="discount" *ngIf="discountApplied">{{discount}}% OFF!</strong>
                                 </span>
                             </p>
 
@@ -47,9 +47,14 @@
                                     <div class="form-group col-6">
                                         <label for="qty" class="form-label modal-form-label bold">Quantity:</label>
                                         <input id="qty" type="number" class="form-control modal-form-input modal-form-text" 
-                                            value="1" name="qty" required min="1" [max]="quantityOnHand" step="1">
+                                            formControlName="qty" name="qty" required min="1" [max]="quantityOnHand" step="1" 
+                                            (keyup)="changedQty()">
+                                    </div>
+                                    <div *ngIf="invalidQty" class="error-msg">
+                                        Due to inventory level constraints, the mininum you can order is 0 and the maximum is {{quantityOnHand}}
                                     </div>
                                     
+                                    <!--Is not enabled unless there's a valid value in qty number input-->
                                     <input type="submit" class="btn btn-add-cart" value="Add to Cart" />
                                 </form> 
                             </div>                           
