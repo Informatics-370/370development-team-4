@@ -7,46 +7,60 @@
         <div class="row">
             <div class="card product-card col-11">
                 <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 col-md-6 product-img" style="border: 1px solid brown;">
-                            <img class="card-img product-card-img" src="data:image/png;base64,Base64String" alt="Single wall box">
+                    <!--DISPLAY LOADING MESSAGE-->
+                    <div class="row" *ngIf="loading">
+                        Getting product for you...
+                    </div>
+
+                    <!--DISPLAY PRODUCT INFO-->
+                    <div class="row align-items-center" *ngIf="!loading">
+                        <div class="col-sm-12 col-md-6 product-img">
+                            <img class="card-img product-card-img" src="data:image/png;base64,{{selectedProductVM.productPhotoB64}}" alt="Single wall box">
                         </div>
-                        <div class="col-sm-12 col-md-6 card-body product-card-body" style="border: 1px solid brown;">
-                            <h5 class="card-text">Single Wall Box (Standard)</h5>
+                        <div class="col-sm-12 col-md-6 card-body product-card-body">
+                            <h5 class="card-text">{{selectedProductVM.description}} (Standard)</h5>
                             <p id="sizes-p">Available sizes:
                                 <ul id="sizes-list">
-                                    <li>150cm x 150cm x 100cm x 1298g x 30l</li>
-                                    <li>150cm x 150cm x 100.5cm x 1298g x 30l</li>
-                                    <li>200cm x 150cm x 100cm x 1298g x 30l</li>
+                                    <li *ngFor="let sizeListString of selectedProductVM.sizeStringArray"><em>{{sizeListString}}</em></li>
                                 </ul>
 
-                            <p><span class="price">Estimated price</span><br/> (150cm x 150cm x 100cm x 1298g x 30l): <br/>
-                                <strong class="price">R19.99</strong>
+                            <p><span id="estimated-price">Unit price (estimate):<br/>
+                                    <strong class="price">{{sizeStringAndPricesArr[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
+                                </span>
+                                <span id="discount-applied" *ngIf="discountApplied"> <br/>
+                                    Total: <strong class="price"><br/>R19.99</strong>                                    
+                                    <strong id="discount">20% OFF!</strong>
+                                </span>
                             </p>
 
                             <div *ngIf="outOfStock" class="out-of-stock">OUT OF STOCK</div>
 
                             <div *ngIf="!outOfStock" class="container">
-                                <form class="row form-inline">
+                                <form class="row form-inline" [formGroup]="addToCartForm">
                                     <div class="form-group col-6">
-                                        <label for="add-sizeID" class="form-label modal-form-label bold">Size:</label>
-                                        <select id="add-sizeID" name="size" class="form-select modal-form-input modal-form-text">
-                                            <option disabled value="NA">Choose size</option>
+                                        <label for="sizeID" class="form-label modal-form-label bold">Size:</label>
+                                        <select id="sizeID" name="size" formControlName="sizeID" [(ngModel)]="selectedSizeID" (change)="changedSize()" class="form-select modal-form-input modal-form-text">
+                                            <option *ngFor="let sizeDropdownString of sizeStringAndPricesArr" value={{sizeDropdownString.sizeID}}>{{sizeDropdownString.sizeString}}</option>
                                         </select>
                                     </div>
                 
                                     <div class="form-group col-6">
                                         <label for="qty" class="form-label modal-form-label bold">Quantity:</label>
                                         <input id="qty" type="number" class="form-control modal-form-input modal-form-text" 
-                                            placeholder="0" name="qty" required min="1" [max]="qtyOnHand" step="1">
+                                            value="1" name="qty" required min="1" [max]="quantityOnHand" step="1">
                                     </div>
                                     
-                                    <input type="submit" class="btn btn-add-cart" [disabled]="disableAddToCart" value="Add to Cart" />
+                                    <input type="submit" class="btn btn-add-cart" value="Add to Cart" />
                                 </form> 
                             </div>                           
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">            
+            <div id="related-products-container" class="col-11">
+                <h5>Related products</h5>
             </div>
         </div>
     </div>

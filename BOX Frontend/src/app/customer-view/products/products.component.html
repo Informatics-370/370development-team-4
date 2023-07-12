@@ -7,18 +7,7 @@
         <h3 class="p-3" style="color: black;">Cartons</h3>
         <!--PRODUCTS-->
         <div id="product-cards" class="row">
-            <!--CARD-->
-            <div class="col-md-3 col-sm-6 card-container">
-                <div class="card product-card">
-                    <div class="card-img-top product-card-img-top">
-                        <img class="card-img product-card-img" src="../../../assets/box.jpg" alt="Single wall box">
-                    </div>
-                    <div class="card-body product-card-body">
-                        <p class="card-text">Single Wall Box</p>
-                    </div>
-                </div>
-            </div>
-
+            <p *ngIf="loading">Loading products...</p>
         </div>
     </div>
 </div>

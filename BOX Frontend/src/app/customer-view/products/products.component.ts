@@ -23,6 +23,7 @@ export class ProductsComponent {
   productCount = -1; //keep track of how many product items there are in the DB
   items: Item[] = []; //used to store all items
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
+  loading = true;
 
   constructor(private dataService: DataService, private router: Router, private renderer: Renderer2) { }
 
@@ -71,8 +72,7 @@ export class ProductsComponent {
           categoryID: item.categoryID,
           description: item.description,
           productPhotoB64: foundProd.productPhotoB64,
-          prices: [],
-          availableSizes: [],
+          sizeStringArray: [],
           qtyOnHand: foundProd.quantityOnHand
         }
       }
@@ -82,8 +82,7 @@ export class ProductsComponent {
           categoryID: item.categoryID,
           description: item.description,
           productPhotoB64: '',
-          prices: [],
-          availableSizes: [],
+          sizeStringArray: [],
           qtyOnHand: 0
         }
       }
@@ -160,6 +159,8 @@ export class ProductsComponent {
           </div>
       */
     });
+
+    this.loading = false;
   }
 
   /*OG DISPLAY PRODUCTS CODE:
@@ -182,6 +183,6 @@ export class ProductsComponent {
   */
 
   redirectToProductDetails(itemID: number, itemDescription: string) {
-    this.router.navigate(['product-details', itemID, itemDescription]);
+    this.router.navigate(['product-details', itemID, itemDescription.replaceAll(' ', '-')]);
   }
 }
