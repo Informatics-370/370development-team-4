@@ -25,7 +25,7 @@
                                 </ul>
 
                             <p><span id="estimated-price" [className]="discountApplied ? 'strikethrough' : ''">Unit price (estimate):<br/>
-                                    <strong [className]="!discountApplied ? 'price' : ''">{{sizeStringAndPricesArr[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
+                                    <strong [className]="!discountApplied ? 'price' : ''">{{sizeDropdownArray[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
                                 </span>
                                 <span id="discount-applied" *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br/>
                                     Total: <strong class="price"><br/>{{total | currency: 'ZAR':'symbol-narrow'}}</strong>                                    
@@ -33,28 +33,33 @@
                                 </span>
                             </p>
 
-                            <div *ngIf="outOfStock" class="out-of-stock">OUT OF STOCK</div>
+                            <div *ngIf="outOfStock">
+                                <div class="out-of-stock">OUT OF STOCK</div>
+                                Please try a different size
+                            </div>
 
-                            <div *ngIf="!outOfStock" class="container">
-                                <form class="row form-inline" [formGroup]="addToCartForm">
+                            <div class="container">
+                                <form class="row form-inline" [formGroup]="addToCartForm" style="margin-top: 1.2em;">
                                     <div class="form-group col-6">
                                         <label for="sizeID" class="form-label modal-form-label bold">Size:</label>
-                                        <select id="sizeID" name="size" formControlName="sizeID" [(ngModel)]="selectedSizeID" (change)="changedSize()" class="form-select modal-form-input modal-form-text">
-                                            <option *ngFor="let sizeDropdownString of sizeStringAndPricesArr" value={{sizeDropdownString.sizeID}}>{{sizeDropdownString.sizeString}}</option>
+                                        <select id="sizeID" name="size" formControlName="sizeID" [(ngModel)]="selectedFixedProdID" (change)="changedSize()" class="form-select modal-form-input modal-form-text">
+                                            <option *ngFor="let productOption of sizeDropdownArray" value={{productOption.fixedProductID}} [disabled]="productOption.qtyOnHand == 0 ? 'disabled' : ''" >
+                                                {{productOption.sizeString}}
+                                            </option>
                                         </select>
                                     </div>
                 
                                     <div class="form-group col-6">
                                         <label for="qty" class="form-label modal-form-label bold">Quantity:</label>
                                         <input id="qty" type="number" class="form-control modal-form-input modal-form-text" 
-                                            formControlName="qty" name="qty" required min="1" [max]="quantityOnHand" step="1" 
+                                            formControlName="qty" name="qty" required min="1" [max]="maxQuantity" step="1" 
                                             (keyup)="changedQty()">
                                     </div>
                                     <div *ngIf="invalidQty" class="error-msg">
-                                        Due to inventory level constraints, the mininum you can order is 0 and the maximum is {{quantityOnHand}}
+                                        Due to inventory level constraints, the mininum you can order is 0 and the maximum is {{maxQuantity}}
                                     </div>
                                     
-                                    <button class="btn btn-add-cart" (click)="addToCart()">Add to Cart</button>
+                                    <button class="btn btn-add-cart" (click)="addToCart()" [disabled]="outOfStock">Add to Cart</button>
                                     <div *ngIf="cartSuccess" class="success-msg">
                                         Successfully added to cart!
                                     </div>

@@ -5,5 +5,4 @@ export interface ProductVM {
     description: string;
     productPhotoB64: string;
     sizeStringArray: string[];
-    qtyOnHand: number;
 }

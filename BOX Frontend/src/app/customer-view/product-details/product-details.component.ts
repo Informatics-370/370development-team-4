@@ -16,8 +16,10 @@ import { Cart } from 'src/app/shared/customer-interfaces/cart';
   styleUrls: ['./product-details.component.css']
 })
 export class ProductDetailsComponent {
+  /*NOTE: the product on display represents an item but each size available represents a fixed product */
+
   outOfStock = false;
-  quantityOnHand = 2000000;
+  maxQuantity = 2000000;
   discountApplied = false;
   relatedProductsVMList: ProductVM[] = []; //all products
   selectedProductVM!: ProductVM; //used to hold all the products that will be displayed to the user
@@ -25,11 +27,11 @@ export class ProductDetailsComponent {
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
   sizes: SizeVM[] = [];
   itemID: number = -1;
-  sizeStringAndPricesArr: SizeDropdrownItem[] = []; //array used to populate size dropdown
-  selectedSizeID = 1; //holds the ID of size currently selected
-  selectedSizeIndex = 0; //holds index of size currently selected in array
+  sizeDropdownArray: SizeDropdrownItem[] = []; //array used to populate size dropdown
+  selectedFixedProdID = 1; //holds the ID of fixed prod with size currently selected
+  selectedSizeIndex = 0; //holds index of size currently selected in dropdown
   discountList: Discount[] = []; //hold all bulk discounts
-  total = 0; //hold total cost
+  total = 0; //hold total cost i.e. unit price * qty - discount
   discount: Discount | null = null; //hold discount
   cart: Cart[] = []; //hold cart
   //form
@@ -37,7 +39,7 @@ export class ProductDetailsComponent {
   //messages to user
   invalidQty = false; //validation error logic
   loading = true; //display loading message
-  cartSuccess = false;
+  cartSuccess = false; //display success message when product is added to cart
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, private formBuilder: FormBuilder, private router: Router) {
     this.addToCartForm = this.formBuilder.group({
@@ -99,7 +101,7 @@ export class ProductDetailsComponent {
     let matchingItem = this.items.find(item => item.itemID == id); //get the item with matching ID
     let matchingFixedProducts = this.fixedProducts.filter(fixedProd => fixedProd.itemID == id); //get all products with matching item ID
     /*sort matching fixed products by price so that sizes will also be in order from least expensive to most expensive, 
-    which should result in smallest size to biggest size*/
+    which should result in smallest to biggest size*/
     matchingFixedProducts.sort((currentProd, nextProd) => {
       return currentProd.price - nextProd.price
     });
@@ -146,13 +148,16 @@ export class ProductDetailsComponent {
           //if it's empty, N/A
           if (sizeDropdownString.trim() === '') sizeDropdownString = 'N/A';
 
-          let sizeStringAndPrice: SizeDropdrownItem = {
-            sizeID: foundSize.sizeID,
+          //create object; e.g. result: {sizeString: '150x150', price: 12.99, id: 15, qtyOnHand: 243500}
+          let sizeDropdownObject: SizeDropdrownItem = {
             sizeString: sizeDropdownString,
             price: fixedProd.price,
-            fixedProductID: fixedProd.fixedProductID
-          }; //create object; e.g. result: {sizeString: '150x150', price: 12.99}
-          this.sizeStringAndPricesArr.push(sizeStringAndPrice); //push to global array for size dropdown
+            fixedProductID: fixedProd.fixedProductID,
+            qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000
+            /* qtyOnHand: fixedProd.quantityOnHand //when fixed product quantities can be updated */
+          };
+
+          this.sizeDropdownArray.push(sizeDropdownObject); //push to global array for size dropdown
         }
       });
 
@@ -162,22 +167,26 @@ export class ProductDetailsComponent {
         description: matchingItem.description,
         categoryID: matchingItem.categoryID,
         productPhotoB64: matchingFixedProducts[matchingFixedProducts.length - 1].productPhotoB64,
-        sizeStringArray: sizeStringListArr,
-        qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000
+        sizeStringArray: sizeStringListArr
       }
 
-      console.log('Display: ', this.selectedProductVM);
-      this.selectedSizeID = this.sizeStringAndPricesArr[0]['sizeID']; //set value of size dropdown to first size
-      this.quantityOnHand = this.selectedProductVM.qtyOnHand; //set max on qty number input
+      console.log('Display: ', this.selectedProductVM, ' and dropdown list: ', this.sizeDropdownArray);
+      this.selectedFixedProdID = this.sizeDropdownArray[0].fixedProductID; //set initial value of size dropdown to first size
+      this.maxQuantity = this.sizeDropdownArray[0].qtyOnHand; //set max on qty number input
 
-      if (this.selectedProductVM.qtyOnHand == 0) this.outOfStock = true; //show if product is out of stock
+      if (this.maxQuantity == 0) this.toggleOutOfStock(true);
 
       this.loading = false; //stop showing loading message
     }
   }
 
   changedSize() {
-    this.selectedSizeIndex = this.sizeStringAndPricesArr.findIndex(element => element.sizeID == this.selectedSizeID);
+    this.selectedSizeIndex = this.sizeDropdownArray.findIndex(element => element.fixedProductID == this.selectedFixedProdID);
+    this.maxQuantity = this.sizeDropdownArray[this.selectedSizeIndex].qtyOnHand; //update max qty on hand because it sets the max value of qty input
+    //check if this product is out of stock
+    if (this.maxQuantity == 0) this.toggleOutOfStock(true);
+    else this.toggleOutOfStock(false);
+
     this.changedQty();
   }
 
@@ -186,8 +195,8 @@ export class ProductDetailsComponent {
     let qtyInputValue = this.addToCartForm.get("qty")?.value; //get value entered in qty number input
     if (qtyInputValue > 0) { //if it's a valid number
       //don't allow orders greater than what we got on hand
-      if (qtyInputValue > this.quantityOnHand) {
-        this.addToCartForm.get("qty")?.setValue(this.quantityOnHand);
+      if (qtyInputValue > this.maxQuantity) {
+        this.addToCartForm.get("qty")?.setValue(this.maxQuantity);
         this.invalidQty = true;
 
         setTimeout(() => {
@@ -206,7 +215,7 @@ export class ProductDetailsComponent {
         //remove all previously applied discounts
         this.discountApplied = false;
         this.discount = null;
-        this.total = this.sizeStringAndPricesArr[this.selectedSizeIndex].price * qtyInputValue; //set product total
+        this.total = this.sizeDropdownArray[this.selectedSizeIndex].price * qtyInputValue; //set product total
       }
     }
     else if (qtyInputValue == 0) {
@@ -221,7 +230,7 @@ export class ProductDetailsComponent {
 
   applyDiscount(discountToApply: Discount, qty: number) {
     this.discount = discountToApply;
-    let unitPrice = this.sizeStringAndPricesArr[this.selectedSizeIndex].price;
+    let unitPrice = this.sizeDropdownArray[this.selectedSizeIndex].price;
     let totalBeforeDiscount = unitPrice * qty;
     this.total = totalBeforeDiscount - (totalBeforeDiscount * this.discount.percentage / 100);
 
@@ -230,7 +239,7 @@ export class ProductDetailsComponent {
   }
 
   addToCart() {
-    let id = this.sizeStringAndPricesArr[this.selectedSizeIndex].fixedProductID;
+    let id = this.sizeDropdownArray[this.selectedSizeIndex].fixedProductID;
     let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
     if (fixedProdToAdd) {
       //check if user already has that product in their cart
@@ -264,6 +273,17 @@ export class ProductDetailsComponent {
     }
   }
 
+  toggleOutOfStock(isProductOutOfStock: boolean) {
+    if (isProductOutOfStock) { //if out of stock
+      this.outOfStock = true; //show div if product is out of stock
+      this.addToCartForm.get("qty")?.disable(); //disable qty number input but leave size because a different size might be in stock
+    }
+    else {
+      this.outOfStock = false; //hide div
+      this.addToCartForm.get("qty")?.enable(); //enable qty number input
+    }
+  }
+
   /*  
   redirectToCart() {
     this.router.navigate(['cart']);
@@ -273,8 +293,8 @@ export class ProductDetailsComponent {
 }
 
 export interface SizeDropdrownItem {
-  sizeID: number;
+  fixedProductID: number;
   sizeString: string;
   price: number;
-  fixedProductID: number;
+  qtyOnHand: number;
 }

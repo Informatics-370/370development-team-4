@@ -74,8 +74,7 @@ export class ProductsComponent {
           categoryID: item.categoryID,
           description: item.description,
           productPhotoB64: foundProd.productPhotoB64,
-          sizeStringArray: [],
-          qtyOnHand: foundProd.quantityOnHand
+          sizeStringArray: []
         }
         this.filteredProductVM.push(prodVM); //populate list that we'll use to display products to the user
       }
