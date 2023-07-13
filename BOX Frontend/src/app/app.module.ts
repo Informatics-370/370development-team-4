@@ -23,6 +23,9 @@ import { StartupDivComponent } from './startup-div/startup-div.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
 import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 import { RawMaterialComponent } from './raw-material/raw-material.component';
+import { ProductsComponent } from './customer-view/products/products.component';
+import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
+import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 
 @NgModule({
   declarations: [ 
@@ -42,8 +45,10 @@ import { RawMaterialComponent } from './raw-material/raw-material.component';
         StartupDivComponent,
         FixedProductComponent,
         EstimateDurationComponent,
-        RawMaterialComponent
-
+        RawMaterialComponent,
+        ProductsComponent,
+        CategoriesMenuComponent,
+        ProductDetailsComponent
   ],
   imports: [
     BrowserModule,

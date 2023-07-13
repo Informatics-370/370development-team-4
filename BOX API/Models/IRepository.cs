@@ -64,5 +64,10 @@ namespace BOX.Models
         Task<Fixed_Product[]> GetAllFixedProductsAsync();
         Task<Fixed_Product> GetFixedProductAsync(int fixedProductId);
         Task UpdateFixedProductAsync(Fixed_Product fixedProduct);
+
+
+        //------------------------------------- COST PRICE FORMULA VARIABLES -------------------------------------
+        Task<Cost_Price_Formula_Variables[]> GetAllFormulaVariablesAsync();
+        Task<Cost_Price_Formula_Variables> GetFormulaVariablesAsync(int formulaVariablesID);
     }
 }

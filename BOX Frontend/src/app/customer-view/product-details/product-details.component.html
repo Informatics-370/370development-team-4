@@ -1,0 +1,74 @@
+<div class="row">
+    <div class="col-md-3 col-sm-12 all-categories-menu">
+        <app-categories-menu></app-categories-menu>
+    </div>
+    <!--PAGE CONTENT-->
+    <div class="col-md-9 col-sm-12 p-4">
+        <div class="row">
+            <div class="card product-card col-11">
+                <div class="container">
+                    <!--DISPLAY LOADING MESSAGE-->
+                    <div class="row" *ngIf="loading">
+                        Getting product for you...
+                    </div>
+
+                    <!--DISPLAY PRODUCT INFO-->
+                    <div class="row align-items-center" *ngIf="!loading">
+                        <div class="col-sm-12 col-md-6 product-img">
+                            <img class="card-img product-card-img" src="data:image/png;base64,{{selectedProductVM.productPhotoB64}}" alt="Single wall box">
+                        </div>
+                        <div class="col-sm-12 col-md-6 card-body product-card-body">
+                            <h5 class="card-text">{{selectedProductVM.description}} (Standard)</h5>
+                            <p id="sizes-p">Available sizes:
+                                <ul id="sizes-list">
+                                    <li *ngFor="let sizeListString of selectedProductVM.sizeStringArray"><em>{{sizeListString}}</em></li>
+                                </ul>
+
+                            <p><span id="estimated-price" [className]="discountApplied ? 'strikethrough' : ''">Unit price (estimate):<br/>
+                                    <strong [className]="!discountApplied ? 'price' : ''">{{sizeStringAndPricesArr[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
+                                </span>
+                                <span id="discount-applied" *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br/>
+                                    Total: <strong class="price"><br/>{{total | currency: 'ZAR':'symbol-narrow'}}</strong>                                    
+                                    <strong id="discount" *ngIf="discountApplied">{{discount?.percentage}}% OFF!</strong>
+                                </span>
+                            </p>
+
+                            <div *ngIf="outOfStock" class="out-of-stock">OUT OF STOCK</div>
+
+                            <div *ngIf="!outOfStock" class="container">
+                                <form class="row form-inline" [formGroup]="addToCartForm">
+                                    <div class="form-group col-6">
+                                        <label for="sizeID" class="form-label modal-form-label bold">Size:</label>
+                                        <select id="sizeID" name="size" formControlName="sizeID" [(ngModel)]="selectedSizeID" (change)="changedSize()" class="form-select modal-form-input modal-form-text">
+                                            <option *ngFor="let sizeDropdownString of sizeStringAndPricesArr" value={{sizeDropdownString.sizeID}}>{{sizeDropdownString.sizeString}}</option>
+                                        </select>
+                                    </div>
+                
+                                    <div class="form-group col-6">
+                                        <label for="qty" class="form-label modal-form-label bold">Quantity:</label>
+                                        <input id="qty" type="number" class="form-control modal-form-input modal-form-text" 
+                                            formControlName="qty" name="qty" required min="1" [max]="quantityOnHand" step="1" 
+                                            (keyup)="changedQty()">
+                                    </div>
+                                    <div *ngIf="invalidQty" class="error-msg">
+                                        Due to inventory level constraints, the mininum you can order is 0 and the maximum is {{quantityOnHand}}
+                                    </div>
+                                    
+                                    <button class="btn btn-add-cart" (click)="addToCart()">Add to Cart</button>
+                                    <div *ngIf="cartSuccess" class="success-msg">
+                                        Successfully added to cart!
+                                    </div>
+                                </form> 
+                            </div>                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">            
+            <div id="related-products-container" class="col-11">
+                <h5>Related products</h5>
+            </div>
+        </div>
+    </div>
+</div>

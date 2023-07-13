@@ -219,6 +219,19 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
+        //-------------------------------------------------------- COST PRICE FORMULA VARIABLES -----------------------------------------------------------
+        public async Task<Cost_Price_Formula_Variables[]> GetAllFormulaVariablesAsync()
+        {
+            IQueryable<Cost_Price_Formula_Variables> query = _appDbContext.cost_Price_Formula_Variables;
+            return await query.ToArrayAsync();
+        }
+
+        public async Task<Cost_Price_Formula_Variables> GetFormulaVariablesAsync(int formulaVariablesID)
+        {
+            IQueryable<Cost_Price_Formula_Variables> query = _appDbContext.cost_Price_Formula_Variables.Where(c => c.FormulaID == formulaVariablesID);
+            return await query.FirstOrDefaultAsync();
+        }
+
         //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
         //Never remove this line of code, code above the line above.
         public async Task<bool> SaveChangesAsync()
