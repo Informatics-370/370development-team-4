@@ -19,19 +19,26 @@ import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 //In this section I will be retrieving from Local storage and dynamically displaying what is stored in local storage in cards to the customer. 
 
 export class CartPageComponent {
-  products: ProductVM[] = [];
   loading = true;
+  products: ProductVM[] = [];
+
 
 
   ngOnInit(): void {
-    // Retrieve products from local storage
     const productsData = localStorage.getItem("MegaPack-cart");
 
     if (productsData) {
-      // Parse the JSON data into an array of ProductVM objects
-      this.products = JSON.parse(productsData);
-      console.log("What we are trying to retrieve:" ,productsData)
+      this.products = JSON.parse(productsData) as ProductVM[];
+      console.log("Retrieved products:", this.products);
     }
+    this.loading = false;
+    console.log("Here is the description present:",this.products)
+
+   if (this.products.length > 0) {
+  const firstProductDescription = this.products[0].description;
+  console.log('First product description:', firstProductDescription);
+}
+
   }
   cartIcon = faShoppingCart; //This ensures we have a shopping cart icon from the font awesome library to show in the front end
 

@@ -53,15 +53,15 @@ ul {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 24px;
-      height: 24px;
+      width: 34px;
+      height: 34px;
       background-color: #333;
       border-radius: 50%;
       color: white;
     }
     
     .cart-icon fa-icon {
-      font-size: 14px;
+      font-size: 20px;
     }
    
     

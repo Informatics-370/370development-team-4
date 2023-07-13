@@ -23,16 +23,16 @@
          <!-- <p *ngIf="loading">Loading products...</p>  -->
          <div *ngFor="let product of products" class="col-md-6 col-sm-6 card-container">
             <div class="card product-card">
-              <div class="card-img-top">
-                <img class="card-img product-card-img" style="width: auto;" [src]="product.productPhotoB64" [alt]="product.description">
-              </div>
+               <div class="card-img-top">
+                <img class="card-img product-card-img" style="width: auto;"  src="data:image/png;base64,{{product.productPhotoB64}}" [alt]="product.description">
+              </div> 
               <div class="card-body product-card-body">
-                <p class="card-text">{{ product.description }}</p>
+                <p class="card-text">{{product.description}} is the product description</p>
               </div>
             </div>
           </div>     
         </div>
-
+       
 
         <!-- <div class="row">
             <div class="col-md-10 col-sm-12 p-2 justify-content-end d-flex">
