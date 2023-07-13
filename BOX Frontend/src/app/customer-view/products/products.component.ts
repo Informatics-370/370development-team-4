@@ -5,6 +5,8 @@ import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { take, lastValueFrom } from 'rxjs';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+
 
 @Component({
   selector: 'app-products',
@@ -85,6 +87,8 @@ export class ProductsComponent {
 
     this.displayProducts();
   }
+//This is to show the cartIcon and thus allow font awesome to be imported into this particular template.
+  cartIcon = faShoppingCart;
 
   //used to display products to user; can filter if necessary; will add filtering later
   displayProducts(categoryID?: number, sortString?: string) {
@@ -103,6 +107,7 @@ export class ProductsComponent {
       this.renderer.addClass(card, 'product-card');
       this.renderer.addClass(card, 'hover-animation');
       this.renderer.setStyle(card, 'border', '0.5px solid rgba(219, 219, 219, 0.25)');
+      this.renderer.setStyle(card, 'box-shadow', '0 7px 7px rgba(0, 0, 0, 0.2)');// Kuziwa: I added this line to give the card boxes a shadow. Please feel free to change the padding and colour of the shadow.
 
       const cardImgTop = this.renderer.createElement('div');
       this.renderer.addClass(cardImgTop, 'card-img-top');

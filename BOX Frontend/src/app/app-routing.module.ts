@@ -15,6 +15,9 @@ import { EstimateDurationComponent } from './estimate-duration/estimate-duration
 import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
+import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
+
+
 
 
 const routes: Routes = [
@@ -33,7 +36,9 @@ const routes: Routes = [
   { path: 'estimate-duration', component: EstimateDurationComponent },
   { path: 'raw-material', component: RawMaterialComponent },
   { path: 'products', component: ProductsComponent },
-  { path: 'product-details/:id/:description', component: ProductDetailsComponent}
+  { path: 'product-details/:id/:description', component: ProductDetailsComponent},
+  { path: 'cart', component: CartPageComponent }
+
 
 ];
 

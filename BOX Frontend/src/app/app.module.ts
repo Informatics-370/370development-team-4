@@ -26,6 +26,7 @@ import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
+import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
 
 @NgModule({
   declarations: [ 
@@ -48,7 +49,8 @@ import { ProductDetailsComponent } from './customer-view/product-details/product
         RawMaterialComponent,
         ProductsComponent,
         CategoriesMenuComponent,
-        ProductDetailsComponent
+        ProductDetailsComponent,
+        CartPageComponent
   ],
   imports: [
     BrowserModule,

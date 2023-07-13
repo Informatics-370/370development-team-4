@@ -527,7 +527,14 @@ namespace BOX.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<byte[]>("Product_Photo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<int>("QRCodeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity_On_Hand")
                         .HasColumnType("int");
 
                     b.Property<int>("SizeID")
@@ -661,9 +668,9 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QRCodeID"), 1L, 1);
 
-                    b.Property<string>("QR_Code_Photo")
+                    b.Property<byte[]>("QR_Code_Photo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("QRCodeID");
 
@@ -684,6 +691,9 @@ namespace BOX.Migrations
                         .HasColumnType("nvarchar(70)");
 
                     b.Property<int>("QRCodeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity_On_Hand")
                         .HasColumnType("int");
 
                     b.HasKey("RawMaterialID");
@@ -798,12 +808,17 @@ namespace BOX.Migrations
                         .HasMaxLength(75)
                         .HasColumnType("nvarchar(75)");
 
+                    b.Property<int>("FixedProductID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("SupplierID");
+
+                    b.HasIndex("FixedProductID");
 
                     b.ToTable("Supplier", (string)null);
                 });
@@ -1505,6 +1520,17 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("BOX.Models.Supplier", b =>
+                {
+                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
+                        .WithMany()
+                        .HasForeignKey("FixedProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fixed_Product");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_Order", b =>

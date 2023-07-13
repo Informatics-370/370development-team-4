@@ -1,0 +1,45 @@
+<ul class="navbar">
+    <li><a class="active" href="#home">Home</a></li>
+    <li><a href="#news">About Us</a></li>
+    <li><a href="#contact">Products</a></li>
+    <li><a href="#about">Contact Us</a></li>
+    <li class="cart">
+          <div class="cart-icon">
+            <fa-icon [icon]="cartIcon" [routerLink]="['/cart']" ></fa-icon>
+          </div>
+      </li>
+  </ul>
+<div class="row">
+    <div class="col-md-3 col-sm-12 all-categories-menu">
+        <app-categories-menu></app-categories-menu>
+    </div>
+    
+
+     <!--PAGE CONTENT-->
+     <div class="col-md-9 col-sm-12 p-2">
+        <h3 class="p-3" style="color: black;">Shopping Cart</h3>
+        <!--PRODUCTS-->
+        <div id="product-cards" class="column">
+         <!-- <p *ngIf="loading">Loading products...</p>  -->
+         <div *ngFor="let product of products" class="col-md-6 col-sm-6 card-container">
+            <div class="card product-card">
+              <div class="card-img-top">
+                <img class="card-img product-card-img" style="width: auto;" [src]="product.productPhotoB64" [alt]="product.description">
+              </div>
+              <div class="card-body product-card-body">
+                <p class="card-text">{{ product.description }}</p>
+              </div>
+            </div>
+          </div>     
+        </div>
+
+
+        <!-- <div class="row">
+            <div class="col-md-10 col-sm-12 p-2 justify-content-end d-flex">
+              <p>
+                Here will be the two buttons for the cart
+              </p>
+            </div>
+          </div> -->
+    </div>
+</div>
