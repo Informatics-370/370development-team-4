@@ -257,7 +257,6 @@ export class ProductDetailsComponent {
         let newCartItem: Cart = {
           fixedProduct: fixedProdToAdd,
           sizeString: this.selectedProductVM.sizeStringArray[this.selectedSizeIndex],
-          discountID: this.discount ? this.discount.discountID : -1,
           quantity: this.addToCartForm.get("qty")?.value
         }
 
