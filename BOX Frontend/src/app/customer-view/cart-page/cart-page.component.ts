@@ -151,6 +151,13 @@ export class CartPageComponent {
     return discountedPrice;
   }
 
+  calculateFinalDiscount(): number {
+    const totalDiscount = this.calculateTotalDiscount() / 100; // Convert the discount percentage to a decimal value
+
+    const discountAmount = this.totalPrice * totalDiscount;
+    return discountAmount;
+  }
+
   updateTotalPrice(): void {
     // Recalculate the total price for all products in the cart
   //   for (const product of this.products) {

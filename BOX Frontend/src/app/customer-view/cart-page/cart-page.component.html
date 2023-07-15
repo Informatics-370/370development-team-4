@@ -113,13 +113,13 @@
                   <th scope="col">Estimated Price</th>
                   <th scope="col">Product Description</th>
                   <th scope="col">Quantity In Your Cart</th>
-                  <th scope="col">Estimated Total Price</th>
+                  <th scope="col">Estimated Price Before Discount</th>
 
               </tr>
           </thead>
           <tbody>                
           
-                        <tr *ngFor="let product of products" >
+                  <tr *ngFor="let product of products" >
                   <td >
                       R{{product.fixedProduct.price}}
                   </td>
@@ -130,9 +130,19 @@
                     {{product.quantity}}
                 </td>
                 <td>
-                R{{(product.fixedProduct.price * +product.quantity).toFixed(2)}}
+                  R{{(product.fixedProduct.price * +product.quantity).toFixed(2)}}
                 </td>
+                <tr>
+                  <td colspan="3">
+                    Total discount given: R{{calculateFinalDiscount().toFixed(2)}}
+                  </td>
               </tr>
+              <tr  >
+                <td colspan="3">
+                <b>Final Estimated Price After Discount: R{{ calculateFinalEstimatedTotalPrice().toFixed(2) }}</b>
+                </td>
+            </tr>
+            
           </tbody>
       </table>
       <h2>Negotiate Price</h2>
