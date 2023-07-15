@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
 import { SizeVM } from '../../shared/size-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
-import { Discount } from '../../shared/discount';
+//import { Discount } from '../../shared/discount';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Cart } from 'src/app/shared/customer-interfaces/cart';
@@ -18,30 +18,42 @@ import { Cart } from 'src/app/shared/customer-interfaces/cart';
 export class ProductDetailsComponent {
   /*NOTE: the product on display represents an item but each size available represents a fixed product */
 
+  //OUT OF STOCK
   outOfStock = false;
   maxQuantity = 2000000;
+
+  /* //DISCOUNT
   discountApplied = false;
-  relatedProductsVMList: ProductVM[] = []; //all products
-  selectedProductVM!: ProductVM; //used to hold all the products that will be displayed to the user
+  discount: Discount | null = null; //hold discount
+  discountList: Discount[] = []; //hold all bulk discounts */
+
+  //DISPLAY PRODUCT
+  selectedProductVM!: ProductVM; //used to hold the product that is displayed to the user
   items: Item[] = []; //used to store all items
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
-  sizes: SizeVM[] = [];
-  itemID: number = -1;
+  sizes: SizeVM[] = []; //all sizes
+  itemID: number = -1; //ID of product item user clicked on to get to this page
+
+  //ADD TO CART
   sizeDropdownArray: SizeDropdrownItem[] = []; //array used to populate size dropdown
   selectedFixedProdID = 1; //holds the ID of fixed prod with size currently selected
   selectedSizeIndex = 0; //holds index of size currently selected in dropdown
-  discountList: Discount[] = []; //hold all bulk discounts
   total = 0; //hold total cost i.e. unit price * qty - discount
-  discount: Discount | null = null; //hold discount
   cart: Cart[] = []; //hold cart
-  //form
-  addToCartForm: FormGroup;
-  //messages to user
+  addToCartForm: FormGroup; //form
+
+  //MESSAGES TO USER
   invalidQty = false; //validation error logic
   loading = true; //display loading message
   cartSuccess = false; //display success message when product is added to cart
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, private formBuilder: FormBuilder, private router: Router) {
+  //DISPLAY RELATED PRODUCTS
+  relatedProductsVMList: ProductVM[] = []; //list of max 6 related products
+
+  //CUSTOMISE PRODUCT
+
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
+    private formBuilder: FormBuilder, private router: Router, private renderer: Renderer2) {
     this.addToCartForm = this.formBuilder.group({
       sizeID: [{ value: '1' }, Validators.required],
       qty: [1, Validators.required]
@@ -56,14 +68,13 @@ export class ProductDetailsComponent {
       if (id) this.itemID = parseInt(id);
     });
 
-    // generate static discount list
+    /* // generate static discount list
     this.discountList.push(
       { discountID: 1, percentage: 6, quantity: 50 },
       { discountID: 2, percentage: 10, quantity: 400 },
       { discountID: 3, percentage: 17, quantity: 7000 },
       { discountID: 4, percentage: 23, quantity: 20000 }
-    )
-    console.log('All discounts: ', this.discountList);
+    ) */
 
     //Retrieve cart list from local storage; if there's nothing in cart, return empty array
     this.cart = JSON.parse(localStorage.getItem("MegaPack-cart") || "[]");
@@ -91,15 +102,22 @@ export class ProductDetailsComponent {
       this.fixedProducts = allFixedProducts;
       this.sizes = allSizes;
 
-      this.displayProduct(this.itemID);
+      this.displayProduct();
     } catch (error) {
       console.error('An error occurred:', error);
     }
   }
 
-  displayProduct(id: number) {
-    let matchingItem = this.items.find(item => item.itemID == id); //get the item with matching ID
-    let matchingFixedProducts = this.fixedProducts.filter(fixedProd => fixedProd.itemID == id); //get all products with matching item ID
+  displayProduct() {
+    //refresh
+    this.sizeDropdownArray = [];
+    this.total = 0;
+    this.addToCartForm.markAsUntouched();
+    this.addToCartForm.markAsPristine();
+    this.addToCartForm.get('qty')?.setValue(1);
+
+    let matchingItem = this.items.find(item => item.itemID == this.itemID); //get the item with matching ID
+    let matchingFixedProducts = this.fixedProducts.filter(fixedProd => fixedProd.itemID == this.itemID); //get all products with matching item ID
     /*sort matching fixed products by price so that sizes will also be in order from least expensive to most expensive, 
     which should result in smallest to biggest size*/
     matchingFixedProducts.sort((currentProd, nextProd) => {
@@ -177,6 +195,8 @@ export class ProductDetailsComponent {
       if (this.maxQuantity == 0) this.toggleOutOfStock(true);
 
       this.loading = false; //stop showing loading message
+
+      this.displayRelatedProducts(); //display related products
     }
   }
 
@@ -204,7 +224,9 @@ export class ProductDetailsComponent {
         }, 8000);
       }
 
-      //apply discount; keep iterating through the loop until a) reach end of discount list or b) find correct discount to apply
+      this.total = this.sizeDropdownArray[this.selectedSizeIndex].price * qtyInputValue; //set product total
+
+      /* //apply discount; keep iterating through the loop until a) reach end of discount list or b) find correct discount to apply
       let i = this.discountList.length - 1;
       while (i >= 0 && qtyInputValue < this.discountList[i].quantity) { i--; }
 
@@ -216,7 +238,7 @@ export class ProductDetailsComponent {
         this.discountApplied = false;
         this.discount = null;
         this.total = this.sizeDropdownArray[this.selectedSizeIndex].price * qtyInputValue; //set product total
-      }
+      } */
     }
     else if (qtyInputValue == 0) {
       this.addToCartForm.get("qty")?.setValue(1);
@@ -228,7 +250,7 @@ export class ProductDetailsComponent {
     }
   }
 
-  applyDiscount(discountToApply: Discount, qty: number) {
+  /* applyDiscount(discountToApply: Discount, qty: number) {
     this.discount = discountToApply;
     let unitPrice = this.sizeDropdownArray[this.selectedSizeIndex].price;
     let totalBeforeDiscount = unitPrice * qty;
@@ -236,7 +258,7 @@ export class ProductDetailsComponent {
 
     console.log('total', this.total, ' and discount is ', this.discount, '%');
     this.discountApplied = true; //display discount    
-  }
+  } */
 
   addToCart() {
     let id = this.sizeDropdownArray[this.selectedSizeIndex].fixedProductID;
@@ -283,11 +305,105 @@ export class ProductDetailsComponent {
     }
   }
 
-  /*  
-  redirectToCart() {
-    this.router.navigate(['cart']);
+  async displayRelatedProducts() {
+    //get related products
+    let matchingItem = this.items.find(item => item.itemID == this.itemID); //get the item with matching ID
+    let matchingProductItems = this.items.filter(item => item.categoryID == matchingItem?.categoryID && item.itemID != matchingItem.itemID);
+    this.relatedProductsVMList = [];
+
+    //display max 6 related products
+    let maxProducts: number = 6;
+    if (matchingProductItems.length <= 4) maxProducts = matchingProductItems.length; //if there's less than 6 related products, don't loop 4 times
+    console.log('matching product items', matchingProductItems)
+    let relatedProductContainer = document.getElementById('related-products-container') as HTMLElement; //get row that holds related products
+    relatedProductContainer.innerHTML = '';
+
+    for (let i = 0; i < maxProducts; i++) {
+      //1st put all related products in product VM
+      let prodVM: ProductVM;
+      //check if there are actually fixed products under this product item
+      console.log(matchingProductItems[i].itemID);
+      let foundProd = this.fixedProducts.find(prod => prod.itemID == matchingProductItems[i].itemID);
+
+      //put item and product photo info in card to display
+      if (foundProd) { //don't show product items for which there are no fixed products
+        //get product photo to use with product item because items don't have photos, products do.
+        let foundProdWithPhoto = this.fixedProducts.find(prod => prod.itemID == matchingProductItems[i].itemID && prod.productPhotoB64 != '');
+
+        prodVM = {
+          itemID: foundProdWithPhoto ? foundProdWithPhoto.itemID : 0,
+          categoryID: matchingProductItems[i].categoryID,
+          description: matchingProductItems[i].description,
+          productPhotoB64: foundProdWithPhoto ? foundProdWithPhoto.productPhotoB64 : '',
+          sizeStringArray: []
+        }
+        console.log('Final prodVM in related products ', prodVM);
+        this.relatedProductsVMList.push(prodVM); //populate list that we'll use to display products to the user
+
+        //create card dynamically
+        const cardContainer = this.renderer.createElement('div');
+        this.renderer.addClass(cardContainer, 'col-md-4');
+        this.renderer.addClass(cardContainer, 'col-sm-6');
+        this.renderer.addClass(cardContainer, 'card-container');
+
+        const card = this.renderer.createElement('div');
+        this.renderer.addClass(card, 'card');
+        this.renderer.addClass(card, 'product-card');
+        this.renderer.addClass(card, 'hover-animation');
+        this.renderer.setStyle(card, 'border', '0.5px solid rgba(219, 219, 219, 0.25)');
+
+        const cardImgTop = this.renderer.createElement('div');
+        this.renderer.addClass(cardImgTop, 'card-img-top');
+        this.renderer.addClass(cardImgTop, 'product-card-img-top');
+
+        const img = this.renderer.createElement('img');
+        this.renderer.addClass(img, 'card-img');
+        this.renderer.addClass(img, 'product-card-img');
+        this.renderer.setStyle(img, 'width', 'auto');
+        this.renderer.setAttribute(img, 'src', 'data:image/png;base64,' + prodVM.productPhotoB64);
+        this.renderer.setAttribute(img, 'alt', prodVM.description);
+
+        const cardBody = this.renderer.createElement('div');
+        this.renderer.addClass(cardBody, 'card-body');
+        this.renderer.addClass(cardBody, 'product-card-body');
+
+        const cardText = this.renderer.createElement('p');
+        this.renderer.addClass(cardText, 'card-text');
+        const text = this.renderer.createText(prodVM.description);
+        this.renderer.appendChild(cardText, text);
+
+        this.renderer.appendChild(cardImgTop, img);
+        this.renderer.appendChild(cardBody, cardText);
+        this.renderer.appendChild(card, cardImgTop);
+        this.renderer.appendChild(card, cardBody);
+        this.renderer.appendChild(cardContainer, card);
+        this.renderer.appendChild(relatedProductContainer, cardContainer);
+
+        this.renderer.listen(cardContainer, 'click', () => {
+          this.redirectToProductDetails(prodVM.itemID, prodVM.description);
+        });
+
+        /*The resulting code looks like this:
+            <div class="col-md-3 col-sm-6 card-container">
+                <div class="card product-card hover-animation" style="border: 0.5px solid rgba(219, 219, 219, 0.25);">
+                    <div class="card-img-top">
+                        <img class="card-img product-card-img" style="width: auto;" src="data:image/png;base64,Base64String" alt="Single wall box">
+                    </div>
+                    <div class="card-body product-card-body">
+                        <p class="card-text">Single Wall Box</p>
+                    </div>
+                </div>
+            </div>
+        */
+      }
+    }
   }
-  */
+
+  redirectToProductDetails(productItemID: number, itemDescription: string) {
+    this.router.navigate(['product-details', productItemID, itemDescription.replaceAll(' ', '-')]);
+    this.itemID = productItemID;
+    this.displayProduct();
+  }
 
 }
 
