@@ -1,3 +1,5 @@
+//Kuziwa: 15 July, unsuccessfully attempted to get the seeding logic to work, I will have to revisit it at another stage.
+
 //namespace BOX.Models
 //{
 //  public class DBSeeder
@@ -14,68 +16,67 @@
 //      // Check if there are any existing records in the Product_Item table
 //      if (!_context.Product_Item.Any())
 //      {
-//        // Get all categories and items from the DBSeeder class
-//        var categories = GetAllCategories();
-//        var items = GetAllItems();
+//        // Get all estimate statuses from the DBSeeder class
+//        var estimatestatuses = GetAllEstimateStatuses();
 
 //        // Add categories and items to the context and save changes
-//        _context.Product_Category.AddRange(categories);
-//        _context.Product_Item.AddRange(items);
+//        _context.Estimate_Status.AddRange(estimatestatuses);
 
 //        _context.SaveChanges();
 //      }
 //    }
 
-//    public List<Product_Item> GetAllItems()
+//    public List<Estimate_Status> GetAllEstimateStatuses()
 //    {
-//      var productItems = new List<Product_Item>();
+//      var estimate_Statuses = new List<Estimate_Status>();
 
 //      // Create seed data item 1
-//      var productItem1 = new Product_Item
+//      var estimatestatus1 = new Estimate_Status
 //      {
-//        ItemID = 0,
-//        CategoryID = 1,  // Assuming you have a Category with ID 1
-//        Description = "Product item 1 description"
+//        EstimateStatusID = 0,
+//        Description = "Pending Review"
 //      };
-//      productItems.Add(productItem1);
+//      estimate_Statuses.Add(estimatestatus1);
 
 //      // Create seed data item 2
-//      var productItem2 = new Product_Item
+//      var estimatestatus2 = new Estimate_Status
 //      {
-//        ItemID = 0,
-//        CategoryID = 2,  // Assuming you have a Category with ID 2
-//        Description = "Product item 2 description"
+//        EstimateStatusID = 1,
+//        Description = "Reviewed"
 //      };
-//      productItems.Add(productItem2);
+//      estimate_Statuses.Add(estimatestatus2);
 
-//      // Add more seed data items as needed...
+//      var estimatestatus3 = new Estimate_Status
+//      {
+//        EstimateStatusID = 2,
+//        Description = "Expired"
+//      };
+//      estimate_Statuses.Add(estimatestatus3);
 
-//      return productItems;
+//      var estimatestatus4 = new Estimate_Status
+//      {
+//        EstimateStatusID = 3,
+//        Description = "Cancelled"
+//      };
+//      estimate_Statuses.Add(estimatestatus4);
+
+//      var estimatestatus5 = new Estimate_Status
+//      {
+//        EstimateStatusID = 4,
+//        Description = "Accepted"
+//      };
+//      estimate_Statuses.Add(estimatestatus5);
+
+//      var estimatestatus6 = new Estimate_Status
+//      {
+//        EstimateStatusID = 5,
+//        Description = "Rejected"
+//      };
+//      estimate_Statuses.Add(estimatestatus6);
+
+
+//      return estimate_Statuses;
 //    }
 
-//    public List<Product_Category> GetAllCategories()
-//    {
-//      var categories = new List<Product_Category>();
-
-//      // Create seed category 1
-//      var category1 = new Product_Category
-//      {
-//        CategoryID = 0,
-//        Description = "Category 1"
-//      };
-//      categories.Add(category1);
-
-//      // Create seed category 2
-//      var category2 = new Product_Category
-//      {
-//        CategoryID = 0,
-//        Description = "Category 2"
-//      };
-//      categories.Add(category2);
-
-//      // Add more seed categories as needed...
-
-//      return categories;
-//    }
 //  }
 //}

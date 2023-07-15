@@ -232,9 +232,29 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
-        //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
-        //Never remove this line of code, code above the line above.
-        public async Task<bool> SaveChangesAsync()
+    //------------------------------------------------------ ESTIMATE STATUS ------------------------------------------------------------
+
+
+    public async Task<Estimate_Status[]> GetAllEstimateStatusesAsync()
+    {
+      IQueryable<Estimate_Status> query = _appDbContext.Estimate_Status;
+      return await query.ToArrayAsync();
+    }
+
+    public async Task<Estimate_Status> GetEstimateStatusAsync(int estimatestatusId)
+    {
+      //Query to select estimate duration where the ID passing through the API matches the ID in the Database
+      IQueryable<Estimate_Status> query = _appDbContext.Estimate_Status.Where(c => c.EstimateStatusID == estimatestatusId);
+      return await query.FirstOrDefaultAsync();
+    }
+
+
+
+
+
+    //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
+    //Never remove this line of code, code above the line above.
+    public async Task<bool> SaveChangesAsync()
 		{
 			return await _appDbContext.SaveChangesAsync() > 0;
 		}

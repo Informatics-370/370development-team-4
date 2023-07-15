@@ -69,5 +69,13 @@ namespace BOX.Models
         //------------------------------------- COST PRICE FORMULA VARIABLES -------------------------------------
         Task<Cost_Price_Formula_Variables[]> GetAllFormulaVariablesAsync();
         Task<Cost_Price_Formula_Variables> GetFormulaVariablesAsync(int formulaVariablesID);
-    }
+
+    //------------------------------------------------------ ESTIMATE DURATION ------------------------------------------------------------
+    Task<Estimate_Status[]> GetAllEstimateStatusesAsync();
+    Task<Estimate_Status> GetEstimateStatusAsync(int estimatedurationId);
+
+
+
+
+  }
 }
