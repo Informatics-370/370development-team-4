@@ -70,6 +70,7 @@ export class ProductsComponent {
       //put item and product photo info in 1 VM object
       if (foundProd) { //prevent users from trying to view product details of product items for which there are no fixed products
         prodVM = {
+          fixedProduct:'',//I added this line because without it, the code failed to compile: Kuziwa
           itemID: item.itemID,
           categoryID: item.categoryID,
           description: item.description,
