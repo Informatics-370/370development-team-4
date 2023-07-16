@@ -74,8 +74,20 @@ namespace BOX.Models
     Task<Estimate_Status[]> GetAllEstimateStatusesAsync();
     Task<Estimate_Status> GetEstimateStatusAsync(int estimatedurationId);
 
+    //---------------------------------------------ESTIMATE--------------------------------------------------------------------
+    Task<Estimate[]> GetAllEstimatesAsync();
+    Task<Estimate> GetEstimateAsync(int estimateId);
+    Task UpdateEstimateAsync(Estimate estimate);
 
+    //-----------------------------------------------ESTIMATE LINE---------------------------------------------
+    Task<Estimate_Line[]> GetAllEstimateLinesAsync();
+    Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId);
 
+    //------------------------------------------------CUSTOMER--------------------------------------------------
+    Task<Customer> GetCustomerAsync(int customerId);
+
+    //------------------------------------------------ADMIN------------------------------------------------------
+    Task<Admin> GetAdminAsync(int adminId);
 
   }
 }
