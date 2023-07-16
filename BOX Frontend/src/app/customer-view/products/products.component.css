@@ -7,3 +7,23 @@
   top: 0;
   left: 0;
 } */
+
+
+/*SORT DRROPDOWN*/
+#sort-dropdown {
+  float: right;
+  position: relative;
+  padding: 0 20px;
+}
+
+.modal-form-text, .modal-form-text:hover, .modal-form-text:focus {
+  border: none;
+  border-bottom: 1px solid #41A0B5;
+  border-radius: 0;
+  box-shadow: none;
+  float: right;
+}
+
+.form-select { width: auto; }
+
+.modal-form-input { margin-bottom: 20px; }

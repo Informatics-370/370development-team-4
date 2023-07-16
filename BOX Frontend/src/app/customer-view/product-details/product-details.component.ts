@@ -185,7 +185,8 @@ export class ProductDetailsComponent {
         description: matchingItem.description,
         categoryID: matchingItem.categoryID,
         productPhotoB64: matchingFixedProducts[matchingFixedProducts.length - 1].productPhotoB64,
-        sizeStringArray: sizeStringListArr
+        sizeStringArray: sizeStringListArr,
+        price: 0
       }
 
       console.log('Display: ', this.selectedProductVM, ' and dropdown list: ', this.sizeDropdownArray);
@@ -335,7 +336,8 @@ export class ProductDetailsComponent {
           categoryID: matchingProductItems[i].categoryID,
           description: matchingProductItems[i].description,
           productPhotoB64: foundProdWithPhoto ? foundProdWithPhoto.productPhotoB64 : '',
-          sizeStringArray: []
+          sizeStringArray: [],
+          price: 0
         }
         console.log('Final prodVM in related products ', prodVM);
         this.relatedProductsVMList.push(prodVM); //populate list that we'll use to display products to the user
@@ -400,7 +402,8 @@ export class ProductDetailsComponent {
   }
 
   redirectToProductDetails(productItemID: number, itemDescription: string) {
-    this.router.navigate(['product-details', productItemID, itemDescription.replaceAll(' ', '-')]);
+    this.router.navigate(['product-details', productItemID, itemDescription.replaceAll(' ', '-')]); //change URL
+    //update displayed product info
     this.itemID = productItemID;
     this.displayProduct();
   }

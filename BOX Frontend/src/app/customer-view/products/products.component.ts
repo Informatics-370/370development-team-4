@@ -25,6 +25,9 @@ export class ProductsComponent {
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
   loading = true;
 
+  //sort and filter
+  sortString = 'default';
+
   constructor(private dataService: DataService, private router: Router, private renderer: Renderer2) { }
 
   ngOnInit(): void {
@@ -63,7 +66,11 @@ export class ProductsComponent {
     this.items.forEach(item => {
       let prodVM: ProductVM;
       //get product photo to use with product item because items don't have photos, products do.
-      let foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID);
+      let foundProd: FixedProductVM | undefined;
+      
+      foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID && prod.productPhotoB64 != '');
+
+      if (!foundProd) { foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID); }
 
       //put item and product photo info in 1 VM object
       if (foundProd) { //prevent users from trying to view product details of product items for which there are no fixed products
@@ -72,7 +79,8 @@ export class ProductsComponent {
           categoryID: item.categoryID,
           description: item.description,
           productPhotoB64: foundProd.productPhotoB64,
-          sizeStringArray: []
+          sizeStringArray: [],
+          price: foundProd.price
         }
         this.filteredProductVM.push(prodVM); //populate list that we'll use to display products to the user
       }
@@ -86,9 +94,50 @@ export class ProductsComponent {
   }
 
   //used to display products to user; can filter if necessary; will add filtering later
-  displayProducts(categoryID?: number, sortString?: string) {
+  displayProducts(categoryID?: number) {
     let productCardsContainer = document.getElementById('product-cards') as HTMLElement;
     productCardsContainer.innerHTML = '';
+
+    if (this.sortString == 'low') { //sort by price from low to high
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        return currentProd.price - nextProd.price
+      });
+    }
+    else if (this.sortString == 'high') { //sort by price from high to low
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        return nextProd.price - currentProd.price
+      });
+    }
+    else if (this.sortString == 'latest') { //sort by product item ID; last item ID is most recently added item; later sort by fixed prod
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        return nextProd.itemID - currentProd.itemID
+      });
+    }
+    else if (this.sortString == 'a-z') { //sort ascending
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        if (currentProd.description.toLocaleLowerCase() < nextProd.description.toLocaleLowerCase()) { return -1; }
+        if (currentProd.description.toLocaleLowerCase() > nextProd.description.toLocaleLowerCase()) { return 1; }
+        return 0;
+      });
+    }
+    else if (this.sortString == 'z-a') { //sort descending
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        if (currentProd.description.toLocaleLowerCase() > nextProd.description.toLocaleLowerCase()) { return -1; }
+        if (currentProd.description.toLocaleLowerCase() < nextProd.description.toLocaleLowerCase()) { return 1; }
+        return 0;
+      });
+    }
+    else if (this.sortString == 'default') { //default sort is sorted by item ID
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        return currentProd.itemID - nextProd.itemID
+      });
+    }
 
     this.filteredProductVM.forEach(prod => {
       //create card dynamically
