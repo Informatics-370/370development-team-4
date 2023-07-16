@@ -34,10 +34,10 @@ export class CategoriesMenuComponent {
         allCategories.forEach((category) => {
           this.categories.push(category);
         });
-  
+
         this.categoryCount = this.categories.length; //update the number of categories
         console.log('All categories array: ', this.categories);
-  
+
         this.displayCategories();
       });
     } catch (error) {
@@ -48,6 +48,23 @@ export class CategoriesMenuComponent {
   displayCategories() {
     let menu = document.getElementById('category-menu') as HTMLElement;
     menu.innerHTML = '';
+
+    //create li and a element for removing filter
+    let noFilterListItem: HTMLLIElement = document.createElement('li');
+    let noFilterLink: HTMLAnchorElement = document.createElement('a');
+    noFilterLink.classList.add('category-link');
+    noFilterLink.innerHTML = 'All categories';
+
+    if (this.currentCategoryID == -1 && location.href.includes('/products')) noFilterLink.classList.add('active-category'); //add active class to all categories link
+
+    //redirect to products page and remove filter
+    this.renderer.listen(noFilterLink, 'click', () => {
+      this.redirectToProducts();
+    });
+
+    //add to categories menu
+    noFilterListItem.appendChild(noFilterLink);
+    menu.appendChild(noFilterListItem);
 
     if (this.categoryCount != 0) {
       this.categories.forEach(cat => {
@@ -74,24 +91,18 @@ export class CategoriesMenuComponent {
         menu.appendChild(categoryListItem);
       });
     }
-    else {
-      //create li and a elements
-      let categoryListItem: HTMLLIElement = document.createElement('li');
-      let categoryLink: HTMLAnchorElement = document.createElement('a');
-      categoryLink.classList.add('category-link', 'active');
-      categoryLink.innerHTML = 'No categories';
-
-      //add to categories menu
-      categoryListItem.appendChild(categoryLink);
-      menu.appendChild(categoryListItem);
-    }
   }
 
   //redirect to products page and filter by category
-  redirectToProducts(categoryID: number, categoryDescription: string) {
+  redirectToProducts(categoryID?: number, categoryDescription?: string) {
     //url is expecting product with id 2 and description 'product description' to be '2-product-description', so combine string into that
-    let urlParameter = categoryID + '-' + categoryDescription.replaceAll(' ', '-');
-    //update menu to display active category and filter as necessary
-    window.location.href = '/products/' + urlParameter;
+    if (categoryID && categoryDescription) {
+      let urlParameter = categoryID + '-' + categoryDescription?.replaceAll(' ', '-');
+      //update menu to display active category and filter as necessary
+      window.location.href = '/products/' + urlParameter;
+    }
+    else {
+      window.location.href = '/products';
+    }
   }
 }

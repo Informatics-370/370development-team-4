@@ -111,13 +111,6 @@ export class ProductDetailsComponent {
   }
 
   displayProduct() {
-    //refresh
-    this.sizeDropdownArray = [];
-    this.total = 0;
-    this.addToCartForm.markAsUntouched();
-    this.addToCartForm.markAsPristine();
-    this.addToCartForm.get('qty')?.setValue(1);
-
     let matchingItem = this.items.find(item => item.itemID == this.itemID); //get the item with matching ID
     let matchingFixedProducts = this.fixedProducts.filter(fixedProd => fixedProd.itemID == this.itemID); //get all products with matching item ID
     /*sort matching fixed products by price so that sizes will also be in order from least expensive to most expensive, 
