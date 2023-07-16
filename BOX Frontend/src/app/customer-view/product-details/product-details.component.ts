@@ -64,8 +64,10 @@ export class ProductDetailsComponent {
     this.getDataFromDB();
     //Retrieve the item ID from url
     this.activatedRoute.paramMap.subscribe(params => {
-      let id = params.get('id');
-      if (id) this.itemID = parseInt(id);
+      //product with id 2 and description 'product description' will come as '2-product-description' so split it into array that is ['2', 'product-description']
+      let id = params.get('id')?.split('-', 1);
+      console.log(id ? id[0] : 'no id');
+      if (id) this.itemID = parseInt(id[0]);
     });
 
     /* // generate static discount list
@@ -315,7 +317,7 @@ export class ProductDetailsComponent {
     //display max 6 related products
     let maxProducts: number = 6;
     if (matchingProductItems.length <= 4) maxProducts = matchingProductItems.length; //if there's less than 6 related products, don't loop 4 times
-    console.log('matching product items', matchingProductItems)
+    
     let relatedProductContainer = document.getElementById('related-products-container') as HTMLElement; //get row that holds related products
     relatedProductContainer.innerHTML = '';
 
@@ -323,7 +325,6 @@ export class ProductDetailsComponent {
       //1st put all related products in product VM
       let prodVM: ProductVM;
       //check if there are actually fixed products under this product item
-      console.log(matchingProductItems[i].itemID);
       let foundProd = this.fixedProducts.find(prod => prod.itemID == matchingProductItems[i].itemID);
 
       //put item and product photo info in card to display
@@ -339,7 +340,6 @@ export class ProductDetailsComponent {
           sizeStringArray: [],
           price: 0
         }
-        console.log('Final prodVM in related products ', prodVM);
         this.relatedProductsVMList.push(prodVM); //populate list that we'll use to display products to the user
 
         //create card dynamically
@@ -402,10 +402,13 @@ export class ProductDetailsComponent {
   }
 
   redirectToProductDetails(productItemID: number, itemDescription: string) {
-    this.router.navigate(['product-details', productItemID, itemDescription.replaceAll(' ', '-')]); //change URL
+    //url is expecting product with id 2 and description 'product description' to be '2-product-description', so combine string into that
+    let urlParameter = productItemID + '-' + itemDescription.replaceAll(' ', '-');
+    /* this.router.navigate(['product-details', urlParameter]); //change URL */
     //update displayed product info
-    this.itemID = productItemID;
-    this.displayProduct();
+    window.location.href = '/product-details/' + urlParameter;
+    /* this.itemID = productItemID;
+    this.displayProduct(); */
   }
 
 }

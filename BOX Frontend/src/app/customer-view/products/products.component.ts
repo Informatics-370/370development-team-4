@@ -1,8 +1,9 @@
 import { Component, Renderer2 } from '@angular/core';
-import { Route, Router } from '@angular/router';
+import {  ActivatedRoute, Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
+import { CategoryVM } from '../../shared/category-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { take, lastValueFrom } from 'rxjs';
 
@@ -23,15 +24,25 @@ export class ProductsComponent {
   productCount = -1; //keep track of how many product items there are in the DB
   items: Item[] = []; //used to store all items
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
+  categories: CategoryVM[] = [];
   loading = true;
 
   //sort and filter
   sortString = 'default';
+  categoryID: number = -1;
+  categoryDescription = 'Products';
 
-  constructor(private dataService: DataService, private router: Router, private renderer: Renderer2) { }
+  constructor(private dataService: DataService, private router: Router, private renderer: Renderer2, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.getDataFromDB();
+    //Retrieve the category ID from url
+    this.activatedRoute.paramMap.subscribe(params => {
+      //category with id 2 and description 'single wall' will come as '2-single-wall' so split it into array that is ['2', 'single-wall']
+      let id = params.get('category')?.split('-', 1);
+      console.log(id ? id[0] : 'no id');
+      if (id) this.categoryID = parseInt(id[0]);
+    });
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -40,12 +51,14 @@ export class ProductsComponent {
       //turn Observables that retrieve data from DB into promises
       const getItemsPromise = lastValueFrom(this.dataService.GetItems().pipe(take(1)));
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+      const getCategoriesPromise = lastValueFrom(this.dataService.GetCategories().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing. However, the console logs are executing in order, which raises questions.
       But that could just be because they're outside the Promise.all. IDC!!!!! I'm tired of trying to find alternatives for this. 
       And data is being retrieved faster that how I had it work before so I'm moving on with my life*/
-      const [allItems, fixedProducts] = await Promise.all([
+      const [allCategories, allItems, fixedProducts] = await Promise.all([
+        getCategoriesPromise,
         getItemsPromise,
         getProductsPromise
       ]);
@@ -53,6 +66,7 @@ export class ProductsComponent {
       //put results from DB in global arrays
       this.items = allItems;
       this.fixedProducts = fixedProducts;
+      this.categories = allCategories;
 
       this.populateProductList();
     } catch (error) {
@@ -94,10 +108,17 @@ export class ProductsComponent {
   }
 
   //used to display products to user; can filter if necessary; will add filtering later
-  displayProducts(categoryID?: number) {
+  displayProducts() {
     let productCardsContainer = document.getElementById('product-cards') as HTMLElement;
     productCardsContainer.innerHTML = '';
 
+    //filter by product category
+    if (this.categoryID != -1) {
+      this.filteredProductVM = this.allProductVM.filter(prodToCheck => prodToCheck.categoryID == this.categoryID);
+      console.log('Filtered: ', this.filteredProductVM, 'All: ', this.allProductVM);
+    }
+
+    //sort by sort string
     if (this.sortString == 'low') { //sort by price from low to high
       console.log('About to sort by: ', this.sortString);
       this.filteredProductVM.sort((currentProd, nextProd) => {
@@ -110,7 +131,7 @@ export class ProductsComponent {
         return nextProd.price - currentProd.price
       });
     }
-    else if (this.sortString == 'latest') { //sort by product item ID; last item ID is most recently added item; later sort by fixed prod
+    else if (this.sortString == 'latest') { //sort by product item ID; last item ID is most recently added item
       console.log('About to sort by: ', this.sortString);
       this.filteredProductVM.sort((currentProd, nextProd) => {
         return nextProd.itemID - currentProd.itemID
@@ -137,7 +158,7 @@ export class ProductsComponent {
       this.filteredProductVM.sort((currentProd, nextProd) => {
         return currentProd.itemID - nextProd.itemID
       });
-    }
+    }    
 
     this.filteredProductVM.forEach(prod => {
       //create card dynamically
@@ -220,6 +241,8 @@ export class ProductsComponent {
   */
 
   redirectToProductDetails(itemID: number, itemDescription: string) {
-    this.router.navigate(['product-details', itemID, itemDescription.replaceAll(' ', '-')]);
+    //url is expecting product with id 2 and description 'product description' to be '2-product-description', so combine string into that
+    let urlParameter = itemID + '-' + itemDescription.replaceAll(' ', '-');
+    this.router.navigate(['product-details', urlParameter]);
   }
 }

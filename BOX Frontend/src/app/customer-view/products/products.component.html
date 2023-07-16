@@ -4,7 +4,7 @@
 	</div>
 	<!--PAGE CONTENT-->
 	<div class="col-md-9 col-sm-12 p-2">
-		<h3 class="p-3" style="color: black;">Products</h3>
+		<h3 class="p-3" style="color: black;">{{categoryDescription}}</h3>
 
 		<div id="sort-dropdown" class="form-inline container">
 			<select id="sort" [(ngModel)]="sortString" (change)="displayProducts()" name="sort" 
@@ -20,7 +20,7 @@
 
 		<!--PRODUCTS-->
 		<div id="product-cards" class="row">
-			<p *ngIf="loading">Loading products...</p>
+			<p *ngIf="loading" class="center-text">Loading products...</p>
 		</div>
 	</div>
 </div>

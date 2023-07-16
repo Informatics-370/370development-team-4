@@ -33,7 +33,8 @@ const routes: Routes = [
   { path: 'estimate-duration', component: EstimateDurationComponent },
   { path: 'raw-material', component: RawMaterialComponent },
   { path: 'products', component: ProductsComponent },
-  { path: 'product-details/:id/:description', component: ProductDetailsComponent}
+  { path: 'products/:category', component: ProductsComponent },
+  { path: 'product-details/:id', component: ProductDetailsComponent}
 
 ];
 
