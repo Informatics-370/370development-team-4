@@ -79,10 +79,10 @@
                 <!--Item data from API-->
                 <tr *ngFor="let Estimateduration of filteredDurations">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(Estimateduration.estimateDurationID)">
+                        <button title="Delete this estimate duration" class="CRUD-icon" (click)="openDeleteModal(Estimateduration.estimateDurationID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(Estimateduration.estimateDurationID)" >
+                        <button title="Update this estimate duration" class="CRUD-icon" (click)="openUpdateModal(Estimateduration.estimateDurationID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>

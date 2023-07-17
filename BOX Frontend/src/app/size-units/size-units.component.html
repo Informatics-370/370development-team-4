@@ -74,10 +74,10 @@
                 <!--Item data from API-->
                 <tr *ngFor="let size of filteredSizeUnits">
                     <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(size.sizeID)" >
+                        <button title="Delete this size" class="CRUD-icon" (click)="openDeleteModal(size.sizeID)" >
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(size.sizeID)" >
+                        <button title="Update this size" class="CRUD-icon" (click)="openUpdateModal(size.sizeID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>

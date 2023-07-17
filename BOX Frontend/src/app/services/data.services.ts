@@ -13,6 +13,7 @@ import { FixedProductVM } from '../shared/fixed-product-vm';
 import { EstimateDuration } from '../shared/estimate-duration';
 import { SizeVM } from '../shared/size-vm';
 import { Supplier } from '../shared/supplier';
+import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
 
 imports:[
   HttpClientModule
@@ -289,5 +290,20 @@ EditSize(sizeId: number, SizeVM: SizeVM): Observable<SizeVM> {
 
   UpdateSupplier(supplierId: number, svm: any): Observable<any> {
    return this.httpClient.put<any>(`${this.apiUrl}Supplier/UpdateSupplier/${supplierId}`, svm, this.httpOptions);
-  }  
+  }
+
+  //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------
+  GetAllFormulaVariables(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CostPriceFormulaVariables/GetAllFormulaVariables`)
+    .pipe(map(result => result))
+  }
+
+  GetFormulaVariables(formulaId: number): Observable<CostPriceFormulaVariables> {
+    return this.httpClient.get<CostPriceFormulaVariables>(`${this.apiUrl}CostPriceFormulaVariables/GetFormulaVariables/${formulaId}`)
+      .pipe(map(result => result));
+  }
+
+  UpdateFormulaVariables(formulaId: number, updatedCPFV: CostPriceFormulaVariables): Observable<any> {
+   return this.httpClient.put<any>(`${this.apiUrl}CostPriceFormulaVariables/EditFormulaVariables/${formulaId}`, updatedCPFV, this.httpOptions);
+  }
 }

@@ -191,8 +191,8 @@ export class EstimateDurationComponent {
       this.dataService.UpdateEstimateDuration(durationId, updatedDuration).subscribe(
         (result: any) => {
           console.log('Updated durations', result);
-          this.getEstimateDurations(); //refresh item list
-          this.submitClicked = false; //rest submission status
+          this.getEstimateDurations(); //refresh list
+          this.submitClicked = false; //reset submission status
         },
         (error) => {
           console.error('Error updating items:', error);
