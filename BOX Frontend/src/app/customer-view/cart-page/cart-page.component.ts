@@ -7,6 +7,9 @@ import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { Cart } from '../../shared/customer-interfaces/cart';
 import { Discount } from '../../shared/discount';
+import { HttpClient } from '@angular/common/http';
+//This is causing the code to break----import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 
 @Component({
@@ -32,15 +35,95 @@ export class CartPageComponent {
   modal:any = document.getElementById('contactModal');
    firstName :string='';
    lastName :string='';
+
+
+
+  //Attempt at creating a new Estimate Line
+
+
+  customerId= 8; // Hardcoded Customer ID, replace with your desired value
+  estimateId=3; // You may choose to hardcode this or generate it as needed
+
+  constructor(private router: Router, private dataService: DataService, private http: HttpClient) {}
+
+
+  //showNotification(message: string): void {
+  //  this.snackBar.open(message, 'Dismiss', {
+  //    duration: 5000, // Duration in milliseconds
+  //    verticalPosition: 'top', // Display the notification at the top of the screen
+  //  });
+  //}
+  submitEstimateLine() {
+    // Prepare the data for creating a new Estimate Line.
+    const estimateLineData = {
+      customerID: this.customerId,
+      estimateID: this.estimateId,
+      AdminID: 1, // Replace with the actual AdminID value
+      FixedProductID: 1, // Replace with the actual FixedProductID value
+      Confirmed_Unit_Price: 0, // Replace with the actual Confirmed_Unit_Price value
+    };
   
+    // Call the AddEstimateLine function from your data service
+    this.dataService.AddEstimateLine(estimateLineData).subscribe(
+      (response) => {
+        console.log('API call successful, response:', response);
+        const newEstimateId = response.estimateID; // Replace 'EstimateID' with the actual property name in the API response
+       // this.showNotification('New estimate created successfully'); // Display success notification
+
+        // Set the Estimate Status ID to 1 (Pending Review) and navigate to the "Estimate" page.
+        
+      },
+      (error) => {
+        console.error('Error creating Estimate Line:', error);
+      //  this.showNotification('Failed to create estimate'); // Display error notification
+
+      }
+    );
+
+ 
 
 
+ // Add the code to send the email here
+ const toEmail = 'recipient@example.com'; // Replace with the email address of the recipient
+ const subject = 'Email Subject'; // Get the subject from your form
+ const body = 'Email Body'; // Get the email body from your form
 
+ // Access the file input element and get selected files
+ const fileInput: HTMLInputElement = document.getElementById('attachments') as HTMLInputElement;
+ const attachments:any = fileInput.files;
 
+ // Create a FormData object to send the data to the API
+ const formData = new FormData();
+ formData.append('recipientEmail', toEmail);
+ formData.append('subject', subject);
+ formData.append('body', body);
 
+ // Append each selected file to the FormData
+ for (let i = 0; i < attachments.length; i++) {
+   formData.append('attachments', attachments[i]);
+ }
 
+ // Make the POST request to your C# API endpoint
+ this.http.post("http:localhost:5116/api/GetInContactEmail/SendEmail"
+ , formData).subscribe(
+   () => {
+     // Handle success
+     console.log('Email sent successfully');
+   //  this.showNotification('Email sent successfully'); // Display success notification
 
-  constructor() {}
+     // Add any additional logic or feedback to the user
+   },
+   (error) => {
+     // Handle error
+     console.error('Error sending email:', error);
+   //  this.showNotification('Failed to send email'); // Display error notification
+
+     // Add any additional error handling or feedback to the user
+   }
+ );
+
+    this.router.navigate(['/estimate']);
+  }
 
   ngOnInit(): void {
     
@@ -164,6 +247,10 @@ export class CartPageComponent {
   //     product.totalPrice = product.fixedProduct.price * +product.quantity;
   //   }
   // }
+
+
+
+ 
   }
   
 

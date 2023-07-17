@@ -151,7 +151,7 @@
           <div class="col-md-12">
             <div class="form-group">
               <label for="to">To:</label>
-              <input type="text" id="to" name="to" class="form-control" value="Kuziwa@megapack.co.za" readonly>
+              <input type="text" id="recipientEmail" name="to" class="form-control" value="example@example.com" readonly>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@
             <div class="form-group">
               <div class="row">
                 <span class="col-md-3">
-                  <button class="btn btn-primary">Send</button>
+                  <button class="btn btn-primary" (click)="submitEstimateLine()">Send</button>
                 </span>
                 <span class="col-md-3">
                   <input type="file" id="attachments" multiple>
@@ -194,3 +194,4 @@
 </div>
 
 
+ 

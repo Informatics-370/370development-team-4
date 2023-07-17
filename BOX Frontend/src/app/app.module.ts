@@ -27,6 +27,8 @@ import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
+import { EstimateLineComponent } from './estimate-line/estimate-line.component';
+import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 
 @NgModule({
   declarations: [ 
@@ -50,7 +52,9 @@ import { CartPageComponent } from './customer-view/cart-page/cart-page.component
         ProductsComponent,
         CategoriesMenuComponent,
         ProductDetailsComponent,
-        CartPageComponent
+        CartPageComponent,
+        EstimateLineComponent,
+        EstimatePageComponent
   ],
   imports: [
     BrowserModule,
