@@ -41,7 +41,7 @@ export class CartPageComponent {
   //Attempt at creating a new Estimate Line
 
 
-  customerId= 8; // Hardcoded Customer ID, replace with your desired value
+  customerId= 6; // Hardcoded Customer ID, replace with your desired value
   estimateId=3; // You may choose to hardcode this or generate it as needed
 
   constructor(private router: Router, private dataService: DataService, private http: HttpClient) {}

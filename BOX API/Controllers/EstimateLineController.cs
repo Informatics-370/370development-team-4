@@ -38,6 +38,7 @@ namespace BOX.Controllers
           //var FixedProduct = await _repository.GetFixedProductAsync(estimate.FixedProductID);
           EstimateLineViewModel elVM = new EstimateLineViewModel()
           {
+             EstimateLineID=estimate.EstimateLineID,
             EstimateID = estimate.EstimateID,
             customerID = estimate.CustomerID,
             FixedProductID = estimate.FixedProductID,
@@ -64,18 +65,19 @@ namespace BOX.Controllers
 
     //-------------------------------------------------- Get Estimate Line By Concatenated ID ------------------------------------------------
     [HttpGet]
-    [Route("GetEstimateLine/{estimateId}/{customerId}")]
-    public async Task<IActionResult> GetEstimateLine(int estimateId, int customerId)
+    [Route("GetEstimateLine/{estimateId}/{customerId}/{estimateLineId}")]
+    public async Task<IActionResult> GetEstimateLine(int estimateId, int customerId,int estimateLineId)
     {
       try
       {
-        var estimateline = await _repository.GetEstimateLineAsync(estimateId, customerId);
+        var estimateline = await _repository.GetEstimateLineAsync(estimateId, customerId, estimateLineId);
 
         if (estimateline == null)
           return NotFound("Estimate Line not found");
 
         var EstimateLineViewModel = new EstimateLineViewModel
         {
+            EstimateLineID=estimateline.EstimateLineID,
           EstimateID = estimateline.EstimateID,
           customerID = estimateline.CustomerID
 
@@ -113,6 +115,7 @@ namespace BOX.Controllers
 
         var estimateLine = new Estimate_Line
         {
+            EstimateLineID = estimateLineViewModel.EstimateLineID,
           EstimateID = estimateLineViewModel.EstimateID,
           CustomerID = estimateLineViewModel.customerID,
           AdminID=estimateLineViewModel.AdminID,
@@ -130,7 +133,7 @@ namespace BOX.Controllers
 
         // Return the created Estimate 
         var createdEstimateLineViewModel = new EstimateLineViewModel
-        {
+        {EstimateLineID = estimateLine.EstimateLineID,
           EstimateID = estimateLine.EstimateID,
           customerID = estimateLineViewModel.customerID
         };
@@ -146,13 +149,13 @@ namespace BOX.Controllers
     //--------------------------------------------------------------------Update Estimate Line----------------------------------------
 
     [HttpPut]
-    [Route("UpdateEstimateLine/{estimateId}/{customerId}")]
-    public async Task<IActionResult> UpdateEstimateLine(int estimateId, int customerId,[FromBody] EstimateLineViewModel updatedEstimateLineViewModel)
+    [Route("UpdateEstimateLine/{estimateId}/{customerId}/estimateLineId")]
+    public async Task<IActionResult> UpdateEstimateLine(int estimateId, int customerId ,int estimateLineId, [FromBody] EstimateLineViewModel updatedEstimateLineViewModel)
     {
       try
       {
         // Get the existing estimate line from the repository
-        var existingEstimateLine = await _repository.GetEstimateLineAsync(updatedEstimateLineViewModel.EstimateID, updatedEstimateLineViewModel.customerID);
+        var existingEstimateLine = await _repository.GetEstimateLineAsync(updatedEstimateLineViewModel.EstimateID, updatedEstimateLineViewModel.customerID,updatedEstimateLineViewModel.EstimateLineID);
 
         // If the estimate line does not exist, return NotFound
         if (existingEstimateLine == null)
@@ -174,7 +177,7 @@ namespace BOX.Controllers
 
         // Return the updated EstimateLineViewModel
         var updatedEstimateLine = new EstimateLineViewModel
-        {
+        {EstimateLineID = existingEstimateLine.EstimateLineID,
           EstimateID = existingEstimateLine.EstimateID,
           customerID = existingEstimateLine.CustomerID,
           FixedProductID = existingEstimateLine.FixedProductID,

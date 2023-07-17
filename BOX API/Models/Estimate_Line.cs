@@ -8,8 +8,9 @@ namespace BOX.Models
   public class Estimate_Line
 
   {
+		[Key] public int EstimateLineID { get; set; }
 
-    [ForeignKey("Customer")]
+		[ForeignKey("Customer")]
     [Column(Order = 0)]
     public int CustomerID { get; set; }
     public virtual Customer Customer { get; set; }

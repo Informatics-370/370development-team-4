@@ -81,13 +81,12 @@ namespace BOX.Models
 
     //-----------------------------------------------ESTIMATE LINE---------------------------------------------
     Task<Estimate_Line[]> GetAllEstimateLinesAsync();
-    Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId);
+    Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId,int estimateLineId);
 
     //------------------------------------------------CUSTOMER--------------------------------------------------
     Task<Customer> GetCustomerAsync(int customerId);
 
     //------------------------------------------------ADMIN------------------------------------------------------
     Task<Admin> GetAdminAsync(int adminId);
-
-  }
+	}
 }
