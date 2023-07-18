@@ -48,8 +48,6 @@ namespace BOX.Controllers
                         estimateLineList.Add(elvm);
                     }
 
-                    var customer = await _repository.GetCustomerAsync(estimateLines[0].CustomerID); //get customer associated with this estimate
-
                     EstimateViewModel eVM = new EstimateViewModel()
                     {
                         EstimateID = estimate.EstimateID,
@@ -93,11 +91,16 @@ namespace BOX.Controllers
                 //put all estimate lines for this specific estimate in the list
                 foreach (var el in estimateLines)
                 {
+                    //when I display a specific estimate, I also display the fixed product unit price and description
+                    var fixedProduct = await _repository.GetFixedProductAsync(el.FixedProductID);
+
                     EstimateLineViewModel elvm = new EstimateLineViewModel()
                     {
                         EstimateLineID = el.EstimateLineID,
                         EstimateID = el.EstimateID,
                         FixedProductID = el.FixedProductID,
+                        FixedProductDescription = fixedProduct.Description,
+                        FixedProductUnitPrice = fixedProduct.Price,
                         CustomProductID = 0,
                         Quantity = el.Quantity
                     };

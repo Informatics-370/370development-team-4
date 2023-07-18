@@ -7,8 +7,8 @@ import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { Cart } from '../../shared/customer-interfaces/cart';
 import { Discount } from '../../shared/discount';
-import { EstimateVM } from '../../shared/customer-interfaces/estimate-vm';
-import { EstimateLineVM } from '../../shared/customer-interfaces/estimate-line-vm';
+import { EstimateVM } from '../../shared/estimate-vm';
+import { EstimateLineVM } from '../../shared/estimate-line-vm';
 declare var $: any;
 
 @Component({
@@ -27,10 +27,10 @@ export class EstimatePageComponent implements OnInit {
     const estimateId = 2; // Replace with your actual estimateId
     const customerId = 9; // Replace with your actual customerId
 
-    this.getEstimateLine(estimateId, customerId);
+    //this.getEstimateLine(estimateId, customerId);
   }
 
-  getEstimateLine(estimateId: number, customerId: number): void {
+  /* getEstimateLine(estimateId: number, customerId: number): void {
     this.dataService.GetEstimateLine(estimateId, customerId).subscribe(
       (result) => {
         this.estimateLines.push(result);
@@ -41,7 +41,7 @@ export class EstimatePageComponent implements OnInit {
         console.log('Error fetching EstimateLine:', error);
       }
     );
-  }
+  } */
 
   //Kuziwa: 16 July, since we are currently retrieving from local storage, I will ensure the Estimate page displays what is stored in the customer's localstorage history---- This will have to change once we implement db functionality
 
