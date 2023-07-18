@@ -6,6 +6,7 @@ import { Item } from '../../shared/item';
 import { SizeVM } from '../../shared/size-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 //import { Discount } from '../../shared/discount';
+import { VAT } from 'src/app/shared/vat';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Cart } from 'src/app/shared/customer-interfaces/cart';
@@ -33,6 +34,7 @@ export class ProductDetailsComponent {
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
   sizes: SizeVM[] = []; //all sizes
   itemID: number = -1; //ID of product item user clicked on to get to this page
+  vat!: VAT;
 
   //ADD TO CART
   sizeDropdownArray: SizeDropdrownItem[] = []; //array used to populate size dropdown
@@ -90,10 +92,12 @@ export class ProductDetailsComponent {
       const getItemsPromise = lastValueFrom(this.dataService.GetItems().pipe(take(1)));
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
       const getSizesPromise = lastValueFrom(this.dataService.GetSizes().pipe(take(1)));
+      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
-      const [allItems, allSizes, allFixedProducts] = await Promise.all([
+      const [allVAT, allItems, allSizes, allFixedProducts] = await Promise.all([
+        getVATPromise,
         getItemsPromise,
         getSizesPromise,
         getProductsPromise
@@ -103,6 +107,8 @@ export class ProductDetailsComponent {
       this.items = allItems;
       this.fixedProducts = allFixedProducts;
       this.sizes = allSizes;
+      this.vat = allVAT[0];
+      console.log(this.vat);
 
       this.displayProduct();
     } catch (error) {
@@ -162,9 +168,11 @@ export class ProductDetailsComponent {
           if (sizeDropdownString.trim() === '') sizeDropdownString = 'N/A';
 
           //create object; e.g. result: {sizeString: '150x150', price: 12.99, id: 15, qtyOnHand: 243500}
+          let priceInclVAT = fixedProd.price * (1 + this.vat.percentage/100); //let price shown incl vat
+
           let sizeDropdownObject: SizeDropdrownItem = {
             sizeString: sizeDropdownString,
-            price: fixedProd.price,
+            price: parseFloat(priceInclVAT.toFixed(2)),
             fixedProductID: fixedProd.fixedProductID,
             qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000
             /* qtyOnHand: fixedProd.quantityOnHand //when fixed product quantities can be updated */
