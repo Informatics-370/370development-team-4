@@ -184,6 +184,7 @@ export class ProductDetailsComponent {
 
       //must declare product here otherwise TS forgets that I check that prodItem isn't null
       this.selectedProductVM = {
+        fixedProduct:'',//Added this line to get code to compile
         itemID: matchingItem.itemID,
         description: matchingItem.description,
         categoryID: matchingItem.categoryID,
@@ -237,6 +238,7 @@ export class ProductDetailsComponent {
       if (i >= 0) { //if while loop stopped because I found correct discount not because I ran out of discounts to check
         this.applyDiscount(this.discountList[i], qtyInputValue);
       }
+      //Discount applied logic
       else {
         //remove all previously applied discounts
         this.discountApplied = false;

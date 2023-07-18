@@ -13,7 +13,10 @@ import { FixedProductVM } from '../shared/fixed-product-vm';
 import { EstimateDuration } from '../shared/estimate-duration';
 import { SizeVM } from '../shared/size-vm';
 import { Supplier } from '../shared/supplier';
+import{Customer} from'../shared/customer';
+import{EstimateLine} from'../shared/estimate-line';
 import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
+
 
 imports:[
   HttpClientModule
@@ -290,6 +293,31 @@ EditSize(sizeId: number, SizeVM: SizeVM): Observable<SizeVM> {
 
   UpdateSupplier(supplierId: number, svm: any): Observable<any> {
    return this.httpClient.put<any>(`${this.apiUrl}Supplier/UpdateSupplier/${supplierId}`, svm, this.httpOptions);
+  }  
+
+//---------------------------------------Customer--------------------------------------------
+// GetCustomer(customerId: number): Observable<Customer> {
+//   return this.httpClient.get<Customer>(`${this.apiUrl}Customer/GetCustomer/${customerId}`)
+//     .pipe(map(result => result));
+// }
+
+//---------------------------------------Estimate Lines----------------------------------
+GetAllEstimateLines(): Observable<any> {
+  return this.httpClient.get(`${this.apiUrl}EstimateLine/GetAllEstimateLines`)
+  .pipe(map(result => result))
+}
+
+GetEstimateLine(estimateId:number ,customerId: number): Observable<EstimateLine> {
+  return this.httpClient.get<EstimateLine>(`${this.apiUrl}EstimateLine/GetEstimateLine/${estimateId},${customerId}`)
+    .pipe(map(result => result));
+}
+
+AddEstimateLine(svm: any): Observable<any> {
+  return this.httpClient.post<any>(
+    `${this.apiUrl}EstimateLine/AddEstimateLine`, svm, this.httpOptions
+  );
+}
+
   }
 
   //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------

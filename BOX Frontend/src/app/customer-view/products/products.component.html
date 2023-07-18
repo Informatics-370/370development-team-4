@@ -1,3 +1,15 @@
+<ul class="navbar">
+    <li><a class="active" href="#home">Home</a></li>
+    <li><a href="#news">About Us</a></li>
+    <li><a href="#contact">Products</a></li>
+    <li><a href="#about">Contact Us</a></li>
+    <li class="cart">
+          <div class="cart-icon">
+            <fa-icon [icon]="cartIcon" [routerLink]="['/cart']" ></fa-icon>
+          </div>
+      </li>
+  </ul>
+
 <div class="row">
 	<div class="col-md-3 col-sm-12 all-categories-menu">
 		<app-categories-menu></app-categories-menu>

@@ -26,6 +26,9 @@ import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
+import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
+import { EstimateLineComponent } from './estimate-line/estimate-line.component';
+import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 
 @NgModule({
@@ -50,6 +53,9 @@ import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formu
         ProductsComponent,
         CategoriesMenuComponent,
         ProductDetailsComponent,
+        CartPageComponent,
+        EstimateLineComponent,
+        EstimatePageComponent,
         CostPriceFormulaComponent
   ],
   imports: [
