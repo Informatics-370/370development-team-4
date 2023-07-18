@@ -4,6 +4,7 @@ using BOX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230710200500_10 July 2023")]
+    partial class _10July2023
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -474,27 +476,18 @@ namespace BOX.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(1);
 
-                    b.Property<int>("EstimateLineID")
-                        .HasColumnType("int");
-
                     b.Property<int>("AdminID")
                         .HasColumnType("int")
-                        .HasColumnOrder(3);
+                        .HasColumnOrder(2);
 
                     b.Property<decimal>("Confirmed_Unit_Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("FixedProductID")
-                        .HasColumnType("int")
-                        .HasColumnOrder(2);
-
-                    b.HasKey("CustomerID", "EstimateID", "EstimateLineID");
+                    b.HasKey("CustomerID", "EstimateID");
 
                     b.HasIndex("AdminID");
 
                     b.HasIndex("EstimateID");
-
-                    b.HasIndex("FixedProductID");
 
                     b.ToTable("Estimate_Line");
                 });
@@ -720,8 +713,10 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeID"), 1L, 1);
 
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Height")
                         .HasColumnType("decimal(18,2)");
@@ -739,8 +734,6 @@ namespace BOX.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("SizeID");
-
-                    b.HasIndex("CategoryID");
 
                     b.ToTable("Size_Units");
                 });
@@ -817,12 +810,17 @@ namespace BOX.Migrations
                         .HasMaxLength(75)
                         .HasColumnType("nvarchar(75)");
 
+                    b.Property<int>("FixedProductID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("SupplierID");
+
+                    b.HasIndex("FixedProductID");
 
                     b.ToTable("Supplier");
                 });
@@ -1429,19 +1427,11 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
-                        .WithMany()
-                        .HasForeignKey("FixedProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Admin");
 
                     b.Navigation("Customer");
 
                     b.Navigation("Estimate");
-
-                    b.Navigation("Fixed_Product");
                 });
 
             modelBuilder.Entity("BOX.Models.Fixed_Product", b =>
@@ -1523,17 +1513,6 @@ namespace BOX.Migrations
                     b.Navigation("QR_Code");
                 });
 
-            modelBuilder.Entity("BOX.Models.Size_Units", b =>
-                {
-                    b.HasOne("BOX.Models.Product_Category", "Product_Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product_Category");
-                });
-
             modelBuilder.Entity("BOX.Models.Stock_Take", b =>
                 {
                     b.HasOne("BOX.Models.Employee", "Employee")
@@ -1543,6 +1522,17 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("BOX.Models.Supplier", b =>
+                {
+                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
+                        .WithMany()
+                        .HasForeignKey("FixedProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fixed_Product");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_Order", b =>

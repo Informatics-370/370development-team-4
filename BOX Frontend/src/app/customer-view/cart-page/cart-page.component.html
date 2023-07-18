@@ -1,0 +1,197 @@
+<ul class="navbar">
+  <li><a class="active" href="#home">Home</a></li>
+  <li><a href="#news">About Us</a></li>
+  <li><a href="#contact">Products</a></li>
+  <li><a href="#about">Contact Us</a></li>
+  <li class="cart">
+    <div class="cart-icon">
+      <fa-icon [icon]="cartIcon" [routerLink]="['/cart']"></fa-icon>
+    </div>
+  </li>
+</ul>
+
+<div class="row">
+  <div class="col-md-3 col-sm-12 all-categories-menu">
+    <app-categories-menu></app-categories-menu>
+  </div>
+
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 col-sm-9 p-2">
+    <div class="row align-items-start"> <!-- Use "align-items-start" class to align the items at the top -->
+      <div class="col-md-6 col-sm-12 p-2">
+     
+      </div>
+      <div class="col-md-6 col-sm-12 p-2 justify-content-end d-flex">
+        <div>
+          <p>
+            Estimated Original Price: R<span id="price"></span> (Number of items): <span id="quantity"></span>
+          </p>
+          <p>
+            Bulk Discount: <span>{{ discountPercentage }}%</span>
+          </p>
+          <p>
+            Customer Discount: <span id="customerdiscount">%</span>
+          </p>
+          <p>
+            Total Discount: <span>{{ calculateTotalDiscount() }}%</span>
+          </p>
+          <p>
+            Final Estimated Total Price: R{{ calculateFinalEstimatedTotalPrice().toFixed(2) }}
+          </p>
+          <p>
+            <button class="btn btn-info">Pay Now</button>
+          </p>
+          <p>
+            <button class="btn btn-info" (click)="showGetInTouchWithUsModal()">Get In Touch With Us</button>
+          </p>
+          <p>
+            Note: Styling to be fixed later-MVP
+          </p>
+        </div>
+      </div>
+    </div>
+    <h3 class="p-3" style="color: black;">Shopping Cart</h3>
+    <div id="product-cards" class="column">
+      <div *ngFor="let product of products" class="col-md-6 col-sm-6 card-container">
+        <div class="card product-card">
+          <div class="row">
+            <div class="col-md-4 col-sm-4">
+              <div class="card-img-top">
+                <img class="card-img product-card-img" style="width: auto;" src="data:image/png;base64,{{product.fixedProduct.productPhotoB64}}" [alt]="product.fixedProduct.description">
+              </div>
+            </div>
+            <div class="col-md-8 col-sm-8">
+              <div class="card-body product-card-body">
+                <p class="card-text">{{product.fixedProduct.description}} is the product description</p>
+              </div>
+              <div class="card-body product-card-body">
+                <p class="card-text">R{{product.fixedProduct.price}} is the price</p>
+              </div>
+              <div class="card-body product-card-body">
+                <input type="number" [(ngModel)]="product.quantity" (change)="updateTotalPrice()" min="1" />
+              </div>
+              <div class="card-body product-card-body">
+                <p class="card-text">Total Price: R{{(product.fixedProduct.price * +product.quantity).toFixed(2)}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Get in touch with us modal -->
+<div id="contactModal" class="modal">
+  <div class="modal-content modal-scroll">
+    <button class="close">
+      <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+     </button> 
+      <h2>Contact Us</h2>
+    <form>
+      <div class="row">
+        <div class="col-md-4">
+          <label  for="name">Name: </label >
+          <input type="text" id="name" name="name" [(ngModel)]="firstName" placeholder="Enter your name" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label for="surname">Surname: </label>
+          <input type="text" id="surname" name="surname" [(ngModel)]="lastName" placeholder="Enter your surname" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label for="email">Email: </label>
+          <input type="email" id="email" name="email" placeholder="Enter your email address" class="form-control">
+        </div>
+      </div>
+      <div class="modal-body">
+        <h2>Items In Cart</h2>
+
+        <table class="table table-hover">
+          <thead>
+              <tr>
+                  <th scope="col">Estimated Price</th>
+                  <th scope="col">Product Description</th>
+                  <th scope="col">Quantity In Your Cart</th>
+                  <th scope="col">Estimated Price Before Discount</th>
+
+              </tr>
+          </thead>
+          <tbody>                
+          
+                  <tr *ngFor="let product of products" >
+                  <td >
+                      R{{product.fixedProduct.price}}
+                  </td>
+                  <td>
+                      {{product.fixedProduct.description}}
+                  </td>
+                  <td>
+                    {{product.quantity}}
+                </td>
+                <td>
+                  R{{(product.fixedProduct.price * +product.quantity).toFixed(2)}}
+                </td>
+                <tr>
+                  <td colspan="3">
+                    Total discount given: R{{calculateFinalDiscount().toFixed(2)}}
+                  </td>
+              </tr>
+              <tr  >
+                <td colspan="3">
+                <b>Final Estimated Price After Discount: R{{ calculateFinalEstimatedTotalPrice().toFixed(2) }}</b>
+                </td>
+            </tr>
+            
+          </tbody>
+      </table>
+      <h2>Negotiate Price</h2>
+      <form>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="to">To:</label>
+              <input type="text" id="recipientEmail" name="to" class="form-control" value="example@example.com" readonly>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="subject">Subject:</label>
+              <input type="text" id="subject" name="subject" class="form-control" [value]="'Price Adjustment for: ' + showUsersName()" readonly>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="message">Message:</label>
+              <textarea id="message" name="message" class="form-control" rows="8" placeholder="Compose your message"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="row">
+                <span class="col-md-3">
+                  <button class="btn btn-primary" (click)="submitEstimateLine()">Send</button>
+                </span>
+                <span class="col-md-3">
+                  <input type="file" id="attachments" multiple>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </form>
+        
+      </div>
+    </form>
+  </div>
+</div>
+
+
+ 
