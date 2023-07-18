@@ -176,7 +176,9 @@ export class ProductsComponent {
       this.renderer.addClass(card, 'product-card');
       this.renderer.addClass(card, 'hover-animation');
       this.renderer.setStyle(card, 'border', '0.5px solid rgba(219, 219, 219, 0.25)');
-      //this.renderer.setStyle(card, 'box-shadow', '0 7px 7px rgba(0, 0, 0, 0.2)');// Kuziwa: I added this line to give the card boxes a shadow. Please feel free to change the padding and colour of the shadow.
+      //this.renderer.setStyle(card, 'box-shadow', '0 7px 7px rgba(0, 0, 0, 0.2)');
+      // Kuziwa: I added this line to give the card boxes a shadow. Please feel free to change the padding and colour of the shadow.
+      //Charis: They already have a shadow; it's more pronounced when you hover over the card but we can make it more visible even when you aren't hovering
 
       const cardImgTop = this.renderer.createElement('div');
       this.renderer.addClass(cardImgTop, 'card-img-top');

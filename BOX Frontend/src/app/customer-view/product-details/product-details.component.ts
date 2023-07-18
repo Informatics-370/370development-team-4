@@ -184,7 +184,6 @@ export class ProductDetailsComponent {
 
       //must declare product here otherwise TS forgets that I check that prodItem isn't null
       this.selectedProductVM = {
-        fixedProduct:'',//Added this line to get code to compile
         itemID: matchingItem.itemID,
         description: matchingItem.description,
         categoryID: matchingItem.categoryID,

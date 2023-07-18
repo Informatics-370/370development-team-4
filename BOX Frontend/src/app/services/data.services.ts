@@ -318,8 +318,6 @@ AddEstimateLine(svm: any): Observable<any> {
   );
 }
 
-  }
-
   //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------
   GetAllFormulaVariables(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CostPriceFormulaVariables/GetAllFormulaVariables`)
