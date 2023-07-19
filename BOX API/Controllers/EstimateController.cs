@@ -125,6 +125,72 @@ namespace BOX.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetEstimateByCustomer/{customerId}")]
+        public async Task<IActionResult> GetEstimateByCustomer(int customerId)
+        {
+            try
+            {
+                List<EstimateViewModel> customerEstimates = new List<EstimateViewModel>(); //create list to return
+                var estimateLines = await _repository.GetEstimateLinesByCustomerAsync(customerId); //get all estimate lines for this customer
+
+                /*What I want to do: get all the estimates a customer has ever made in a list of estimate VMs
+                But, the estimate entity doesn't contain the customerID, estimate lines does because it's the associative entity inbetween
+                so I get all the estimate lines made by a customer and I want to sort them into estimates i.e. estimateVM 1 should 
+                contain only its estimate lines. To do that, I first find out how many estimates there are, using the distinct() 
+                method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
+                Hopefully this make sense to future Charis */
+
+
+                List<EstimateLineViewModel> allCustomerEstimateLines = new List<EstimateLineViewModel>();
+                //put all the customer's estimate lines in VM
+                foreach (var el in estimateLines)
+                {
+                    var fixedProduct = await _repository.GetFixedProductAsync(el.FixedProductID);
+
+                    EstimateLineViewModel elVM = new EstimateLineViewModel
+                    {
+                        EstimateLineID = el.EstimateLineID,
+                        EstimateID = el.EstimateID,
+                        FixedProductID = el.FixedProductID,
+                        FixedProductDescription = fixedProduct.Description,
+                        FixedProductUnitPrice = fixedProduct.Price,
+                        Quantity = el.Quantity
+                    };
+                    allCustomerEstimateLines.Add(elVM);
+                }
+
+                //Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
+                var distinctEstimateLines = estimateLines.Select(el => el.EstimateID).Distinct(); //returns all distinct estimate IDs
+                int estimateCount = distinctEstimateLines.Count(); //count how many estimates there are
+
+                foreach (var estimateID in distinctEstimateLines) //get all the estimates using the distinct estimateIDs and estimateVM
+                {
+                    Estimate estimate = await _repository.GetEstimateAsync(estimateID);
+                    var status = await _repository.GetEstimateStatusAsync(estimate.EstimateStatusID); //get status data
+
+                    EstimateViewModel eVM = new EstimateViewModel
+                    {
+                        EstimateID = estimate.EstimateID,
+                        EstimateStatusID = estimate.EstimateStatusID,
+                        EstimateStatusDescription = status.Description,
+                        EstimateDurationID = estimate.EstimateDurationID,
+                        ConfirmedTotal = estimate.Confirmed_Total_Price,
+                        CustomerID = customerId,
+                        Estimate_Lines = allCustomerEstimateLines.Where(el => el.EstimateID == estimateID).ToList() //get all estimate lines for this estimate
+                    };
+
+                    customerEstimates.Add(eVM);
+                }
+
+                return Ok(customerEstimates);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
         //-------------------------------------------------- Create Estimate  ----------------------------------------------------
         [HttpPost]
         [Route("AddEstimate")]
