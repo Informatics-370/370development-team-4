@@ -21,7 +21,7 @@
     <!--Search bar-->
     <div id="searchbar">
       <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
-        placeholder="Search quote number or status" />
+        placeholder="Search quote number, status" />
       <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
     </div>
 
@@ -40,86 +40,67 @@
           <!--Header-->
           <div class="estimate-header mb-4">
             <div class="flex-space-between" style="align-items: end;">
-              <span class="title">Qoute #{{estimate.estimateID}}</span>
-              <span class="less-important" >Status:</span>
+              <span class="title light-bold">Qoute #{{estimate.ID}}</span>
+              Status:
             </div>
             <div class="flex-space-between" style="align-items: start;">
-              <span class="less-important date">23 Jul 2023, 8:01 PM</span>
-              <span style="line-height: 0.9em;">{{estimate.estimateStatusDescription}}</span>
+              <span class="date">23 Jul 2023, 8:01 PM</span>
+              <span class="light-bold" style="line-height: 0.9em;">{{estimate.statusDescription}}</span>
             </div>
           </div>
           <!--Body-->
           <div class="estimate-details">
-            <div class="estimate-line row">
-              <!-- <div class="product-img-container col-4">
-                <img class="product-img" src="../../../assets/box.jpg" alt="" />
+            <div class="estimate-line row"  *ngFor="let estimateLine of estimate.estimate_Lines">
+              <div class="product-img-container col-4">
+                <img class="product-img" src="data:image/png;base64,{{estimateLine.productImage}}" alt="" />
               </div>
-              <div class="col-8"> -->
-              <div *ngFor="let estimateLine of estimate.estimate_Lines">
-                {{estimateLine.fixedProductDescription}}<br />
-                <span class="less-important">Size</span><br />
+              <div class="col-8">
+                <span class="light-bold">{{estimateLine.productDescription}}</span><br />
 
                 <div class="estimate-line-footer flex-space-between">
                   Qty: {{estimateLine.quantity}}
                   <span class="price">
-                    {{estimateLine.fixedProductUnitPrice * estimateLine.quantity | currency: 'ZAR':'symbol-narrow'}} excl. VAT
+                    {{estimateLine.unitPrice | currency: 'ZAR':'symbol-narrow'}}
                   </span>
                 </div>
-                <hr class="estimate-divider mt-1" />
+                Total: {{estimateLine.unitPrice * estimateLine.quantity | currency: 'ZAR':'symbol-narrow'}}
               </div>
             </div>
-
-            <!-- <div class="estimate-line row">
-              <div class="product-img-container col-4">
-                <img class="product-img" src="../../../assets/box.jpg" alt="" />
-              </div>
-              <div class="col-8">
-                Description 2<br />
-                <span class="less-important">Size 2</span><br />
-
-                <div class="estimate-line-footer flex-space-between">
-                  Qty: 4
-                  <span class="price">R270,980.89</span>
-                </div>
-                <hr class="estimate-divider mt-1 hide" /> *ngIf=index != estimate_Lines.Length
-              </div>
-            </div> -->
-
           </div>
 
           <!--Footer-->
-          <hr class="estimate-divider mb-3">
+          <hr class="footer-divider pb-2">
           <div class="totals">
             <table>
-              <tr class="less-important">
+              <tr>
                 <td>Subtotal:</td>
-                <td>R2,304,509.99</td>
+                <td>{{estimate.getTotalBeforeDiscount() | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
-              <tr class="less-important">
+              <tr>
                 <td>Discount:</td>
-                <td>-R43,509.00</td>
+                <td>-{{estimate.totalDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
-              <tr class="less-important">
+              <tr class="light-bold">
                 <td>Total:</td>
                 <td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
               <tr class="total-divider">
                 <td colspan="2"></td>
               </tr>
-              <tr class="negotiated" *ngIf="estimate.estimateStatusDescription == 'Reviewed'">
+              <tr class="negotiated light-bold" *ngIf="estimate.statusDescription == 'Reviewed'">
                 <td>Negotiated discount:</td>
-                <td>-R509.99</td>
+                <td>-{{estimate.getNegotiatedDiscount() | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
-              <tr *ngIf="estimate.estimateStatusDescription == 'Reviewed'">
+              <tr class="light-bold" *ngIf="estimate.statusDescription == 'Reviewed'">
                 <td>Confirmed total:</td>
                 <td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
             </table>
-            <div class="buttons flex-space-between" *ngIf="estimate.estimateStatusDescription == 'Reviewed'">
+            <div class="buttons flex-space-between" *ngIf="estimate.statusDescription == 'Reviewed'">
               <button class="btn btn-reject">Reject Quote</button>
               <button class="btn btn-accept">Accept Quote</button>
             </div>
-            <div class="buttons" style="margin: auto;"  *ngIf="estimate.estimateStatusDescription == 'Pending review'"> <!--*ngIf status!="Pending review"-->
+            <div class="buttons" style="margin: auto;"  *ngIf="estimate.statusDescription == 'Pending review'">
               <button title="I don't want to negotiate price anymore" class="btn btn-reject">Cancel</button>
             </div>
           </div>
