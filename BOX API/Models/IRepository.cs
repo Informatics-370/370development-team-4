@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace BOX.Models
 {
-  public interface IRepository
-  {
+    public interface IRepository
+    {
         void Add<T>(T entity) where T : class;
         void Delete<T>(T entity) where T : class;
         Task<bool> SaveChangesAsync();
@@ -29,29 +29,29 @@ namespace BOX.Models
         Task<Product_Item> GetItemAsync(int itemId);
 
 
-		//-------------------------------------------------------- WRITE OFF REASON -----------------------------------------------------------
-		Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync();
-		Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeOffReasonId);
+        //-------------------------------------------------------- WRITE OFF REASON -----------------------------------------------------------
+        Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync();
+        Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeOffReasonId);
 
 
         //--------------------------------------------------------- REFUND REASON -------------------------------------------------------------
         Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync();
-		Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
+        Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
 
 
         //------------------------------------------------------------- VAT -------------------------------------------------------------------
         Task<VAT[]> GetAllVatAsync();
-		Task<VAT> GetVatAsync(int vatId);
+        Task<VAT> GetVatAsync(int vatId);
 
 
         //-------------------------------------------------------- RAW MATERIAL ---------------------------------------------------------------
         Task<Raw_Material[]> GetAllRawMaterialsAsync();
-		Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId);
+        Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId);
 
 
         //------------------------------------------------------ ESTIMATE DURATION ------------------------------------------------------------
         Task<Estimate_Duration[]> GetAllEstimateDurationsAsync();
-		Task<Estimate_Duration> GetEstimateDurationAsync(int estimatedurationId);
+        Task<Estimate_Duration> GetEstimateDurationAsync(int estimatedurationId);
 
 
         //---------------------------------------------------------- SUPPLIER -----------------------------------------------------------------
@@ -62,5 +62,9 @@ namespace BOX.Models
         Task<Fixed_Product[]> GetAllFixedProductsAsync();
         Task<Fixed_Product> GetFixedProductAsync(int fixedProductId);
         Task UpdateFixedProductAsync(Fixed_Product fixedProduct);
+
+        //--------------------------- CREDIT APPLICATION STATUS --------------------------
+        Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
+        Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
     }
 }

@@ -109,7 +109,7 @@ namespace BOX.Controllers
         [HttpGet]
         private ActionResult GenerateJwtToken(User user)
         {
-            //var userRoles = _userManager.GetRolesAsync(user).Result;
+            var userRoles = _userManager.GetRolesAsync(user).Result;
 
             // Create JWT Token
             var claims = new[]
@@ -119,7 +119,7 @@ namespace BOX.Controllers
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
             }.ToList();
 
-            //claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

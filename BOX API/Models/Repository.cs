@@ -212,6 +212,20 @@ namespace BOX.Models
             await _appDbContext.SaveChangesAsync();
         }
 
+        //--------------------------------- CREDIT APPLICATION STATUS -------------------------
+        public async Task<Credit_Application_Status[]> GetAllAppStatusesAsync()
+        {
+            IQueryable<Credit_Application_Status> query = _appDbContext.Credit_Application_Status;
+            return await query.ToArrayAsync();
+        }
+
+
+        public async Task<Credit_Application_Status> GetAppStatusAsync(int applicationId)
+		{
+			IQueryable<Credit_Application_Status> query = _appDbContext.Credit_Application_Status.Where(s => s.CreditApplicationStatusID == applicationId);
+			return await query.FirstOrDefaultAsync();
+		}
+
         //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
         //Never remove this line of code, code above the line above.
         public async Task<bool> SaveChangesAsync()
