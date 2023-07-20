@@ -41,8 +41,7 @@ export class ProductsComponent {
     //Retrieve the category ID from url
     this.activatedRoute.paramMap.subscribe(params => {
       //category with id 2 and description 'single wall' will come as '2-single-wall' so split it into array that is ['2', 'single-wall']
-      let id = params.get('category')?.split('-', 1);
-      console.log(id ? id[0] : 'no id');
+      let id = params.get('category')?.split('-', 1);      
       if (id) this.categoryID = parseInt(id[0]);
     });
   }

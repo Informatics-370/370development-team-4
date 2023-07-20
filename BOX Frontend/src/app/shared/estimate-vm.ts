@@ -7,6 +7,6 @@ export interface EstimateVM {
     estimateDurationID : number;
     confirmedTotal : number;
     customerID : number;
-    customerFullName : number;
+    customerFullName : string;
     estimate_Lines : EstimateLineVM[];
 }

@@ -21,7 +21,6 @@ export class CategoriesMenuComponent {
     this.activatedRoute.paramMap.subscribe(params => {
       //category with id 2 and description 'single wall' will come as '2-single-wall' so split it into array that is ['2', 'single-wall']
       let id = params.get('category')?.split('-', 1);
-      console.log(id ? 'categories-menu ' + id[0] : 'categories-menu no id');
       if (id) this.currentCategoryID = parseInt(id[0]);
     });
   }
@@ -36,7 +35,6 @@ export class CategoriesMenuComponent {
         });
 
         this.categoryCount = this.categories.length; //update the number of categories
-        console.log('All categories array: ', this.categories);
 
         this.displayCategories();
       });
