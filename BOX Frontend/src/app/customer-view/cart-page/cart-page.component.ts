@@ -30,8 +30,8 @@ export class CartPageComponent {
   products: Cart[] = [];
   discountList: Discount[] = []; //hold all bulk discounts
   totalQuantity: number = 0;
-  applicableDiscount = 0;
-  randomdiscount = 0;
+  applicableDiscount = 0; //bulk discount
+  randomdiscount = 0; //customer discount
   totalPrice = 0;
   modal: any = document.getElementById('contactModal');
   firstName: string = '';
@@ -351,9 +351,9 @@ export class CartPageComponent {
 			estimateStatusID: 0,
 			estimateStatusDescription: '',
 			estimateDurationID: 0,
-			customerID: Math.floor((Math.random() * 13) + 1),
+			customerID: Math.floor((Math.random() * 11) + 3),
 			customerFullName: '',
-			confirmedTotal: this.cartService.getCartTotal(),
+			confirmedTotal: this.cartService.getCartTotal(this.applicableDiscount, this.randomdiscount),
 			estimate_Lines: []
 		}
 
@@ -373,10 +373,18 @@ export class CartPageComponent {
 
 			newEstimate.estimate_Lines.push(estimateLine);
 		});
-
-		console.log('Estimate is: ', newEstimate);
+		console.log('Estimate before posting: ', newEstimate);
 		
-		//post to backend
+		try {
+			//post to backend
+			this.dataService.AddEstimate(newEstimate).subscribe((result) => {
+				console.log('New estimate: ', result)
+				this.cartService.emptyCart(); //clear cart
+				this.router.navigate(['/estimate']); //redirect to estimate page
+			});
+		} catch (error) {
+			console.error('Error submitting estimate: ', error);
+		}
 	}
 
 }

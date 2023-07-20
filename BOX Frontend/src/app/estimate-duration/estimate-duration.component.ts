@@ -124,7 +124,7 @@ export class EstimateDurationComponent {
     let id = this.deleteModal.nativeElement.id;
     let durationId = id.substring(id.indexOf('-') + 1);
     console.log(durationId);
-    this.dataService.DeleteEstimateDurationn(durationId).subscribe(
+    this.dataService.DeleteEstimateDuration(durationId).subscribe(
       (result) => {
         console.log("Successfully deleted ", result);
         this.getEstimateDurations(); //refresh item list

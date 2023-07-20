@@ -7,7 +7,6 @@ import { FixedProductVM } from '../../shared/fixed-product-vm';
 })
 export class CartService {
   //!!!!!!!PRICES IN CART ARE VAT EXCLUSIVE!!!!!!!
-  //BULK DISCOUNTS ARE NOT ACCOUNTED FOR IN CART SERVICE
   cart: Cart[] = [];
 
   constructor() {
@@ -34,13 +33,18 @@ export class CartService {
     localStorage.setItem("MegaPack-cart", JSON.stringify(this.cart));
   }
 
-  //excluding VAT and bulk discounts
-  getCartTotal(): number {
+  //excluding VAT
+  //please pass discount parameters as whole numbers e.g. 25 for 25%
+  getCartTotal(bulkDiscountWholeNumber : number, customerDiscountWholeNumber : number): number {
     let cartTotal = 0;
 
     this.cart.forEach(cartItem => {
       cartTotal += cartItem.fixedProduct.price * cartItem.quantity;
     });
+
+    //add discount
+    let totalDiscountInRand = (bulkDiscountWholeNumber + customerDiscountWholeNumber) / 100 * cartTotal;
+    cartTotal = cartTotal - totalDiscountInRand;
 
     return cartTotal;
   }
