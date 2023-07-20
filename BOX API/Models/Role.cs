@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 namespace BOX.Models
 {
-	public class Role : IdentityRole<Guid>
+	public class Role
     {
-		//[Key] public Guid RoleID { get; set; }
+		[Key] public Guid RoleID { get; set; }
 		[Required][MaxLength(50)]public string Description { get; set; } = string.Empty;
 	}
 }

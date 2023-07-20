@@ -53,7 +53,7 @@ namespace BOX.Controllers
 
 		[HttpPost]
 		[Route("AddVat")]
-		public async Task<IActionResult> AddVat(VATViewModel vvm)
+		public async Task<IActionResult> AddVat(VatViewModel vvm)
 		{
 			var valt = new VAT { Percentage=vvm.Percentage};
 
@@ -72,7 +72,7 @@ namespace BOX.Controllers
 
 		[HttpPut]
 		[Route("EditVat/{vatId}")]
-		public async Task<ActionResult<VATViewModel>> EditVat(int vatId, VATViewModel vvm)
+		public async Task<ActionResult<VatViewModel>> EditVat(int vatId, VatViewModel vvm)
 		{
 			try
 			{

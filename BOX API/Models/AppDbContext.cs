@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BOX.Models
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+        }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 			//This sets the composite key for the Estimate Line Entity and does the same for the remaining Associative entities
@@ -26,17 +29,6 @@ namespace BOX.Models
 						modelBuilder.Entity<Category_Size_Variables>()
 			 .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
 			
-			//add-migration fix
-            modelBuilder.Entity<IdentityUserLogin<Guid>>().HasNoKey();
-            modelBuilder.Entity<IdentityUserRole<Guid>>().HasNoKey();
-            modelBuilder.Entity<IdentityUserToken<Guid>>().HasNoKey();
-            modelBuilder.Entity<User>().ToTable("Users");
-            modelBuilder.Entity<IdentityRole<Guid>>().ToTable("Roles");
-            modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
-            modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
-            modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
-            modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
-            modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
         }
 
 		public DbSet<Admin> Admin { get; set; }
@@ -94,19 +86,6 @@ namespace BOX.Models
 		public DbSet<User_Role_Permission> User_Role_Permission { get; set; }
 		public DbSet<Size_Variables> Size_Variables { get; set; }
 		public DbSet<Category_Size_Variables> Category_Size_Variables { get; set; }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 }
