@@ -70,7 +70,7 @@ namespace BOX.Models
         Task<Cost_Price_Formula_Variables[]> GetAllFormulaVariablesAsync();
         Task<Cost_Price_Formula_Variables> GetFormulaVariablesAsync(int formulaVariablesID);
 
-    //------------------------------------------------------ ESTIMATE DURATION ------------------------------------------------------------
+    //------------------------------------------------------ ESTIMATE STATUS ------------------------------------------------------------
     Task<Estimate_Status[]> GetAllEstimateStatusesAsync();
     Task<Estimate_Status> GetEstimateStatusAsync(int estimatedurationId);
 
@@ -88,5 +88,38 @@ namespace BOX.Models
 
     //------------------------------------------------ADMIN------------------------------------------------------
     Task<Admin> GetAdminAsync(int adminId);
+
+		//------------------------------------------------EMPLOYEE------------------------------------------------------
+		Task<Employee> GetEmployeeAsync(int employeeId);
+
+
+		//-------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
+		Task<Custom_Product[]> GetAllCustomProductsAsync();
+		Task<Custom_Product> GetCustomProductAsync(int customProductId);
+		Task UpdateCustomProductAsync(Custom_Product customProduct);
+
+
+		//------------------------------------------------------ CUSTOMER ORDER STATUS ------------------------------------------------------------
+		Task<Customer_Order_Status[]> GetAllCustomerOrderStatusesAsync();
+		Task<Customer_Order_Status> GetCustomerOrderStatusAsync(int customerOrderstatusId);
+
+
+        //---------------------------------------------ORDER DELIVERY SCHEDULE--------------------------------------------------------------------
+        Task<Order_Delivery_Schedule[]> GetAllCustomerOrderDeliverySchedulesAsync();
+        Task<Order_Delivery_Schedule> GetCustomerOrderDeliveryScheduleAsync(int orderDeliveryScheduleId);
+        Task UpdateCustomerOrderDeliveryScheduleAsync(Order_Delivery_Schedule order_delivery_Schedule);
+
+
+		//------------------------------------------------------------- DISCOUNT -------------------------------------------------------------------
+		Task<Discount[]> GetAllDiscountsAsync();
+		Task<Discount> GetDiscountAsync(int discountId);
+
+		//-------------------------------------------------------- CUSTOMER ORDER -----------------------------------------------------------------
+		Task<Customer_Order[]> GetAllCustomerOrdersAsync();
+		Task<Customer_Order> GetCustomerOrderAsync(int customerOrderId);
+		Task UpdateCustomerOrderAsync(Customer_Order customerOrder);
+
+
 	}
+
 }

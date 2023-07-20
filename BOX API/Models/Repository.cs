@@ -308,9 +308,129 @@ namespace BOX.Models
       return await query.FirstOrDefaultAsync();
     }
 
-    //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
-    //Never remove this line of code, code above the line above.
-    public async Task<bool> SaveChangesAsync()
+
+		//----------------------------------------------------EMPLOYEE (TEMP)-------------------------------------
+		public async Task<Employee> GetEmployeeAsync(int employeeId)
+		{
+			IQueryable<Employee> query = _appDbContext.Employee.Where(c => c.EmployeeID == employeeId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+
+		//------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
+
+		//Get All Fixed Products
+		public async Task<Custom_Product[]> GetAllCustomProductsAsync()
+		{
+			IQueryable<Custom_Product> query = _appDbContext.Custom_Product;
+			return await query.ToArrayAsync();
+		}
+
+		//Gets one Fixed Product according to the ID
+		public async Task<Custom_Product> GetCustomProductAsync(int customProductId)
+		{
+			//Query to select fixed product where the ID passing through the API matches the ID in the Database
+			IQueryable<Custom_Product> query = _appDbContext.Custom_Product.Where(c => c.CustomProductID == customProductId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+		public async Task UpdateCustomProductAsync(Custom_Product customProduct)
+		{
+			// Update the Custom product entity in the data storage
+			_appDbContext.Update(customProduct);
+
+			await _appDbContext.SaveChangesAsync();
+		}
+
+		//------------------------------------------------------ CUSTOMER STATUS ------------------------------------------------------------
+
+
+		public async Task<Customer_Order_Status[]> GetAllCustomerOrderStatusesAsync()
+		{
+			IQueryable<Customer_Order_Status> query = _appDbContext.Customer_Order_Status;
+			return await query.ToArrayAsync();
+		}
+
+		public async Task<Customer_Order_Status> GetCustomerOrderStatusAsync(int customerOrderstatusId)
+		{
+			IQueryable<Customer_Order_Status> query = _appDbContext.Customer_Order_Status.Where(c => c.CustomerOrderStatusID == customerOrderstatusId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+
+
+        //------------------------------------------------------ Customer Order Delivery Schedule ------------------------------------------------------------
+
+
+        public async Task<Order_Delivery_Schedule[]> GetAllCustomerOrderDeliverySchedulesAsync()
+        {
+            IQueryable<Order_Delivery_Schedule> query = _appDbContext.Order_Delivery_Schedule;
+            return await query.ToArrayAsync();
+        }
+
+
+        //Gets one Order Delivery Schedule  according to the ID
+        public async Task<Order_Delivery_Schedule> GetCustomerOrderDeliveryScheduleAsync(int orderDeliveryScheduleId)
+        {
+            //Query to select fixed product where the ID passing through the API matches the ID in the Database
+            IQueryable<Order_Delivery_Schedule> query = _appDbContext.Order_Delivery_Schedule.Where(c => c.OrderDeliveryScheduleID == orderDeliveryScheduleId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task UpdateCustomerOrderDeliveryScheduleAsync(Order_Delivery_Schedule order_delivery_schedule)
+        {
+            // Update the Estimate entity in the data storage
+            _appDbContext.Update(order_delivery_schedule);
+
+            await _appDbContext.SaveChangesAsync();
+        }
+
+		//------------------------------------------------------------- DISCOUNT -------------------------------------------------------------------
+
+		//Get All Discounts
+		public async Task<Discount[]> GetAllDiscountsAsync()
+		{
+			IQueryable<Discount> query = _appDbContext.Discount;
+			return await query.ToArrayAsync();
+		}
+
+		//Get VAT By ID
+		public async Task<Discount> GetDiscountAsync(int discountId)
+		{
+			//Query to select vat where the ID passing through the API matches the ID in the Database
+			IQueryable<Discount> query = _appDbContext.Discount.Where(c => c.DiscountID == discountId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+		//------------------------------------------------------- CUSTOMER ORDER -----------------------------------------------------------------
+
+		//Get All Customer Orders 
+		public async Task<Customer_Order[]> GetAllCustomerOrdersAsync()
+		{
+			IQueryable<Customer_Order> query = _appDbContext.Customer_Order;
+			return await query.ToArrayAsync();
+		}
+
+		//Gets one Fixed Product according to the ID
+		public async Task<Customer_Order> GetCustomerOrderAsync(int customerOrderId)
+		{
+			//Query to select fixed product where the ID passing through the API matches the ID in the Database
+			IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.CustomerOrderID == customerOrderId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+		public async Task UpdateCustomerOrderAsync(Customer_Order customerOrder)
+		{
+			// Update the Customer Order entity in the data storage
+			_appDbContext.Update(customerOrder);
+
+			await _appDbContext.SaveChangesAsync();
+		}
+
+
+		//---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
+		//Never remove this line of code, code above the line above.
+		public async Task<bool> SaveChangesAsync()
     {
       return await _appDbContext.SaveChangesAsync() > 0;
     }
