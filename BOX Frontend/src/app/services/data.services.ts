@@ -307,8 +307,12 @@ export class DataService {
   }
 
   GetEstimate(estimateId: number): Observable<EstimateVM> {
-    return this.httpClient.get<EstimateVM>(`${this.apiUrl}Estimate/GetEstimate/${estimateId}}`)
+    return this.httpClient.get<EstimateVM>(`${this.apiUrl}Estimate/GetEstimate/${estimateId}`)
       .pipe(map(result => result));
+  }
+
+  GetEstimatesByCustomer(customerId: number): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}Estimate/GetEstimateByCustomer/${customerId}`).pipe(map(result => result));
   }
 
   AddEstimate(estimateViewModel: EstimateVM): Observable<any> {

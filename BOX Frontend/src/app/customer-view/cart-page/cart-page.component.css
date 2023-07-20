@@ -136,7 +136,11 @@ ul.navbar li.cart a i {
   max-width: 100% !important;
 }
 
-.product-card { cursor: default; padding-top: 2px;}
+.product-card { 
+  cursor: default; 
+  padding-top: 2px;
+  border: none;
+}
 
 .product-card-body { text-align: left; }
 
