@@ -70,21 +70,23 @@ namespace BOX.Models
         Task<Cost_Price_Formula_Variables[]> GetAllFormulaVariablesAsync();
         Task<Cost_Price_Formula_Variables> GetFormulaVariablesAsync(int formulaVariablesID);
 
-    //------------------------------------------------------ ESTIMATE STATUS ------------------------------------------------------------
-    Task<Estimate_Status[]> GetAllEstimateStatusesAsync();
-    Task<Estimate_Status> GetEstimateStatusAsync(int estimatedurationId);
+        //------------------------------------------------------ ESTIMATE STATUS ------------------------------------------------------------
+        Task<Estimate_Status[]> GetAllEstimateStatusesAsync();
+        Task<Estimate_Status> GetEstimateStatusAsync(int estimateStatusId);
 
-    //---------------------------------------------ESTIMATE--------------------------------------------------------------------
-    Task<Estimate[]> GetAllEstimatesAsync();
-    Task<Estimate> GetEstimateAsync(int estimateId);
-    Task UpdateEstimateAsync(Estimate estimate);
+        //---------------------------------------------ESTIMATE--------------------------------------------------------------------
+        Task<Estimate[]> GetAllEstimatesAsync();
+        Task<Estimate> GetEstimateAsync(int estimateId);
+        Task UpdateEstimateAsync(Estimate estimate);
 
-    //-----------------------------------------------ESTIMATE LINE---------------------------------------------
-    Task<Estimate_Line[]> GetAllEstimateLinesAsync();
-    Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId,int estimateLineId);
+        //-----------------------------------------------ESTIMATE LINE---------------------------------------------
+        Task<Estimate_Line[]> GetAllEstimateLinesAsync();
+        Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId,int estimateLineId);
+        Task<Estimate_Line[]> GetEstimateLinesByEstimateAsync(int estimateId);
+        Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(int customerId);
 
-    //------------------------------------------------CUSTOMER--------------------------------------------------
-    Task<Customer> GetCustomerAsync(int customerId);
+        //------------------------------------------------CUSTOMER--------------------------------------------------
+        Task<Customer> GetCustomerAsync(int customerId);
 
     //------------------------------------------------ADMIN------------------------------------------------------
     Task<Admin> GetAdminAsync(int adminId);

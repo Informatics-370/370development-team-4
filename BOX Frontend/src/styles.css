@@ -1,42 +1,45 @@
 @import "node_modules/bootstrap/dist/css/bootstrap.css";
 
 .page-content {
-    margin-left: 260px;
+  margin-left: 260px;
 }
 
 /*If I don't declare these classes globally, they won't be applied*/
-.remove-pic { 
-    all: unset;
-    color: rgba(255, 0, 0, 0.65);
-    text-decoration: underline;
-    font-size: 80%;
-    margin-left: 1.5rem;
-    border: 0;
-    outline: 0;
-    background-color: transparent;
+.remove-pic {
+  all: unset;
+  color: rgba(255, 0, 0, 0.65);
+  text-decoration: underline;
+  font-size: 80%;
+  margin-left: 1.5rem;
+  border: 0;
+  outline: 0;
+  background-color: transparent;
 }
 
 .category-link {
-    display: block;
-    color: whitesmoke;
-    padding: 8px 12px;
-    text-decoration: none;
-    text-align: center;
-    border-bottom: 1px solid whitesmoke;
+  display: block;
+  color: whitesmoke;
+  padding: 8px 12px;
+  text-decoration: none;
+  text-align: center;
+  border-bottom: 1px solid whitesmoke;
+  cursor: pointer;
 }
 
 .category-list-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .category-link:hover {
-    background-color: #00F2C8;
-    color: #373435;
+  background-color: #00F2C8;
+  color: #373435;
 }
 
-.active {
-    color: #fff;
-    font-weight: 600;
+.active-category {
+  color: #fff;
+  font-weight: 500;
+  font-size: 105%;
+  cursor: default;
 }
 
 /*CARDS ON PRODUCTS PAGE (CUSTOMER VIEW PRODUCTS)*/
@@ -47,7 +50,8 @@
 
 .product-card {
   cursor: pointer;
-  box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px;
+  /* box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px; */
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   text-align: center;
   padding-top: 20px;
   display: inline-block;
@@ -55,23 +59,28 @@
   margin: auto;
 }
 
-.hover-animation { transition: all ease 0.5s; }
+.hover-animation {
+  transition: all ease 0.5s;
+}
 
-.hover-animation:hover { 
+.hover-animation:hover {
   transform: translateY(-10px);
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; 
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .product-card-img-top {
   width: 100%;
-  height: 175px;
 }
 
 .product-card-img {
-  max-height: 175px;  
+  max-height: 175px;
   max-width: 100%;
 }
 
 .product-card-body {
   padding: 20px;
+}
+
+.center-text {
+  text-align: center;
 }

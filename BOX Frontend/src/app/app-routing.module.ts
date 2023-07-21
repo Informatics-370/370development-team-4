@@ -17,6 +17,7 @@ import { ProductsComponent } from './customer-view/products/products.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
+import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 
 
 
@@ -29,7 +30,7 @@ const routes: Routes = [
   { path: "product-item", component: ProductItemTestComponent },
   { path: "help", component: ViewHelpInventoryComponent },
   { path: "product-category", component: ProductCategoryComponent },
-  { path: "refund-reason", component: RefundReasonComponent },
+  { path: "return-reason", component: RefundReasonComponent },
   { path: "write-off-reason", component: WriteOffReasonComponent },
   { path: 'size-units', component: SizeUnitsComponent },
   { path: 'vat', component: VatComponent },
@@ -38,7 +39,9 @@ const routes: Routes = [
   { path: 'estimate-duration', component: EstimateDurationComponent },
   { path: 'raw-material', component: RawMaterialComponent },
   { path: 'products', component: ProductsComponent },
-  { path: 'product-details/:id/:description', component: ProductDetailsComponent},
+  { path: 'products/:category', component: ProductsComponent },
+  { path: 'product-details/:id', component: ProductDetailsComponent},
+  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent},
   { path: 'cart', component: CartPageComponent },
   { path: 'estimate', component: EstimatePageComponent }
 

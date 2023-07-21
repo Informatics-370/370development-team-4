@@ -4,6 +4,7 @@ using BOX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230718082436_AddQtyToEstimateLine")]
+    partial class AddQtyToEstimateLine
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,18 +184,12 @@ namespace BOX.Migrations
                     b.Property<int>("FormulaID")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Height")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("ItemID")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Label")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<decimal>("Length")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<byte[]>("Logo")
                         .IsRequired()
@@ -265,9 +261,8 @@ namespace BOX.Migrations
                     b.Property<int>("CustomerOrderStatusID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Date")
+                        .HasColumnType("int");
 
                     b.Property<byte[]>("Delivery_Photo")
                         .IsRequired()
@@ -407,9 +402,6 @@ namespace BOX.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiscountID"), 1L, 1);
 
                     b.Property<int>("Percentage")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("DiscountID");
@@ -575,9 +567,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDeliveryScheduleID"), 1L, 1);
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("EmployeeID")
                         .HasColumnType("int");

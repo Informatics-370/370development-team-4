@@ -14,7 +14,7 @@ namespace BOX.Models
 		[ForeignKey("Estimate_Duration")]
 		public int EstimateDurationID { get; set; }
 		public virtual Estimate_Duration Estimate_Duration { get; set; }
-
+		public decimal Confirmed_Total_Price { get; set; }
 
 	}
 }

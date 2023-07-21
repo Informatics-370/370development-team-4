@@ -241,10 +241,10 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-        public async Task<Estimate_Status> GetEstimateStatusAsync(int estimatestatusId)
+        public async Task<Estimate_Status> GetEstimateStatusAsync(int estimateStatusId)
         {
             //Query to select estimate duration where the ID passing through the API matches the ID in the Database
-            IQueryable<Estimate_Status> query = _appDbContext.Estimate_Status.Where(c => c.EstimateStatusID == estimatestatusId);
+            IQueryable<Estimate_Status> query = _appDbContext.Estimate_Status.Where(c => c.EstimateStatusID == estimateStatusId);
             return await query.FirstOrDefaultAsync();
         }
 
@@ -261,7 +261,7 @@ namespace BOX.Models
         //Gets one Estimate  according to the ID
         public async Task<Estimate> GetEstimateAsync(int estimateId)
         {
-            //Query to select fixed product where the ID passing through the API matches the ID in the Database
+            //Query to select estimate where the ID passing through the API matches the ID in the Database
             IQueryable<Estimate> query = _appDbContext.Estimate.Where(c => c.EstimateID == estimateId);
             return await query.FirstOrDefaultAsync();
         }
@@ -285,12 +285,26 @@ namespace BOX.Models
 
         //Gets one Estimate line  according to the concatenated ID
         public async Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId, int estimateLineId) //int estimateLineId)
-    {
-      IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line
-       .Where(c => c.EstimateID == estimateId && c.CustomerID == customerId && c.EstimateLineID == estimateLineId);
-      return await query.FirstOrDefaultAsync();
+        {
+          IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line
+           .Where(c => c.EstimateID == estimateId && c.CustomerID == customerId && c.EstimateLineID == estimateLineId);
+          return await query.FirstOrDefaultAsync();
 
-    }
+        }
+
+        //gets all estimate lines for a specific estimate
+        public async Task<Estimate_Line[]> GetEstimateLinesByEstimateAsync(int estimateId)
+        {
+            IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line.Where(c => c.EstimateID == estimateId);
+            return await query.ToArrayAsync();
+        }
+
+        //Gets all estimate lines from every estimate customer A has ever made
+        public async Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(int customerId)
+        {
+            IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line.Where(c => c.CustomerID == customerId);
+            return await query.ToArrayAsync();
+        }
 
     //----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
     public async Task<Customer> GetCustomerAsync(int customerId)
