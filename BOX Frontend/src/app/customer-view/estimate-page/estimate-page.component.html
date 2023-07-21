@@ -21,7 +21,7 @@
     <!--Search bar-->
     <div id="searchbar">
       <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
-        placeholder="Search quote number, status" />
+        placeholder="Search quote number, status" (keyup)="searchEstimates($event)" />
       <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
     </div>
 
@@ -29,7 +29,7 @@
     <!--Messages to user-->
     <div class="m-3"> 
       <span *ngIf="loading">Getting your quotes..</span>
-      <span *ngIf="estimateCount == 0">You don't have any quotes</span>
+      <span *ngIf="estimateCount == 0">No quotes found.</span>
     </div>
     
     <div class="row estimates-container p-1">
@@ -96,12 +96,15 @@
                 <td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
             </table>
-            <div class="buttons flex-space-between" *ngIf="estimate.statusDescription == 'Reviewed'">
-              <button class="btn btn-reject">Reject Quote</button>
-              <button class="btn btn-accept">Accept Quote</button>
+            <div *ngIf="estimate.statusDescription == 'Reviewed'">
+              <div class="buttons flex-space-between">
+                <button class="btn btn-reject" (click)="rejectEstimate(estimate.ID)">Reject Quote</button>
+                <button title="Buy now" class="btn btn-accept" (click)="acceptEstimate(estimate.ID)">Accept Quote</button>
+              </div>
+              <div style="text-align: center;">This quote expires on <span class="light-bold">23 Aug 2023</span>.</div>
             </div>
             <div class="buttons" style="margin: auto;"  *ngIf="estimate.statusDescription == 'Pending review'">
-              <button title="I don't want to negotiate price anymore" class="btn btn-reject">Cancel</button>
+              <button title="I don't want to negotiate price anymore" class="btn btn-reject" (click)="cancelEstimate(estimate.ID)">Cancel</button>
             </div>
           </div>
         </div>

@@ -43,7 +43,7 @@ const routes: Routes = [
   { path: 'product-details/:id', component: ProductDetailsComponent},
   { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent},
   { path: 'cart', component: CartPageComponent },
-  { path: 'estimate', component: EstimatePageComponent }
+  { path: 'quotes', component: EstimatePageComponent }
 
 
 

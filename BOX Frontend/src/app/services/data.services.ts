@@ -321,6 +321,14 @@ export class DataService {
     );
   }
 
+  UpdateEstimateStatus(estimateId: number, statusId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimateStatus/${estimateId}/${statusId}`, this.httpOptions);
+  }
+
+  DeleteEstimate(estimateId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Estimate/DeleteEstimate/${estimateId}`, this.httpOptions);
+  }
+
   //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------
   GetAllFormulaVariables(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CostPriceFormulaVariables/GetAllFormulaVariables`)

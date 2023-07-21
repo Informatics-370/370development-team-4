@@ -380,7 +380,7 @@ export class CartPageComponent {
 			this.dataService.AddEstimate(newEstimate).subscribe((result) => {
 				console.log('New estimate: ', result)
 				this.cartService.emptyCart(); //clear cart
-				this.router.navigate(['/estimate']); //redirect to estimate page
+				this.router.navigate(['/quotes']); //redirect to estimate page
 			});
 		} catch (error) {
 			console.error('Error submitting estimate: ', error);
