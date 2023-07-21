@@ -1045,9 +1045,6 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VatID"), 1L, 1);
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Percentage")
                         .HasColumnType("int");
 

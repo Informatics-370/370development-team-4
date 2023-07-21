@@ -286,9 +286,9 @@ namespace BOX.Models
         //Gets one Estimate line  according to the concatenated ID
         public async Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId, int estimateLineId) //int estimateLineId)
         {
-          IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line
-           .Where(c => c.EstimateID == estimateId && c.CustomerID == customerId && c.EstimateLineID == estimateLineId);
-          return await query.FirstOrDefaultAsync();
+            IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line
+             .Where(c => c.EstimateID == estimateId && c.CustomerID == customerId && c.EstimateLineID == estimateLineId);
+            return await query.FirstOrDefaultAsync();
 
         }
 
@@ -306,30 +306,22 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-    //----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
-    public async Task<Customer> GetCustomerAsync(int customerId)
-    {
-      //Query to select fixed product where the ID passing through the API matches the ID in the Database
-      IQueryable<Customer> query = _appDbContext.Customer.Where(c => c.customerID == customerId);
-      return await query.FirstOrDefaultAsync();
-    }
+        //----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
+        public async Task<Customer> GetCustomerAsync(int customerId)
+        {
+            //Query to select fixed product where the ID passing through the API matches the ID in the Database
+            IQueryable<Customer> query = _appDbContext.Customer.Where(c => c.customerID == customerId);
+            return await query.FirstOrDefaultAsync();
+        }
 
-    //----------------------------------------------------ADMIN (TEMP)-------------------------------------
-    public async Task<Admin> GetAdminAsync(int adminId)
-    {
-      //Query to select fixed product where the ID passing through the API matches the ID in the Database
-      IQueryable<Admin> query = _appDbContext.Admin.Where(c => c.AdminID == adminId);
-      return await query.FirstOrDefaultAsync();
-    }
+        //----------------------------------------------------ADMIN (TEMP)-------------------------------------
+        public async Task<Admin> GetAdminAsync(int adminId)
+        {
+            //Query to select fixed product where the ID passing through the API matches the ID in the Database
+            IQueryable<Admin> query = _appDbContext.Admin.Where(c => c.AdminID == adminId);
+            return await query.FirstOrDefaultAsync();
+        }
 
-    //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
-    //Never remove this line of code, code above the line above.
-    public async Task<bool> SaveChangesAsync()
-    {
-      return await _appDbContext.SaveChangesAsync() > 0;
-    }
-
-  }
         //--------------------------------- CREDIT APPLICATION STATUS -------------------------
         public async Task<Credit_Application_Status[]> GetAllAppStatusesAsync()
         {
@@ -339,18 +331,20 @@ namespace BOX.Models
 
 
         public async Task<Credit_Application_Status> GetAppStatusAsync(int applicationId)
-		{
-			IQueryable<Credit_Application_Status> query = _appDbContext.Credit_Application_Status.Where(s => s.CreditApplicationStatusID == applicationId);
-			return await query.FirstOrDefaultAsync();
-		}
+        {
+            IQueryable<Credit_Application_Status> query = _appDbContext.Credit_Application_Status.Where(s => s.CreditApplicationStatusID == applicationId);
+            return await query.FirstOrDefaultAsync();
+        }
 
         //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
         //Never remove this line of code, code above the line above.
         public async Task<bool> SaveChangesAsync()
-		{
-			return await _appDbContext.SaveChangesAsync() > 0;
-		}
-	}
+        {
+            return await _appDbContext.SaveChangesAsync() > 0;
+        }
+
+    }
+
 }
 
 
