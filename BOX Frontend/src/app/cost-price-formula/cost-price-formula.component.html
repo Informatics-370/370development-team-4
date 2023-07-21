@@ -1,0 +1,112 @@
+<div class="row">
+	<!--Menu bar-->
+	<div class="col-md-3">
+		<div class="app-menu"></div>
+	</div>
+	<!--PAGE CONTENT-->
+	<div class="col-md-9 page-content">
+		<h3 class="p-3" style="color: black;">Cost Price Formula</h3>
+
+		<hr class="hr hr-blurry m-3" />
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="width: 55px;" scope="col"></th>
+					<th scope="col">Product Item</th>
+					<th scope="col">Formula</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!--Error message if formulas couldn't be retrieved-->
+				<tr *ngIf="loadingError && !loading">
+					<td colspan="3">No formulas found. Please try refreshing the page. If the error persists, contact B.O.X
+						support</td>
+				</tr>
+				<!--Loading message while data is still being retrieved from the DB-->
+				<tr *ngIf="loading">
+					<td colspan="3">Please wait while we load all formulas...</td>
+				</tr>
+				<!--Data from API-->
+				<tr *ngIf="!loading && !loadingError"> <!--Single wall box formula-->
+					<td>
+						<button title="Update this formula's box factor and rate per ton" class="CRUD-icon"
+							(click)="openUpdateModal(0)">
+							<fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+						</button>
+					</td>
+					<td>
+						{{formulaVariables[0].description}}
+					</td>
+					<td>
+						2 &times; <em>(l + b)</em> + 0.04 &times; <em>(b + h)</em> + 0.01 &times; Box Factor ({{formulaVariables[0].box_Factor}}) &times; Rate Per Ton [{{formulaVariables[0].rate_Per_Ton}}]
+					</td>
+				</tr>
+				<tr *ngIf="!loading && !loadingError"> <!--Double wall box formula-->
+					<td>
+						<button title="Update this formula's box factor and rate per ton" class="CRUD-icon"
+							(click)="openUpdateModal(1)">
+							<fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+						</button>
+					</td>
+					<td>
+						{{formulaVariables[1].description}}
+					</td>
+					<td>
+						2 &times; <em>(l + b)</em> + 0.05 &times; <em>(b + h)</em> + 0.014 &times; Box Factor [{{formulaVariables[1].box_Factor}}] &times; Rate Per Ton [{{formulaVariables[1].rate_Per_Ton}}]
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!--CRUD MODALS-->
+<!--UPDATE COST PRICE FORMULA-->
+<div class="modal fade" id="updateFormulaVariables" tabindex="-1" *ngIf="selectedFormulaVariables">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+
+			<!--HEADER-->
+			<div class="modal-header">
+				<h4 class="modal-title">Edit Cost Price Formula</h4>
+				<button class="close-modal" data-bs-dismiss="modal"><fa-icon
+						[icon]="['fas', 'window-close']"></fa-icon></button>
+			</div>
+
+			<!--BODY-->
+			<div class="modal-body">
+				<form [formGroup]="updateFormulaVariablesForm">
+					<p>({{selectedFormulaVariables.description}})</p>
+					<div class="form-group">
+						<label for="box_Factor" class="form-label modal-form-label bold">Box Factor:</label>
+						<input id="box_Factor" type="number" class="form-control modal-form-input modal-form-text" name="box_Factor"
+							min="0" step="1" formControlName="box_Factor" required>
+							<!--Validation-->
+							<div *ngIf="(boxFactor?.dirty || boxFactor?.touched || submitClicked) && boxFactor?.errors?.['required']"
+									class="error-msg">
+									This field is required.
+							</div>
+					</div>
+
+					<div class="form-group">
+						<label for="rate_Per_Ton" class="form-label modal-form-label bold">Rate per ton:</label>
+						<input id="rate_Per_Ton" type="number" class="form-control modal-form-input modal-form-text" name="rate_Per_Ton"
+							min="0" step="1" formControlName="rate_Per_Ton" required>
+							<!--Validation-->
+							<div *ngIf="(ratePerTon?.dirty || ratePerTon?.touched || submitClicked) && ratePerTon?.errors?.['required']"
+									class="error-msg">
+									This field is required.
+							</div>
+					</div>
+
+					<div class="form-submit-div">
+						<button class="btn btn-create modal-form-submit" (click)="updateCostPriceFormulaVariables()">Save</button>
+					</div>
+
+				</form>
+			</div>
+
+		</div>
+	</div>
+</div>

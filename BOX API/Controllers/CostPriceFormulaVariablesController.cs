@@ -27,7 +27,7 @@ namespace BOX.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
+                return StatusCode(500, "Internal Server Error. Please contact B.O.X support services.");
             }
         }
 
@@ -99,7 +99,7 @@ namespace BOX.Controllers
             try
             {
                 var existingCPFV = await _repository.GetFormulaVariablesAsync(formulaId);
-                if (existingCPFV == null) return NotFound($"The Formula variables do not exist on the BOX System");
+                if (existingCPFV == null) return NotFound($"The Formula variables do not exist on the B.O.X System");
 
                 _repository.Delete(existingCPFV);
 

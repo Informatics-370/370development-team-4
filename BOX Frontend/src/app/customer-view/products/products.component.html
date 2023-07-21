@@ -11,16 +11,28 @@
   </ul>
 
 <div class="row">
-    <div class="col-md-3 col-sm-12 all-categories-menu">
-        <app-categories-menu></app-categories-menu>
-    </div>
-    
-    <!--PAGE CONTENT-->
-    <div class="col-md-9 col-sm-12 p-2">
-        <h3 class="p-3" style="color: black;">Cartons</h3>
-        <!--PRODUCTS-->
-        <div id="product-cards" class="row">
-            <p *ngIf="loading">Loading products...</p>
-        </div>
-    </div>
+	<div class="col-md-3 col-sm-12 all-categories-menu">
+		<app-categories-menu></app-categories-menu>
+	</div>
+	<!--PAGE CONTENT-->
+	<div class="col-md-9 col-sm-12 p-2">
+		<h3 class="p-3" style="color: black;">{{categoryDescription}}</h3>
+
+		<div id="sort-dropdown" class="form-inline container">
+			<select id="sort" [(ngModel)]="sortString" (change)="displayProducts()" name="sort" 
+				class="form-select modal-form-input modal-form-text col-md-3 col-sm-8">
+				<option value="default">Default sorting</option>
+				<option value="low">Price: low to high</option>
+				<option value="high">Price: high to low</option>
+				<option value="latest">Latest</option>
+				<option value="a-z">Ascending</option>
+				<option value="z-a">Descending</option>
+			</select>
+		</div>
+
+		<!--PRODUCTS-->
+		<div id="product-cards" class="row">
+			<p *ngIf="loading" class="center-text">Loading products...</p>
+		</div>
+	</div>
 </div>

@@ -48,7 +48,7 @@
     </div>
     <!--Right Side-->
     <div class="col-md-9">
-        <h3 class="p-3" style="color: black;">Refund Reasons</h3>
+        <h3 class="p-3" style="color: black;">Return Reasons</h3>
         <!--Search bar-->
         <div id="searchbar" >
             <input (keyup)="searchReasons($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Incorrect purchase" />
@@ -56,30 +56,30 @@
         </div>
 
         <hr class="hr hr-blurry m-3" />
-        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addReason">Create Refund Reason</button>
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addReason">Create Return Reason</button>
         <table class="table">
             <thead>
                 <tr>
                     <th style="width: 110px;" scope="col"></th>
-                    <th scope="col">Refund Reason</th>
+                    <th scope="col">Return Reason</th>
                 </tr>
             </thead>
             <tbody>                
                 <!--Error message if there's no reasons in the DB-->
                 <tr *ngIf="reasonCount==0">
-                    <td colspan="2">No customer refund reasons found. Please add a new reason to the system.</td>
+                    <td colspan="2">No customer return reasons found. Please add a new reason to the system.</td>
                 </tr>
                 <!--Loading message while data is still being retrieved from the DB-->
                 <tr *ngIf="loading">
-                    <td colspan="2">Please wait while we load all refund reasons...</td>
+                    <td colspan="2">Please wait while we load all return reasons...</td>
                 </tr>
                 <!--Reason data from API-->
                 <tr *ngFor="let reason of filteredReasons">
                     <td>
-                        <button title="Delete this customer refund reason" class="CRUD-icon" (click)="openDeleteModal(reason.customerRefundReasonID)">
+                        <button title="Delete this customer return reason" class="CRUD-icon" (click)="openDeleteModal(reason.customerRefundReasonID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button title="Update this customer refund reason" class="CRUD-icon" (click)="openUpdateModal(reason.customerRefundReasonID)" >
+                        <button title="Update this customer return reason" class="CRUD-icon" (click)="openUpdateModal(reason.customerRefundReasonID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
@@ -100,7 +100,7 @@
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Create New Refund Reason</h4>
+          <h4 class="modal-title">Create New Return Reason</h4>
           <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
@@ -108,7 +108,7 @@
         <div class="modal-body">
           <form [formGroup]="addReasonForm">
             <div class="form-group">
-                <label for="description" class="form-label modal-form-label bold">Refund Reason:</label>
+                <label for="description" class="form-label modal-form-label bold">Return Reason:</label>
                 <input id="description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. Product was damaged on arrival" name="description" required>
             </div>
             <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
@@ -118,7 +118,7 @@
             </div>
 
             <div class="form-submit-div">
-                <button class="btn btn-create modal-form-submit" (click)="addReason()">Add New Refund Reason</button>
+                <button class="btn btn-create modal-form-submit" (click)="addReason()">Add New Return Reason</button>
             </div>
             
           </form>
@@ -135,7 +135,7 @@
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Delete Refund Reason</h4>
+          <h4 class="modal-title">Delete Return Reason</h4>
           <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
@@ -160,7 +160,7 @@
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Edit Refund Reason</h4>
+          <h4 class="modal-title">Edit Return Reason</h4>
           <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
@@ -168,7 +168,7 @@
         <div class="modal-body">
           <form [formGroup]="updateReasonForm">
             <div class="form-group">
-                <label for="description" class="form-label modal-form-label bold">Refund Reason:</label>
+                <label for="description" class="form-label modal-form-label bold">Return Reason:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="description" required>
             </div>
             <!--Display validation error message-->

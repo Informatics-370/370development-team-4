@@ -8,9 +8,9 @@ namespace BOX.Models
   public class Estimate_Line
 
   {
-		[Key] public int EstimateLineID { get; set; }
+	[Key] public int EstimateLineID { get; set; }
 
-		[ForeignKey("Customer")]
+	[ForeignKey("Customer")]
     [Column(Order = 0)]
     public int CustomerID { get; set; }
     public virtual Customer Customer { get; set; }
@@ -19,11 +19,6 @@ namespace BOX.Models
     [Column(Order = 1)]
     public int EstimateID { get; set; }
     public virtual Estimate Estimate { get; set; }
-
-    [ForeignKey("Admin")]
-    [Column(Order = 3)]
-    public int AdminID { get; set; }
-    public virtual Admin Admin { get; set; }
 
     //Because custom products are not yet working,I've left out the integration of custom products in estimate Line
 
@@ -34,7 +29,7 @@ namespace BOX.Models
     public int FixedProductID { get; set; }
     public virtual Fixed_Product Fixed_Product { get; set; }
 
-   [Required] public decimal Confirmed_Unit_Price { get; set; }
+    public int Quantity { get; set; }
 
     //This is to ensure we retrieve the details in string and integer format when we view Estimate Line:
 

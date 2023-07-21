@@ -1,8 +1,8 @@
 export interface ProductVM {
-    fixedProduct: any;
     itemID: number;
     categoryID: number;
     description: string;
+    price: number;
     productPhotoB64: string;
     sizeStringArray: string[];
 }

@@ -1,8 +1,9 @@
 import { Component, Renderer2 } from '@angular/core';
-import { Route, Router } from '@angular/router';
+import {  ActivatedRoute, Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
+import { CategoryVM } from '../../shared/category-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { take, lastValueFrom } from 'rxjs';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
@@ -25,12 +26,24 @@ export class ProductsComponent {
   productCount = -1; //keep track of how many product items there are in the DB
   items: Item[] = []; //used to store all items
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
+  categories: CategoryVM[] = [];
   loading = true;
 
-  constructor(private dataService: DataService, private router: Router, private renderer: Renderer2) { }
+  //sort and filter
+  sortString = 'default';
+  categoryID: number = -1;
+  categoryDescription = 'Products';
+
+  constructor(private dataService: DataService, private router: Router, private renderer: Renderer2, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.getDataFromDB();
+    //Retrieve the category ID from url
+    this.activatedRoute.paramMap.subscribe(params => {
+      //category with id 2 and description 'single wall' will come as '2-single-wall' so split it into array that is ['2', 'single-wall']
+      let id = params.get('category')?.split('-', 1);      
+      if (id) this.categoryID = parseInt(id[0]);
+    });
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -39,12 +52,14 @@ export class ProductsComponent {
       //turn Observables that retrieve data from DB into promises
       const getItemsPromise = lastValueFrom(this.dataService.GetItems().pipe(take(1)));
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+      const getCategoriesPromise = lastValueFrom(this.dataService.GetCategories().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing. However, the console logs are executing in order, which raises questions.
       But that could just be because they're outside the Promise.all. IDC!!!!! I'm tired of trying to find alternatives for this. 
       And data is being retrieved faster that how I had it work before so I'm moving on with my life*/
-      const [allItems, fixedProducts] = await Promise.all([
+      const [allCategories, allItems, fixedProducts] = await Promise.all([
+        getCategoriesPromise,
         getItemsPromise,
         getProductsPromise
       ]);
@@ -52,6 +67,7 @@ export class ProductsComponent {
       //put results from DB in global arrays
       this.items = allItems;
       this.fixedProducts = fixedProducts;
+      this.categories = allCategories;
 
       this.populateProductList();
     } catch (error) {
@@ -65,17 +81,21 @@ export class ProductsComponent {
     this.items.forEach(item => {
       let prodVM: ProductVM;
       //get product photo to use with product item because items don't have photos, products do.
-      let foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID);
+      let foundProd: FixedProductVM | undefined;
+      
+      foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID && prod.productPhotoB64 != '');
+
+      if (!foundProd) { foundProd = this.fixedProducts.find(prod => prod.itemID == item.itemID); }
 
       //put item and product photo info in 1 VM object
       if (foundProd) { //prevent users from trying to view product details of product items for which there are no fixed products
         prodVM = {
-          fixedProduct:'',//I added this line because without it, the code failed to compile: Kuziwa
           itemID: item.itemID,
           categoryID: item.categoryID,
           description: item.description,
           productPhotoB64: foundProd.productPhotoB64,
-          sizeStringArray: []
+          sizeStringArray: [],
+          price: foundProd.price
         }
         this.filteredProductVM.push(prodVM); //populate list that we'll use to display products to the user
       }
@@ -91,9 +111,57 @@ export class ProductsComponent {
   cartIcon = faShoppingCart;
 
   //used to display products to user; can filter if necessary; will add filtering later
-  displayProducts(categoryID?: number, sortString?: string) {
+  displayProducts() {
     let productCardsContainer = document.getElementById('product-cards') as HTMLElement;
     productCardsContainer.innerHTML = '';
+
+    //filter by product category
+    if (this.categoryID != -1) {
+      this.filteredProductVM = this.allProductVM.filter(prodToCheck => prodToCheck.categoryID == this.categoryID);
+      console.log('Filtered: ', this.filteredProductVM, 'All: ', this.allProductVM);
+    }
+
+    //sort by sort string
+    if (this.sortString == 'low') { //sort by price from low to high
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        return currentProd.price - nextProd.price
+      });
+    }
+    else if (this.sortString == 'high') { //sort by price from high to low
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        return nextProd.price - currentProd.price
+      });
+    }
+    else if (this.sortString == 'latest') { //sort by product item ID; last item ID is most recently added item
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        return nextProd.itemID - currentProd.itemID
+      });
+    }
+    else if (this.sortString == 'a-z') { //sort ascending
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        if (currentProd.description.toLocaleLowerCase() < nextProd.description.toLocaleLowerCase()) { return -1; }
+        if (currentProd.description.toLocaleLowerCase() > nextProd.description.toLocaleLowerCase()) { return 1; }
+        return 0;
+      });
+    }
+    else if (this.sortString == 'z-a') { //sort descending
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        if (currentProd.description.toLocaleLowerCase() > nextProd.description.toLocaleLowerCase()) { return -1; }
+        if (currentProd.description.toLocaleLowerCase() < nextProd.description.toLocaleLowerCase()) { return 1; }
+        return 0;
+      });
+    }
+    else if (this.sortString == 'default') { //default sort is sorted by item ID
+      console.log('About to sort by: ', this.sortString);
+      this.filteredProductVM.sort((currentProd, nextProd) => {
+        return currentProd.itemID - nextProd.itemID
+      });
+    }    
 
     this.filteredProductVM.forEach(prod => {
       //create card dynamically
@@ -107,7 +175,9 @@ export class ProductsComponent {
       this.renderer.addClass(card, 'product-card');
       this.renderer.addClass(card, 'hover-animation');
       this.renderer.setStyle(card, 'border', '0.5px solid rgba(219, 219, 219, 0.25)');
-      this.renderer.setStyle(card, 'box-shadow', '0 7px 7px rgba(0, 0, 0, 0.2)');// Kuziwa: I added this line to give the card boxes a shadow. Please feel free to change the padding and colour of the shadow.
+      //this.renderer.setStyle(card, 'box-shadow', '0 7px 7px rgba(0, 0, 0, 0.2)');
+      // Kuziwa: I added this line to give the card boxes a shadow. Please feel free to change the padding and colour of the shadow.
+      //Charis: They already have a shadow; it's more pronounced when you hover over the card but we can make it more visible even when you aren't hovering
 
       const cardImgTop = this.renderer.createElement('div');
       this.renderer.addClass(cardImgTop, 'card-img-top');
@@ -177,6 +247,8 @@ export class ProductsComponent {
   */
 
   redirectToProductDetails(itemID: number, itemDescription: string) {
-    this.router.navigate(['product-details', itemID, itemDescription.replaceAll(' ', '-')]);
+    //url is expecting product with id 2 and description 'product description' to be '2-product-description', so combine string into that
+    let urlParameter = itemID + '-' + itemDescription.replaceAll(' ', '-');
+    this.router.navigate(['product-details', urlParameter]);
   }
 }
