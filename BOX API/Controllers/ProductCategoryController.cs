@@ -1,7 +1,8 @@
-﻿    using BOX.Models;
+    using BOX.Models;
     using BOX.ViewModel;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using Microsoft.EntityFrameworkCore;
 
     namespace BOX.Controllers
     {
@@ -25,7 +26,33 @@
                 try
                 {
                     var results = await _repository.GetAllCategoriesAsync();
-                    return Ok(results);
+                    List<CategoryViewModel> categoryVMs = new List<CategoryViewModel>();
+                    foreach (var cat in results)
+                    {
+                        //get size variables
+                        var categorySizeVariable = await _repository.GetCategorySizeVariablesAsync(cat.CategoryID);
+                        if (categorySizeVariable == null) return NotFound("Product category does not exist on the system");
+
+                        var sizeVariable = await _repository.GetSizeVariableAsync(categorySizeVariable.SizeVariablesID);
+                        if (sizeVariable == null) { return NotFound("Size variables do not exist on the system"); }
+                        else
+                        {
+                            CategoryViewModel catVM = new CategoryViewModel()
+                            {
+                                categoryID = cat.CategoryID,
+                                categoryDescription = cat.Description,
+                                width = sizeVariable.Width,
+                                height = sizeVariable.Height,
+                                weight = sizeVariable.Weight,
+                                length = sizeVariable.Length,
+                                volume = sizeVariable.Volume
+                            };
+
+                            categoryVMs.Add(catVM);
+                        }
+                    }
+
+                    return Ok(categoryVMs);
                 }
                 catch (Exception)
                 {
@@ -46,10 +73,11 @@
                     if (categorySizeVariable == null) return NotFound("Product category does not exist on the system");
 
                     var sizeVariable = await _repository.GetSizeVariableAsync(categorySizeVariable.SizeVariablesID);
-                    if (sizeVariable == null) return NotFound("Size variables do not exist on the system");
+                    if (sizeVariable == null) { return NotFound("Size variables do not exist on the system"); }
 
                     CategoryViewModel catVM = new CategoryViewModel()
                     {
+                        categoryID = categoryId,
                         categoryDescription = category.Description,
                         width = sizeVariable.Width,
                         height = sizeVariable.Height,
@@ -78,6 +106,7 @@
                     Length = catVM.length,
                     Weight = catVM.weight,
                     Volume = catVM.volume
+
                 };
 
                 try

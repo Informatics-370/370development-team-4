@@ -20,6 +20,16 @@ import { VatComponent } from './vat/vat.component';
 import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
+import { FixedProductComponent } from './fixed-product/fixed-product.component';
+import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
+import { RawMaterialComponent } from './raw-material/raw-material.component';
+import { ProductsComponent } from './customer-view/products/products.component';
+import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
+import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
+import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
+import { EstimateLineComponent } from './estimate-line/estimate-line.component';
+import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
+import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 
 @NgModule({
   declarations: [ 
@@ -32,11 +42,21 @@ import { StartupDivComponent } from './startup-div/startup-div.component';
         RefundReasonComponent,
         WriteOffReasonComponent,
         SizeUnitsComponent,
-        VatComponent
+        VatComponent,
         ProductCategoryComponent,
         MenuComponent,
         SupplierComponent,
-        StartupDivComponent
+        StartupDivComponent,
+        FixedProductComponent,
+        EstimateDurationComponent,
+        RawMaterialComponent,
+        ProductsComponent,
+        CategoriesMenuComponent,
+        ProductDetailsComponent,
+        CartPageComponent,
+        EstimateLineComponent,
+        EstimatePageComponent,
+        CostPriceFormulaComponent
   ],
   imports: [
     BrowserModule,

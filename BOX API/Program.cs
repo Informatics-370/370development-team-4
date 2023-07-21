@@ -17,13 +17,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(defaultPolicy =>
-    {
-        defaultPolicy.WithOrigins("http://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
+  options.AddDefaultPolicy(defaultPolicy =>
+  {
+    defaultPolicy.WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+  });
 });
 
 
@@ -36,16 +36,16 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Description = "Add Bearer Token",
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        Scheme = "bearer"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+  c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+  {
+    In = ParameterLocation.Header,
+    Description = "Add Bearer Token",
+    Name = "Authorization",
+    Type = SecuritySchemeType.Http,
+    BearerFormat = "JWT",
+    Scheme = "bearer"
+  });
+  c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
@@ -95,18 +95,32 @@ builder.Services.AddScoped<IRepository, Repository>();
 
 var app = builder.Build();
 
+// Data Seeding
+using (var scope = app.Services.CreateScope())
+{
+  var services = scope.ServiceProvider;
+  var dbContext = services.GetRequiredService<AppDbContext>();
+  //lINE 85-86 Is for seeding data, it needs some tweaks, it will be fully implemented at a later stage
+  //var dbSeeder = new DBSeeder(dbContext); 
+  //dbSeeder.SeedData(dbContext);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+  app.UseSwagger();
+  app.UseSwaggerUI();
 }
+
+app.UseRouting(); // Add this line to enable routing
+
 app.UseCors();
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 app.UseAuthentication();
-
-app.MapControllers();
+app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+  endpoints.MapControllers();
+});
 
 app.Run();

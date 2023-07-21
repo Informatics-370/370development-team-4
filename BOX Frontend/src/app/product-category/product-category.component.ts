@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.services';
-import { Category } from '../shared/category';
 import { CategoryVM } from '../shared/category-vm';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 declare var $: any; 
@@ -11,8 +10,8 @@ declare var $: any;
   styleUrls: ['./product-category.component.css']
 })
 export class ProductCategoryComponent {
-  categories: Category[] = []; //used to get all categories
-  filteredCategories: Category[] = []; //used to hold all the categories that will be displayed to the user
+  categories: CategoryVM[] = []; //used to get all categories
+  filteredCategories: CategoryVM[] = []; //used to hold all the categories that will be displayed to the user
   specificCategory!: CategoryVM; //used to get a specific category
   categoryCount: number = -1; //keep track of how many categories there are in the DB
   //forms
@@ -26,6 +25,7 @@ export class ProductCategoryComponent {
   submitClicked = false; //keep track of when submit button is clicked
   loading = true; //show loading message while data loads
   duplicateFound = false; //boolean to display error message if user tries to create a duplicate category
+  duplicateFoundUpdate = false; //used to display error message if user tries to update category to have duplicate description
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addCategoryForm = this.formBuilder.group({
@@ -72,7 +72,7 @@ export class ProductCategoryComponent {
     this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredCategories = []; //clear array
     for (let i = 0; i < this.categories.length; i++) {
-      let notCaseSensitive: string = this.categories[i].description.toLowerCase();
+      let notCaseSensitive: string = this.categories[i].categoryDescription.toLowerCase();
       if (notCaseSensitive.includes(this.searchTerm.toLowerCase()))
       {
         this.filteredCategories.push(this.categories[i]);
@@ -88,6 +88,7 @@ export class ProductCategoryComponent {
     this.submitClicked = true;
     if (this.addCategoryForm.valid) {
       let newCategory : CategoryVM = this.addCategoryForm.value;
+      newCategory.categoryID = 0;
 
       //prevent user from creating duplicate categories (same description)
       if (this.checkDuplicateDescription(newCategory.categoryDescription)) { //if user is entering duplicate category
@@ -112,11 +113,12 @@ export class ProductCategoryComponent {
     }
   }
   
-  //method to determine if a user tried to enter a new category with same description
-  checkDuplicateDescription(description: string): boolean {
+  //method to determine if a user tried to enter a category with same description
+  checkDuplicateDescription(description: string, ID?: number): boolean {
     description = description.trim().toLowerCase(); //remove trailing white space so users can't cheat by adding space to string
-    for (let i = 0; i < this.categories.length; i++) {      
-      if (this.categories[i].description.toLowerCase() == description) {
+    for (let i = 0; i < this.categories.length; i++) {
+      //if description matches but they're updating a category, don't count it as a duplicate if they kept the category description the same
+      if (this.categories[i].categoryDescription.toLowerCase() == description && ID != this.categories[i].categoryID) {         
         return true;
       }
     }
@@ -253,28 +255,39 @@ export class ProductCategoryComponent {
 
       //get form data
       const formValues = this.updateCategoryForm.value;
-      let updatedCategory : CategoryVM = {
-        categoryDescription: formValues.uCategoryDescription,
-        width: formValues.uWidth,
-        length: formValues.uLength,
-        height: formValues.uHeight,
-        weight: formValues.uWeight,
-        volume: formValues.uVolume
-      };
 
-      //update category
-      this.dataService.UpdateCategory(categoryId, updatedCategory).subscribe(
-        (result: any) => {
-          console.log('Updated category', result);
-          this.getCategories(); //refresh category list
-          this.submitClicked = false;
-        },
-        (error) => {
-          console.error('Error updating category:', error);
-        }
-      );
-
-      this.closeUpdateModal();
+      //prevent user from updating category to have duplicate descriptions
+      if (this.checkDuplicateDescription(formValues.uCategoryDescription, categoryId)) { //if user is entering duplicate category
+        this.duplicateFoundUpdate = true;
+        setTimeout(() => {
+          this.duplicateFoundUpdate = false;
+        }, 8000);
+      }
+      else {
+        let updatedCategory : CategoryVM = {
+          categoryID: 0,
+          categoryDescription: formValues.uCategoryDescription,
+          width: formValues.uWidth,
+          length: formValues.uLength,
+          height: formValues.uHeight,
+          weight: formValues.uWeight,
+          volume: formValues.uVolume
+        };
+  
+        //update category
+        this.dataService.UpdateCategory(categoryId, updatedCategory).subscribe(
+          (result: any) => {
+            console.log('Updated category', result);
+            this.getCategories(); //refresh category list
+            this.submitClicked = false;
+            //close modal only if updated successfully
+            this.closeUpdateModal();
+          },
+          (error) => {
+            console.error('Error updating category:', error);
+          }
+        );
+      }      
     }    
   }
 
