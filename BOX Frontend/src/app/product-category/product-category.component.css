@@ -26,26 +26,35 @@
 }
 
 #search, #search:focus {
-    padding: 5px 10px;
+    padding: 5px 0;
     padding-right: 40px;
+    padding-left: 15px;
     outline: none;
-    border: 2px solid #D6AD60;
-    max-width: 100%;
+    border: 1px solid rgba(55, 52, 53, 0.8);
+    width: 100%;
+    border-radius: 30px;
+    margin-bottom: 0;
 }
 
-#search::placeholder { color: #978154;}
+#search::placeholder {
+    color: grey;
+}
 
 #search-icon {
     position: absolute;
     right: 15px;
-    bottom: 11px;
-    color: #a78444;
+    bottom: -10px;
+    color: #373435;
 }
 
 /*MODAL STYLES*/
-.modal-title { color: black; font-weight: normal; }
+.modal-title {
+    color: black;
+    font-weight: normal;
+}
 
-.close-modal, .CRUD-icon {
+.close-modal,
+.CRUD-icon {
     background-color: white;
     border: none;
     margin: 0;
@@ -53,20 +62,26 @@
     max-width: 20px;
 }
 
-.CRUD-icon {    
+.CRUD-icon {
     max-width: fit-content;
     display: inline;
 }
 
-.modal-form-label { color: black; }
-
-.modal-form-text, .modal-form-text:hover, .modal-form-text:focus {
-    border-color: #41A0B5;
-    border-radius: 5px;
-    box-shadow: none;    
+.modal-form-label {
+    color: black;
 }
 
-.modal-form-input { margin-bottom: 20px; }
+.modal-form-text,
+.modal-form-text:hover,
+.modal-form-text:focus {
+    border-color: #41A0B5;
+    border-radius: 5px;
+    box-shadow: none;
+}
+
+.modal-form-input {
+    margin-bottom: 20px;
+}
 
 .modal-form-submit {
     padding-left: 100px;
@@ -74,11 +89,18 @@
     margin-left: 0;
 }
 
-.form-submit-div { text-align: center; margin-top: 2rem;}
+.form-submit-div {
+    text-align: center;
+    margin-top: 2rem;
+}
 
-.bold { font-weight: 600; }
+.bold {
+    font-weight: 600;
+}
 
-.red-btn { background-color: #E33131;}
+.red-btn {
+    background-color: #E33131;
+}
 
 .error-msg {
     font-size: 70%;
@@ -87,14 +109,20 @@
     color: #E33131;
 }
 
-.red-btn:hover {background-color: #bc2a2a; }
+.red-btn:hover {
+    background-color: #bc2a2a;
+}
 
-.required-field { color: red; font-weight: bold; }
+.required-field {
+    color: red;
+    font-weight: bold;
+}
+
 .fa-icon-large {
     color: white;
     font-size: 75px;
 }
 
 .menu-card {
-    box-shadow:inset;
+    box-shadow: inset;
 }

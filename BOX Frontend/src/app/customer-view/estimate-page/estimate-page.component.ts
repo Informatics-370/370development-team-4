@@ -46,8 +46,8 @@ export class EstimatePageComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
-    let index = Math.floor((Math.random() * 5));
+    const customerIDs = [3, 4, 5, 7, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
+    let index = Math.floor((Math.random() * 7));
     this.customer.ID = customerIDs[index];
     this.getDataFromDB();
   }

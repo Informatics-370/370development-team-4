@@ -1,0 +1,12 @@
+@import "../dashboard/dashboard.component.css";
+@import "../product-category/product-category.component.css";
+
+.btn-edit-price {
+    padding: 1px 12px;
+    margin: 0;
+}
+
+.price-col {
+    text-align: center;
+    width: 100px;
+}

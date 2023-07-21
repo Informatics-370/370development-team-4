@@ -1,1 +1,52 @@
-<p>estimate-line works!</p>
+<div class="row" style="max-width: 100%;">
+	<!--Menu bar-->
+	<div class="col-md-3">
+		<div class="app-menu"></div>
+	</div>
+	<!--PAGE CONTENT-->
+	<div class="col-md-9 page-content">
+		<h3 class="p-3" style="color: black;">Customer Estimates</h3>
+		<!--Search bar-->
+		<div id="searchbar">
+			<input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+				placeholder="e.g. Reviewed" />
+			<fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+		</div>
+
+		<hr class="hr hr-blurry m-3" />
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="width: 120px;" scope="col">Estimate ID</th>
+					<th scope="col">Customer</th>
+					<th scope="col">Status</th>
+					<th scope="col">Price</th>
+					<th class="price-col" scope="col">Edit Price</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!--Messages to the user-->
+				<tr>
+					<!--Message if there's no estimates in the DB-->
+					<td *ngIf="estimateCount == 0" colspan="5">No customers have requested quotes.</td>
+					<!--Loading message while data is still being retrieved from the DB-->
+					<td *ngIf="loading" colspan="5">Please wait while we load all estimates...</td>
+					<!--Error message-->
+					<td *ngIf="error" colspan="5">Error loading data from the database. Please contact support services.</td>
+				</tr>
+				<!--Category data from API-->
+				<tr *ngFor="let estimate of filteredEstimates">
+					<td class="text-center">EST{{estimate.estimateID}}</td>
+					<td>John LongSurname</td>
+					<td>{{estimate.estimateStatusDescription}}</td>
+					<td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
+					<td class="text-center">
+						<button title="Edit this estimate" class="btn btn-create btn-edit-price">
+							Edit
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
