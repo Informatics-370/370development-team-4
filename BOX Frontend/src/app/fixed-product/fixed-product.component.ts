@@ -202,9 +202,9 @@ export class FixedProductComponent {
     for (let i = 0; i < this.tableProducts.length; i++) {
       //concatenate all the product info in one variable so user can search using any of them even if they aren't displayed in the table
       let prodInformation: string = String(this.tableProducts[i].categoryDescription +
-        this.tableProducts[i].itemDescription +
-        this.tableProducts[i].sizeString +
-        this.tableProducts[i].description +
+        this.tableProducts[i].itemDescription + ' ' +
+        this.tableProducts[i].sizeString + ' ' +
+        this.tableProducts[i].description + ' ' +
         this.tableProducts[i].price).toLowerCase();
 
       if (prodInformation.includes(this.searchTerm.toLowerCase())) {

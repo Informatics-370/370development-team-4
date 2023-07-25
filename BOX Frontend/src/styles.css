@@ -1,8 +1,8 @@
 @import "node_modules/bootstrap/dist/css/bootstrap.css";
 
-/* .page-content {
+.page-content {
   margin-left: 260px;
-} */
+}
 
 /*If I don't declare these classes globally, they won't be applied*/
 .remove-pic {

@@ -111,7 +111,7 @@ export class EstimatePageComponent implements OnInit {
       });
 
       let estimate : EstimateClass = new EstimateClass(est.estimateID, est.estimateStatusID, est.estimateStatusDescription, 
-        est.confirmedTotal, est.confirmedTotal, estimateLines)
+        this.getVATInclusive(est.confirmedTotal), this.getVATInclusive(est.confirmedTotal), estimateLines)
       this.filteredEstimates.push(estimate);
     });
     
@@ -228,7 +228,7 @@ export class EstimateClass {
     this.statusID = statusID;
     this.statusDescription = statusDescription;
     this.confirmedTotal = confirmedTotal;
-    this.negotiatedTotal = negotiatedTotal;
+    this.negotiatedTotal = negotiatedTotal; //includes VAT
     this.estimate_Lines = estimateLines;
     this.totalDiscount = this.getDiscount();
   }

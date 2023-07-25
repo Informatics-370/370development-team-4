@@ -30,6 +30,7 @@ import { CartPageComponent } from './customer-view/cart-page/cart-page.component
 import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
+import { EstimateDetailsComponent } from './estimate-details/estimate-details.component';
 
 @NgModule({
   declarations: [ 
@@ -56,7 +57,8 @@ import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formu
         CartPageComponent,
         EstimateLineComponent,
         EstimatePageComponent,
-        CostPriceFormulaComponent
+        CostPriceFormulaComponent,
+        EstimateDetailsComponent
   ],
   imports: [
     BrowserModule,

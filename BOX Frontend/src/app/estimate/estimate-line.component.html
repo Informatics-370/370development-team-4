@@ -9,7 +9,7 @@
 		<!--Search bar-->
 		<div id="searchbar">
 			<input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
-				placeholder="e.g. Reviewed" />
+				placeholder="e.g. Search by ID, customer, status, price" (keyup)="searchEstimates($event)" (change)="searchEstimates($event)" />
 			<fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
 		</div>
 
@@ -39,9 +39,9 @@
 					<td class="text-center">EST{{estimate.estimateID}}</td>
 					<td>John LongSurname</td>
 					<td>{{estimate.estimateStatusDescription}}</td>
-					<td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
+					<td>{{getVATInclusiveAmount(estimate.confirmedTotal) | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
 					<td class="text-center">
-						<button title="Edit this estimate" class="btn btn-create btn-edit-price">
+						<button title="Edit this estimate" class="btn btn-create btn-edit-price" (click)="openUpdateEstimateModal(estimate)">
 							Edit
 						</button>
 					</td>
@@ -49,4 +49,99 @@
 			</tbody>
 		</table>
 	</div>
+</div>
+
+<!--EDIT PRICE MODAL-->
+<div class="modal fade" id="editPrice" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content" *ngIf="selectedEstimate != null">
+
+            <!--HEADER-->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Price</h4>
+                <button class="close-modal" data-bs-dismiss="modal">
+                    <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+                </button>
+            </div>
+
+            <!--BODY-->
+            <div class="modal-body">
+				<h5>John LongSurname</h5>
+				Estimate #: EST{{selectedEstimate.estimateID}}
+				Status: {{selectedEstimate.estimateStatusDescription}}
+				Date: 23 July 2023
+
+				<table class="table table-hover">
+					<thead>
+					  <tr>
+						<th scope="col">Product</th>
+						<th scope="col">Price</th>
+						<th scope="col">Qty</th>
+						<th scope="col">Total</th>		  
+					  </tr>
+					</thead>
+					<tbody>		  
+					  <tr *ngFor="let estLine of selectedEstimate.estimate_Lines">
+						<td>{{estLine.fixedProductDescription}}</td>
+						<td>{{estLine.fixedProductUnitPrice}}</td>
+						<td>{{estLine.quantity}}</td>
+						<td>{{estLine.fixedProductUnitPrice * estLine.quantity}}</td>
+					  <tr>
+						<td colspan="3">
+						  Total discount given: 
+						</td>
+					  </tr>
+					  <tr>
+						<td colspan="3">
+						  <b>Final Estimated Price After Discount: R{{selectedEstimate.confirmedTotal}}</b>
+						</td>
+					  </tr>
+		  
+					</tbody>
+				  </table>
+
+                <form >
+                    <div class="form-group">
+                        <label for="price" class="form-label modal-form-label bold">Price:</label>
+                        <input id="price" type="number"  class="form-control modal-form-input modal-form-text" 
+                            placeholder="0.00" name="price" required min="0" step="0.01">
+                    </div>
+
+                    <div class="form-submit-div">
+                        <button class="btn btn-create modal-form-submit" data-bs-toggle="modal" data-bs-target="#confirmEdit">Save changes</button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--CONFIRM MODAL-->
+<div class="modal fade" id="confirmEdit" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" *ngIf="selectedEstimate != null">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Confirm</h4>
+          <button class="close-modal" (click)="openUpdateEstimateModal(selectedEstimate)"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <p class="modal-form-input">Are you sure you want to grant John LongSurname an additional discount of 
+			{{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}} on the original total of 
+			{{selectedEstimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}? The customer will be notified via email immediately.
+		</p>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer justify-content-evenly">
+            <button (click)="openUpdateEstimateModal(selectedEstimate)" class="btn btn-create red-btn modal-form-submit">No</button>
+            <button class="btn btn-create modal-form-submit"  >Yes</button>
+        </div>
+      </div>
+    </div>
 </div>
