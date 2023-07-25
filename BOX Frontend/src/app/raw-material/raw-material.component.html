@@ -66,7 +66,7 @@
             <tbody>                
                 <!--Error message if there's no items in the DB-->
                 <tr *ngIf="rawmaterialCount==0">
-                    <td colspan="2">No raw materials found. Please add a new reason to the system.</td>
+                    <td colspan="2">No raw materials found. Please add a new raw material to the system.</td>
                 </tr>
                 <!--Loading message while data is still being retrieved from the DB-->
                 <tr *ngIf="loading">
@@ -74,11 +74,14 @@
                 </tr>
                 <!--Item data from API-->
                 <tr *ngFor="let material of filteredRawMaterials">
-                    <td>
-                        <button class="CRUD-icon" (click)="openDeleteModal(material.rawmaterialID)">
+                    <td style="text-align: center;">
+                        <button title="View raw material details" class="CRUD-icon" (click)="openViewRawMaterial(material)" >
+                            <fa-icon [icon]="['fas', 'circle-info']"></fa-icon>
+                        </button>
+                        <button title="Delete this raw material" class="CRUD-icon" (click)="openDeleteModal(material.rawMaterialID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(material.rawmaterialID)" >
+                        <button title="Update this raw material" class="CRUD-icon" (click)="openUpdateModal(material.rawMaterialID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
@@ -93,6 +96,38 @@
 
 
 <!--CRUD MODALS-->
+<!--VIEW RAW MATERIAL DETAILS MODAL-->
+<div class="modal fade" id="viewRawMaterial" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" *ngIf="specificrawmaterial != null">
+
+            <!--HEADER-->
+            <div class="modal-header">
+                <h4 id="modal-title" class="modal-title">{{specificrawmaterial.description}}</h4>
+                <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+            </div>
+
+            <!--BODY-->
+            <div class="modal-body">
+                <div class="display-photo">
+                    <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{specificrawmaterial.qrCodeBytesB64}}" alt={{specificrawmaterial.description}} /><br />
+                    <button class="btn btn-create download" (click)="downloadQRCodeAsImage()">
+                        <fa-icon style="margin-right: 0.5rem;" [icon]="['fas', 'download']"></fa-icon>Download QR code
+                    </button>
+                </div>
+                <div style="text-align: center;">
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer justify-content-evenly">
+                <button class="btn btn-create modal-form-submit" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <!--ADD RAW MATERIAL MODAL-->
 <div class="modal fade" id="addRawMaterial" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -109,12 +144,16 @@
           <form [formGroup]="addRawMaterialForm">
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Raw Material:</label>
-                <input id="description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. brown sheets" name="description" required>
-            </div>
-            <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
-            The message is just for user experience-->
-            <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
-                This field is required.
+                <input id="description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" 
+                    placeholder="e.g. brown sheets" name="description" maxlength="70" required>
+                    <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
+                    The message is just for user experience-->
+                    <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
+                        This field is required.
+                    </div>                    
+                    <div *ngIf="duplicateFound && submitClicked" class="error-msg">
+                        A raw material with this description already exists.
+                    </div>
             </div>
 
             <div class="form-submit-div">
@@ -170,10 +209,13 @@
             <div class="form-group">
                 <label for="description" class="form-label modal-form-label bold">Raw Material:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="description" required>
-            </div>
-            <!--Display validation error message-->
-            <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
-                This field is required.
+                <!--Display validation error message-->
+                <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
+                    This field is required.
+                </div>
+                <div *ngIf="duplicateFoundUpdate && submitClicked" class="error-msg">
+                    A raw material with this description already exists.
+                </div>
             </div>
 
             <div class="form-submit-div">

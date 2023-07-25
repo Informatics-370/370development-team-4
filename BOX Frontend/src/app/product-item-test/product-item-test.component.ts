@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
-import { Category } from '../shared/category';
+import { CategoryVM } from '../shared/category-vm';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 declare var $: any; 
 
@@ -17,12 +17,11 @@ export class ProductItemTestComponent {
   filteredItems: Item[] = []; //used to hold all the categories that will be displayed to the user
   specificItem!: Item; //used to get a specific item
   itemCount: number = -1; //keep track of how many items there are in the DB
-  categories: Category[] = []; //used to store all categories
+  categories: CategoryVM[] = []; //used to store all categories
   //forms
   addItemForm: FormGroup;
   updateItemForm: FormGroup;
-  //I need these two variables below just to display a default, disabled option in the caetgory dropdown. Can you imagine?!!
-  isDisabled = true;
+  //I need these two variables below just to display a default, disabled option in the category dropdown. Can you imagine?!!
   public selectedValue = 'NA';
   //modals 
   @ViewChild('deleteModal') deleteModal: any;
@@ -59,6 +58,7 @@ export class ProductItemTestComponent {
       
       this.items = this.filteredItems; //store all the items someplace before I search below
       this.itemCount = this.filteredItems.length; //update the number of items
+      this.loading = false; //stop displaying loading message
 
       console.log('All items array: ', this.filteredItems);
     });
@@ -74,7 +74,6 @@ export class ProductItemTestComponent {
       });
 
       console.log('All categories array: ', this.categories);
-      this.loading = false; //stop displaying loading message
     });
   }  
 
@@ -110,6 +109,7 @@ export class ProductItemTestComponent {
 
           this.getItems(); //refresh item list
           this.addItemForm.reset();
+          this.selectedValue = 'NA'; //reset selected value
           this.submitClicked = false;
           $('#addItem').modal('hide');
         },

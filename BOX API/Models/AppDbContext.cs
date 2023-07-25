@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BOX.Models
 {
@@ -11,22 +12,32 @@ namespace BOX.Models
 			base.OnModelCreating(modelBuilder);
 			//This sets the composite key for the Estimate Line Entity and does the same for the remaining Associative entities
 			modelBuilder.Entity<Estimate_Line>()
-	 .HasKey(e => new { e.CustomerID, e.EstimateID });
+				 .HasKey(e => new { e.CustomerID, e.EstimateID });
 
-			modelBuilder.Entity<Customer_Order_Line>()
-	 .HasKey(e => new { e.CustomerOrderID, e.FixedProductID, e.CustomProductID });
+						modelBuilder.Entity<Customer_Order_Line>()
+				 .HasKey(e => new { e.CustomerOrderID, e.FixedProductID, e.CustomProductID });
 
-			modelBuilder.Entity<Supplier_OrderLine>()
-	 .HasKey(e => new { e.SupplierOrderID, e.FixedProductID, e.RawMaterialID });
+						modelBuilder.Entity<Supplier_OrderLine>()
+				 .HasKey(e => new { e.SupplierOrderID, e.FixedProductID, e.RawMaterialID });
 
-			modelBuilder.Entity<User_Role_Permission>()
-	 .HasKey(e => new { e.RoleId, e.UserPermissionID });
+						modelBuilder.Entity<User_Role_Permission>()
+				 .HasKey(e => new { e.RoleId, e.UserPermissionID });
 
-			modelBuilder.Entity<Category_Size_Variables>()
- .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
-
-		
-		}
+						modelBuilder.Entity<Category_Size_Variables>()
+			 .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
+			
+			//add-migration fix
+            modelBuilder.Entity<IdentityUserLogin<Guid>>().HasNoKey();
+            modelBuilder.Entity<IdentityUserRole<Guid>>().HasNoKey();
+            modelBuilder.Entity<IdentityUserToken<Guid>>().HasNoKey();
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<IdentityRole<Guid>>().ToTable("Roles");
+            modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
+            modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
+            modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
+            modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
+            modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
+        }
 
 		public DbSet<Admin> Admin { get; set; }
 		public DbSet<Audit_Trail> Audit_Trail { get; set; }
@@ -51,6 +62,8 @@ namespace BOX.Models
 		public DbSet<Estimate_Line> Estimate_Line { get; set; }
 
 		public DbSet<Estimate_Status> Estimate_Status { get; set; }
+
+		public DbSet<Fixed_Product> Fixed_Product { get; set; }
 
 		public DbSet<Order_Delivery_Schedule> Order_Delivery_Schedule { get; set; }
 
@@ -95,5 +108,5 @@ namespace BOX.Models
 
 
 
-	}
+    }
 }
