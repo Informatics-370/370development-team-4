@@ -12,7 +12,7 @@ namespace BOX.Models
 			base.OnModelCreating(modelBuilder);
 			//This sets the composite key for the Estimate Line Entity and does the same for the remaining Associative entities
 			modelBuilder.Entity<Estimate_Line>()
-				 .HasKey(e => new { e.CustomerID, e.EstimateID });
+				 .HasKey(e => new { e.CustomerID, e.EstimateID,e.EstimateLineID });
 
 						modelBuilder.Entity<Customer_Order_Line>()
 				 .HasKey(e => new { e.CustomerOrderID, e.FixedProductID, e.CustomProductID });

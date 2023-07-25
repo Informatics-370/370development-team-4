@@ -11,8 +11,13 @@ import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { EstimateDuration } from '../shared/estimate-duration';
+import { SizeVM } from '../shared/size-vm';
+import { Supplier } from '../shared/supplier';
+import { Customer } from '../shared/customer';
+import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
+import { EstimateVM } from '../shared/estimate-vm';
 
-imports:[
+imports: [
   HttpClientModule
 ]
 @Injectable({
@@ -22,50 +27,51 @@ export class DataService {
 
   apiUrl = 'http://localhost:5116/api/'
 
-  httpOptions ={
+  httpOptions = {
     headers: new HttpHeaders({
       ContentType: 'application/json'
     })
   }
 
-  constructor(private httpClient: HttpClient) { 
+  constructor(private httpClient: HttpClient) {
   }
 
-  GetSizes(): Observable<any>{
+  //--------------------------------Size Units------------------------------------//
+
+  GetSizes(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}Size/GetAllSizes`)
-    .pipe(map(result => result))
+      .pipe(map(result => result))
   }
 
-  getSize(sizeId: number): Observable<Size> {
-    return this.httpClient.get<Size>(`${this.apiUrl}Size/GetSize/${sizeId}`)
+  getSize(sizeId: number): Observable<SizeVM> {
+    return this.httpClient.get<SizeVM>(`${this.apiUrl}Size/GetSize/${sizeId}`)
       .pipe(map(result => result));
   }
 
-  AddSize(size: Size): Observable<Size> {
-    return this.httpClient.post<Size>(
-      `${this.apiUrl}Size/AddSize`,
-      size,
+  AddSize(SizeVM: SizeVM): Observable<SizeVM> {
+    return this.httpClient.post<SizeVM>(
+      `${this.apiUrl}Size/AddSizeUnit`,
+      SizeVM,
       this.httpOptions
     );
   }
-  
 
-DeleteSize(sizeId:number):Observable<Size[]>{
-  console.log(sizeId);
-  return this.httpClient.delete<Size[]>(`${this.apiUrl}Size/DeleteSize/${sizeId}`,this.httpOptions)
-}
-EditSize(sizeId: number, size: Size): Observable<Size[]> {
-  return this.httpClient.put<Size[]>(
-    `${this.apiUrl}Size/EditSize/${sizeId}`,
-    size,
-    this.httpOptions
-  );
-}
+  DeleteSize(sizeId: number): Observable<Size[]> {
+    console.log(sizeId);
+    return this.httpClient.delete<Size[]>(`${this.apiUrl}Size/DeleteSize/${sizeId}`, this.httpOptions)
+  }
+  EditSize(sizeId: number, SizeVM: SizeVM): Observable<SizeVM> {
+    return this.httpClient.put<SizeVM>(
+      `${this.apiUrl}Size/EditSize/${sizeId}`,
+      SizeVM,
+      this.httpOptions
+    );
+  }
 
   //------------PRODUCT CATEGORY------------ [Give it its own service?]
   GetCategories(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}ProductCategory/GetAllCategories`)
-    .pipe(map(result => result))
+      .pipe(map(result => result))
   }
 
   GetCategory(categoryId: number): Observable<CategoryVM> {
@@ -85,13 +91,13 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
 
   UpdateCategory(categoryId: number, categoryVM: CategoryVM): Observable<CategoryVM> {
     return this.httpClient.put<CategoryVM>(`${this.apiUrl}ProductCategory/UpdateCategory/${categoryId}`, categoryVM, this.httpOptions);
-    }
+  }
 
-    //------------PRODUCT ITEM------------ [Give it its own service?]
-    GetItems(): Observable<any> {
-        return this.httpClient.get(`${this.apiUrl}ProductItem/GetAllItems`)
-            .pipe(map(result => result))
-    }
+  //------------PRODUCT ITEM------------ [Give it its own service?]
+  GetItems(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}ProductItem/GetAllItems`)
+      .pipe(map(result => result))
+  }
 
   GetItem(itemId: number): Observable<Item> {
     return this.httpClient.get<Item>(`${this.apiUrl}ProductItem/GetItem/${itemId}`)
@@ -104,7 +110,7 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
-  DeleteItem(itemId: number): Observable<any> {    
+  DeleteItem(itemId: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}ProductItem/DeleteItem/${itemId}`, this.httpOptions);
   }
 
@@ -140,7 +146,7 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
   //----------WRITE-OFF REASON---------------
   GetWriteOffReasons(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}WriteOffReason/GetAllWriteOffReasons`)
-    .pipe(map(result => result))
+      .pipe(map(result => result))
   }
 
   GetWriteOffReason(writeoffreasonId: number): Observable<WriteOffReason> {
@@ -154,18 +160,18 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
-  DeleteWriteOffReason(writeoffreasonId: number ):Observable<any> {
+  DeleteWriteOffReason(writeoffreasonId: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}WriteOffReason/DeleteWriteOffReason/${writeoffreasonId}`, this.httpOptions);
   }
 
   UpdateWriteOffReason(writeoffreasonId: number, writeoffreasonmodel: any): Observable<any> {
-   return this.httpClient.put<any>(`${this.apiUrl}WriteOffReason/EditWriteOffReason/${writeoffreasonId}`, writeoffreasonmodel, this.httpOptions);
-  }  
+    return this.httpClient.put<any>(`${this.apiUrl}WriteOffReason/EditWriteOffReason/${writeoffreasonId}`, writeoffreasonmodel, this.httpOptions);
+  }
 
   //------------VAT------------
   GetAllVAT(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}VAT/GetAllVATs`)
-    .pipe(map(result => result))
+      .pipe(map(result => result))
   }
 
   GetVAT(vatId: number): Observable<VAT> {
@@ -179,18 +185,18 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
-  DeleteVAT(vatId: number): Observable<any> {    
+  DeleteVAT(vatId: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}VAT/DeleteVat/${vatId}`, this.httpOptions);
   }
 
   UpdateVAT(vatId: number, updatedVAT: VAT): Observable<any> {
-   return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, updatedVAT, this.httpOptions);
+    return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, updatedVAT, this.httpOptions);
   }
 
   //-------------------------------------------------------FIXED PRODUCT-------------------------------------------------------
   GetAllFixedProducts(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}FixedProduct/GetAllFixedProducts`)
-    .pipe(map(result => result))
+      .pipe(map(result => result))
   }
 
   GetFixedProduct(fixedProductId: number): Observable<FixedProductVM> {
@@ -205,10 +211,10 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
   }
 
   UpdateFixedProduct(fixedProductId: number, fixedProductViewModel: FixedProductVM): Observable<any> {
-   return this.httpClient.put<any>(`${this.apiUrl}FixedProduct/UpdateFixedProduct/${fixedProductId}`, fixedProductViewModel, this.httpOptions);
+    return this.httpClient.put<any>(`${this.apiUrl}FixedProduct/UpdateFixedProduct/${fixedProductId}`, fixedProductViewModel, this.httpOptions);
   }
 
-  DeleteFixedProduct(fixedProductId: number): Observable<any> {    
+  DeleteFixedProduct(fixedProductId: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
   }
 
@@ -229,18 +235,18 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
-  DeleteEstimateDurationn(estimatedurationId: number): Observable<any> {
+  DeleteEstimateDuration(estimatedurationId: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}EstimateDuration/DeleteEstimateDuration/${estimatedurationId}`, this.httpOptions);
   }
 
   UpdateEstimateDuration(estimatedurationId: number, estimatedurationModel: any): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}EstimateDuration/EditEstimateDuration/${estimatedurationId}`, estimatedurationModel, this.httpOptions);
   }
-   
+
   //----------RAW MATERIAL---------------
   GetAllRawMaterials(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}RawMaterials/GetAllRawMaterials`)
-    .pipe(map(result => result))
+      .pipe(map(result => result))
   }
 
   GetRawMaterial(rawmaterialId: number): Observable<any> {
@@ -254,11 +260,79 @@ EditSize(sizeId: number, size: Size): Observable<Size[]> {
     );
   }
 
-  DeleteRawMaterial(rawmaterialId: number ):Observable<any> {
+  DeleteRawMaterial(rawmaterialId: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}RawMaterials/DeleteRawMaterial/${rawmaterialId}`, this.httpOptions);
   }
 
   UpdateRawMaterial(rawmaterialId: number, rawMaterialDescription: string): Observable<any> {
-   return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
+    return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
+  }
+
+
+  //------------------------------Supplier--------------------------//
+  GetAllSuppliers(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Supplier/GetAllSuppliers`)
+      .pipe(map(result => result))
+  }
+
+  GetSupplier(supplierId: number): Observable<Supplier> {
+    return this.httpClient.get<Supplier>(`${this.apiUrl}Supplier/GetSupplier/${supplierId}`)
+      .pipe(map(result => result));
+  }
+
+  AddSupplier(svm: any): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}Supplier/AddSupplier`, svm, this.httpOptions
+    );
+  }
+
+  DeleteSupplier(supplierId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Supplier/DeleteSupplier/${supplierId}`, this.httpOptions);
+  }
+
+  UpdateSupplier(supplierId: number, svm: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Supplier/UpdateSupplier/${supplierId}`, svm, this.httpOptions);
+  }
+
+  //---------------------------------------Customer--------------------------------------------
+  // GetCustomer(customerId: number): Observable<Customer> {
+  //   return this.httpClient.get<Customer>(`${this.apiUrl}Customer/GetCustomer/${customerId}`)
+  //     .pipe(map(result => result));
+  // }
+
+  //---------------------------------------ESTIMATE----------------------------------
+  GetAllEstimates(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Estimate/GetAllEstimates`)
+      .pipe(map(result => result))
+  }
+
+  GetEstimate(estimateId: number): Observable<EstimateVM> {
+    return this.httpClient.get<EstimateVM>(`${this.apiUrl}Estimate/GetEstimate/${estimateId}`)
+      .pipe(map(result => result));
+  }
+
+  GetEstimatesByCustomer(customerId: number): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}Estimate/GetEstimateByCustomer/${customerId}`).pipe(map(result => result));
+  }
+
+  AddEstimate(estimateViewModel: EstimateVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}Estimate/AddEstimate`, estimateViewModel, this.httpOptions
+    );
+  }
+
+  //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------
+  GetAllFormulaVariables(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CostPriceFormulaVariables/GetAllFormulaVariables`)
+      .pipe(map(result => result))
+  }
+
+  GetFormulaVariables(formulaId: number): Observable<CostPriceFormulaVariables> {
+    return this.httpClient.get<CostPriceFormulaVariables>(`${this.apiUrl}CostPriceFormulaVariables/GetFormulaVariables/${formulaId}`)
+      .pipe(map(result => result));
+  }
+
+  UpdateFormulaVariables(formulaId: number, updatedCPFV: CostPriceFormulaVariables): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}CostPriceFormulaVariables/EditFormulaVariables/${formulaId}`, updatedCPFV, this.httpOptions);
   }
 }

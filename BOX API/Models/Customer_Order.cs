@@ -19,7 +19,7 @@ namespace BOX.Models
 		public int OrderDeliveryScheduleID { get; set; }
 		public virtual Order_Delivery_Schedule Order_Delivery_Schedule { get; set; }
 
-		[Required] public DateFormat Date { get; set; }
+		[Required] public string Date { get; set; }
 		[Required] public byte[] Delivery_Photo { get; set; }
 	}
 	}

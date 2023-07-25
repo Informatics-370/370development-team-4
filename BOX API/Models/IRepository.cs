@@ -64,5 +64,64 @@ namespace BOX.Models
         Task<Fixed_Product[]> GetAllFixedProductsAsync();
         Task<Fixed_Product> GetFixedProductAsync(int fixedProductId);
         Task UpdateFixedProductAsync(Fixed_Product fixedProduct);
-    }
+
+
+        //------------------------------------- COST PRICE FORMULA VARIABLES -------------------------------------
+        Task<Cost_Price_Formula_Variables[]> GetAllFormulaVariablesAsync();
+        Task<Cost_Price_Formula_Variables> GetFormulaVariablesAsync(int formulaVariablesID);
+
+        //------------------------------------------------------ ESTIMATE STATUS ------------------------------------------------------------
+        Task<Estimate_Status[]> GetAllEstimateStatusesAsync();
+        Task<Estimate_Status> GetEstimateStatusAsync(int estimateStatusId);
+
+        //---------------------------------------------ESTIMATE--------------------------------------------------------------------
+        Task<Estimate[]> GetAllEstimatesAsync();
+        Task<Estimate> GetEstimateAsync(int estimateId);
+        Task UpdateEstimateAsync(Estimate estimate);
+
+        //-----------------------------------------------ESTIMATE LINE---------------------------------------------
+        Task<Estimate_Line[]> GetAllEstimateLinesAsync();
+        Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId,int estimateLineId);
+        Task<Estimate_Line[]> GetEstimateLinesByEstimateAsync(int estimateId);
+        Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(int customerId);
+
+        //------------------------------------------------CUSTOMER--------------------------------------------------
+        Task<Customer> GetCustomerAsync(int customerId);
+
+    //------------------------------------------------ADMIN------------------------------------------------------
+    Task<Admin> GetAdminAsync(int adminId);
+
+		//------------------------------------------------EMPLOYEE------------------------------------------------------
+		Task<Employee> GetEmployeeAsync(int employeeId);
+
+
+		//-------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
+		Task<Custom_Product[]> GetAllCustomProductsAsync();
+		Task<Custom_Product> GetCustomProductAsync(int customProductId);
+		Task UpdateCustomProductAsync(Custom_Product customProduct);
+
+
+		//------------------------------------------------------ CUSTOMER ORDER STATUS ------------------------------------------------------------
+		Task<Customer_Order_Status[]> GetAllCustomerOrderStatusesAsync();
+		Task<Customer_Order_Status> GetCustomerOrderStatusAsync(int customerOrderstatusId);
+
+
+        //---------------------------------------------ORDER DELIVERY SCHEDULE--------------------------------------------------------------------
+        Task<Order_Delivery_Schedule[]> GetAllCustomerOrderDeliverySchedulesAsync();
+        Task<Order_Delivery_Schedule> GetCustomerOrderDeliveryScheduleAsync(int orderDeliveryScheduleId);
+        Task UpdateCustomerOrderDeliveryScheduleAsync(Order_Delivery_Schedule order_delivery_Schedule);
+
+
+		//------------------------------------------------------------- DISCOUNT -------------------------------------------------------------------
+		Task<Discount[]> GetAllDiscountsAsync();
+		Task<Discount> GetDiscountAsync(int discountId);
+
+		//-------------------------------------------------------- CUSTOMER ORDER -----------------------------------------------------------------
+		Task<Customer_Order[]> GetAllCustomerOrdersAsync();
+		Task<Customer_Order> GetCustomerOrderAsync(int customerOrderId);
+		Task UpdateCustomerOrderAsync(Customer_Order customerOrder);
+
+
+	}
+
 }

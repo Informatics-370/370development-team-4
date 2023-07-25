@@ -1,4 +1,5 @@
-﻿using BOX.Models;
+using BOX.Models;
+using BOX.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,24 +49,26 @@ namespace BOX.Controllers
             }
         }
 
-        [HttpPost] // ADD NEW SUPPLIER
-        [Route("AddSupplier")]
-        public async Task<IActionResult> AddSupplier(Supplier supplier)
-        {
-            try
-            {
-                _repository.Add(supplier);
-                await _repository.SaveChangesAsync();
+    [HttpPost]
+    [Route("AddSupplier")]
+    public async Task<IActionResult> AddSupplier(SupplierViewModel svm)
+    {
+      var supplier = new Supplier {Name=svm.Name, Address=svm.Address,Email=svm.Email,Contact_Number=svm.Phone_Number };
 
-                return Ok(supplier);
-            }
-            catch (Exception)
-            {
-                return BadRequest("Invalid transaction");
-            }
-        }
+      try
+      {
+        _repository.Add(supplier);
+        await _repository.SaveChangesAsync();
+      }
+      catch (Exception)
+      {
+        return BadRequest("Invalid transaction");
+      }
 
-        [HttpPut]
+      return Ok(supplier);
+    }
+
+    [HttpPut]
         [Route("UpdateSupplier/{supplierId}")]
         public async Task<IActionResult> UpdateSupplier(int supplierId, Supplier updatedSupplier)
         {
@@ -73,7 +76,10 @@ namespace BOX.Controllers
             {
                 var existingSupplier = await _repository.GetSupplierAsync(supplierId);
                 if (existingSupplier == null)
-                    return NotFound("Supplier does not exist in the system");
+        {
+          return NotFound("Supplier does not exist in the system");
+        }
+                   
 
                 existingSupplier.Name = updatedSupplier.Name;
                 existingSupplier.Address = updatedSupplier.Address;

@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.services';
-import { Category } from '../shared/category';
 import { CategoryVM } from '../shared/category-vm';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 declare var $: any; 

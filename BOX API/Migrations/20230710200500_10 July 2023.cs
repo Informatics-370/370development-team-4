@@ -4,7 +4,7 @@
 
 namespace BOX.Migrations
 {
-    public partial class FixVAT : Migration
+    public partial class _10July2023 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -13,23 +13,39 @@ import { SupplierComponent } from './supplier/supplier.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
 import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 import { RawMaterialComponent } from './raw-material/raw-material.component';
+import { ProductsComponent } from './customer-view/products/products.component';
+import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
+import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
+import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
+import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
+
+
+
 
 
 const routes: Routes = [
-  { path:"", redirectTo:'register', pathMatch:'full' },
-  { path:"dashboard", component: DashboardComponent },
-    { path: "register", component: RegisterComponent },
-      { path: "product-item", component: ProductItemTestComponent },
-        { path: "help", component: ViewHelpInventoryComponent },
-          { path: "product-category", component: ProductCategoryComponent },
-          {path: "refund-reason", component: RefundReasonComponent},
-          {path: "write-off-reason", component: WriteOffReasonComponent},
-          {path: 'size-units', component: SizeUnitsComponent},
-    { path: 'vat', component: VatComponent },
-    { path: "supplier", component: SupplierComponent },
-    { path: "fixed-product", component: FixedProductComponent },
-          {path: 'estimate-duration', component: EstimateDurationComponent},
-          {path: 'raw-material', component:RawMaterialComponent}
+  { path: "", redirectTo: 'register', pathMatch: 'full' },
+  { path: "dashboard", component: DashboardComponent },
+  { path: "register", component: RegisterComponent },
+  { path: "product-item", component: ProductItemTestComponent },
+  { path: "help", component: ViewHelpInventoryComponent },
+  { path: "product-category", component: ProductCategoryComponent },
+  { path: "return-reason", component: RefundReasonComponent },
+  { path: "write-off-reason", component: WriteOffReasonComponent },
+  { path: 'size-units', component: SizeUnitsComponent },
+  { path: 'vat', component: VatComponent },
+  { path: "supplier", component: SupplierComponent },
+  { path: "fixed-product", component: FixedProductComponent },
+  { path: 'estimate-duration', component: EstimateDurationComponent },
+  { path: 'raw-material', component: RawMaterialComponent },
+  { path: 'products', component: ProductsComponent },
+  { path: 'products/:category', component: ProductsComponent },
+  { path: 'product-details/:id', component: ProductDetailsComponent},
+  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent},
+  { path: 'cart', component: CartPageComponent },
+  { path: 'estimate', component: EstimatePageComponent }
+
+
 
 ];
 
