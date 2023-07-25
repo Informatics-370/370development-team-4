@@ -4,6 +4,7 @@ using BOX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230725205549_Removed CustomrID from Cutomer Order and made order delivery scheduleID nullable")]
+    partial class RemovedCustomrIDfromCutomerOrderandmadeorderdeliveryscheduleIDnullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,7 +298,7 @@ namespace BOX.Migrations
                     b.Property<int>("CustomProductID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CustomerRefundID")
+                    b.Property<int>("CustomerRefundID")
                         .HasColumnType("int");
 
                     b.Property<int>("FixedProductID")
@@ -1361,7 +1363,9 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Customer_Refund", "Customer_Refund")
                         .WithMany()
-                        .HasForeignKey("CustomerRefundID");
+                        .HasForeignKey("CustomerRefundID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
                         .WithMany()

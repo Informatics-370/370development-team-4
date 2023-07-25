@@ -15,7 +15,7 @@ namespace BOX.Models
 				 .HasKey(e => new { e.CustomerID, e.EstimateID,e.EstimateLineID });
 
 						modelBuilder.Entity<Customer_Order_Line>()
-				 .HasKey(e => new { e.CustomerOrderID, e.FixedProductID, e.CustomProductID });
+				 .HasKey(e => new { e.CustomerID, e.CustomerOrderID , e.Customer_Order_LineID});
 
 						modelBuilder.Entity<Supplier_OrderLine>()
 				 .HasKey(e => new { e.SupplierOrderID, e.FixedProductID, e.RawMaterialID });

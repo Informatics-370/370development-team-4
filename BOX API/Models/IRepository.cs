@@ -122,6 +122,14 @@ namespace BOX.Models
 		Task UpdateCustomerOrderAsync(Customer_Order customerOrder);
 
 
+
+		//-----------------------------------------------Customer Order LINE---------------------------------------------
+		Task<Customer_Order_Line[]> GetAllOrderLinesAsync();
+		Task<Customer_Order_Line> GetOrderLineAsync(int customerOrderId, int customerId, int customerOrderLineId);
+		Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
+		Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(int customerId);
+
+
 	}
 
 }

@@ -39,24 +39,27 @@ namespace BOX.Controllers
                     {
                         EstimateLineViewModel elvm = new EstimateLineViewModel()
                         {
+                            //The attributes below all pertain to the Actual EstimateLine Entity except the CustomerID. Not the View Model**
                             EstimateLineID = el.EstimateLineID,
                             EstimateID = el.EstimateID,
                             FixedProductID = el.FixedProductID,
                             CustomProductID = 0,
                             Quantity = el.Quantity
+                            //The customerID is intentionally left out so that we get all the Estimates for every single Customer
                         };
                         estimateLineList.Add(elvm);
                     }
-
+                    //This is still contained in the greater for loop which is iterating for every single estimate that is the estimate VM
                     EstimateViewModel eVM = new EstimateViewModel()
                     {
                         EstimateID = estimate.EstimateID,
                         EstimateStatusID = estimate.EstimateStatusID,
                         EstimateDurationID = estimate.EstimateDurationID,
-                        EstimateStatusDescription = Status.Description,
+						CustomerID = estimateLines[0].CustomerID,
+						EstimateStatusDescription = Status.Description,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
-                        CustomerID = estimateLines[0].CustomerID,
                         Estimate_Lines = estimateLineList
+                        //The Customer Name attribute does not appear here
                     };
                     EstimateViewModels.Add(eVM);
                 }
@@ -201,7 +204,7 @@ namespace BOX.Controllers
             {
                 //hard coded values are constant or can only ever be 1 in the DB. It'll be fine as long as we remember to change it on each person's machine and 1ce and for all on the final server
                 EstimateStatusID = 1, //estimate status of 'Pending review'. Statuses can't be CRUDed so this can be hard coded
-                EstimateDurationID = 4, //estimate duration of 20 days.
+                EstimateDurationID = 1, //estimate duration of 20 days.
                 Confirmed_Total_Price = estimateViewModel.ConfirmedTotal
             }; //do not add value for estimateID manually else SQL won't auto generate it
 

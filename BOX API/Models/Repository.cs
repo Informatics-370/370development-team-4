@@ -441,6 +441,38 @@ namespace BOX.Models
 			await _appDbContext.SaveChangesAsync();
 		}
 
+		//------------------------------------------------------ Customer Order LINE------------------------------------------------------------
+
+
+		public async Task<Customer_Order_Line[]> GetAllOrderLinesAsync()
+		{
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line;
+			return await query.ToArrayAsync();
+		}
+
+		//Gets one Customer Order line  according to the concatenated ID
+		public async Task<Customer_Order_Line> GetOrderLineAsync(int customerOrderId, int customerId,int customerOrderLineId) //int customerOrderLineID)
+		{
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line
+			 .Where(c => c.CustomerOrderID == customerOrderId && c.CustomerID == customerId && c.Customer_Order_LineID==customerOrderLineId);
+			return await query.FirstOrDefaultAsync();
+
+		}
+
+		//gets all Customer Order lines for a specific order
+		public async Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId)
+		{
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerOrderID == orderId);
+			return await query.ToArrayAsync();
+		}
+
+		//Gets all customer order lines from every order customer "A" has ever made
+		public async Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(int customerId)
+		{
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerID == customerId);
+			return await query.ToArrayAsync();
+		}
+
 
 		//---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
 		//Never remove this line of code, code above the line above.
