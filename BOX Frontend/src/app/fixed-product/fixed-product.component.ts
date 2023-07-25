@@ -115,7 +115,7 @@ export class FixedProductComponent {
 
       this.formatProducts(); //Execute only after data has been retrieved from the DB otherwise error; put products in format to display in table
 
-      return 'Successfully retrieved product from the database';
+      return 'Successfully retrieved products from the database';
     } catch (error) {
       console.log('An error occurred while retrieving products: ' + error);
       throw new Error('An error occurred while retrieving products: ' + error);

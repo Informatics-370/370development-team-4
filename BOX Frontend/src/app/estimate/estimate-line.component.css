@@ -27,6 +27,7 @@
 }
 
 .table-input {
-  max-width: 150px;
+  width: 90%;
   padding: 2px 5px;
+  display: inline;
 }

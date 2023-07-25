@@ -40,7 +40,7 @@
           <td class="text-center">EST{{estimate.estimateID}}</td>
           <td>John LongSurname</td>
           <td>{{estimate.estimateStatusDescription}}</td>
-          <td>{{getVATInclusiveAmount(estimate.confirmedTotal) | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
+          <td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
           <td class="text-center">
             <button title="Edit this estimate" class="btn btn-create btn-edit-price"
               (click)="openUpdateEstimateModal(estimate.estimateID)">
@@ -86,10 +86,10 @@
           </thead>
           <tbody>
             <tr *ngFor="let estLine of selectedEstimate.estimate_Lines">
-              <td>{{estLine.fixedProductDescription}}</td>
-              <td>{{estLine.fixedProductUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{estLine.productDescription}}</td>
+              <td>{{estLine.productUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
               <td>{{estLine.quantity}}</td>
-              <td>{{estLine.fixedProductUnitPrice * estLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{estLine.productUnitPrice * estLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
             </tr>
           </tbody>
         </table><br/>
@@ -97,11 +97,11 @@
         <table id="total-table">          
           <tr>
             <td class="text-right" style="width: 80%;">Subtotal:</td>
-            <td></td>
+            <td>{{selectedEstimate.getTotalBeforeDiscount() | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr>
             <td class="text-right">Discount:</td>
-            <td></td>
+            <td>{{selectedEstimate.totalDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr>
             <td class="text-right"><strong>Total:</strong></td>
@@ -109,12 +109,13 @@
           </tr>
           <tr>
             <td class="text-right"><strong>Discount after negotiations: </strong></td>
-            <td></td>
+            <td>{{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr>
             <td class="text-right"><strong>Confirmed total:</strong></td>
             <td>
-              <input type="number" class="form-control table-input" placeholder="0.00" name="price" required min="0" step="0.01">
+              R <input [(ngModel)]="negotiatedTotal" type="number" class="form-control table-input" 
+                placeholder="0.00" name="negotiatedTotal" required min="1" step="0.01" max="{{selectedEstimate.confirmedTotal}}">
             </td>
           </tr>
         </table>

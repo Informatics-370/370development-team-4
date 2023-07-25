@@ -5,6 +5,7 @@ import { take, lastValueFrom } from 'rxjs';
 declare var $: any;
 import { EstimateVM } from '../shared/estimate-vm';
 import { EstimateLineVM } from '../shared/estimate-line-vm';
+import { VATInclusiveEstimate } from '../shared/vat-inclusive-estimate-class';
 import { VAT } from '../shared/vat';
 
 @Component({
@@ -13,9 +14,9 @@ import { VAT } from '../shared/vat';
   styleUrls: ['./estimate-line.component.css']
 })
 export class EstimateLineComponent {
-  estimates: EstimateVM[] = []; //hold all estimates
-  filteredEstimates: EstimateVM[] = []; //estimates to show user
-  selectedEstimate!: EstimateVM; //specific estimate to show user
+  estimates: VATInclusiveEstimate[] = []; //hold all estimates
+  filteredEstimates: VATInclusiveEstimate[] = []; //estimates to show user
+  selectedEstimate!: VATInclusiveEstimate; //specific estimate to show user
   negotiatedTotal = 0; //hold total after negotiations in global array
   vat!: VAT;
   searchTerm: string = '';
@@ -32,27 +33,48 @@ export class EstimateLineComponent {
 
   async getDataFromDB() {
     try {
-      //get vat
-      let allVAT = await lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+      //turn Observables that retrieve data from DB into promises
+      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+
+      /*The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
+      That's what the Promise.all method is supposed to be doing.
+      get all products, categories, items and sizes and put in categories, items, sizes and products array*/
+      const [allVAT] = await Promise.all([
+        getVATPromise
+      ]);
+
+      //put results from DB in global arrays
       this.vat = allVAT[0];
 
-      this.dataService.GetAllEstimates().subscribe((result: any[]) => {
-        let allEstimates: any[] = result;
-        this.filteredEstimates = []; //empty array
-        allEstimates.forEach((est) => {
-          this.filteredEstimates.push(est);
-        });
-        
-        this.estimates = this.filteredEstimates; //store all the estimates someplace before I search below
-        this.estimateCount = this.filteredEstimates.length; //update the number of estimates
-  
-        console.log('All estimates array: ', this.filteredEstimates);
-        this.loading = false;
-      });
+      await this.getEstimatesPromise();
     } catch (error) {
       this.estimateCount = -1;
       this.loading = false;
       this.error = true;
+    }
+  }
+
+  //get estimates separately so I can update only estimates list when estimate is updated to save time
+  async getEstimatesPromise(): Promise<any> {
+    try {
+      let allEstimates: EstimateVM[] = await lastValueFrom(this.dataService.GetAllEstimates().pipe(take(1)));
+      this.filteredEstimates = [];
+
+      allEstimates.forEach((currentEst: EstimateVM) => {
+        let newEstimate: VATInclusiveEstimate = new VATInclusiveEstimate(currentEst, this.vat.percentage);
+        this.filteredEstimates.push(newEstimate);
+      });
+        
+      this.estimates = this.filteredEstimates; //store all the estimates someplace before I search below
+      this.estimateCount = this.filteredEstimates.length; //update the number of estimates
+
+      console.log('All estimates array: ', this.filteredEstimates);
+      this.loading = false;
+
+      return 'Successfully retrieved estimates from the database';
+    } catch (error) {
+      console.error('An error occurred while retrieving estimates: ' + error);
+      throw new Error('An error occurred while retrieving estimates: ' + error);
     }
   }
 
@@ -77,9 +99,10 @@ export class EstimateLineComponent {
   }
 
   async openUpdateEstimateModal(id: number) {
-    this.selectedEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));;
+    let theEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));
+    this.selectedEstimate = new VATInclusiveEstimate(theEstimate, this.vat.percentage);
     console.log(this.selectedEstimate);
-    this.negotiatedTotal = this.selectedEstimate.confirmedTotal;
+    this.negotiatedTotal = parseFloat(this.selectedEstimate.confirmedTotal.toFixed(2));
     $('#confirmEdit').modal('hide');
     $('#editPrice').modal('show');
   }
@@ -98,9 +121,7 @@ export class EstimateLineComponent {
     return totalInclVAT;
   }
 
-  /* redirectToEstimateDetails(estID: number) {
-    //url is expecting estimate with id 2 to be 'est-2', so combine string into that
-    let urlParameter = 'est-' + estID;
-    this.router.navigate(['estimate-details', urlParameter]);
-  } */
+  updateEstimate() {
+    
+  }
 }

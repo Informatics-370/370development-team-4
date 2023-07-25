@@ -34,6 +34,9 @@ namespace BOX.Controllers
                     List<EstimateLineViewModel> estimateLineList = new List<EstimateLineViewModel>();
                     var estimateLines = await _repository.GetEstimateLinesByEstimateAsync(estimate.EstimateID);
 
+                    //an estimate must have at least 1 line else it's not a real order and will cause an error
+                    if (estimateLines == null) return NotFound("The estimate does not exist on the B.O.X System.");
+
                     //put all estimate lines for this specific estimate in a list for the estimate VM
                     foreach (var el in estimateLines)
                     {
