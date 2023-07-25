@@ -4,6 +4,7 @@ using BOX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230719150704_Enabled Height and Length to custom product")]
+    partial class EnabledHeightandLengthtocustomproduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,9 +267,8 @@ namespace BOX.Migrations
                     b.Property<int>("CustomerOrderStatusID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Date")
+                        .HasColumnType("int");
 
                     b.Property<byte[]>("Delivery_Photo")
                         .IsRequired()
@@ -409,9 +410,6 @@ namespace BOX.Migrations
                     b.Property<int>("Percentage")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.HasKey("DiscountID");
 
                     b.ToTable("Discount");
@@ -442,9 +440,6 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstimateID"), 1L, 1);
-
-                    b.Property<decimal>("Confirmed_Total_Price")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("EstimateDurationID")
                         .HasColumnType("int");
@@ -490,14 +485,20 @@ namespace BOX.Migrations
                     b.Property<int>("EstimateLineID")
                         .HasColumnType("int");
 
+                    b.Property<int>("AdminID")
+                        .HasColumnType("int")
+                        .HasColumnOrder(3);
+
+                    b.Property<decimal>("Confirmed_Unit_Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("FixedProductID")
                         .HasColumnType("int")
                         .HasColumnOrder(2);
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.HasKey("CustomerID", "EstimateID", "EstimateLineID");
+
+                    b.HasIndex("AdminID");
 
                     b.HasIndex("EstimateID");
 
@@ -575,9 +576,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDeliveryScheduleID"), 1L, 1);
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("EmployeeID")
                         .HasColumnType("int");
@@ -1419,6 +1419,12 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Estimate_Line", b =>
                 {
+                    b.HasOne("BOX.Models.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
@@ -1436,6 +1442,8 @@ namespace BOX.Migrations
                         .HasForeignKey("FixedProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Admin");
 
                     b.Navigation("Customer");
 

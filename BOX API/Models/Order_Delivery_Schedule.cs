@@ -12,6 +12,6 @@ namespace BOX.Models
 		public int EmployeeID { get; set; }
 		public virtual Employee Employee { get; set; }
 		[Required]
-		public DateTime Date { get; set; }
+		public string Date { get; set; }
 	}
 }

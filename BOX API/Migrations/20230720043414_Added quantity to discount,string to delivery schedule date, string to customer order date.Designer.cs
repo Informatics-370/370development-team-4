@@ -4,6 +4,7 @@ using BOX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230720043414_Added quantity to discount,string to delivery schedule date, string to customer order date")]
+    partial class Addedquantitytodiscountstringtodeliveryscheduledatestringtocustomerorderdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -443,9 +445,6 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstimateID"), 1L, 1);
 
-                    b.Property<decimal>("Confirmed_Total_Price")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("EstimateDurationID")
                         .HasColumnType("int");
 
@@ -490,14 +489,20 @@ namespace BOX.Migrations
                     b.Property<int>("EstimateLineID")
                         .HasColumnType("int");
 
+                    b.Property<int>("AdminID")
+                        .HasColumnType("int")
+                        .HasColumnOrder(3);
+
+                    b.Property<decimal>("Confirmed_Unit_Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("FixedProductID")
                         .HasColumnType("int")
                         .HasColumnOrder(2);
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.HasKey("CustomerID", "EstimateID", "EstimateLineID");
+
+                    b.HasIndex("AdminID");
 
                     b.HasIndex("EstimateID");
 
@@ -1419,6 +1424,12 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Estimate_Line", b =>
                 {
+                    b.HasOne("BOX.Models.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
@@ -1436,6 +1447,8 @@ namespace BOX.Migrations
                         .HasForeignKey("FixedProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Admin");
 
                     b.Navigation("Customer");
 
