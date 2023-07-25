@@ -107,10 +107,12 @@ namespace BOX.Controllers
                     estimateLineList.Add(elvm);
                 }
 
+                var status = await _repository.GetEstimateStatusAsync(estimate.EstimateStatusID); //get status associated with this estimate
                 var EstimateViewModel = new EstimateViewModel
                 {
                     EstimateID = estimate.EstimateID,
                     EstimateStatusID = estimate.EstimateStatusID,
+                    EstimateStatusDescription = status.Description,
                     EstimateDurationID = estimate.EstimateDurationID,
                     ConfirmedTotal = estimate.Confirmed_Total_Price,
                     CustomerID = estimateLines[0].CustomerID,

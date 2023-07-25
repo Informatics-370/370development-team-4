@@ -2,11 +2,31 @@
 @import "../product-category/product-category.component.css";
 
 .btn-edit-price {
-    padding: 1px 12px;
-    margin: 0;
+  padding: 1px 12px;
+  margin: 0;
 }
 
 .price-col {
-    text-align: center;
-    width: 100px;
+  text-align: center;
+  width: 100px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+#estimate-details-table { margin: 0; }
+
+#total-table {
+  width: 100%;
+}
+
+#total-table tr td {
+  padding-right: 5px;
+  line-height: 1.2em;
+}
+
+.table-input {
+  max-width: 150px;
+  padding: 2px 5px;
 }

@@ -76,8 +76,9 @@ export class EstimateLineComponent {
     console.log('Search results:', this.filteredEstimates);
   }
 
-  openUpdateEstimateModal(est: EstimateVM) {
-    this.selectedEstimate = est;
+  async openUpdateEstimateModal(id: number) {
+    this.selectedEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));;
+    console.log(this.selectedEstimate);
     this.negotiatedTotal = this.selectedEstimate.confirmedTotal;
     $('#confirmEdit').modal('hide');
     $('#editPrice').modal('show');
