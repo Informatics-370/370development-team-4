@@ -68,11 +68,11 @@
 
       <!--BODY-->
       <div class="modal-body">
-        <span class="bold" style="font-size: 1.05em;">John LongSurname</span><br/>
+        <span class="bold" style="font-size: 1.05em;">John LongSurname</span><br />
         <div style="font-size: 0.95em; color: grey;">
-          Estimate #: EST{{selectedEstimate.estimateID}} <br/>
-          Status: {{selectedEstimate.estimateStatusDescription}} <br/>
-          Date: 23 July 2023<br/><br/>
+          Estimate #: EST{{selectedEstimate.estimateID}} <br />
+          Status: {{selectedEstimate.estimateStatusDescription}} <br />
+          Date: 23 July 2023<br /><br />
         </div>
 
         <table id="estimate-details-table" class="table table-hover">
@@ -84,17 +84,46 @@
               <th scope="col">Total</th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let estLine of selectedEstimate.estimate_Lines">
-              <td>{{estLine.productDescription}}</td>
-              <td>{{estLine.productUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+          <tbody id="estimate-details-tbody">
+            <tr id="f-{{estLine.fixedProductID}}-{{estLine.quantity}}" *ngFor="let estLine of selectedEstimate.estimate_Lines">
+              <td>{{estLine.fixedProductDescription}}</td>
+              <td>{{estLine.fixedProductUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
               <td>{{estLine.quantity}}</td>
-              <td>{{estLine.productUnitPrice * estLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{estLine.fixedProductUnitPrice * estLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
             </tr>
           </tbody>
-        </table><br/>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="form-heading">Add new product to quote</td>
+            </tr>
+            <tr [formGroup]="addEstimateLineForm">
+              <td>
+                <select id="productID" [(ngModel)]="selectedProductID" formControlName="productID" name="productID"
+                  class="form-select modal-form-input modal-form-text table-input estimate-form-select" (change)="changedProduct()">
+                  <option disabled value="NA">Type to search products</option>
+                  <option *ngFor="let fp of filteredFixedProducts" value={{fp.fixedProductID}}>{{fp.description}}</option>
+                </select>
+              </td>
+              <td>
+                <label for="quantity" class="form-label modal-form-label">Quantity:</label>
+              </td>
+              <td>
+                <input id="quantity" type="number" formControlName="quantity"
+                  class="form-control modal-form-input modal-form-text table-input" placeholder="1" name="quantity"
+                  required min="1" step="1" max="{{selectedProduct ? 2000000 : 1}}">
+              </td>
+              <td>
+                <button class="btn btn-create estimate-form-submit" (click)="addEstimateLine()">
+                  <fa-icon [icon]="['fas', 'plus']"></fa-icon> Add Product
+                </button>
+              </td>
+            </tr>
+          </tfoot>
+        </table><br />
 
-        <table id="total-table">          
+
+
+        <table id="total-table">
           <tr>
             <td class="text-right" style="width: 80%;">Subtotal:</td>
             <td>{{selectedEstimate.getTotalBeforeDiscount() | currency: 'ZAR':'symbol-narrow'}}</td>
@@ -114,15 +143,16 @@
           <tr>
             <td class="text-right"><strong>Confirmed total:</strong></td>
             <td>
-              R <input [(ngModel)]="negotiatedTotal" type="number" class="form-control table-input" 
-                placeholder="0.00" name="negotiatedTotal" required min="1" step="0.01" max="{{selectedEstimate.confirmedTotal}}">
+              R <input [(ngModel)]="negotiatedTotal" type="number"
+                class="form-control modal-form-input modal-form-text table-input" placeholder="0.00"
+                name="negotiatedTotal" required min="1" step="0.01" max="{{selectedEstimate.confirmedTotal}}">
             </td>
           </tr>
         </table>
-          <div class="form-submit-div">
-            <button class="btn btn-create modal-form-submit" data-bs-toggle="modal" data-bs-target="#confirmEdit">Save
-              changes</button>
-          </div>
+        <div class="form-submit-div">
+          <button class="btn btn-create modal-form-submit" data-bs-toggle="modal" data-bs-target="#confirmEdit">Save
+            changes</button>
+        </div>
       </div>
 
     </div>
@@ -144,7 +174,8 @@
       <!--BODY-->
       <div class="modal-body">
         <p class="modal-form-input">Are you sure you want to grant John LongSurname an additional discount of
-          {{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}} on the original total of
+          {{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}} on the original total
+          of
           {{selectedEstimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}? The customer will be notified via email
           immediately.
         </p>

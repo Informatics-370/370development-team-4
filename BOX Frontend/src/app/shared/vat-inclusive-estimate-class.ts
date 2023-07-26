@@ -38,9 +38,12 @@ export class VATInclusiveEstimate implements EstimateVM {
         line = {
           estimateLineID: estL.estimateLineID,
           estimateID: estL.estimateID,
-          productID: estL.fixedProductID,
-          productDescription: estL.fixedProductDescription,
-          productUnitPrice: this.getVATInclusiveAmount(estL.fixedProductUnitPrice),
+          fixedProductID: estL.fixedProductID,
+          fixedProductDescription: estL.fixedProductDescription,
+          fixedProductUnitPrice: this.getVATInclusiveAmount(estL.fixedProductUnitPrice),
+          customProductID: 0,
+          customProductDescription: '',
+          customProductUnitPrice: 0,
           quantity: estL.quantity
         };
       }
@@ -48,9 +51,12 @@ export class VATInclusiveEstimate implements EstimateVM {
         line = {
           estimateLineID: estL.estimateLineID,
           estimateID: estL.estimateID,
-          productID: estL.customProductID,
-          productDescription: estL.customProductDescription,
-          productUnitPrice: estL.customProductUnitPrice,
+          fixedProductID: 0,
+          fixedProductDescription: '',
+          fixedProductUnitPrice: 0,
+          customProductID: estL.customProductID,
+          customProductDescription: estL.customProductDescription,
+          customProductUnitPrice: estL.customProductUnitPrice,
           quantity: estL.quantity
         };
       }
@@ -89,8 +95,11 @@ export class VATInclusiveEstimate implements EstimateVM {
 interface VATInclusiveEstimateLine {
   estimateLineID: number;
   estimateID: number;
-  productID: number;
-  productDescription: string;
-  productUnitPrice: number;
+  fixedProductID: number;
+  fixedProductDescription: string;
+  fixedProductUnitPrice: number;
+  customProductID: number;
+  customProductDescription: string;
+  customProductUnitPrice: number;
   quantity: number;
 }

@@ -26,8 +26,27 @@
   line-height: 1.2em;
 }
 
+.estimate-form-submit, .estimate-form-submit:hover, .estimate-form-submit:active {
+  margin: 0;
+  background-color: #00d2af;
+  color: white;
+}
+
+.estimate-form-submit:hover { background-color: #00b99a; }
+
+.form-heading { 
+  border-bottom: none;
+  font-size: 1.15em;
+  font-weight: 500;
+  padding-bottom: 0;
+  padding-top: 2px;
+}
+
 .table-input {
-  width: 90%;
+  max-width: 90%;
   padding: 2px 5px;
   display: inline;
+  margin: 0;
 }
+
+.estimate-form-select { max-width: 100%;}
