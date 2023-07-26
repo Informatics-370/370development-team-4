@@ -11,6 +11,7 @@ using BOX.Factory;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json.Serialization;
+using BOX.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +84,16 @@ builder.Services.AddAuthentication()
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:Key"]))
                     };
                 });
+
+//Add Email Configs
+
+var configuration = builder.Configuration;
+var emailConfig = configuration
+    .GetSection("EmailConfiguration")
+    .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, AppUserClaimsPrincipalFactory>();
 

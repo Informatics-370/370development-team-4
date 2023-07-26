@@ -1,9 +1,12 @@
 ﻿using BOX.Models;
+using BOX.Services;
 using BOX.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -19,14 +22,23 @@ namespace BOX.Controllers
         private readonly IUserClaimsPrincipalFactory<User> _claimsPrincipalFactory;
         private readonly IConfiguration _configuration;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly IEmailService _emailService;
 
-        public AuthenticationController(UserManager<User> userManager, IUserClaimsPrincipalFactory<User> claimsPrincipalFactory, IConfiguration configuration, IRepository repository, RoleManager<IdentityRole> roleManager)
+        public AuthenticationController(UserManager<User> userManager, 
+            IUserClaimsPrincipalFactory<User> claimsPrincipalFactory, 
+            IConfiguration configuration, IRepository repository, 
+            RoleManager<IdentityRole> roleManager,
+            SignInManager<User> signInManager,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _claimsPrincipalFactory = claimsPrincipalFactory;
             _configuration = configuration;
             _repository = repository;
             _roleManager = roleManager;
+            _signInManager = signInManager;
+            _emailService = emailService;
         }
 
         //----------------------------------- Register -----------------------------------------
@@ -138,5 +150,64 @@ namespace BOX.Controllers
                 user = user.UserName,
             });
         }
+
+        //-------------------------------- Forgot Password ---------------------------------
+        //Sends the email to the user
+        [HttpPost]
+        [Route("ForgotPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            var user = await _userManager.FindByNameAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                return BadRequest("Invalid request");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetPasswordLink = Url.Action(nameof(ResetPassword), "Authentication", new { token, email = model.Email }, Request.Scheme);
+
+            var message = new Message(new string[] { user.Email }, "Password Reset", "Click the link below to reset your password:<br> " + resetPasswordLink);
+            _emailService.SendEmail(message);
+
+            return Ok("Password reset link sent successfully" + resetPasswordLink);
+        }
+
+        //Acutally change the password
+        [HttpPost]
+        [Route("ChangePassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
+        {
+            var user = await _userManager.FindByNameAsync(resetPassword.Email);
+            if (user != null)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                resetPassword.Token = token;
+
+                var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
+                if (!resetPassResult.Succeeded)
+                {
+                    foreach (var error in resetPassResult.Errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                }
+                return StatusCode(StatusCodes.Status200OK, "Password has been changed");
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, "Error");
+        }
+
+
+        [HttpGet]
+        [Route("ResetPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string token, string email)
+        {
+            var model = new ResetPasswordViewModel { Token = token, Email = email };
+            return Ok(new { model });
+        }
+
     }
 }
