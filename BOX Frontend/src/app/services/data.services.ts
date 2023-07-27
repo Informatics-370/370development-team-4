@@ -321,6 +321,10 @@ export class DataService {
     );
   }
 
+  UpdateEstimate(estimateId: number, estimateViewModel: EstimateVM): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimate/${estimateId}`, estimateViewModel, this.httpOptions);
+  }
+
   UpdateEstimateStatus(estimateId: number, statusId: number): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimateStatus/${estimateId}/${statusId}`, this.httpOptions);
   }

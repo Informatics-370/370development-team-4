@@ -130,7 +130,7 @@
           </tr>
           <tr>
             <td class="text-right">Discount:</td>
-            <td>{{selectedEstimate.totalDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
+            <td>-{{selectedEstimate.totalDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr>
             <td class="text-right"><strong>Total:</strong></td>
@@ -138,14 +138,14 @@
           </tr>
           <tr>
             <td class="text-right"><strong>Discount after negotiations: </strong></td>
-            <td>{{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
+            <td>-{{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr>
             <td class="text-right"><strong>Confirmed total:</strong></td>
             <td>
               R <input [(ngModel)]="negotiatedTotal" type="number"
                 class="form-control modal-form-input modal-form-text table-input" placeholder="0.00"
-                name="negotiatedTotal" required min="1" step="0.01" max="{{selectedEstimate.confirmedTotal}}">
+                name="negotiatedTotal" required min="0" step="0.01" max="{{selectedEstimate.confirmedTotal}}">
             </td>
           </tr>
         </table>
@@ -173,19 +173,19 @@
 
       <!--BODY-->
       <div class="modal-body">
-        <p class="modal-form-input">Are you sure you want to grant John LongSurname an additional discount of
-          {{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}} on the original total
-          of
-          {{selectedEstimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}? The customer will be notified via email
-          immediately.
+        <p class="modal-form-input">Are you sure you want to grant John LongSurname an <strong> additional discount of
+          {{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}}</strong> on the original total of 
+          <strong>{{selectedEstimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}</strong>? 
+          The customer will be notified via email immediately.
         </p>
       </div>
 
       <!-- Modal footer -->
       <div class="modal-footer justify-content-evenly">
-        <button (click)="openUpdateEstimateModal(selectedEstimate.estimateID)"
-          class="btn btn-create red-btn modal-form-submit">No</button>
-        <button class="btn btn-create modal-form-submit">Yes</button>
+        <button (click)="openUpdateEstimateModal(selectedEstimate.estimateID)" class="btn btn-create red-btn modal-form-submit">
+          No
+        </button>
+        <button class="btn btn-create modal-form-submit" (click)="updateEstimate()">Yes</button>
       </div>
     </div>
   </div>

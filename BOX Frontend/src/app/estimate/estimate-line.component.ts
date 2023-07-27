@@ -211,7 +211,7 @@ export class EstimateLineComponent {
       //add estimate line to global selectedEstimate so I can easily add to backend; NT you can't add custom product ot estimate this way
       let newEstimateLine: EstimateLineVM = {
         estimateID: this.selectedEstimate.estimateID,
-        estimateLineID: 0,
+        estimateLineID: this.selectedEstimate.estimate_Lines.length + 1,
         fixedProductID: this.selectedProduct ? this.selectedProduct.fixedProductID : 0,
         fixedProductDescription: this.selectedProduct ? this.selectedProduct.description : '',
         fixedProductUnitPrice: this.selectedProduct ? this.getVATInclusiveAmount(this.selectedProduct.price) : 0,
@@ -224,7 +224,7 @@ export class EstimateLineComponent {
       this.selectedEstimate.addNewEstimateLine(newEstimateLine);
       console.log('Estimate after adding', this.selectedEstimate);
       this.negotiatedTotal = parseInt(this.selectedEstimate.negotiatedTotal.toFixed(2));
-      
+
       //reset form
       this.selectedProductID = 'NA'; //reset product dropdown
       this.addEstimateLineForm.get('quantity')?.setValue(1);
@@ -233,6 +233,56 @@ export class EstimateLineComponent {
 
   //-------------------UPDATE ESTIMATE LOGIC-------------------
   updateEstimate() {
-
+    if (this.negotiatedTotal < this.selectedEstimate.confirmedTotal && this.negotiatedTotal > 1) {
+      try {
+        let updatedEstLines: EstimateLineVM[] = [];
+        //put estimate line data in VM
+        this.selectedEstimate.estimate_Lines.forEach(line => {
+          let updatedEstimateLine: EstimateLineVM = {
+            estimateID: this.selectedEstimate.estimateID,
+            estimateLineID: line.estimateLineID,
+            fixedProductID: line.fixedProductID,
+            fixedProductDescription: '',
+            fixedProductUnitPrice: 0,
+            customProductID: 0,
+            customProductDescription: '',
+            customProductUnitPrice: 0,
+            quantity: line.quantity
+          };
+  
+          updatedEstLines.push(updatedEstimateLine);
+        });
+  
+        //put estimate data in VM
+        let updatedEstimate: EstimateVM = {
+          estimateID: this.selectedEstimate.estimateID,
+          customerID: this.selectedEstimate.customerID,
+          customerFullName: '',
+          estimateStatusID: this.selectedEstimate.estimateStatusID,
+          estimateStatusDescription: '',
+          estimateDurationID: 0,
+          confirmedTotal: this.negotiatedTotal / (1 + this.vat.percentage / 100), //remove VAT from negotiated total
+          estimate_Lines: updatedEstLines
+        };
+  
+        console.log('Updated estimate: ', updatedEstimate);
+  
+        this.dataService.UpdateEstimate(this.selectedEstimate.estimateID, updatedEstimate).subscribe(
+          (result: any) => {
+            console.log('Successfully updated estimate! ', result);
+            this.getEstimatesPromise(); //refresh estimate list
+            //close both modals
+            $('#confirmEdit').modal('hide');
+            $('#editPrice').modal('hide');
+          }
+        );
+      }
+      catch (error) {
+        console.log('Error submitting form', error)
+      }
+    }
+    else {
+      console.error('Invalid confirmed total');
+    }
   }
 }

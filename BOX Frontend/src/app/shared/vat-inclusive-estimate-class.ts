@@ -104,4 +104,18 @@ export class VATInclusiveEstimate implements EstimateVM {
     this.negotiatedTotal = this.confirmedTotal; //reset negotiated total
     this.totalDiscount = this.getDiscount(); //get new total discount
   }
+
+  removeEstimateLine(...estimateLineIDs: number[]) {    
+    //remove estimate line
+    estimateLineIDs.forEach(ID => {
+      let toDelete = this.estimate_Lines.find(l => l.estimateLineID == ID);
+
+      if (toDelete) this.estimate_Lines.splice(this.estimate_Lines.indexOf(toDelete), 1);
+    });
+
+    //update totals; this won't account for bulk discounts but it will account for whatever discount was there before
+    this.confirmedTotal = this.getTotalBeforeDiscount() - this.totalDiscount;
+    this.negotiatedTotal = this.confirmedTotal; //reset negotiated total
+    this.totalDiscount = this.getDiscount(); //get new total discount
+  }
 }
