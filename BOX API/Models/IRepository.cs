@@ -80,8 +80,6 @@ namespace BOX.Models
         Task UpdateEstimateAsync(Estimate estimate);
 
         //-----------------------------------------------ESTIMATE LINE---------------------------------------------
-        Task<Estimate_Line[]> GetAllEstimateLinesAsync();
-        Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId,int estimateLineId);
         Task<Estimate_Line[]> GetEstimateLinesByEstimateAsync(int estimateId);
         Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(int customerId);
 

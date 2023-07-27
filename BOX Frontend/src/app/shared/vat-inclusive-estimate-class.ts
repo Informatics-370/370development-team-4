@@ -34,32 +34,17 @@ export class VATInclusiveEstimate implements EstimateVM {
 
     estimateLines.forEach(estL => {
       let line: EstimateLineVM;
-      if (estL.fixedProductID > 0) { //if this estimate line is for a fixed product
-        line = {
-          estimateLineID: estL.estimateLineID,
-          estimateID: estL.estimateID,
-          fixedProductID: estL.fixedProductID,
-          fixedProductDescription: estL.fixedProductDescription,
-          fixedProductUnitPrice: this.getVATInclusiveAmount(estL.fixedProductUnitPrice),
-          customProductID: 0,
-          customProductDescription: '',
-          customProductUnitPrice: 0,
-          quantity: estL.quantity
-        };
-      }
-      else { //custom product is being quoted for
-        line = {
-          estimateLineID: estL.estimateLineID,
-          estimateID: estL.estimateID,
-          fixedProductID: 0,
-          fixedProductDescription: '',
-          fixedProductUnitPrice: 0,
-          customProductID: estL.customProductID,
-          customProductDescription: estL.customProductDescription,
-          customProductUnitPrice: estL.customProductUnitPrice,
-          quantity: estL.quantity
-        };
-      }
+      line = {
+        estimateLineID: estL.estimateLineID,
+        estimateID: estL.estimateID,
+        fixedProductID: estL.fixedProductID,
+        fixedProductDescription: estL.fixedProductDescription,
+        fixedProductUnitPrice: this.getVATInclusiveAmount(estL.fixedProductUnitPrice),
+        customProductID: estL.customProductID,
+        customProductDescription: estL.customProductDescription,
+        customProductUnitPrice: this.getVATInclusiveAmount(estL.customProductUnitPrice),
+        quantity: estL.quantity
+      };
 
       lines.push(line);
     });
@@ -105,7 +90,7 @@ export class VATInclusiveEstimate implements EstimateVM {
     this.totalDiscount = this.getDiscount(); //get new total discount
   }
 
-  removeEstimateLine(...estimateLineIDs: number[]) {    
+  removeEstimateLine(...estimateLineIDs: number[]) {
     //remove estimate line
     estimateLineIDs.forEach(ID => {
       let toDelete = this.estimate_Lines.find(l => l.estimateLineID == ID);
