@@ -473,6 +473,81 @@ namespace BOX.Models
 			return await query.ToArrayAsync();
 		}
 
+		//------------------------------------------------------------- Supplier Return  -------------------------------------------------------------------
+
+		//Get Al VAT
+		public async Task<Supplier_Return[]> GetAllSupplierReturnsAsync()
+		{
+			IQueryable<Supplier_Return> query = _appDbContext.Supplier_Return;
+			return await query.ToArrayAsync();
+		}
+
+		//Get VAT By ID
+		public async Task<Supplier_Return> GetSupplierReturnAsync(int supplierReturnId)
+		{
+			//Query to select vat where the ID passing through the API matches the ID in the Database
+			IQueryable<Supplier_Return> query = _appDbContext.Supplier_Return.Where(c => c.SupplierReturnID == supplierReturnId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+
+
+		//This Deals with the Functionality for Supplier Orders:
+
+		//Explanation--- Wr will be placing Supplier Orders Onto the system, we will be able to filter through and see the Order History for a particular Supplier and what it is they supply us. This is highly likely going to be necessary for one of the Reports
+
+
+		//------------------------------------------------------- SUPPLIER ORDER -----------------------------------------------------------------
+
+		//Get All Supplier Orders 
+		public async Task<Supplier_Order[]> GetAllSupplierOrdersAsync()
+		{
+			IQueryable<Supplier_Order> query = _appDbContext.Supplier_Order;
+			return await query.ToArrayAsync();
+		}
+
+
+        //Gets one Supplier Order according to the ID
+        public async Task<Supplier_Order> GetSupplierOrderAsync(int supplierOrderId)
+		{
+			//Query to select fixed product where the ID passing through the API matches the ID in the Database
+			IQueryable<Supplier_Order> query = _appDbContext.Supplier_Order.Where(c => c.SupplierOrderID == supplierOrderId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+
+		//------------------------------------------------------ Supplier Order LINE------------------------------------------------------------
+
+
+		public async Task<Supplier_OrderLine[]> GetAllSupplierOrderLinesAsync()
+		{
+			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine;
+			return await query.ToArrayAsync();
+		}
+
+		//Gets one Supplier Order line  according to the concatenated ID
+		public async Task<Supplier_OrderLine> GetSupplierOrderLineAsync(int supplierOrderId, int supplierId, int supplierOrderLineId) //int customerOrderLineID)
+		{
+			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine
+			 .Where(c => c.SupplierID == supplierId && c.SupplierOrderID == supplierOrderId && c.Supplier_Order_LineID == supplierOrderLineId);
+			return await query.FirstOrDefaultAsync();
+
+		}
+
+		//Gets all Supplier Order lines for a specific order
+		public async Task<Supplier_OrderLine[]> GetSupplierOrderLinesByOrderAsync(int supOrderId)
+		{
+			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.SupplierOrderID == supOrderId);
+			return await query.ToArrayAsync();
+		}
+
+		//Gets all Supplier order lines from every order Supplier "A" has ever made---------- This will help us to create a report for how much we have ordered from each Supplier
+		public async Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId)
+		{
+			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.SupplierID == supplierId);
+			return await query.ToArrayAsync();
+		}
+
 
 		//---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
 		//Never remove this line of code, code above the line above.

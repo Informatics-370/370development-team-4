@@ -232,6 +232,7 @@ namespace BOX.Controllers
                         EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Estimate = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,
+                        CustomProductID=1,
                         Quantity = estimateLineVM.Quantity
                     };
 

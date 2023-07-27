@@ -129,6 +129,21 @@ namespace BOX.Models
 		Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
 		Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(int customerId);
 
+		//------------------------------------------------------------- Supplier Return -------------------------------------------------------------------
+		Task<Supplier_Return[]> GetAllSupplierReturnsAsync();
+		Task<Supplier_Return> GetSupplierReturnAsync(int supplierReturnId);
+
+		//-------------------------------------------------------- SUPPLIER ORDER -----------------------------------------------------------------
+		Task<Supplier_Order[]> GetAllSupplierOrdersAsync();
+		Task<Supplier_Order> GetSupplierOrderAsync(int supplierOrderId);
+
+
+
+		//-----------------------------------------------SUPPLIER ORDER LINE---------------------------------------------
+		Task<Supplier_OrderLine[]> GetAllSupplierOrderLinesAsync();
+		Task<Supplier_OrderLine> GetSupplierOrderLineAsync(int supplierOrderId, int supplierId, int supplierOrderLineId);
+		Task<Supplier_OrderLine[]> GetSupplierOrderLinesByOrderAsync(int supOrderId);
+		Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId);
 
 	}
 
