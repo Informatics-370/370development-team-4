@@ -168,17 +168,17 @@ namespace BOX.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetPasswordLink = Url.Action(nameof(ResetPassword), "Authentication", new { token, email = model.Email }, Request.Scheme);
 
-            var message = new Message(new string[] { user.Email }, "Password Reset", "Click the link below to reset your password:<br> " + resetPasswordLink);
+            var message = new Message(new string[] { user.Email }, "Password Reset", "Click the link below to reset your password: " + resetPasswordLink);
             _emailService.SendEmail(message);
 
-            return Ok("Password reset link sent successfully" + resetPasswordLink);
+            return Ok("Password reset link sent successfully");
         }
 
         //Acutally change the password
         [HttpPost]
         [Route("ChangePassword")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
+        public async Task<IActionResult> ChangePassword(ResetPassword resetPassword)
         {
             var user = await _userManager.FindByNameAsync(resetPassword.Email);
             if (user != null)

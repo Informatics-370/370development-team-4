@@ -43,6 +43,7 @@ export class LoginComponent {
         // Login failed
         console.error('Login failed:', error);
       }
-    );
+    );    
   }
+
 }

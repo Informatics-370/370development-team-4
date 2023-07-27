@@ -33,8 +33,7 @@ import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formu
 import { CustomerNavbarComponent } from './customer-view/customer-navbar/customer-navbar.component';
 import { LoginComponent } from './login/login.component';
 import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
-import { FooterComponent } from './customer-view/footer/footer.component';
-import { MapComponent } from './customer-view/map/map.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
 @NgModule({
   declarations: [ 
@@ -65,8 +64,7 @@ import { MapComponent } from './customer-view/map/map.component';
         CustomerNavbarComponent,
         LoginComponent,
         CustomerHomepageComponent,
-        FooterComponent,
-        MapComponent
+        ForgotPasswordComponent
   ],
   imports: [
     BrowserModule,

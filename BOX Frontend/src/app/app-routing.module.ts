@@ -20,6 +20,7 @@ import { EstimatePageComponent } from './customer-view/estimate-page/estimate-pa
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 import { LoginComponent } from './login/login.component';
 import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
 
 
@@ -47,8 +48,8 @@ const routes: Routes = [
   { path: 'cart', component: CartPageComponent },
   { path: 'estimate', component: EstimatePageComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'customer-homepage', component: CustomerHomepageComponent }
-
+  { path: 'customer-homepage', component: CustomerHomepageComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent }
 
 
 ];

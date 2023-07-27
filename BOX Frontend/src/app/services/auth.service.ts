@@ -18,4 +18,8 @@ export class AuthService {
   login(loginData: any): Observable<any> {
     return this.http.post(`${this.authUrl}Login`, loginData);
   }
+
+  sendForgotPasswordLink(forgotPasswordData: any): Observable<any> {
+    return this.http.post(`${this.authUrl}ChangePassword`, forgotPasswordData);
+  }
 }
