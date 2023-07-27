@@ -16,6 +16,7 @@ import { Supplier } from '../shared/supplier';
 import { Customer } from '../shared/customer';
 import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
 import { EstimateVM } from '../shared/estimate-vm';
+import { Discount } from '../shared/discount';
 
 imports: [
   HttpClientModule
@@ -335,4 +336,30 @@ export class DataService {
   UpdateFormulaVariables(formulaId: number, updatedCPFV: CostPriceFormulaVariables): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}CostPriceFormulaVariables/EditFormulaVariables/${formulaId}`, updatedCPFV, this.httpOptions);
   }
+
+  //------------DISCOUNTS------------ 
+  GetDiscounts(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Discount/GetAllDiscounts`)
+      .pipe(map(result => result))
+  }
+
+  GetDiscount(discountId: number): Observable<Discount> {
+    return this.httpClient.get<Discount>(`${this.apiUrl}Discount/GetDiscount/${discountId}`)
+      .pipe(map(result => result));
+  }
+
+  AddDiscount(rrvm: any): Observable<Discount> {
+    return this.httpClient.post<Discount>(
+      `${this.apiUrl}Discount/AddDiscount`, rrvm, this.httpOptions
+    );
+  }
+
+  DeleteDiscount(discountId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Discount/DeleteDiscount/${discountId}`, this.httpOptions);
+  }
+
+  UpdateDiscount(discountId: number, discountModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
+  }
+
 }

@@ -42,89 +42,96 @@
                     <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
                     VAT
                 </button><pre></pre>
-                <button class="btn btn-info active text-start">
+                <button [routerLink]="['/estimate-duration']" class="btn btn-info active text-start">
                     <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
                     Estimate Duration
                 </button><pre></pre>
-                <button [routerLink]="['/discount']" class="btn btn-info active text-start">
+                <button class="btn btn-info active text-start">
                     <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
                     Discount
                 </button><pre></pre>
             </div>
         </div>
     </div>
-    <!--Right Side-->
-    <div class="col-md-9">
-        <h3 class="p-3" style="color: black;">Estimate Duration</h3>
-        <!--Search bar-->
-        <div id="searchbar" >
-            <input (keyup)="searchDurations($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. 15 " />
-            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
-        </div>
-
-        <hr class="hr hr-blurry m-3" />
-        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addDuration">Create Estimate Duration</button>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="width: 110px;" scope="col"></th>
-                    <th scope="col">Estimate Duration</th>
-                </tr>
-            </thead>
-            <tbody>                
-                <!--Error message if there's no items in the DB-->
-                <tr *ngIf="durationCount==0">
-                    <td colspan="2">No estimate durations found. Please add a new duration to the system.</td>
-                </tr>
-                <!--Loading message while data is still being retrieved from the DB-->
-                <tr *ngIf="loading">
-                    <td colspan="2">Please wait while we load all estimate durations...</td>
-                </tr>
-                <!--Item data from API-->
-                <tr *ngFor="let Estimateduration of filteredDurations">
-                    <td>
-                        <button title="Delete this estimate duration" class="CRUD-icon" (click)="openDeleteModal(Estimateduration.estimateDurationID)">
-                            <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
-                        </button>
-                        <button title="Update this estimate duration" class="CRUD-icon" (click)="openUpdateModal(Estimateduration.estimateDurationID)" >
-                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
-                        </button>                                              
-                    </td>
-                    <td>
-                        {{Estimateduration.duration}}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+<!--Right Side-->
+<div class="col-md-9">
+    <h3 class="p-3" style="color: black;">Discount</h3>
+    <!--Search bar-->
+    <div id="searchbar" >
+        <input (keyup)="searchDiscounts($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. 15 " />
+        <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
     </div>
+
+    <hr class="hr hr-blurry m-3" />
+    <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addDiscount">Create Discount</button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="width: 110px;" scope="col"></th>
+                <th scope="col">Discount</th>
+                <th scope="col">Quantity</th>
+            </tr>
+        </thead>
+        <tbody>                
+            <!--Error message if there's no items in the DB-->
+            <tr *ngIf="discountCount==0">
+                <td colspan="2">No discount found. Please add a new discount to the system.</td>
+            </tr>
+            <!--Loading message while data is still being retrieved from the DB-->
+            <tr *ngIf="loading">
+                <td colspan="2">Please wait while we load all discounts...</td>
+            </tr>
+            <!--Item data from API-->
+            <tr *ngFor="let Discount of filteredDiscounts">
+                <td>
+                    <button title="Delete this discount" class="CRUD-icon" (click)="openDeleteModal(Discount.discountID)">
+                        <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
+                    </button>
+                    <button title="Update this discount" class="CRUD-icon" (click)="openUpdateModal(Discount.discountID)" >
+                        <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                    </button>                                              
+                </td>
+                <td>
+                    {{Discount.percentage}}
+                </td>
+                <td>
+                    {{Discount.quantity}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 </div>
 <!--CRUD MODALS-->
-<!--ADD ESTIMATE DURATION MODAL-->
-<div class="modal fade" id="addDuration" tabindex="-1">
+<!--ADD DISCOUNTS MODAL-->
+<div class="modal fade" id="addDiscount" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Create New Estimate Duration</h4>
+          <h4 class="modal-title">Create New Discount</h4>
           <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
         <!--BODY-->
         <div class="modal-body">
-          <form [formGroup]="addEstimateDurationForm">
+          <form [formGroup]="addDiscountForm">
             <div class="form-group">
-                <label for="duration" class="form-label modal-form-label bold">Estimate Duration(in days):</label>
-                <input id="duration" type="number" formControlName="duration" class="form-control modal-form-input modal-form-text" placeholder="e.g. 15 days" name="duration" min= "1" required>
+                <label for="percent" class="form-label modal-form-label bold">Discount percentage(%):</label>
+                
+                <input id="percent" type="number" formControlName="percentage" class="form-control modal-form-input modal-form-text" placeholder="e.g. 10%" name="percent" min= "0.1" required>
+                <label for="quantity" class="form-label modal-form-label bold">Quantity (units):</label>
+                <input id="quantity" type="number" formControlName="quantity" class="form-control modal-form-input modal-form-text" placeholder="e.g. 15" name="quantity" min= "1" required>
             </div>
             <!--Display validation error message; NT the form won't submit if fields are invalid whether or not this message is displayed. 
             The message is just for user experience-->
-            <div *ngIf="(duration?.dirty || duration?.touched || submitClicked) && duration?.errors?.['required']" class="error-msg">
+            <div *ngIf="(percentage?.dirty || percentage?.touched || submitClicked) && percentage?.errors?.['required']" class="error-msg">
                 This field is required.
             </div>
 
             <div class="form-submit-div">
-                <button class="btn btn-create modal-form-submit" (click)="addEstimateDuration()">Add New Estimate Duration</button>
+                <button class="btn btn-create modal-form-submit" (click)="addDiscount()">Add New Discount</button>
             </div>
             
           </form>
@@ -133,15 +140,14 @@
       </div>
     </div>
 </div>
-
-<!--DELETE ESTIMATE DURATION MODAL-->
-<div class="modal fade" id="deleteDuration" tabindex="-1" #deleteModal>
+<!--DELETE DISCOUNT MODAL-->
+<div class="modal fade" id="deleteDiscount" tabindex="-1" #deleteModal>
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Delete Estimate Duration</h4>
+          <h4 class="modal-title">Delete Discount</h4>
           <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
@@ -152,38 +158,41 @@
 
         <!-- Modal footer -->
         <div class="modal-footer justify-content-evenly">
-            <button class="btn btn-create modal-form-submit" (click)="deleteDuration()" >Yes</button>
+            <button class="btn btn-create modal-form-submit" (click)="deleteDiscount()" >Yes</button>
             <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
         </div>
       </div>
     </div>
 </div>
 
-<!--UPDATE ESTIMATE DURATION MODAL-->
-<div class="modal fade" id="updateDuration" tabindex="-1" #updateModal>
+<!--UPDATE DISCOUNT MODAL-->
+<div class="modal fade" id="updateDiscount" tabindex="-1" #updateModal>
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Edit Estimate Duration</h4>
+          <h4 class="modal-title">Edit Discount</h4>
           <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
         <!--BODY-->
         <div class="modal-body">
-          <form [formGroup]="updateEstimateDurationForm">
+          <form [formGroup]="updateDiscountForm">
             <div class="form-group">
-                <label for="duration" class="form-label modal-form-label bold">Estimate Duration(in days):</label>
-                <input id="update-duration" type="number" formControlName="uDuration" class="form-control modal-form-input modal-form-text" name="duration" min="1" required>
+                <label for="percent" class="form-label modal-form-label bold">Percentage (%):</label>
+                
+                <input id="update-discounts" type="number" formControlName="discount" class="form-control modal-form-input modal-form-text" name="discount" min="0.1" required>
+                <label for="quantity" class="form-label modal-form-label bold">Quantity(units):</label>
+                <input id="update-discounts" type="number" formControlName="discount" class="form-control modal-form-input modal-form-text" name="discount" min="1" required>
             </div>
             <!--Display validation error message-->
-            <div *ngIf="(uDuration?.dirty || uDuration?.touched || submitClicked) && uDuration?.errors?.['required']" class="error-msg">
+            <div *ngIf="(uPercentage?.dirty || uPercentage?.touched || submitClicked) && uPercentage?.errors?.['required']" class="error-msg">
                 This field is required.
             </div>
 
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateDuration()" >Save Changes</button>
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateDiscount()" >Save Changes</button>
             </div>            
           </form>
         </div>
@@ -193,3 +202,4 @@
 </div>
 
 <div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>
+
