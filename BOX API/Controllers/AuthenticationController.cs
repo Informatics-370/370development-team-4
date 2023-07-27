@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Web;
 
 namespace BOX.Controllers
 {
@@ -166,7 +167,8 @@ namespace BOX.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetPasswordLink = Url.Action(nameof(ResetPassword), "Authentication", new { token, email = model.Email }, Request.Scheme);
+            var frontendResetPasswordLink = "http://localhost:4200/forgot-password";
+            var resetPasswordLink = frontendResetPasswordLink + "?token=" + HttpUtility.UrlEncode(token) + "&email=" + HttpUtility.UrlEncode(model.Email);
 
             var message = new Message(new string[] { user.Email }, "Password Reset", "Click the link below to reset your password: " + resetPasswordLink);
             _emailService.SendEmail(message);

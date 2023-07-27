@@ -34,6 +34,7 @@ import { CustomerNavbarComponent } from './customer-view/customer-navbar/custome
 import { LoginComponent } from './login/login.component';
 import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 @NgModule({
   declarations: [ 
@@ -64,7 +65,8 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
         CustomerNavbarComponent,
         LoginComponent,
         CustomerHomepageComponent,
-        ForgotPasswordComponent
+        ForgotPasswordComponent,
+        ResetPasswordComponent
   ],
   imports: [
     BrowserModule,

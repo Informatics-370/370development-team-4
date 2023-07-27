@@ -21,6 +21,7 @@ import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formu
 import { LoginComponent } from './login/login.component';
 import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 
 
@@ -49,9 +50,8 @@ const routes: Routes = [
   { path: 'estimate', component: EstimatePageComponent },
   { path: 'login', component: LoginComponent },
   { path: 'customer-homepage', component: CustomerHomepageComponent },
-  { path: 'forgot-password', component: ForgotPasswordComponent }
-
-
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent}
 ];
 
 @NgModule({
