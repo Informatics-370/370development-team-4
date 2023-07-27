@@ -134,28 +134,33 @@ export class EstimateLineComponent {
 
   //filter products shown in dropdown to not include products currently in estimate; atm, this only accounts for fixed products
   filterProductDropdown(currentEstimate: VATInclusiveEstimate) {
-    this.filteredFixedProducts = [];
-    this.filteredFixedProducts = this.fixedProducts; //reset array
-    console.log('All products: ', this.fixedProducts, 'and filtered products: ', this.filteredFixedProducts);
+    /*reset array. Just saying filteredFP = fP doesn't work because (according to ChatGPT):
+    The issue you are facing is likely due to the fact that arrays in JavaScript are reference types. When you do 
+    this.filteredFixedProducts = this.fixedProducts, you are not creating a new copy of the fixedProducts array; instead, you are 
+    creating a new reference to the same array. As a result, any changes made to this.filteredFixedProducts will also affect 
+    this.fixedProducts.
+    To fix this behavior and avoid modifying the original fixedProducts array when filtering, you need to create a copy of the 
+    fixedProducts array. There are several ways to do this in JavaScript/TypeScript. One common way is to use the 
+    spread operator ... to create a shallow copy of the array:*/
+    this.filteredFixedProducts = [...this.fixedProducts];
 
     //for each estimate line
     currentEstimate.estimate_Lines.forEach(estLine => {
       //find fixed product with matching ID
-      console.log('est line: ', estLine);
-      let toDelete = this.fixedProducts.find(prod => estLine.fixedProductID == prod.fixedProductID);
+      let toDelete = this.filteredFixedProducts.find(prod => estLine.fixedProductID == prod.fixedProductID);
       console.log('Bout to delete: ', toDelete);
 
       //if product is found, delete it
-      if (toDelete) this.filteredFixedProducts.splice(this.filteredFixedProducts.indexOf(toDelete));
+      if (toDelete) this.filteredFixedProducts.splice(this.filteredFixedProducts.indexOf(toDelete), 1);
     });
   }
 
-  /* getVATInclusiveAmount(amount: number): number {
+  getVATInclusiveAmount(amount: number): number {
     let priceInclVAT = amount * (1 + this.vat.percentage / 100);
     return priceInclVAT;
   }
 
-  getVATInclusiveTotal(est: EstimateVM): number {
+  /* getVATInclusiveTotal(est: EstimateVM): number {
     let totalInclVAT = 0;
     est.estimate_Lines.forEach(estimateLine => {
       totalInclVAT += estimateLine.fixedProductUnitPrice * (1 + this.vat.percentage / 100) * estimateLine.quantity;
@@ -172,9 +177,9 @@ export class EstimateLineComponent {
 
   addEstimateLine() {
     if (this.addEstimateLineForm.valid && this.selectedProductID != 'NA') {
-      const formData = this.addEstimateLineForm.value;
-      console.log(formData);
+      const formData = this.addEstimateLineForm.value; //get form data
 
+      //add row to table
       let newRow: HTMLTableRowElement = document.createElement('tr');
       newRow.id = 'f-' + this.selectedProduct?.fixedProductID + '-' + formData.quantity;
       
@@ -198,6 +203,25 @@ export class EstimateLineComponent {
 
       document.getElementById('estimate-details-tbody')?.appendChild(newRow);
       console.log(newRow);
+
+      console.log('Estimate before adding', this.selectedEstimate);
+      //add estimate line to global selectedEstimate so I can easily add to backend; NT you can't add custom product ot estimate this way
+      let newEstimateLine: EstimateLineVM = {
+        estimateID: this.selectedEstimate.estimateID,
+        estimateLineID: 0,
+        fixedProductID: this.selectedProduct ? this.selectedProduct.fixedProductID : 0,
+        fixedProductDescription: this.selectedProduct ? this.selectedProduct.description : '',
+        fixedProductUnitPrice: this.selectedProduct ? this.getVATInclusiveAmount(this.selectedProduct.price) : 0,
+        customProductID: 0,
+        customProductDescription: '',
+        customProductUnitPrice: 0,
+        quantity: formData.quantity
+      };
+
+      this.selectedEstimate.addNewEstimateLine(newEstimateLine);
+      console.log('Estimate after adding', this.selectedEstimate);
+
+      //remove fixed product from dropdown
     }
   }
 

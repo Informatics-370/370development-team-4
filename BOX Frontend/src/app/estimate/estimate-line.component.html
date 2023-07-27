@@ -42,7 +42,7 @@
           <td>{{estimate.estimateStatusDescription}}</td>
           <td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
           <td class="text-center">
-            <button title="Edit this estimate" class="btn btn-create btn-edit-price"
+            <button title="Edit this estimate" class="btn btn-create btn-edit-price" *ngIf="estimate.estimateStatusDescription == 'Pending review'"
               (click)="openUpdateEstimateModal(estimate.estimateID)">
               Edit
             </button>
@@ -100,7 +100,7 @@
               <td>
                 <select id="productID" [(ngModel)]="selectedProductID" formControlName="productID" name="productID"
                   class="form-select modal-form-input modal-form-text table-input estimate-form-select" (change)="changedProduct()">
-                  <option disabled value="NA">Type to search products</option>
+                  <option disabled value="NA">Select products</option>
                   <option *ngFor="let fp of filteredFixedProducts" value={{fp.fixedProductID}}>{{fp.description}}</option>
                 </select>
               </td>
