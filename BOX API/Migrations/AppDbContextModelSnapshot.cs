@@ -725,9 +725,11 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Role", b =>
                 {
-                    b.Property<Guid>("RoleID")
+                    b.Property<int>("RoleID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleID"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -1024,8 +1026,8 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.User_Role_Permission", b =>
                 {
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserPermissionID")
                         .HasColumnType("int");

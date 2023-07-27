@@ -32,7 +32,7 @@ namespace BOX.Models
         }
 
 		public DbSet<Admin> Admin { get; set; }
-		public DbSet<Audit_Trail> Audit_Trail { get; set; }
+        public DbSet<Audit_Trail> Audit_Trail { get; set; }
 		public DbSet<Cost_Price_Formula_Variables> cost_Price_Formula_Variables { get; set; }
 		public DbSet<Credit_Application> Credit_Application { get; set; }
 		public DbSet<Credit_Application_Status> Credit_Application_Status{ get; set; }

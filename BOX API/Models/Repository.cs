@@ -322,6 +322,23 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
+        //------------------------------------------- ROLES ------------------------------------
+        //Get All Roles
+        public async Task<Role[]> GetAllRolesAsync()
+        {
+            IQueryable<Role> query = _appDbContext.Role;
+            return await query.ToArrayAsync();
+        }
+
+        //Get Role By ID
+        public async Task<Role> GetRoleAsync(int RoleId)
+        {
+            //Query to select role where the ID passing through the API matches the ID in the Database
+            IQueryable<Role> query = _appDbContext.Role.Where(r => r.RoleID == RoleId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+
         //--------------------------------- CREDIT APPLICATION STATUS -------------------------
         public async Task<Credit_Application_Status[]> GetAllAppStatusesAsync()
         {

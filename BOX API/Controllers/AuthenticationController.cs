@@ -199,7 +199,6 @@ namespace BOX.Controllers
             return StatusCode(StatusCodes.Status400BadRequest, "Error");
         }
 
-
         [HttpGet]
         [Route("ResetPassword")]
         [AllowAnonymous]

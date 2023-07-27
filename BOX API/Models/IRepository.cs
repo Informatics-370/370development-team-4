@@ -90,7 +90,10 @@ namespace BOX.Models
 
         //------------------------------------------------ADMIN------------------------------------------------------
         Task<Admin> GetAdminAsync(int adminId);
-	
+
+        //------------------------------------------------ROLE------------------------------------------------------
+        Task<Role[]> GetAllRolesAsync();
+        Task<Role> GetRoleAsync(int RoleId);
 
         //--------------------------- CREDIT APPLICATION STATUS --------------------------
         Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
