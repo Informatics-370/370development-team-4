@@ -122,6 +122,7 @@ export class EstimateLineComponent {
     //get estimate to show details of
     let theEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));
     this.selectedEstimate = new VATInclusiveEstimate(theEstimate, this.vat.percentage);
+    console.log('Estimate before adding', this.selectedEstimate);
 
     //set global negotiated total value
     this.negotiatedTotal = parseFloat(this.selectedEstimate.confirmedTotal.toFixed(2));
@@ -148,7 +149,6 @@ export class EstimateLineComponent {
     currentEstimate.estimate_Lines.forEach(estLine => {
       //find fixed product with matching ID
       let toDelete = this.filteredFixedProducts.find(prod => estLine.fixedProductID == prod.fixedProductID);
-      console.log('Bout to delete: ', toDelete);
 
       //if product is found, delete it
       if (toDelete) this.filteredFixedProducts.splice(this.filteredFixedProducts.indexOf(toDelete), 1);
@@ -177,9 +177,13 @@ export class EstimateLineComponent {
 
   addEstimateLine() {
     if (this.addEstimateLineForm.valid && this.selectedProductID != 'NA') {
+      //REMOVED FIXED PRODUCT FROM DROPDOWN
+      let toDelete = this.filteredFixedProducts.find(prod => this.selectedProduct?.fixedProductID == prod.fixedProductID); //find fixed product with matching ID
+      if (toDelete) this.filteredFixedProducts.splice(this.filteredFixedProducts.indexOf(toDelete), 1); //if product is found, delete it
+
       const formData = this.addEstimateLineForm.value; //get form data
 
-      //add row to table
+      /* //add row to table
       let newRow: HTMLTableRowElement = document.createElement('tr');
       newRow.id = 'f-' + this.selectedProduct?.fixedProductID + '-' + formData.quantity;
       
@@ -202,9 +206,8 @@ export class EstimateLineComponent {
       newRow.appendChild(newTotalCell);
 
       document.getElementById('estimate-details-tbody')?.appendChild(newRow);
-      console.log(newRow);
+      console.log(newRow); */
 
-      console.log('Estimate before adding', this.selectedEstimate);
       //add estimate line to global selectedEstimate so I can easily add to backend; NT you can't add custom product ot estimate this way
       let newEstimateLine: EstimateLineVM = {
         estimateID: this.selectedEstimate.estimateID,
@@ -220,8 +223,11 @@ export class EstimateLineComponent {
 
       this.selectedEstimate.addNewEstimateLine(newEstimateLine);
       console.log('Estimate after adding', this.selectedEstimate);
-
-      //remove fixed product from dropdown
+      this.negotiatedTotal = parseInt(this.selectedEstimate.negotiatedTotal.toFixed(2));
+      
+      //reset form
+      this.selectedProductID = 'NA'; //reset product dropdown
+      this.addEstimateLineForm.get('quantity')?.setValue(1);
     }
   }
 
