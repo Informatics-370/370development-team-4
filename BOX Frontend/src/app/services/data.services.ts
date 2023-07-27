@@ -358,7 +358,7 @@ export class DataService {
     return this.httpClient.delete<any>(`${this.apiUrl}Discount/DeleteDiscount/${discountId}`, this.httpOptions);
   }
 
-  UpdateDiscount(discountId: number, discountModel: any): Observable<any> {
+  UpdateDiscount(discountId: number, discountModel: Discount): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
   }
 

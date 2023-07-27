@@ -186,7 +186,8 @@ updateDiscount() {
 
     //get form data
     const formValues = this.updateDiscountForm.value;
-    let updatedDiscount = {        
+    let updatedDiscount:Discount
+    ={discountID: 0,
       percentage: formValues.uPercentage,
       quantity: formValues.uQuantity,
     };

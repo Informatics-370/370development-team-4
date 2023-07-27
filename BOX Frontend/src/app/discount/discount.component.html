@@ -120,7 +120,7 @@
             <div class="form-group">
                 <label for="percent" class="form-label modal-form-label bold">Discount percentage(%):</label>
                 
-                <input id="percent" type="number" formControlName="percentage" class="form-control modal-form-input modal-form-text" placeholder="e.g. 10%" name="percent" min= "0.1" required>
+                <input id="percent" type="number" formControlName="percentage" class="form-control modal-form-input modal-form-text" placeholder="e.g. 10%" name="percent" min= "1" required>
                 <label for="quantity" class="form-label modal-form-label bold">Quantity (units):</label>
                 <input id="quantity" type="number" formControlName="quantity" class="form-control modal-form-input modal-form-text" placeholder="e.g. 15" name="quantity" min= "1" required>
             </div>
@@ -182,9 +182,9 @@
             <div class="form-group">
                 <label for="percent" class="form-label modal-form-label bold">Percentage (%):</label>
                 
-                <input id="update-discounts" type="number" formControlName="discount" class="form-control modal-form-input modal-form-text" name="discount" min="0.1" required>
+                <input id="update-discounts" type="number" formControlName="uPercentage" class="form-control modal-form-input modal-form-text" name="discount" min="1" required>
                 <label for="quantity" class="form-label modal-form-label bold">Quantity(units):</label>
-                <input id="update-discounts" type="number" formControlName="discount" class="form-control modal-form-input modal-form-text" name="discount" min="1" required>
+                <input id="update-discounts" type="number" formControlName="uQuantity" class="form-control modal-form-input modal-form-text" name="discount" min="1" required>
             </div>
             <!--Display validation error message-->
             <div *ngIf="(uPercentage?.dirty || uPercentage?.touched || submitClicked) && uPercentage?.errors?.['required']" class="error-msg">
