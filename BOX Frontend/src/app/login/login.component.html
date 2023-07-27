@@ -14,6 +14,7 @@
 </head>
 
 <body>
+    <div class="app-customer-navbar"></div>
     <div class="row">
         <!-- Left Divider -->
         <div class="col-md-4" style="background-color: #31AF99; height: 150vh;">
@@ -29,7 +30,7 @@
                         <!-- Heading -->
                         <h4 class="text-black text-center pt-4">{{'Create An Account'}}</h4>
                         <div class="card-body">
-                            <form class="px-md-2">                                   
+                            <form class="px-md-2" (submit)="submitForm()">                                   
     
                                 <!-- Email  Input -->
                                 <div class="form-group">
@@ -60,7 +61,7 @@
 
                                 <!-- Submit Button -->
                                 <div class="text-center">
-                                  <button type="submit" class="btn btn-lg text-uppercase text-white ripple shadow">Login</button>
+                                  <button type="submit" class="btn btn-lg text-uppercase text-white ripple shadow" (submit)="submitForm()">Login</button>
                                   <p class="mt-4">No Account? <a [routerLink]="['/register']">Sign Up Here</a></p>
                               </div>
 

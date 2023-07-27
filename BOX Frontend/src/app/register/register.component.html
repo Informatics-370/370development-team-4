@@ -14,6 +14,7 @@
 </head>
 
 <body>
+    <div class="app-customer-navbar"></div>
     <div class="row">
         <!-- Left Divider -->
         <div class="col-md-4" style="background-color: #31AF99; height: 150vh;">
@@ -141,7 +142,7 @@
 
                                 <!-- Submit Button -->
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-lg text-uppercase text-white ripple shadow">Register</button>
+                                    <button type="submit" class="btn btn-lg text-uppercase text-white ripple shadow" (submit)="submitForm()">Register</button>
                                     <p class="mt-4">Already Registered? <a [routerLink]="['/login']">Login Here</a></p>
                                 </div>
 

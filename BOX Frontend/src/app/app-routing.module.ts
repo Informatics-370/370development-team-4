@@ -19,6 +19,7 @@ import { CartPageComponent } from './customer-view/cart-page/cart-page.component
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 import { LoginComponent } from './login/login.component';
+import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
 
 
 
@@ -45,7 +46,8 @@ const routes: Routes = [
   { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent},
   { path: 'cart', component: CartPageComponent },
   { path: 'estimate', component: EstimatePageComponent },
-  { path: 'login', component: LoginComponent }
+  { path: 'login', component: LoginComponent },
+  { path: 'customer-homepage', component: CustomerHomepageComponent }
 
 
 

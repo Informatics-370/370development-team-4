@@ -32,6 +32,9 @@ import { EstimatePageComponent } from './customer-view/estimate-page/estimate-pa
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 import { CustomerNavbarComponent } from './customer-view/customer-navbar/customer-navbar.component';
 import { LoginComponent } from './login/login.component';
+import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
+import { FooterComponent } from './customer-view/footer/footer.component';
+import { MapComponent } from './customer-view/map/map.component';
 
 @NgModule({
   declarations: [ 
@@ -60,7 +63,10 @@ import { LoginComponent } from './login/login.component';
         EstimatePageComponent,
         CostPriceFormulaComponent,
         CustomerNavbarComponent,
-        LoginComponent
+        LoginComponent,
+        CustomerHomepageComponent,
+        FooterComponent,
+        MapComponent
   ],
   imports: [
     BrowserModule,
