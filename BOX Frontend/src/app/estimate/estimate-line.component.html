@@ -42,7 +42,8 @@
           <td>{{estimate.estimateStatusDescription}}</td>
           <td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
           <td class="text-center">
-            <button title="Edit this estimate" class="btn btn-create btn-edit-price" *ngIf="estimate.estimateStatusDescription == 'Pending review'"
+            <button title="Edit this estimate" class="btn btn-create btn-edit-price" 
+              *ngIf="estimate.estimateStatusDescription == 'Pending review' || estimate.estimateStatusDescription == 'Reviewed'"
               (click)="openUpdateEstimateModal(estimate.estimateID)">
               Edit
             </button>
