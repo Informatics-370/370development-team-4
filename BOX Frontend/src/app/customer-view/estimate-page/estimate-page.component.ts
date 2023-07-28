@@ -162,7 +162,7 @@ export class EstimatePageComponent implements OnInit {
       //statusID 5 = 'Rejected'
       this.dataService.UpdateEstimateStatus(estimateId, 5).subscribe((result) => {
         console.log("Result", result);
-        //this.deleteEstimate(estimateId); //delete estimate
+        this.deleteEstimate(estimateId); //delete estimate
         this.getCustomerEstimatesPromise(); //refresh list
       });
     } catch (error) {
@@ -175,7 +175,7 @@ export class EstimatePageComponent implements OnInit {
       //statusID 3 = 'Cancelled'
       this.dataService.UpdateEstimateStatus(estimateId, 3).subscribe((result) => {
         console.log("Result", result);
-        //this.deleteEstimate(estimateId); //delete estimate
+        this.deleteEstimate(estimateId); //delete estimate
         this.getCustomerEstimatesPromise(); //refresh list
       });
     } catch (error) {

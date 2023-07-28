@@ -58,8 +58,8 @@ namespace BOX.Controllers
                         EstimateID = estimate.EstimateID,
                         EstimateStatusID = estimate.EstimateStatusID,
                         EstimateDurationID = estimate.EstimateDurationID,
-						CustomerID = estimateLines[0].CustomerID,
-						EstimateStatusDescription = Status.Description,
+                        CustomerID = estimateLines[0].CustomerID,
+                        EstimateStatusDescription = Status.Description,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
                         Estimate_Lines = estimateLineList
                         //The Customer Name attribute does not appear here
@@ -237,7 +237,7 @@ namespace BOX.Controllers
                         EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Estimate = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,
-                        CustomProductID=1,
+                        CustomProductID = 1,
                         Quantity = estimateLineVM.Quantity
                     };
 
@@ -261,7 +261,7 @@ namespace BOX.Controllers
         public async Task<IActionResult> UpdateEstimate(int estimateId, [FromBody] EstimateViewModel updatedEstimateVM)
         {
             try
-            {                
+            {
                 var existingEstimate = await _repository.GetEstimateAsync(estimateId); //Retrieve the existing estimate from the database
                 if (existingEstimate == null) return NotFound($"The estimate does not exist on the B.O.X System");
 
@@ -271,7 +271,7 @@ namespace BOX.Controllers
                 //Update the estimate
                 existingEstimate.EstimateStatusID = 2; //status ID of 'Reviewed'.
                 existingEstimate.Confirmed_Total_Price = updatedEstimateVM.ConfirmedTotal;
-                
+
                 //await _repository.UpdateEstimateAsync(existingEstimate); // Update the Estimate in the repository
 
                 /*The next bit of code is a lil complicated but it was fun to write. Lengthy comments can explain to future me and anyone interested

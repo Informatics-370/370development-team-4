@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230417150545_BOX")]
-    partial class BOX
+    [Migration("20230728153636_UpdateCharisDBForTheLastTimeHopefully")]
+    partial class UpdateCharisDBForTheLastTimeHopefully
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,14 +32,17 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminID"), 1L, 1);
 
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("AdminID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserId1");
 
-                    b.ToTable("Admins");
+                    b.ToTable("Admin");
                 });
 
             modelBuilder.Entity("BOX.Models.Audit_Trail", b =>
@@ -78,7 +81,24 @@ namespace BOX.Migrations
 
                     b.HasKey("AuditTrailID");
 
-                    b.ToTable("Audit_Trails");
+                    b.ToTable("Audit_Trail");
+                });
+
+            modelBuilder.Entity("BOX.Models.Category_Size_Variables", b =>
+                {
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("SizeVariablesID")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    b.HasKey("CategoryID", "SizeVariablesID");
+
+                    b.HasIndex("SizeVariablesID");
+
+                    b.ToTable("Category_Size_Variables");
                 });
 
             modelBuilder.Entity("BOX.Models.Cost_Price_Formula_Variables", b =>
@@ -91,9 +111,6 @@ namespace BOX.Migrations
 
                     b.Property<decimal>("Box_Factor")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Date")
-                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -143,7 +160,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("Credit_Applications");
+                    b.ToTable("Credit_Application");
                 });
 
             modelBuilder.Entity("BOX.Models.Credit_Application_Status", b =>
@@ -154,9 +171,14 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CreditApplicationStatusID"), 1L, 1);
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.HasKey("CreditApplicationStatusID");
 
-                    b.ToTable("Credit_Application_Statuses");
+                    b.ToTable("Credit_Application_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Custom_Product", b =>
@@ -170,12 +192,18 @@ namespace BOX.Migrations
                     b.Property<int>("FormulaID")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Height")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("ItemID")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Label")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<decimal>("Length")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<byte[]>("Logo")
                         .IsRequired()
@@ -190,7 +218,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("Custom_Products");
+                    b.ToTable("Custom_Product");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer", b =>
@@ -213,8 +241,11 @@ namespace BOX.Migrations
                     b.Property<int>("EmployeeID")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("VAT_NO")
                         .IsRequired()
@@ -228,9 +259,9 @@ namespace BOX.Migrations
 
                     b.HasIndex("EmployeeID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserId1");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customer");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>
@@ -241,59 +272,63 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerOrderID"), 1L, 1);
 
-                    b.Property<int>("CustomerID")
-                        .HasColumnType("int");
-
                     b.Property<int>("CustomerOrderStatusID")
                         .HasColumnType("int");
 
-                    b.Property<int>("Date")
-                        .HasColumnType("int");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("Delivery_Photo")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int>("OrderDeliveryScheduleID")
+                    b.Property<int?>("OrderDeliveryScheduleID")
                         .HasColumnType("int");
 
                     b.HasKey("CustomerOrderID");
-
-                    b.HasIndex("CustomerID");
 
                     b.HasIndex("CustomerOrderStatusID");
 
                     b.HasIndex("OrderDeliveryScheduleID");
 
-                    b.ToTable("Customer_Orders");
+                    b.ToTable("Customer_Order");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Order_Line", b =>
                 {
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
                     b.Property<int>("CustomerOrderID")
                         .HasColumnType("int");
 
-                    b.Property<int>("FixedProductID")
+                    b.Property<int>("Customer_Order_LineID")
                         .HasColumnType("int");
 
                     b.Property<int>("CustomProductID")
                         .HasColumnType("int");
 
-                    b.Property<int>("CustomerRefundID")
+                    b.Property<int?>("CustomerRefundID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FixedProductID")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("CustomerOrderID", "FixedProductID", "CustomProductID");
+                    b.HasKey("CustomerID", "CustomerOrderID", "Customer_Order_LineID");
 
                     b.HasIndex("CustomProductID");
+
+                    b.HasIndex("CustomerOrderID");
 
                     b.HasIndex("CustomerRefundID");
 
                     b.HasIndex("FixedProductID");
 
-                    b.ToTable("Customer_Order_Lines");
+                    b.ToTable("Customer_Order_Line");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Order_Status", b =>
@@ -311,7 +346,7 @@ namespace BOX.Migrations
 
                     b.HasKey("CustomerOrderStatusID");
 
-                    b.ToTable("Customer_Order_Statuses");
+                    b.ToTable("Customer_Order_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Refund", b =>
@@ -332,7 +367,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("CustomerRefundReasonID");
 
-                    b.ToTable("Customer_Refunds");
+                    b.ToTable("Customer_Refund");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Refund_Reason", b =>
@@ -350,7 +385,7 @@ namespace BOX.Migrations
 
                     b.HasKey("CustomerRefundReasonID");
 
-                    b.ToTable("Customer_Refund_Reasons");
+                    b.ToTable("Customer_Refund_Reason");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Review", b =>
@@ -376,7 +411,7 @@ namespace BOX.Migrations
 
                     b.HasKey("CustomerReviewID");
 
-                    b.ToTable("Customer_Reviews");
+                    b.ToTable("Customer_Review");
                 });
 
             modelBuilder.Entity("BOX.Models.Discount", b =>
@@ -390,9 +425,12 @@ namespace BOX.Migrations
                     b.Property<int>("Percentage")
                         .HasColumnType("int");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.HasKey("DiscountID");
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discount");
                 });
 
             modelBuilder.Entity("BOX.Models.Employee", b =>
@@ -406,11 +444,14 @@ namespace BOX.Migrations
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("EmployeeID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employee");
                 });
 
             modelBuilder.Entity("BOX.Models.Estimate", b =>
@@ -420,6 +461,9 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstimateID"), 1L, 1);
+
+                    b.Property<decimal>("Confirmed_Total_Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("EstimateDurationID")
                         .HasColumnType("int");
@@ -433,7 +477,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("EstimateStatusID");
 
-                    b.ToTable("Estimates");
+                    b.ToTable("Estimate");
                 });
 
             modelBuilder.Entity("BOX.Models.Estimate_Duration", b =>
@@ -449,7 +493,7 @@ namespace BOX.Migrations
 
                     b.HasKey("EstimateDurationID");
 
-                    b.ToTable("Estimate_Durations");
+                    b.ToTable("Estimate_Duration");
                 });
 
             modelBuilder.Entity("BOX.Models.Estimate_Line", b =>
@@ -462,20 +506,28 @@ namespace BOX.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(1);
 
-                    b.Property<int>("AdminID")
+                    b.Property<int>("EstimateLineID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FixedProductID")
                         .HasColumnType("int")
                         .HasColumnOrder(2);
 
-                    b.Property<decimal>("Confirmed_Unit_Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
-                    b.HasKey("CustomerID", "EstimateID");
+                    b.HasKey("CustomerID", "EstimateID", "EstimateLineID");
 
-                    b.HasIndex("AdminID");
+                    b.HasIndex("CustomProductID");
 
                     b.HasIndex("EstimateID");
 
-                    b.ToTable("Estimate_Lines");
+                    b.HasIndex("FixedProductID");
+
+                    b.ToTable("Estimate_Line");
                 });
 
             modelBuilder.Entity("BOX.Models.Estimate_Status", b =>
@@ -493,26 +545,7 @@ namespace BOX.Migrations
 
                     b.HasKey("EstimateStatusID");
 
-                    b.ToTable("Estimate_Statuses");
-                });
-
-            modelBuilder.Entity("BOX.Models.Fixed_Price", b =>
-                {
-                    b.Property<int>("PriceID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PriceID"), 1L, 1);
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Date")
-                        .HasColumnType("int");
-
-                    b.HasKey("PriceID");
-
-                    b.ToTable("Fixed_Prices");
+                    b.ToTable("Estimate_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Fixed_Product", b =>
@@ -531,7 +564,17 @@ namespace BOX.Migrations
                     b.Property<int>("ItemID")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<byte[]>("Product_Photo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<int>("QRCodeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity_On_Hand")
                         .HasColumnType("int");
 
                     b.Property<int>("SizeID")
@@ -548,29 +591,6 @@ namespace BOX.Migrations
                     b.ToTable("Fixed_Product");
                 });
 
-            modelBuilder.Entity("BOX.Models.FixedProductSize", b =>
-                {
-                    b.Property<int>("FixedProductSizeID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FixedProductSizeID"), 1L, 1);
-
-                    b.Property<int>("FixedProductID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SizeID")
-                        .HasColumnType("int");
-
-                    b.HasKey("FixedProductSizeID");
-
-                    b.HasIndex("FixedProductID");
-
-                    b.HasIndex("SizeID");
-
-                    b.ToTable("FixedProductSizes");
-                });
-
             modelBuilder.Entity("BOX.Models.Order_Delivery_Schedule", b =>
                 {
                     b.Property<int>("OrderDeliveryScheduleID")
@@ -579,8 +599,9 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDeliveryScheduleID"), 1L, 1);
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmployeeID")
                         .HasColumnType("int");
@@ -589,7 +610,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("EmployeeID");
 
-                    b.ToTable("Order_Delivery_Schedules");
+                    b.ToTable("Order_Delivery_Schedule");
                 });
 
             modelBuilder.Entity("BOX.Models.Payment", b =>
@@ -618,7 +639,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("PaymentTypeID");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("BOX.Models.Payment_Type", b =>
@@ -636,7 +657,7 @@ namespace BOX.Migrations
 
                     b.HasKey("PaymentTypeID");
 
-                    b.ToTable("Payment_Types");
+                    b.ToTable("Payment_Type");
                 });
 
             modelBuilder.Entity("BOX.Models.Product_Category", b =>
@@ -647,9 +668,6 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryID"), 1L, 1);
 
-                    b.Property<int>("AdminID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -657,9 +675,7 @@ namespace BOX.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.HasIndex("AdminID");
-
-                    b.ToTable("Product_Categories");
+                    b.ToTable("Product_Category");
                 });
 
             modelBuilder.Entity("BOX.Models.Product_Item", b =>
@@ -682,7 +698,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("Product_Items");
+                    b.ToTable("Product_Item");
                 });
 
             modelBuilder.Entity("BOX.Models.QR_Code", b =>
@@ -693,18 +709,13 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QRCodeID"), 1L, 1);
 
-                    b.Property<int>("AdminID")
-                        .HasColumnType("int");
-
                     b.Property<byte[]>("QR_Code_Photo")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.HasKey("QRCodeID");
 
-                    b.HasIndex("AdminID");
-
-                    b.ToTable("QR_Codes");
+                    b.ToTable("QR_Code");
                 });
 
             modelBuilder.Entity("BOX.Models.Raw_Material", b =>
@@ -723,11 +734,14 @@ namespace BOX.Migrations
                     b.Property<int>("QRCodeID")
                         .HasColumnType("int");
 
+                    b.Property<int>("Quantity_On_Hand")
+                        .HasColumnType("int");
+
                     b.HasKey("RawMaterialID");
 
                     b.HasIndex("QRCodeID");
 
-                    b.ToTable("Raw_Materials");
+                    b.ToTable("Raw_Material");
                 });
 
             modelBuilder.Entity("BOX.Models.Role", b =>
@@ -745,16 +759,19 @@ namespace BOX.Migrations
 
                     b.HasKey("RoleID");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Role");
                 });
 
-            modelBuilder.Entity("BOX.Models.Size", b =>
+            modelBuilder.Entity("BOX.Models.Size_Units", b =>
                 {
                     b.Property<int>("SizeID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeID"), 1L, 1);
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Height")
                         .HasColumnType("decimal(18,2)");
@@ -773,7 +790,37 @@ namespace BOX.Migrations
 
                     b.HasKey("SizeID");
 
-                    b.ToTable("Sizes");
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("Size_Units");
+                });
+
+            modelBuilder.Entity("BOX.Models.Size_Variables", b =>
+                {
+                    b.Property<int>("SizeVariablesID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeVariablesID"), 1L, 1);
+
+                    b.Property<bool>("Height")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Length")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Volume")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Weight")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Width")
+                        .HasColumnType("bit");
+
+                    b.HasKey("SizeVariablesID");
+
+                    b.ToTable("Size_Variables");
                 });
 
             modelBuilder.Entity("BOX.Models.Stock_Take", b =>
@@ -794,7 +841,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("EmployeeID");
 
-                    b.ToTable("Stock_Takes");
+                    b.ToTable("Stock_Take");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier", b =>
@@ -825,14 +872,9 @@ namespace BOX.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("SupplierID");
 
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Suppliers");
+                    b.ToTable("Supplier");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_Order", b =>
@@ -843,17 +885,13 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierOrderID"), 1L, 1);
 
-                    b.Property<int>("Date")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SupplierID")
-                        .HasColumnType("int");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SupplierOrderID");
 
-                    b.HasIndex("SupplierID");
-
-                    b.ToTable("Supplier_Orders");
+                    b.ToTable("Supplier_Order");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_OrderLine", b =>
@@ -870,7 +908,13 @@ namespace BOX.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("SupplierID")
+                        .HasColumnType("int");
+
                     b.Property<int>("SupplierReturnID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Supplier_Order_LineID")
                         .HasColumnType("int");
 
                     b.HasKey("SupplierOrderID", "FixedProductID", "RawMaterialID");
@@ -879,9 +923,11 @@ namespace BOX.Migrations
 
                     b.HasIndex("RawMaterialID");
 
+                    b.HasIndex("SupplierID");
+
                     b.HasIndex("SupplierReturnID");
 
-                    b.ToTable("Supplier_OrderLines");
+                    b.ToTable("Supplier_OrderLine");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_Return", b =>
@@ -892,24 +938,69 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierReturnID"), 1L, 1);
 
-                    b.Property<int>("Date")
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("SupplierReturnID");
 
-                    b.ToTable("Supplier_Returns");
+                    b.ToTable("Supplier_Return");
                 });
 
             modelBuilder.Entity("BOX.Models.User", b =>
                 {
-                    b.Property<int>("UserID")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleID")
-                        .HasColumnType("int");
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("title")
                         .IsRequired()
@@ -921,16 +1012,6 @@ namespace BOX.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("user_Cellnum")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("user_Email")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)");
-
                     b.Property<string>("user_FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -941,16 +1022,17 @@ namespace BOX.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("user_Password")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
+                    b.HasKey("Id");
 
-                    b.HasKey("UserID");
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("RoleID");
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Users");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("BOX.Models.User_Permission", b =>
@@ -968,7 +1050,7 @@ namespace BOX.Migrations
 
                     b.HasKey("UserPermissionID");
 
-                    b.ToTable("User_Permissions");
+                    b.ToTable("User_Permission");
                 });
 
             modelBuilder.Entity("BOX.Models.User_Role_Permission", b =>
@@ -983,7 +1065,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("UserPermissionID");
 
-                    b.ToTable("User_Role_Permissions");
+                    b.ToTable("User_Role_Permission");
                 });
 
             modelBuilder.Entity("BOX.Models.VAT", b =>
@@ -994,15 +1076,12 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VatID"), 1L, 1);
 
-                    b.Property<int>("Date")
-                        .HasColumnType("int");
-
                     b.Property<int>("Percentage")
                         .HasColumnType("int");
 
                     b.HasKey("VatID");
 
-                    b.ToTable("VATs");
+                    b.ToTable("VAT");
                 });
 
             modelBuilder.Entity("BOX.Models.Write_Off", b =>
@@ -1012,9 +1091,6 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WriteOffID"), 1L, 1);
-
-                    b.Property<int>("AdminID")
-                        .HasColumnType("int");
 
                     b.Property<int>("QRCodeID")
                         .HasColumnType("int");
@@ -1027,15 +1103,13 @@ namespace BOX.Migrations
 
                     b.HasKey("WriteOffID");
 
-                    b.HasIndex("AdminID");
-
                     b.HasIndex("QRCodeID");
 
                     b.HasIndex("StockTakeID");
 
                     b.HasIndex("WriteOffReasonID");
 
-                    b.ToTable("Write_Offs");
+                    b.ToTable("Write_Off");
                 });
 
             modelBuilder.Entity("BOX.Models.Write_Off_Reason", b =>
@@ -1052,18 +1126,168 @@ namespace BOX.Migrations
 
                     b.HasKey("WriteOffReasonID");
 
-                    b.ToTable("Write_Off_Reasons");
+                    b.ToTable("Write_Off_Reason");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("BOX.Models.Admin", b =>
                 {
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserID")
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BOX.Models.Category_Size_Variables", b =>
+                {
+                    b.HasOne("BOX.Models.Product_Category", "Product_Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("BOX.Models.Size_Variables", "Size_Variables")
+                        .WithMany()
+                        .HasForeignKey("SizeVariablesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product_Category");
+
+                    b.Navigation("Size_Variables");
                 });
 
             modelBuilder.Entity("BOX.Models.Credit_Application", b =>
@@ -1122,9 +1346,7 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("Employee");
 
@@ -1133,12 +1355,6 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>
                 {
-                    b.HasOne("BOX.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BOX.Models.Customer_Order_Status", "Customer_Order_Status")
                         .WithMany()
                         .HasForeignKey("CustomerOrderStatusID")
@@ -1147,11 +1363,7 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Order_Delivery_Schedule", "Order_Delivery_Schedule")
                         .WithMany()
-                        .HasForeignKey("OrderDeliveryScheduleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
+                        .HasForeignKey("OrderDeliveryScheduleID");
 
                     b.Navigation("Customer_Order_Status");
 
@@ -1166,6 +1378,12 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BOX.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
                         .WithMany()
                         .HasForeignKey("CustomerOrderID")
@@ -1174,9 +1392,7 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Customer_Refund", "Customer_Refund")
                         .WithMany()
-                        .HasForeignKey("CustomerRefundID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerRefundID");
 
                     b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
                         .WithMany()
@@ -1185,6 +1401,8 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Custom_Product");
+
+                    b.Navigation("Customer");
 
                     b.Navigation("Customer_Order");
 
@@ -1208,9 +1426,7 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -1236,9 +1452,9 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Estimate_Line", b =>
                 {
-                    b.HasOne("BOX.Models.Admin", "Admin")
+                    b.HasOne("BOX.Models.Custom_Product", "Custom_Product")
                         .WithMany()
-                        .HasForeignKey("AdminID")
+                        .HasForeignKey("CustomProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1254,11 +1470,19 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Admin");
+                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
+                        .WithMany()
+                        .HasForeignKey("FixedProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Custom_Product");
 
                     b.Navigation("Customer");
 
                     b.Navigation("Estimate");
+
+                    b.Navigation("Fixed_Product");
                 });
 
             modelBuilder.Entity("BOX.Models.Fixed_Product", b =>
@@ -1275,7 +1499,7 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BOX.Models.Size", "Size")
+                    b.HasOne("BOX.Models.Size_Units", "Size_Units")
                         .WithMany()
                         .HasForeignKey("SizeID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1285,26 +1509,7 @@ namespace BOX.Migrations
 
                     b.Navigation("QR_Code");
 
-                    b.Navigation("Size");
-                });
-
-            modelBuilder.Entity("BOX.Models.FixedProductSize", b =>
-                {
-                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
-                        .WithMany()
-                        .HasForeignKey("FixedProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BOX.Models.Size", "Size")
-                        .WithMany()
-                        .HasForeignKey("SizeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Fixed_Product");
-
-                    b.Navigation("Size");
+                    b.Navigation("Size_Units");
                 });
 
             modelBuilder.Entity("BOX.Models.Order_Delivery_Schedule", b =>
@@ -1337,17 +1542,6 @@ namespace BOX.Migrations
                     b.Navigation("Payment_Type");
                 });
 
-            modelBuilder.Entity("BOX.Models.Product_Category", b =>
-                {
-                    b.HasOne("BOX.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("AdminID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
-                });
-
             modelBuilder.Entity("BOX.Models.Product_Item", b =>
                 {
                     b.HasOne("BOX.Models.Product_Category", "Product_Category")
@@ -1357,17 +1551,6 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Product_Category");
-                });
-
-            modelBuilder.Entity("BOX.Models.QR_Code", b =>
-                {
-                    b.HasOne("BOX.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("AdminID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
                 });
 
             modelBuilder.Entity("BOX.Models.Raw_Material", b =>
@@ -1381,6 +1564,17 @@ namespace BOX.Migrations
                     b.Navigation("QR_Code");
                 });
 
+            modelBuilder.Entity("BOX.Models.Size_Units", b =>
+                {
+                    b.HasOne("BOX.Models.Product_Category", "Product_Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product_Category");
+                });
+
             modelBuilder.Entity("BOX.Models.Stock_Take", b =>
                 {
                     b.HasOne("BOX.Models.Employee", "Employee")
@@ -1390,28 +1584,6 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("BOX.Models.Supplier", b =>
-                {
-                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Fixed_Product");
-                });
-
-            modelBuilder.Entity("BOX.Models.Supplier_Order", b =>
-                {
-                    b.HasOne("BOX.Models.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_OrderLine", b =>
@@ -1425,6 +1597,12 @@ namespace BOX.Migrations
                     b.HasOne("BOX.Models.Raw_Material", "Raw_Material")
                         .WithMany()
                         .HasForeignKey("RawMaterialID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BOX.Models.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1444,20 +1622,11 @@ namespace BOX.Migrations
 
                     b.Navigation("Raw_Material");
 
+                    b.Navigation("Supplier");
+
                     b.Navigation("Supplier_Order");
 
                     b.Navigation("Supplier_Return");
-                });
-
-            modelBuilder.Entity("BOX.Models.User", b =>
-                {
-                    b.HasOne("BOX.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("BOX.Models.User_Role_Permission", b =>
@@ -1481,12 +1650,6 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Write_Off", b =>
                 {
-                    b.HasOne("BOX.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("AdminID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BOX.Models.QR_Code", "QR_Code")
                         .WithMany()
                         .HasForeignKey("QRCodeID")
@@ -1505,13 +1668,62 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Admin");
-
                     b.Navigation("QR_Code");
 
                     b.Navigation("Stock_Take");
 
                     b.Navigation("Write_Off_Reason");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("BOX.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("BOX.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BOX.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("BOX.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
