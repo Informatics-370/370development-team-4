@@ -5,11 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BOX.Migrations
 {
-<<<<<<<< HEAD:BOX API/Migrations/20230728153636_UpdateCharisDBForTheLastTimeHopefully.cs
-    public partial class UpdateCharisDBForTheLastTimeHopefully : Migration
-========
-    public partial class Nikkesha : Migration
->>>>>>>> Internal-Testing:BOX API/Migrations/20230728170449_Nikkesha.cs
+    public partial class UpdateCharisDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
