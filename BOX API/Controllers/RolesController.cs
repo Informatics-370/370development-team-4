@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BOX.Controllers
 {
@@ -64,36 +65,62 @@ namespace BOX.Controllers
         {
             try
             {
-                var role = new Role { Description = newRole.Description };
-
                 // Check if role exists, create it if necessary
-                var roleExists = await _roleManager.RoleExistsAsync(role.Description);
-                if (!roleExists)//If role does not exist, add to AspNetRoles
+                var roleExists = await _roleManager.RoleExistsAsync(newRole.Description);
+                if (!roleExists)
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(role.Description));
-                    _repository.Add(role);
-                    await _repository.SaveChangesAsync();
-                    return StatusCode(StatusCodes.Status201Created, $"The role '{ newRole.Description }' has been created successfully ");
+                    await _roleManager.CreateAsync(new IdentityRole(newRole.Description));
                 }
-                else//If role does exist, do not add to AspNetRoles
-                {
-                    if (roleExists)//If the role exists, do not add anywhere
-                    {
-                        return StatusCode(StatusCodes.Status400BadRequest, $"This role '{ newRole.Description }' already exists. Please create a new one");
-                    }
-                    else//else add a new role
-                    {
-                        _repository.Add(role);
-                        await _repository.SaveChangesAsync();
-                        return StatusCode(StatusCodes.Status201Created, $"The role '{ newRole.Description }' has been created successfully ");
-                    }
-                }
+
+                _repository.Add(newRole);
+                await _repository.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status201Created, newRole);
             }
             catch (Exception)
             {
                 return BadRequest("Invalid transaction");
             }
         }
+
+        //---------------------------- ADD PERMISSIONS -----------------------------
+        //[HttpPost]
+        //[Route("AddPermissionsToRole/{RoleId}")]
+        //public async Task<IActionResult> AddPermissionsToRole(int RoleId, List<Permission> permissions)
+        //{
+        //    try
+        //    {
+        //        var existingRole = await _repository.GetRoleAsync(RoleId);
+        //        if (existingRole == null)
+        //        {
+        //            return NotFound($"The role with ID {RoleId} does not exist on the B.O.X System.");
+        //        }
+
+        //        var role = await _roleManager.FindByNameAsync(existingRole.Description);
+        //        if (role == null)
+        //        {
+        //            return NotFound($"The role with ID {RoleId} does not exist in the RoleManager.");
+        //        }
+
+        //        // Add the permissions to the role
+        //        foreach (var permission in permissions)
+        //        {
+        //            var claim = new Claim("Permission", permission.Name);
+        //            var result = await _roleManager.AddClaimAsync(role, claim);
+        //            if (!result.Succeeded)
+        //            {
+        //                return BadRequest("Failed to add permissions to the role.");
+        //            }
+        //        }
+
+        //        return Ok("Permissions added to the role successfully.");
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact support.");
+        //    }
+        //}
+
 
         //------------------------------ UPDATE ROLE ------------------------------
         [HttpPut]
@@ -112,7 +139,7 @@ namespace BOX.Controllers
 
                 if (await _repository.SaveChangesAsync())
                 {
-                    return StatusCode(StatusCodes.Status200OK, $"{ existingRole } has been updated successfully.");
+                    return Ok(existingRole);
                 }
             }
             catch (Exception)
@@ -137,7 +164,7 @@ namespace BOX.Controllers
                 _repository.Delete(existingRole);
 
                 if (await _repository.SaveChangesAsync()) 
-                    return StatusCode(StatusCodes.Status200OK, $"{ existingRole } has been deleted successfully.");
+                    return Ok(existingRole);
 
             }
             catch (Exception)

@@ -97,6 +97,7 @@ namespace BOX.Controllers
         //----------------------------------- Login --------------------------------------------
         [HttpPost]
         [Route("Login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDTO dto)
         {
             var user = await _userManager.FindByNameAsync(dto.emailaddress);
