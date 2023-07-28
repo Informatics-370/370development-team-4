@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230718072257_RemoveAdminFromEstimateLine AddConfirmedPriceToEstimate")]
-    partial class RemoveAdminFromEstimateLineAddConfirmedPriceToEstimate
+    [Migration("20230725212008_Making refundnullable")]
+    partial class Makingrefundnullable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -184,12 +184,18 @@ namespace BOX.Migrations
                     b.Property<int>("FormulaID")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Height")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("ItemID")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Label")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<decimal>("Length")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<byte[]>("Logo")
                         .IsRequired()
@@ -255,25 +261,21 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerOrderID"), 1L, 1);
 
-                    b.Property<int>("CustomerID")
-                        .HasColumnType("int");
-
                     b.Property<int>("CustomerOrderStatusID")
                         .HasColumnType("int");
 
-                    b.Property<int>("Date")
-                        .HasColumnType("int");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("Delivery_Photo")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int>("OrderDeliveryScheduleID")
+                    b.Property<int?>("OrderDeliveryScheduleID")
                         .HasColumnType("int");
 
                     b.HasKey("CustomerOrderID");
-
-                    b.HasIndex("CustomerID");
 
                     b.HasIndex("CustomerOrderStatusID");
 
@@ -284,24 +286,32 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Customer_Order_Line", b =>
                 {
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
                     b.Property<int>("CustomerOrderID")
                         .HasColumnType("int");
 
-                    b.Property<int>("FixedProductID")
+                    b.Property<int>("Customer_Order_LineID")
                         .HasColumnType("int");
 
                     b.Property<int>("CustomProductID")
                         .HasColumnType("int");
 
-                    b.Property<int>("CustomerRefundID")
+                    b.Property<int?>("CustomerRefundID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FixedProductID")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("CustomerOrderID", "FixedProductID", "CustomProductID");
+                    b.HasKey("CustomerID", "CustomerOrderID", "Customer_Order_LineID");
 
                     b.HasIndex("CustomProductID");
+
+                    b.HasIndex("CustomerOrderID");
 
                     b.HasIndex("CustomerRefundID");
 
@@ -404,6 +414,9 @@ namespace BOX.Migrations
                     b.Property<int>("Percentage")
                         .HasColumnType("int");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.HasKey("DiscountID");
 
                     b.ToTable("Discount");
@@ -482,11 +495,19 @@ namespace BOX.Migrations
                     b.Property<int>("EstimateLineID")
                         .HasColumnType("int");
 
+                    b.Property<int>("CustomProductID")
+                        .HasColumnType("int");
+
                     b.Property<int>("FixedProductID")
                         .HasColumnType("int")
                         .HasColumnOrder(2);
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.HasKey("CustomerID", "EstimateID", "EstimateLineID");
+
+                    b.HasIndex("CustomProductID");
 
                     b.HasIndex("EstimateID");
 
@@ -564,8 +585,9 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDeliveryScheduleID"), 1L, 1);
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmployeeID")
                         .HasColumnType("int");
@@ -1304,12 +1326,6 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>
                 {
-                    b.HasOne("BOX.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BOX.Models.Customer_Order_Status", "Customer_Order_Status")
                         .WithMany()
                         .HasForeignKey("CustomerOrderStatusID")
@@ -1318,11 +1334,7 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Order_Delivery_Schedule", "Order_Delivery_Schedule")
                         .WithMany()
-                        .HasForeignKey("OrderDeliveryScheduleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
+                        .HasForeignKey("OrderDeliveryScheduleID");
 
                     b.Navigation("Customer_Order_Status");
 
@@ -1337,6 +1349,12 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BOX.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
                         .WithMany()
                         .HasForeignKey("CustomerOrderID")
@@ -1345,9 +1363,7 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Customer_Refund", "Customer_Refund")
                         .WithMany()
-                        .HasForeignKey("CustomerRefundID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerRefundID");
 
                     b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
                         .WithMany()
@@ -1356,6 +1372,8 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Custom_Product");
+
+                    b.Navigation("Customer");
 
                     b.Navigation("Customer_Order");
 
@@ -1407,6 +1425,12 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Estimate_Line", b =>
                 {
+                    b.HasOne("BOX.Models.Custom_Product", "Custom_Product")
+                        .WithMany()
+                        .HasForeignKey("CustomProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
@@ -1424,6 +1448,8 @@ namespace BOX.Migrations
                         .HasForeignKey("FixedProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Custom_Product");
 
                     b.Navigation("Customer");
 

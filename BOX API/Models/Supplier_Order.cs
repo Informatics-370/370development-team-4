@@ -8,9 +8,6 @@ namespace BOX.Models
 	{
 		[Key]
 		public int SupplierOrderID { get; set; }
-		[ForeignKey("Supplier")]
-		public int SupplierID { get; set; }
-		public virtual Supplier Supplier { get; set; }
-		[Required] public DateFormat Date { get; set; }
+		[Required] public string Date { get; set; }
 	}
 }
