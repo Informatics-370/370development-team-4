@@ -40,12 +40,14 @@ namespace BOX.Controllers
                     //put all estimate lines for this specific estimate in a list for the estimate VM
                     foreach (var el in estimateLines)
                     {
+                        int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
+
                         EstimateLineViewModel elvm = new EstimateLineViewModel()
                         {
                             //The attributes below all pertain to the Actual EstimateLine Entity except the CustomerID. Not the View Model**
                             EstimateLineID = el.EstimateLineID,
                             EstimateID = el.EstimateID,
-                            FixedProductID = el.FixedProductID,
+                            FixedProductID = fpID,
                             CustomProductID = 0,
                             Quantity = el.Quantity
                             //The customerID is intentionally left out so that we get all the Estimates for every single Customer
@@ -97,14 +99,15 @@ namespace BOX.Controllers
                 //put all estimate lines for this specific estimate in the list
                 foreach (var el in estimateLines)
                 {
+                    int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
                     //when I display a specific estimate, I also display the fixed product unit price and description
-                    var fixedProduct = await _repository.GetFixedProductAsync(el.FixedProductID);
+                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 
                     EstimateLineViewModel elvm = new EstimateLineViewModel()
                     {
                         EstimateLineID = el.EstimateLineID,
                         EstimateID = el.EstimateID,
-                        FixedProductID = el.FixedProductID,
+                        FixedProductID = fpID,
                         FixedProductDescription = fixedProduct.Description,
                         FixedProductUnitPrice = fixedProduct.Price,
                         CustomProductID = 0,
@@ -127,9 +130,9 @@ namespace BOX.Controllers
 
                 return Ok(EstimateViewModel); //return estimate VM which contains estimate info plus estimate lines info in list format
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ex.InnerException);
             }
         }
 
@@ -154,13 +157,14 @@ namespace BOX.Controllers
                 //put all the customer's estimate lines in VM
                 foreach (var el in estimateLines)
                 {
-                    var fixedProduct = await _repository.GetFixedProductAsync(el.FixedProductID);
+                    int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
+                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 
                     EstimateLineViewModel elVM = new EstimateLineViewModel
                     {
                         EstimateLineID = el.EstimateLineID,
                         EstimateID = el.EstimateID,
-                        FixedProductID = el.FixedProductID,
+                        FixedProductID = fpID,
                         FixedProductDescription = fixedProduct.Description,
                         FixedProductUnitPrice = fixedProduct.Price,
                         Quantity = el.Quantity
@@ -237,7 +241,6 @@ namespace BOX.Controllers
                         EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Estimate = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,
-                        CustomProductID = 1,
                         Quantity = estimateLineVM.Quantity
                     };
 

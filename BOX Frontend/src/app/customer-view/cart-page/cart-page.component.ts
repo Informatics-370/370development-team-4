@@ -42,7 +42,7 @@ export class CartPageComponent {
   //Attempt at creating a new Estimate Line
 
 
-  customerId = 6; // Hardcoded Customer ID, replace with your desired value
+  customerId = 1; // Hardcoded Customer ID, replace with your desired value
   estimateId = 3; // You may choose to hardcode this or generate it as needed
 
   constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService) { }
@@ -351,7 +351,7 @@ export class CartPageComponent {
 			estimateStatusID: 0,
 			estimateStatusDescription: '',
 			estimateDurationID: 0,
-			customerID: Math.floor((Math.random() * 11) + 3),
+			customerID: 4,
 			customerFullName: '',
 			confirmedTotal: this.cartService.getCartTotal(this.applicableDiscount, this.randomdiscount),
 			estimate_Lines: []

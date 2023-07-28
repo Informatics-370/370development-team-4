@@ -31,12 +31,14 @@
     padding-left: 15px;
     outline: none;
     border: 1px solid rgba(55, 52, 53, 0.8);
+    /* border: 1px solid #c39a4e; */
     width: 100%;
     border-radius: 30px;
     margin-bottom: 0;
 }
 
 #search::placeholder {
+    /* color: grey; */
     color: grey;
 }
 
@@ -45,6 +47,7 @@
     right: 15px;
     bottom: -10px;
     color: #373435;
+    /* color: #c39a4e; */
 }
 
 /*MODAL STYLES*/

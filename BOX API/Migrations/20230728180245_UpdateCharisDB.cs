@@ -360,15 +360,14 @@ namespace BOX.Migrations
                 {
                     AdminID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Admin", x => x.AdminID);
                     table.ForeignKey(
-                        name: "FK_Admin_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Admin_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
@@ -642,8 +641,7 @@ namespace BOX.Migrations
                 {
                     customerID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     EmployeeID = table.Column<int>(type: "int", nullable: false),
                     isBusiness = table.Column<bool>(type: "bit", nullable: false),
                     VAT_NO = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
@@ -655,8 +653,8 @@ namespace BOX.Migrations
                 {
                     table.PrimaryKey("PK_Customer", x => x.customerID);
                     table.ForeignKey(
-                        name: "FK_Customer_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Customer_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -1031,9 +1029,9 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Admin_UserId1",
+                name: "IX_Admin_UserId",
                 table: "Admin",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -1110,9 +1108,9 @@ namespace BOX.Migrations
                 column: "EmployeeID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Customer_UserId1",
+                name: "IX_Customer_UserId",
                 table: "Customer",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_Order_CustomerOrderStatusID",
