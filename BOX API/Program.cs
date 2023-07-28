@@ -7,16 +7,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BOX.Factory;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json.Serialization;
+using BOX.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IRepository, Repository>();
-
-builder.Services.AddIdentity<User, Role>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
 
 // Add services to the container.
 builder.Services.AddCors(options =>
@@ -30,7 +27,11 @@ builder.Services.AddCors(options =>
   });
 });
 
-builder.Services.AddControllers();
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -61,18 +62,47 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-      options.TokenValidationParameters = new TokenValidationParameters()
-      {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-              .GetBytes(builder.Configuration.GetSection("Tokens:Key").Value)),
-        ValidIssuer = builder.Configuration["Tokens:Issuer"],
-        ValidAudience = builder.Configuration["Tokens:Audience"]
-      };
-    });
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = true;
+    options.User.RequireUniqueEmail = true;
+})
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication()
+                .AddCookie()
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = builder.Configuration["Tokens:Issuer"],
+                        ValidAudience = builder.Configuration["Tokens:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:Key"]))
+                    };
+                });
+
+//Add Email Configs
+
+var configuration = builder.Configuration;
+var emailConfig = configuration
+    .GetSection("EmailConfiguration")
+    .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, AppUserClaimsPrincipalFactory>();
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options => options.TokenLifespan = TimeSpan.FromHours(3));
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IRepository, Repository>();
 
 var app = builder.Build();
 

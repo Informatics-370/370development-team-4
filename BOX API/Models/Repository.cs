@@ -286,9 +286,9 @@ namespace BOX.Models
         //Gets one Estimate line  according to the concatenated ID
         public async Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId, int estimateLineId) //int estimateLineId)
         {
-          IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line
-           .Where(c => c.EstimateID == estimateId && c.CustomerID == customerId && c.EstimateLineID == estimateLineId);
-          return await query.FirstOrDefaultAsync();
+            IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line
+             .Where(c => c.EstimateID == estimateId && c.CustomerID == customerId && c.EstimateLineID == estimateLineId);
+            return await query.FirstOrDefaultAsync();
 
         }
 
@@ -306,22 +306,59 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-    //----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
-    public async Task<Customer> GetCustomerAsync(int customerId)
-    {
-      //Query to select fixed product where the ID passing through the API matches the ID in the Database
-      IQueryable<Customer> query = _appDbContext.Customer.Where(c => c.customerID == customerId);
-      return await query.FirstOrDefaultAsync();
-    }
+        //----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
+        public async Task<Customer> GetCustomerAsync(int customerId)
+        {
+            //Query to select fixed product where the ID passing through the API matches the ID in the Database
+            IQueryable<Customer> query = _appDbContext.Customer.Where(c => c.customerID == customerId);
+            return await query.FirstOrDefaultAsync();
+        }
 
-    //----------------------------------------------------ADMIN (TEMP)-------------------------------------
-    public async Task<Admin> GetAdminAsync(int adminId)
-    {
-      //Query to select fixed product where the ID passing through the API matches the ID in the Database
-      IQueryable<Admin> query = _appDbContext.Admin.Where(c => c.AdminID == adminId);
-      return await query.FirstOrDefaultAsync();
-    }
+        //----------------------------------------------------ADMIN (TEMP)-------------------------------------
+        public async Task<Admin> GetAdminAsync(int adminId)
+        {
+            //Query to select fixed product where the ID passing through the API matches the ID in the Database
+            IQueryable<Admin> query = _appDbContext.Admin.Where(c => c.AdminID == adminId);
+            return await query.FirstOrDefaultAsync();
+        }
 
+        //------------------------------------------- ROLES ------------------------------------
+        //Get All Roles
+        public async Task<Role[]> GetAllRolesAsync()
+        {
+            IQueryable<Role> query = _appDbContext.Role;
+            return await query.ToArrayAsync();
+        }
+
+        //Get Role By ID
+        public async Task<Role> GetRoleAsync(int RoleId)
+        {
+            //Query to select role where the ID passing through the API matches the ID in the Database
+            IQueryable<Role> query = _appDbContext.Role.Where(r => r.RoleID == RoleId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+
+        //--------------------------------- CREDIT APPLICATION STATUS -------------------------
+        public async Task<Credit_Application_Status[]> GetAllAppStatusesAsync()
+        {
+            IQueryable<Credit_Application_Status> query = _appDbContext.Credit_Application_Status;
+            return await query.ToArrayAsync();
+        }
+
+
+        public async Task<Credit_Application_Status> GetAppStatusAsync(int applicationId)
+        {
+            IQueryable<Credit_Application_Status> query = _appDbContext.Credit_Application_Status.Where(s => s.CreditApplicationStatusID == applicationId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
+        //Never remove this line of code, code above the line above.
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _appDbContext.SaveChangesAsync() > 0;
+        }
 
 		//----------------------------------------------------EMPLOYEE (TEMP)-------------------------------------
 		public async Task<Employee> GetEmployeeAsync(int employeeId)
@@ -441,6 +478,113 @@ namespace BOX.Models
 			await _appDbContext.SaveChangesAsync();
 		}
 
+		//------------------------------------------------------ Customer Order LINE------------------------------------------------------------
+
+
+		public async Task<Customer_Order_Line[]> GetAllOrderLinesAsync()
+		{
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line;
+			return await query.ToArrayAsync();
+		}
+
+		//Gets one Customer Order line  according to the concatenated ID
+		public async Task<Customer_Order_Line> GetOrderLineAsync(int customerOrderId, int customerId,int customerOrderLineId) //int customerOrderLineID)
+		{
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line
+			 .Where(c => c.CustomerOrderID == customerOrderId && c.CustomerID == customerId && c.Customer_Order_LineID==customerOrderLineId);
+			return await query.FirstOrDefaultAsync();
+
+		}
+
+		//gets all Customer Order lines for a specific order
+		public async Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId)
+		{
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerOrderID == orderId);
+			return await query.ToArrayAsync();
+		}
+
+		//Gets all customer order lines from every order customer "A" has ever made
+		public async Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(int customerId)
+		{
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerID == customerId);
+			return await query.ToArrayAsync();
+		}
+
+		//------------------------------------------------------------- Supplier Return  -------------------------------------------------------------------
+
+		//Get Al VAT
+		public async Task<Supplier_Return[]> GetAllSupplierReturnsAsync()
+		{
+			IQueryable<Supplier_Return> query = _appDbContext.Supplier_Return;
+			return await query.ToArrayAsync();
+		}
+
+		//Get VAT By ID
+		public async Task<Supplier_Return> GetSupplierReturnAsync(int supplierReturnId)
+		{
+			//Query to select vat where the ID passing through the API matches the ID in the Database
+			IQueryable<Supplier_Return> query = _appDbContext.Supplier_Return.Where(c => c.SupplierReturnID == supplierReturnId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+
+
+		//This Deals with the Functionality for Supplier Orders:
+
+		//Explanation--- Wr will be placing Supplier Orders Onto the system, we will be able to filter through and see the Order History for a particular Supplier and what it is they supply us. This is highly likely going to be necessary for one of the Reports
+
+
+		//------------------------------------------------------- SUPPLIER ORDER -----------------------------------------------------------------
+
+		//Get All Supplier Orders 
+		public async Task<Supplier_Order[]> GetAllSupplierOrdersAsync()
+		{
+			IQueryable<Supplier_Order> query = _appDbContext.Supplier_Order;
+			return await query.ToArrayAsync();
+		}
+
+
+        //Gets one Supplier Order according to the ID
+        public async Task<Supplier_Order> GetSupplierOrderAsync(int supplierOrderId)
+		{
+			//Query to select fixed product where the ID passing through the API matches the ID in the Database
+			IQueryable<Supplier_Order> query = _appDbContext.Supplier_Order.Where(c => c.SupplierOrderID == supplierOrderId);
+			return await query.FirstOrDefaultAsync();
+		}
+
+
+		//------------------------------------------------------ Supplier Order LINE------------------------------------------------------------
+
+
+		public async Task<Supplier_OrderLine[]> GetAllSupplierOrderLinesAsync()
+		{
+			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine;
+			return await query.ToArrayAsync();
+		}
+
+		//Gets one Supplier Order line  according to the concatenated ID
+		public async Task<Supplier_OrderLine> GetSupplierOrderLineAsync(int supplierOrderId, int supplierId, int supplierOrderLineId) //int customerOrderLineID)
+		{
+			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine
+			 .Where(c => c.SupplierID == supplierId && c.SupplierOrderID == supplierOrderId && c.Supplier_Order_LineID == supplierOrderLineId);
+			return await query.FirstOrDefaultAsync();
+
+		}
+
+		//Gets all Supplier Order lines for a specific order
+		public async Task<Supplier_OrderLine[]> GetSupplierOrderLinesByOrderAsync(int supOrderId)
+		{
+			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.SupplierOrderID == supOrderId);
+			return await query.ToArrayAsync();
+		}
+
+		//Gets all Supplier order lines from every order Supplier "A" has ever made---------- This will help us to create a report for how much we have ordered from each Supplier
+		public async Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId)
+		{
+			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.SupplierID == supplierId);
+			return await query.ToArrayAsync();
+		}
+
 
 		//---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
 		//Never remove this line of code, code above the line above.
@@ -449,7 +593,8 @@ namespace BOX.Models
       return await _appDbContext.SaveChangesAsync() > 0;
     }
 
-  }
+    }
+
 }
 
 

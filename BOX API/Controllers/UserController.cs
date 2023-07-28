@@ -1,43 +1,133 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+﻿using BOX.Models;
+using BOX.Services;
+using BOX.ViewModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BOX.Controllers
 {
-  [Route("api/[controller]")]
-  [ApiController]
-  public class UserController : ControllerBase
-  {
-    // GET: api/<UserController>
-    [HttpGet]
-    public IEnumerable<string> Get()
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserController : ControllerBase
     {
-      return new string[] { "value1", "value2" };
-    }
+        private readonly UserManager<User> _userManager;
+        private readonly IRepository _repository;
+        private readonly IUserClaimsPrincipalFactory<User> _claimsPrincipalFactory;
+        private readonly IConfiguration _configuration;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly IEmailService _emailService;
+        private readonly AppDbContext _dbContext;
 
-    // GET api/<UserController>/5
-    [HttpGet("{id}")]
-    public string Get(int id)
-    {
-      return "value";
-    }
+        public UserController(UserManager<User> userManager,
+            IUserClaimsPrincipalFactory<User> claimsPrincipalFactory,
+            IConfiguration configuration, IRepository repository,
+            RoleManager<IdentityRole> roleManager,
+            SignInManager<User> signInManager,
+            IEmailService emailService,
+            AppDbContext dbContext)
+        {
+            _userManager = userManager;
+            _claimsPrincipalFactory = claimsPrincipalFactory;
+            _configuration = configuration;
+            _repository = repository;
+            _roleManager = roleManager;
+            _signInManager = signInManager;
+            _emailService = emailService;
+            _dbContext = dbContext;
+        }
 
-    // POST api/<UserController>
-    [HttpPost]
-    public void Post([FromBody] string value)
-    {
-    }
+        [HttpGet]
+        [Route("GetAllUsers")]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
+        {
+            var users = await _dbContext.Users
+                .Select(u => new UserDTO
+                {
+                    FirstName = u.user_FirstName,
+                    LastName = u.user_LastName,
+                    Email = u.Email,
+                    Address = u.user_Address,
+                    Title = u.title,
+                    PhoneNumber = u.PhoneNumber
+                })
+                .ToListAsync();
 
-    // PUT api/<UserController>/5
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
-    {
-    }
+            return users;
+        }
 
-    // DELETE api/<UserController>/5
-    [HttpDelete("{id}")]
-    public void Delete(int id)
-    {
+        [HttpGet]
+        [Route("GetUserByEmailOrPhoneNumber")]
+        public async Task<ActionResult<UserDTO>> GetUserByEmailOrPhoneNumber(string emailOrPhoneNumber)
+        {
+            var user = await _dbContext.Users
+                .Where(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber)
+                .Select(u => new UserDTO
+                {
+                    FirstName = u.user_FirstName,
+                    LastName = u.user_LastName,
+                    Email = u.Email,
+                    Address = u.user_Address,
+                    Title = u.title,
+                    PhoneNumber = u.PhoneNumber
+                })
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound(); // User not found
+            }
+
+            return user;
+        }
+
+        [HttpPut]
+        [Route("UpdateUser")]
+        public async Task<IActionResult> UpdateUser(string emailOrPhoneNumber, [FromBody] UserDTO updatedUser)
+        {
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber);
+
+            if (user == null)
+            {
+                return NotFound(); // User not found
+            }
+
+            // Update the user's properties with the values from the updatedUser DTO
+            user.user_FirstName = updatedUser.FirstName;
+            user.user_LastName = updatedUser.LastName;
+            user.Email = updatedUser.Email;
+            user.user_Address = updatedUser.Address;
+            user.title = updatedUser.Title;
+            user.PhoneNumber = updatedUser.PhoneNumber;
+
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent(); // Update successful, return 204 No Content response
+        }
+
+        [HttpDelete]
+        [Route("DeleteUser")]
+        public async Task<IActionResult> DeleteUser(string emailOrPhoneNumber)
+        {
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber);
+
+            if (user == null)
+            {
+                return NotFound(); // User not found
+            }
+
+            _dbContext.Users.Remove(user);
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent(); // Deletion successful, return 204 No Content response
+        }
+
+
+
+
     }
-  }
 }
