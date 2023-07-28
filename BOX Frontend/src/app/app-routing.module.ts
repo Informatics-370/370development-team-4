@@ -51,8 +51,7 @@ const routes: Routes = [
   { path: 'customer-homepage', component: CustomerHomepageComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent},
-  { path: 'roles', component: RolesComponent }
-  { path: 'estimate', component: EstimatePageComponent },
+  { path: 'roles', component: RolesComponent },
   { path: 'discount', component: DiscountComponent }
 
 

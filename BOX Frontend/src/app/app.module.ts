@@ -69,8 +69,7 @@ import { DiscountComponent } from './discount/discount.component';
         CustomerHomepageComponent,
         ForgotPasswordComponent,
         ResetPasswordComponent,
-        RolesComponent
-        CostPriceFormulaComponent,
+        RolesComponent,
         DiscountComponent
   ],
   imports: [

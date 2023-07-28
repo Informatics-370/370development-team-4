@@ -366,7 +366,6 @@ export class DataService {
   UpdateRole(roleId: number, updatedRole: Role): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Roles/UpdateRole/${roleId}`, updatedRole, this.httpOptions);
   }
-}
 
   //------------DISCOUNTS------------ 
   GetDiscounts(): Observable<any> {

@@ -883,15 +883,11 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierOrderID"), 1L, 1);
 
-                    b.Property<int>("Date")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SupplierID")
-                        .HasColumnType("int");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SupplierOrderID");
-
-                    b.HasIndex("SupplierID");
 
                     b.ToTable("Supplier_Order");
                 });
@@ -910,7 +906,13 @@ namespace BOX.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("SupplierID")
+                        .HasColumnType("int");
+
                     b.Property<int>("SupplierReturnID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Supplier_Order_LineID")
                         .HasColumnType("int");
 
                     b.HasKey("SupplierOrderID", "FixedProductID", "RawMaterialID");
@@ -918,6 +920,8 @@ namespace BOX.Migrations
                     b.HasIndex("FixedProductID");
 
                     b.HasIndex("RawMaterialID");
+
+                    b.HasIndex("SupplierID");
 
                     b.HasIndex("SupplierReturnID");
 
@@ -932,7 +936,11 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierReturnID"), 1L, 1);
 
-                    b.Property<int>("Date")
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("SupplierReturnID");
@@ -1576,17 +1584,6 @@ namespace BOX.Migrations
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("BOX.Models.Supplier_Order", b =>
-                {
-                    b.HasOne("BOX.Models.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Supplier");
-                });
-
             modelBuilder.Entity("BOX.Models.Supplier_OrderLine", b =>
                 {
                     b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
@@ -1598,6 +1595,12 @@ namespace BOX.Migrations
                     b.HasOne("BOX.Models.Raw_Material", "Raw_Material")
                         .WithMany()
                         .HasForeignKey("RawMaterialID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BOX.Models.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1616,6 +1619,8 @@ namespace BOX.Migrations
                     b.Navigation("Fixed_Product");
 
                     b.Navigation("Raw_Material");
+
+                    b.Navigation("Supplier");
 
                     b.Navigation("Supplier_Order");
 
