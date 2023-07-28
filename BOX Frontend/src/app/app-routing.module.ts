@@ -24,6 +24,7 @@ import { CustomerHomepageComponent } from './customer-view/customer-homepage/cus
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
+import { DiscountComponent } from './discount/discount.component';
 
 
 const routes: Routes = [
@@ -52,7 +53,11 @@ const routes: Routes = [
   { path: 'customer-homepage', component: CustomerHomepageComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent},
-  { path: 'roles', component: RolesComponent }
+  { path: 'roles', component: RolesComponent },
+  { path: 'discount', component: DiscountComponent }
+
+
+
 ];
 
 @NgModule({

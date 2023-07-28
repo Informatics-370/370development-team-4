@@ -83,8 +83,9 @@ namespace BOX.Models
         //------------------------------------------------CUSTOMER--------------------------------------------------
         Task<Customer> GetCustomerAsync(int customerId);
 
-        //------------------------------------------------EMPLOYEE------------------------------------------------------
-        Task<Employee> GetEmployeeAsync(int employeeId);
+
+		//------------------------------------------------EMPLOYEE------------------------------------------------------
+		Task<Employee> GetEmployeeAsync(int employeeId);
 
 
         //-------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
@@ -136,6 +137,8 @@ namespace BOX.Models
         Task<Supplier_OrderLine> GetSupplierOrderLineAsync(int supplierOrderId, int supplierId, int supplierOrderLineId);
         Task<Supplier_OrderLine[]> GetSupplierOrderLinesByOrderAsync(int supOrderId);
         Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId);
+
+	
 
         //------------------------------------------------ADMIN------------------------------------------------------
         Task<Admin> GetAdminAsync(int adminId);
