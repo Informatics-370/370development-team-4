@@ -8,8 +8,8 @@ namespace BOX.Models
 		//Setting a Primary Key
 		[Key] public int customerID { get; set; }
 		//Setting Foreign Keys
-		[ForeignKey("User")]
-		public int UserID { get; set; }
+		[ForeignKey("Username")]
+		public int UserId { get; set; }
 		public virtual User User { get; set; }
 		[ForeignKey("Employee")]
 		public int EmployeeID { get; set; }

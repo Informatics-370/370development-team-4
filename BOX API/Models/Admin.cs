@@ -6,8 +6,8 @@ namespace BOX.Models
 	public class Admin
 	{
 		[Key] public int AdminID { get; set; }
-		[ForeignKey("User")]
-		public int UserID { get; set; }
+		[ForeignKey("Username")]
+		public int UserId { get; set; }
 		public virtual User User { get; set; }
 	}
 }

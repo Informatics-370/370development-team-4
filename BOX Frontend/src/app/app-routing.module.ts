@@ -19,9 +19,11 @@ import { CartPageComponent } from './customer-view/cart-page/cart-page.component
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 import { EstimateLineComponent } from './estimate/estimate-line.component';
-
-
-
+import { LoginComponent } from './login/login.component';
+import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RolesComponent } from './roles/roles.component';
 
 
 const routes: Routes = [
@@ -45,8 +47,12 @@ const routes: Routes = [
   { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent},
   { path: 'cart', component: CartPageComponent },
   { path: 'quotes', component: EstimatePageComponent },
-  { path: 'estimates', component: EstimateLineComponent}
-
+  { path: 'estimates', component: EstimateLineComponent},
+  { path: 'login', component: LoginComponent },
+  { path: 'customer-homepage', component: CustomerHomepageComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent},
+  { path: 'roles', component: RolesComponent }
 ];
 
 @NgModule({

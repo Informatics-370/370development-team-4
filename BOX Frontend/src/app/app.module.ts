@@ -30,6 +30,12 @@ import { CartPageComponent } from './customer-view/cart-page/cart-page.component
 import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
+import { CustomerNavbarComponent } from './customer-view/customer-navbar/customer-navbar.component';
+import { LoginComponent } from './login/login.component';
+import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RolesComponent } from './roles/roles.component';
 
 @NgModule({
   declarations: [ 
@@ -56,7 +62,13 @@ import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formu
         CartPageComponent,
         EstimateLineComponent,
         EstimatePageComponent,
-        CostPriceFormulaComponent
+        CostPriceFormulaComponent,
+        CustomerNavbarComponent,
+        LoginComponent,
+        CustomerHomepageComponent,
+        ForgotPasswordComponent,
+        ResetPasswordComponent,
+        RolesComponent
   ],
   imports: [
     BrowserModule,
