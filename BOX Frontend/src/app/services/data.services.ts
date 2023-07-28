@@ -16,6 +16,7 @@ import { Supplier } from '../shared/supplier';
 import { Customer } from '../shared/customer';
 import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
 import { EstimateVM } from '../shared/estimate-vm';
+import { Role } from '../shared/role';
 
 imports: [
   HttpClientModule
@@ -334,5 +335,34 @@ export class DataService {
 
   UpdateFormulaVariables(formulaId: number, updatedCPFV: CostPriceFormulaVariables): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}CostPriceFormulaVariables/EditFormulaVariables/${formulaId}`, updatedCPFV, this.httpOptions);
+  }
+
+      // Get all Roles
+  GetAllRoles(): Observable<Role[]> {
+    return this.httpClient.get<Role[]>(`${this.apiUrl}Roles/GetAllRoles`)
+      .pipe(map(result => result));
+  }
+
+  // Get a specific Role by ID
+  GetRole(roleId: number): Observable<Role> {
+    return this.httpClient.get<Role>(`${this.apiUrl}Roles/GetRole/${roleId}`)
+      .pipe(map(result => result));
+  }
+
+  // Add a new Role
+  AddRole(newRole: Role): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}Roles/CreateRole`, newRole, this.httpOptions
+    );
+  }
+
+  // Delete a Role by ID
+  DeleteRole(roleId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Roles/DeleteRole/${roleId}`, this.httpOptions);
+  }
+
+  // Update a Role by ID
+  UpdateRole(roleId: number, updatedRole: Role): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Roles/UpdateRole/${roleId}`, updatedRole, this.httpOptions);
   }
 }

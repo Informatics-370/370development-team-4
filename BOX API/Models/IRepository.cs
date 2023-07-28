@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace BOX.Models
 {
-  public interface IRepository
-  {
+    public interface IRepository
+    {
         void Add<T>(T entity) where T : class;
         void Delete<T>(T entity) where T : class;
         Task<bool> SaveChangesAsync();
@@ -29,24 +29,24 @@ namespace BOX.Models
         Task<Product_Item> GetItemAsync(int itemId);
 
 
-		//-------------------------------------------------------- WRITE OFF REASON -----------------------------------------------------------
-		Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync();
-		Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeOffReasonId);
+        //-------------------------------------------------------- WRITE OFF REASON -----------------------------------------------------------
+        Task<Write_Off_Reason[]> GetAllWriteOffReasonsAsync();
+        Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeOffReasonId);
 
 
         //--------------------------------------------------------- REFUND REASON -------------------------------------------------------------
         Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync();
-		Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
+        Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
 
 
         //------------------------------------------------------------- VAT -------------------------------------------------------------------
         Task<VAT[]> GetAllVatAsync();
-		Task<VAT> GetVatAsync(int vatId);
+        Task<VAT> GetVatAsync(int vatId);
 
 
         //-------------------------------------------------------- RAW MATERIAL ---------------------------------------------------------------
         Task<Raw_Material[]> GetAllRawMaterialsAsync();
-		Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId);
+        Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId);
 
 
         //------------------------------------------------------ ESTIMATE DURATION ------------------------------------------------------------
@@ -147,4 +147,15 @@ namespace BOX.Models
 
 	}
 
+        //------------------------------------------------ADMIN------------------------------------------------------
+        Task<Admin> GetAdminAsync(int adminId);
+
+        //------------------------------------------------ROLE------------------------------------------------------
+        Task<Role[]> GetAllRolesAsync();
+        Task<Role> GetRoleAsync(int RoleId);
+
+        //--------------------------- CREDIT APPLICATION STATUS --------------------------
+        Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
+        Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
+    }
 }

@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace BOX.Migrations
 {
-    public partial class UpdateEstimateVAT : Migration
+    public partial class MergedInternalToIsmail : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,12 +16,12 @@ namespace BOX.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "Date",
                 table: "VAT",
-                type: "int",
+                type: "datetime2",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
         }
     }
 }
