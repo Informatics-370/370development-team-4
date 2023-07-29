@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230728170449_Nikkesha")]
-    partial class Nikkesha
+    [Migration("20230728180245_UpdateCharisDB")]
+    partial class UpdateCharisDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

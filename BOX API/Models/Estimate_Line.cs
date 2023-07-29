@@ -22,12 +22,12 @@ namespace BOX.Models
 
 
 		[ForeignKey("Custom_Product")]
-		public int CustomProductID { get; set; }
+		public int? CustomProductID { get; set; }
 		public virtual Custom_Product Custom_Product { get; set; }
 
 		[ForeignKey("Fixed_Product")]
 		[Column(Order = 2)]
-		public int FixedProductID { get; set; }
+		public int? FixedProductID { get; set; }
 		public virtual Fixed_Product Fixed_Product { get; set; }
 
 		public int Quantity { get; set; }

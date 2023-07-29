@@ -61,8 +61,8 @@ searchDiscounts(event: Event) {
   this.searchTerm = (event.target as HTMLInputElement).value;
   this.filteredDiscounts = []; //clear array
   for (let i = 0; i < this.Discounts.length; i++) {
-    let currentDiscount: number = this.Discounts[i].percentage;
-    if (currentDiscount.toString().includes(this.searchTerm))
+    let currentDiscount: string = this.Discounts[i].percentage + ' ' + this.Discounts[i].quantity;
+    if (currentDiscount.includes(this.searchTerm))
     {
       this.filteredDiscounts.push(this.Discounts[i]);
     }
@@ -76,8 +76,8 @@ addDiscount() {
   if (this.addDiscountForm.valid) {
     const formData = this.addDiscountForm.value;
     let newDiscount = {
-      percentage: formData.percentage,
-      quantity: formData.quantity
+      percentage: Math.floor(formData.percentage),
+      quantity: Math.floor(formData.quantity)
     };
     console.log(newDiscount);
     
@@ -146,8 +146,8 @@ openUpdateModal(discountId: number) {
     (result) => {
       console.log('Discount to update: ', result);        
       this.updateDiscountForm.setValue({          
-        uPercentage: result.percentage,
-        uQuantity: result.quantity,
+        uPercentage: Math.floor(result.percentage),
+        uQuantity: Math.floor(result.quantity),
 
       }); //display data;
     },
