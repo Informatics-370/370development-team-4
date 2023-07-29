@@ -353,13 +353,7 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
-        //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
-        //Never remove this line of code, code above the line above.
-        public async Task<bool> SaveChangesAsync()
-        {
-            return await _appDbContext.SaveChangesAsync() > 0;
-        }
-
+       
 		//----------------------------------------------------EMPLOYEE (TEMP)-------------------------------------
 		public async Task<Employee> GetEmployeeAsync(int employeeId)
 		{
@@ -584,6 +578,7 @@ namespace BOX.Models
 			IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.SupplierID == supplierId);
 			return await query.ToArrayAsync();
 		}
+
 
 
 		//---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------

@@ -36,6 +36,8 @@ import { CustomerHomepageComponent } from './customer-view/customer-homepage/cus
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
+import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
+import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 
 @NgModule({
   declarations: [ 
@@ -68,7 +70,9 @@ import { RolesComponent } from './roles/roles.component';
         CustomerHomepageComponent,
         ForgotPasswordComponent,
         ResetPasswordComponent,
-        RolesComponent
+        RolesComponent,
+        SupplierOrderComponent,
+        SupplierReturnComponent
   ],
   imports: [
     BrowserModule,

@@ -17,6 +17,7 @@ import { Customer } from '../shared/customer';
 import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
 import { EstimateVM } from '../shared/estimate-vm';
 import { Role } from '../shared/role';
+import { SupplierOrderVM } from '../shared/supplierOrder-vm';
 
 imports: [
   HttpClientModule
@@ -269,6 +270,10 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
   }
 
+  UpdateRawMaterialQuantity(rawId: number, rawQuantity: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}EditRawMaterialQuantity/{rawmaterialId}/{rawMaterialQuantityOnHand}`, this.httpOptions);
+  }
+
 
   //------------------------------Supplier--------------------------//
   GetAllSuppliers(): Observable<any> {
@@ -365,4 +370,11 @@ export class DataService {
   UpdateRole(roleId: number, updatedRole: Role): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Roles/UpdateRole/${roleId}`, updatedRole, this.httpOptions);
   }
+
+//Supplier Orders
+AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
+  return this.httpClient.post<any>(
+    `${this.apiUrl}SupplierOrder/AddSupplierOrder`, newSupplierOrder, this.httpOptions
+  );
+}
 }

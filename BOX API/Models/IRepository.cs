@@ -88,8 +88,7 @@ namespace BOX.Models
         //------------------------------------------------CUSTOMER--------------------------------------------------
         Task<Customer> GetCustomerAsync(int customerId);
 
-    //------------------------------------------------ADMIN------------------------------------------------------
-    Task<Admin> GetAdminAsync(int adminId);
+ 
 
 		//------------------------------------------------EMPLOYEE------------------------------------------------------
 		Task<Employee> GetEmployeeAsync(int employeeId);
@@ -145,17 +144,20 @@ namespace BOX.Models
 		Task<Supplier_OrderLine[]> GetSupplierOrderLinesByOrderAsync(int supOrderId);
 		Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId);
 
+
+		//------------------------------------------------ADMIN------------------------------------------------------
+		Task<Admin> GetAdminAsync(int adminId);
+
+		//------------------------------------------------ROLE------------------------------------------------------
+		Task<Role[]> GetAllRolesAsync();
+		Task<Role> GetRoleAsync(int RoleId);
+
+		//--------------------------- CREDIT APPLICATION STATUS --------------------------
+		Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
+		Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
+
 	}
 
-        //------------------------------------------------ADMIN------------------------------------------------------
-        Task<Admin> GetAdminAsync(int adminId);
+      
+ }
 
-        //------------------------------------------------ROLE------------------------------------------------------
-        Task<Role[]> GetAllRolesAsync();
-        Task<Role> GetRoleAsync(int RoleId);
-
-        //--------------------------- CREDIT APPLICATION STATUS --------------------------
-        Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
-        Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
-    }
-}

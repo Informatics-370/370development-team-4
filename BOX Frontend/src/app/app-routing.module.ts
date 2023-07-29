@@ -23,6 +23,10 @@ import { CustomerHomepageComponent } from './customer-view/customer-homepage/cus
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
+import {EstimateLineComponent}from './estimate-line/estimate-line.component';
+import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
+import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
+
 
 
 const routes: Routes = [
@@ -47,10 +51,14 @@ const routes: Routes = [
   { path: 'cart', component: CartPageComponent },
   { path: 'estimate', component: EstimatePageComponent },
   { path: 'login', component: LoginComponent },
+  {path:'estimates',component:EstimateLineComponent},
   { path: 'customer-homepage', component: CustomerHomepageComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent},
-  { path: 'roles', component: RolesComponent }
+  { path: 'roles', component: RolesComponent },
+  {path: 'supplier-order',component:SupplierOrderComponent},
+  {path: 'supplier-return',component:SupplierReturnComponent}
+
 ];
 
 @NgModule({
