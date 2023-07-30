@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,7 +54,7 @@ namespace BOX.Controllers
 					{
 						CustomerOrderID = order.CustomerOrderID,
 						CustomerStatusID=order.CustomerOrderStatusID,
-						CustomerID = orderLines[0].CustomerID,
+            UserId = orderLines[0].UserId,
 						OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
 
 						Date = order.Date,
@@ -117,7 +117,7 @@ namespace BOX.Controllers
 				var CustomerOrderViewModel = new CustomerOrderViewModel
 				{
 					CustomerOrderID = order.CustomerOrderID,
-					CustomerID = orderLines[0].CustomerID,
+          UserId = orderLines[0].UserId,
 					CustomerStatusID=order.CustomerOrderStatusID,
 					OrderDeliveryScheduleID=order.OrderDeliveryScheduleID,
 					DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
@@ -135,7 +135,7 @@ namespace BOX.Controllers
 
 		[HttpGet]
 		[Route("GetOrderByCustomer/{customerId}")]
-		public async Task<IActionResult> GetOrderByCustomer(int customerId)
+		public async Task<IActionResult> GetOrderByCustomer(string customerId)
 		{
 			try
 			{
@@ -186,7 +186,7 @@ namespace BOX.Controllers
 						OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
 						DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
 						Date = order.Date,
-						CustomerID = customerId,
+            UserId = customerId,
 						CustomerOrders = allCustomerOrderLines.Where(el => el.CustomerOrderID == orderID).ToList() //get all estimate lines for this estimate
 					};
 
@@ -238,7 +238,7 @@ namespace BOX.Controllers
 					Customer_Order_Line orderLineRecord = new Customer_Order_Line
 					{
 						Customer_Order_LineID = i + 1, //e.g. 1, then 2, 3, etc.
-						CustomerID = customerOrderViewModel.CustomerID,
+            UserId = customerOrderViewModel.UserId,
 						CustomerOrderID = order.CustomerOrderID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
 						Customer_Order = order,
 						CustomProductID=1,

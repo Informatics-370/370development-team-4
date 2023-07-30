@@ -10,24 +10,23 @@ namespace BOX.Models
 	{
 		[Key] public int EstimateLineID { get; set; }
 
-		[ForeignKey("Customer")]
-		[Column(Order = 0)]
-		public int CustomerID { get; set; }
-		public virtual Customer Customer { get; set; }
+    [ForeignKey("User")]
+    public string UserId { get; set; }
+    public virtual User User { get; set; }
 
-		[ForeignKey("Estimate")]
+    [ForeignKey("Estimate")]
 		[Column(Order = 1)]
 		public int EstimateID { get; set; }
 		public virtual Estimate Estimate { get; set; }
 
 
 		[ForeignKey("Custom_Product")]
-		public int CustomProductID { get; set; }
+		public int? CustomProductID { get; set; }
 		public virtual Custom_Product Custom_Product { get; set; }
 
 		[ForeignKey("Fixed_Product")]
 		[Column(Order = 2)]
-		public int FixedProductID { get; set; }
+		public int? FixedProductID { get; set; }
 		public virtual Fixed_Product Fixed_Product { get; set; }
 
 		public int Quantity { get; set; }

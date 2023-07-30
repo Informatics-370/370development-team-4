@@ -4,6 +4,7 @@ using BOX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230730091207_Initial Migration 30 July 2023")]
+    partial class InitialMigration30July2023
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,11 +283,11 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Customer_Refund", b =>
                 {
-                    b.Property<int?>("CustomerRefundID")
+                    b.Property<int>("CustomerRefundID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("CustomerRefundID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerRefundID"), 1L, 1);
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
@@ -417,10 +419,10 @@ namespace BOX.Migrations
                     b.Property<int>("EstimateLineID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CustomProductID")
+                    b.Property<int>("CustomProductID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FixedProductID")
+                    b.Property<int>("FixedProductID")
                         .HasColumnType("int")
                         .HasColumnOrder(2);
 
@@ -458,11 +460,11 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Fixed_Product", b =>
                 {
-                    b.Property<int?>("FixedProductID")
+                    b.Property<int>("FixedProductID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("FixedProductID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FixedProductID"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -629,11 +631,11 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Raw_Material", b =>
                 {
-                    b.Property<int?>("RawMaterialID")
+                    b.Property<int>("RawMaterialID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("RawMaterialID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RawMaterialID"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -816,13 +818,13 @@ namespace BOX.Migrations
                     b.Property<int>("Supplier_Order_LineID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FixedProductID")
+                    b.Property<int>("FixedProductID")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RawMaterialID")
+                    b.Property<int>("RawMaterialID")
                         .HasColumnType("int");
 
                     b.Property<int>("SupplierReturnID")
@@ -843,11 +845,11 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Supplier_Return", b =>
                 {
-                    b.Property<int?>("SupplierReturnID")
+                    b.Property<int>("SupplierReturnID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("SupplierReturnID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierReturnID"), 1L, 1);
 
                     b.Property<string>("Date")
                         .IsRequired()
@@ -1322,7 +1324,9 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.Custom_Product", "Custom_Product")
                         .WithMany()
-                        .HasForeignKey("CustomProductID");
+                        .HasForeignKey("CustomProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BOX.Models.Estimate", "Estimate")
                         .WithMany()
@@ -1332,7 +1336,9 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
                         .WithMany()
-                        .HasForeignKey("FixedProductID");
+                        .HasForeignKey("FixedProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
@@ -1454,11 +1460,15 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
                         .WithMany()
-                        .HasForeignKey("FixedProductID");
+                        .HasForeignKey("FixedProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BOX.Models.Raw_Material", "Raw_Material")
                         .WithMany()
-                        .HasForeignKey("RawMaterialID");
+                        .HasForeignKey("RawMaterialID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BOX.Models.Supplier", "Supplier")
                         .WithMany()

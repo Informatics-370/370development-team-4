@@ -21,8 +21,8 @@ export class EstimatePageComponent implements OnInit {
   estimateCount = -1;
   loading = true;
   cartIcon = faShoppingCart;
-  customer = {
-    ID: 9,
+  user = {
+    Id: '3804c42b-f8cb-4df3-91cd-8334874b5cf4',
     fullName: 'John Doe',
     discount: 0.05
   }; //will retrieve from backend when users are up and running
@@ -38,9 +38,9 @@ export class EstimatePageComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
-    let index = Math.floor((Math.random() * 5));
-    this.customer.ID = customerIDs[index];
+    // const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
+    // let index = Math.floor((Math.random() * 5));
+    this.user.Id = '3804c42b-f8cb-4df3-91cd-8334874b5cf4';
     this.getDataFromDB();
   }
 
@@ -50,7 +50,7 @@ export class EstimatePageComponent implements OnInit {
       //turn Observables that retrieve data from DB into promises
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
-      const getEstimatesPromise = lastValueFrom(this.dataService.GetEstimatesByCustomer(this.customer.ID).pipe(take(1)));
+      const getEstimatesPromise = lastValueFrom(this.dataService.GetEstimatesByCustomer(this.user.Id).pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
@@ -95,7 +95,7 @@ export class EstimatePageComponent implements OnInit {
     this.allCustomerEstimates = this.filteredEstimates; //store all the estimate someplace before I search below
     this.estimateCount = this.filteredEstimates.length; //update the number of estimates
 
-    console.log("All of customer " + this.customer.ID + "'s estimates: ", this.filteredEstimates);
+    console.log("All of customer " + this.user.Id + "'s estimates: ", this.filteredEstimates);
     this.loading = false;
   }
 

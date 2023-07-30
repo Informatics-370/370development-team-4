@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 namespace BOX.Models
 {
@@ -21,12 +21,12 @@ namespace BOX.Models
 
 
 		[ForeignKey("Fixed_Product")]
-		public int FixedProductID { get; set; }
+		public int? FixedProductID { get; set; }
 		public virtual Fixed_Product Fixed_Product { get; set; }
 
 
 		[ForeignKey("Raw_Material")]
-		public int RawMaterialID { get; set; }
+		public int? RawMaterialID { get; set; }
 		public virtual Raw_Material Raw_Material { get; set; }
 
 

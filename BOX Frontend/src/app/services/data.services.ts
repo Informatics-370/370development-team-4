@@ -317,7 +317,7 @@ export class DataService {
       .pipe(map(result => result));
   }
 
-  GetEstimatesByCustomer(customerId: number): Observable<any> {
+  GetEstimatesByCustomer(customerId: string): Observable<any> {
     return this.httpClient.get<any>(`${this.apiUrl}Estimate/GetEstimateByCustomer/${customerId}`).pipe(map(result => result));
   }
 

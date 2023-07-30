@@ -163,7 +163,7 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-        public async Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId)
+        public async Task<Raw_Material> GetRawMaterialAsync(int? rawmaterialId)
         {
             //Query to select raw material where the ID passing through the API matches the ID in the Database
             IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(c => c.RawMaterialID == rawmaterialId);
@@ -197,7 +197,7 @@ namespace BOX.Models
         }
 
         //Gets one Fixed Product according to the ID
-        public async Task<Fixed_Product> GetFixedProductAsync(int fixedProductId)
+        public async Task<Fixed_Product> GetFixedProductAsync(int? fixedProductId)
         {
             //Query to select fixed product where the ID passing through the API matches the ID in the Database
             IQueryable<Fixed_Product> query = _appDbContext.Fixed_Product.Where(c => c.FixedProductID == fixedProductId);
@@ -284,10 +284,10 @@ namespace BOX.Models
         }
 
         //Gets one Estimate line  according to the concatenated ID
-        public async Task<Estimate_Line> GetEstimateLineAsync(int estimateId, int customerId, int estimateLineId) //int estimateLineId)
+        public async Task<Estimate_Line> GetEstimateLineAsync(int estimateId, string customerId, int estimateLineId) //int estimateLineId)
         {
             IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line
-             .Where(c => c.EstimateID == estimateId && c.CustomerID == customerId && c.EstimateLineID == estimateLineId);
+             .Where(c => c.EstimateID == estimateId && c.UserId == customerId && c.EstimateLineID == estimateLineId);
             return await query.FirstOrDefaultAsync();
 
         }
@@ -300,27 +300,27 @@ namespace BOX.Models
         }
 
         //Gets all estimate lines from every estimate customer A has ever made
-        public async Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(int customerId)
+        public async Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(string customerId)
         {
-            IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line.Where(c => c.CustomerID == customerId);
+            IQueryable<Estimate_Line> query = _appDbContext.Estimate_Line.Where(c => c.UserId == customerId);
             return await query.ToArrayAsync();
         }
 
-        //----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
-        public async Task<Customer> GetCustomerAsync(int customerId)
-        {
-            //Query to select fixed product where the ID passing through the API matches the ID in the Database
-            IQueryable<Customer> query = _appDbContext.Customer.Where(c => c.customerID == customerId);
-            return await query.FirstOrDefaultAsync();
-        }
+        ////----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
+        //public async Task<Customer> GetCustomerAsync(int customerId)
+        //{
+        //    //Query to select fixed product where the ID passing through the API matches the ID in the Database
+        //    IQueryable<Customer> query = _appDbContext.Customer.Where(c => c.customerID == customerId);
+        //    return await query.FirstOrDefaultAsync();
+        //}
 
         //----------------------------------------------------ADMIN (TEMP)-------------------------------------
-        public async Task<Admin> GetAdminAsync(int adminId)
-        {
-            //Query to select fixed product where the ID passing through the API matches the ID in the Database
-            IQueryable<Admin> query = _appDbContext.Admin.Where(c => c.AdminID == adminId);
-            return await query.FirstOrDefaultAsync();
-        }
+        //public async Task<Admin> GetAdminAsync(int adminId)
+        //{
+        //    //Query to select fixed product where the ID passing through the API matches the ID in the Database
+        //    IQueryable<Admin> query = _appDbContext.Admin.Where(c => c.AdminID == adminId);
+        //    return await query.FirstOrDefaultAsync();
+        //}
 
         //------------------------------------------- ROLES ------------------------------------
         //Get All Roles
@@ -355,11 +355,11 @@ namespace BOX.Models
 
        
 		//----------------------------------------------------EMPLOYEE (TEMP)-------------------------------------
-		public async Task<Employee> GetEmployeeAsync(int employeeId)
-		{
-			IQueryable<Employee> query = _appDbContext.Employee.Where(c => c.EmployeeID == employeeId);
-			return await query.FirstOrDefaultAsync();
-		}
+		//public async Task<Employee> GetEmployeeAsync(int employeeId)
+		//{
+		//	IQueryable<Employee> query = _appDbContext.Employee.Where(c => c.EmployeeID == employeeId);
+		//	return await query.FirstOrDefaultAsync();
+		//}
 
 
 		//------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
@@ -372,7 +372,7 @@ namespace BOX.Models
 		}
 
 		//Gets one Fixed Product according to the ID
-		public async Task<Custom_Product> GetCustomProductAsync(int customProductId)
+		public async Task<Custom_Product> GetCustomProductAsync(int? customProductId)
 		{
 			//Query to select fixed product where the ID passing through the API matches the ID in the Database
 			IQueryable<Custom_Product> query = _appDbContext.Custom_Product.Where(c => c.CustomProductID == customProductId);
@@ -482,10 +482,10 @@ namespace BOX.Models
 		}
 
 		//Gets one Customer Order line  according to the concatenated ID
-		public async Task<Customer_Order_Line> GetOrderLineAsync(int customerOrderId, int customerId,int customerOrderLineId) //int customerOrderLineID)
+		public async Task<Customer_Order_Line> GetOrderLineAsync(int customerOrderId, string customerId,int customerOrderLineId) //int customerOrderLineID)
 		{
 			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line
-			 .Where(c => c.CustomerOrderID == customerOrderId && c.CustomerID == customerId && c.Customer_Order_LineID==customerOrderLineId);
+			 .Where(c => c.CustomerOrderID == customerOrderId && c.UserId == customerId && c.Customer_Order_LineID==customerOrderLineId);
 			return await query.FirstOrDefaultAsync();
 
 		}
@@ -498,9 +498,9 @@ namespace BOX.Models
 		}
 
 		//Gets all customer order lines from every order customer "A" has ever made
-		public async Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(int customerId)
+		public async Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(string customerId)
 		{
-			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerID == customerId);
+			IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.UserId == customerId);
 			return await query.ToArrayAsync();
 		}
 

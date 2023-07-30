@@ -351,7 +351,7 @@ export class CartPageComponent {
 			estimateStatusID: 0,
 			estimateStatusDescription: '',
 			estimateDurationID: 0,
-			customerID: Math.floor((Math.random() * 11) + 3),
+			UserId: '3804c42b-f8cb-4df3-91cd-8334874b5cf4',
 			customerFullName: '',
 			confirmedTotal: this.cartService.getCartTotal(this.applicableDiscount, this.randomdiscount),
 			estimate_Lines: []

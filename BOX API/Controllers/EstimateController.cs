@@ -55,7 +55,7 @@ namespace BOX.Controllers
                         EstimateID = estimate.EstimateID,
                         EstimateStatusID = estimate.EstimateStatusID,
                         EstimateDurationID = estimate.EstimateDurationID,
-						CustomerID = estimateLines[0].CustomerID,
+                      UserId = estimateLines[0].UserId,
 						EstimateStatusDescription = Status.Description,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
                         Estimate_Lines = estimateLineList
@@ -116,7 +116,7 @@ namespace BOX.Controllers
                     EstimateStatusID = estimate.EstimateStatusID,
                     EstimateDurationID = estimate.EstimateDurationID,
                     ConfirmedTotal = estimate.Confirmed_Total_Price,
-                    CustomerID = estimateLines[0].CustomerID,
+                  UserId = estimateLines[0].UserId,
                     Estimate_Lines = estimateLineList
                 };
 
@@ -130,7 +130,7 @@ namespace BOX.Controllers
 
         [HttpGet]
         [Route("GetEstimateByCustomer/{customerId}")]
-        public async Task<IActionResult> GetEstimateByCustomer(int customerId)
+        public async Task<IActionResult> GetEstimateByCustomer(string customerId)
         {
             try
             {
@@ -179,7 +179,7 @@ namespace BOX.Controllers
                         EstimateStatusDescription = status.Description,
                         EstimateDurationID = estimate.EstimateDurationID,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
-                        CustomerID = customerId,
+                      UserId = customerId,
                         Estimate_Lines = allCustomerEstimateLines.Where(el => el.EstimateID == estimateID).ToList() //get all estimate lines for this estimate
                     };
 
@@ -228,7 +228,7 @@ namespace BOX.Controllers
                     Estimate_Line estimateLineRecord = new Estimate_Line
                     {
                         EstimateLineID = i + 1, //e.g. 1, then 2, 3, etc.
-                        CustomerID = 1,
+                      UserId = "3804c42b-f8cb-4df3-91cd-8334874b5cf4",
                         EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Estimate = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,
@@ -304,7 +304,7 @@ namespace BOX.Controllers
                         Estimate_Line estimateLineRecord = new Estimate_Line
                         {
                             EstimateLineID = index + 1,
-                            CustomerID = updatedEstimateVM.CustomerID,
+                          UserId = updatedEstimateVM.UserId,
                             EstimateID = estimateId,
                             FixedProductID = line.FixedProductID,
                             Quantity = line.Quantity
