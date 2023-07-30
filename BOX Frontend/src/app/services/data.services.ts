@@ -18,6 +18,7 @@ import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variable
 import { EstimateVM } from '../shared/estimate-vm';
 import { Role } from '../shared/role';
 import { SupplierOrderVM } from '../shared/supplierOrder-vm';
+import { Discount } from '../shared/discount';
 
 imports: [
   HttpClientModule
@@ -327,6 +328,18 @@ export class DataService {
     );
   }
 
+  UpdateEstimate(estimateId: number, estimateViewModel: EstimateVM): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimate/${estimateId}`, estimateViewModel, this.httpOptions);
+  }
+
+  UpdateEstimateStatus(estimateId: number, statusId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimateStatus/${estimateId}/${statusId}`, this.httpOptions);
+  }
+
+  DeleteEstimate(estimateId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Estimate/DeleteEstimate/${estimateId}`, this.httpOptions);
+  }
+
   //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------
   GetAllFormulaVariables(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CostPriceFormulaVariables/GetAllFormulaVariables`)
@@ -377,4 +390,31 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
     `${this.apiUrl}SupplierOrder/AddSupplierOrder`, newSupplierOrder, this.httpOptions
   );
 }
+}
+
+  //------------DISCOUNTS------------ 
+  GetDiscounts(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Discount/GetAllDiscounts`)
+      .pipe(map(result => result))
+  }
+
+  GetDiscount(discountId: number): Observable<Discount> {
+    return this.httpClient.get<Discount>(`${this.apiUrl}Discount/GetDiscount/${discountId}`)
+      .pipe(map(result => result));
+  }
+
+  AddDiscount(rrvm: any): Observable<Discount> {
+    return this.httpClient.post<Discount>(
+      `${this.apiUrl}Discount/AddDiscount`, rrvm, this.httpOptions
+    );
+  }
+
+  DeleteDiscount(discountId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Discount/DeleteDiscount/${discountId}`, this.httpOptions);
+  }
+
+  UpdateDiscount(discountId: number, discountModel: Discount): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
+  }
+
 }

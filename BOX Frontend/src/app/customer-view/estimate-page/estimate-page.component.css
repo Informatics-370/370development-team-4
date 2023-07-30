@@ -75,24 +75,6 @@ ul.navbar li.cart a i {
   padding-left: 1em;
 }
 
-/*SEARCH BAR*/
-#search, #search:focus {
-  border: 1px solid rgba(55, 52, 53, 0.8);
-  width: 100%;
-  border-radius: 30px;
-  padding-left: 15px;
-  margin-bottom: 0;
-}
-
-#search::placeholder {
-  color: grey;
-}
-
-#search-icon {
-  color: #373435;
-  bottom: -9px;
-}
-
 /*FAKE CARD STYTLING*/
 .faux-card {
   margin: 10px;

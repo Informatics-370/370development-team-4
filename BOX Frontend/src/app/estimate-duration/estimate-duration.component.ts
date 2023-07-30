@@ -74,7 +74,7 @@ export class EstimateDurationComponent {
     if (this.addEstimateDurationForm.valid) {
       const formData = this.addEstimateDurationForm.value;
       let newDuration = {
-        duration: formData.duration
+        duration: Math.floor(formData.duration)
       };
       console.log(newDuration);
       
@@ -183,7 +183,7 @@ export class EstimateDurationComponent {
       //get form data
       const formValues = this.updateEstimateDurationForm.value;
       let updatedDuration = {        
-        duration: formValues.uDuration
+        duration: Math.floor(formValues.uDuration)
       };
       console.log(updatedDuration);
 

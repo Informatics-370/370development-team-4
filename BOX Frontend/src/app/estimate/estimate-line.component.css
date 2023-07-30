@@ -1,0 +1,52 @@
+@import "../dashboard/dashboard.component.css";
+@import "../product-category/product-category.component.css";
+
+.btn-edit-price {
+  padding: 1px 12px;
+  margin: 0;
+}
+
+.price-col {
+  text-align: center;
+  width: 100px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+#estimate-details-table { margin: 0; }
+
+#total-table {
+  width: 100%;
+}
+
+#total-table tr td {
+  padding-right: 5px;
+  line-height: 1.2em;
+}
+
+.estimate-form-submit, .estimate-form-submit:hover, .estimate-form-submit:active {
+  margin: 0;
+  background-color: #00d2af;
+  color: white;
+}
+
+.estimate-form-submit:hover { background-color: #00b99a; }
+
+.form-heading { 
+  border-bottom: none;
+  font-size: 1.15em;
+  font-weight: 500;
+  padding-bottom: 0;
+  padding-top: 2px;
+}
+
+.table-input {
+  max-width: 90%;
+  padding: 2px 5px;
+  display: inline;
+  margin: 0;
+}
+
+.estimate-form-select { max-width: 100%;}

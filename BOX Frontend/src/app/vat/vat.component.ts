@@ -76,7 +76,7 @@ export class VatComponent {
      const formData = this.addVATForm.value;
       let newVAT: VAT = {
         vatID: 0,
-        percentage: formData.percentage
+        percentage: Math.floor(formData.percentage)
       };
       
       this.dataService.AddVAT(newVAT).subscribe(
@@ -142,7 +142,7 @@ export class VatComponent {
       const formValues = this.updateVATForm.value;
       let updatedVAT: VAT = {
         vatID: 0,    
-        percentage: formValues.uPercentage
+        percentage: Math.floor(formValues.uPercentage)
       };
 
       console.log(updatedVAT);

@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
     [Migration("20230730122606_Removing nullable PK to Custom Product")]
     partial class RemovingnullablePKtoCustomProduct
+========
+    [Migration("20230728204711_Make fixed prod and custom prod ID nullable in estmate line")]
+    partial class MakefixedprodandcustomprodIDnullableinestmateline
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,6 +29,30 @@ namespace BOX.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
+========
+            modelBuilder.Entity("BOX.Models.Admin", b =>
+                {
+                    b.Property<int>("AdminID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminID"), 1L, 1);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AdminID");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("Admin");
+                });
+
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
             modelBuilder.Entity("BOX.Models.Audit_Trail", b =>
                 {
                     b.Property<int>("AuditTrailID")
@@ -196,6 +225,52 @@ namespace BOX.Migrations
                     b.ToTable("Custom_Product");
                 });
 
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
+========
+            modelBuilder.Entity("BOX.Models.Customer", b =>
+                {
+                    b.Property<int>("customerID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("customerID"), 1L, 1);
+
+                    b.Property<decimal>("Credit_Balance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Credit_Limit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("EmployeeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("VAT_NO")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<bool>("isBusiness")
+                        .HasColumnType("bit");
+
+                    b.HasKey("customerID");
+
+                    b.HasIndex("EmployeeID");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("Customer");
+                });
+
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>
                 {
                     b.Property<int>("CustomerOrderID")
@@ -365,6 +440,30 @@ namespace BOX.Migrations
                     b.ToTable("Discount");
                 });
 
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
+========
+            modelBuilder.Entity("BOX.Models.Employee", b =>
+                {
+                    b.Property<int>("EmployeeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"), 1L, 1);
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("EmployeeID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Employee");
+                });
+
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
             modelBuilder.Entity("BOX.Models.Estimate", b =>
                 {
                     b.Property<int>("EstimateID")
@@ -812,6 +911,7 @@ namespace BOX.Migrations
                     b.Property<int>("SupplierOrderID")
                         .HasColumnType("int");
 
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
                     b.Property<int>("SupplierID")
                         .HasColumnType("int");
 
@@ -825,12 +925,27 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("RawMaterialID")
+========
+                    b.Property<int>("FixedProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RawMaterialID")
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierID")
                         .HasColumnType("int");
 
                     b.Property<int>("SupplierReturnID")
                         .HasColumnType("int");
 
-                    b.HasKey("SupplierOrderID", "SupplierID", "Supplier_Order_LineID");
+                    b.Property<int>("Supplier_Order_LineID")
+                        .HasColumnType("int");
+
+                    b.HasKey("SupplierOrderID", "FixedProductID", "RawMaterialID");
 
                     b.HasIndex("FixedProductID");
 
@@ -1173,6 +1288,18 @@ namespace BOX.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
+========
+                });
+
+            modelBuilder.Entity("BOX.Models.Admin", b =>
+                {
+                    b.HasOne("BOX.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("User");
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
                 });
 
             modelBuilder.Entity("BOX.Models.Category_Size_Variables", b =>
@@ -1232,6 +1359,26 @@ namespace BOX.Migrations
                     b.Navigation("Product_Item");
                 });
 
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
+========
+            modelBuilder.Entity("BOX.Models.Customer", b =>
+                {
+                    b.HasOne("BOX.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BOX.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("User");
+                });
+
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>
                 {
                     b.HasOne("BOX.Models.Customer_Order_Status", "Customer_Order_Status")
@@ -1301,6 +1448,18 @@ namespace BOX.Migrations
                     b.Navigation("Customer_Refund_Reason");
                 });
 
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
+========
+            modelBuilder.Entity("BOX.Models.Employee", b =>
+                {
+                    b.HasOne("BOX.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
             modelBuilder.Entity("BOX.Models.Estimate", b =>
                 {
                     b.HasOne("BOX.Models.Estimate_Duration", "Estimate_Duration")
@@ -1325,6 +1484,15 @@ namespace BOX.Migrations
                     b.HasOne("BOX.Models.Custom_Product", "Custom_Product")
                         .WithMany()
                         .HasForeignKey("CustomProductID");
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
+========
+
+                    b.HasOne("BOX.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
 
                     b.HasOne("BOX.Models.Estimate", "Estimate")
                         .WithMany()
@@ -1335,12 +1503,15 @@ namespace BOX.Migrations
                     b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
                         .WithMany()
                         .HasForeignKey("FixedProductID");
+<<<<<<<< HEAD:BOX API/Migrations/20230730122606_Removing nullable PK to Custom Product.Designer.cs
 
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+========
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230728204711_Make fixed prod and custom prod ID nullable in estmate line.Designer.cs
 
                     b.Navigation("Custom_Product");
 

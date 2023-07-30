@@ -27,7 +27,7 @@ import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
-import { EstimateLineComponent } from './estimate-line/estimate-line.component';
+import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 import { CustomerNavbarComponent } from './customer-view/customer-navbar/customer-navbar.component';
@@ -38,6 +38,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { RolesComponent } from './roles/roles.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
+import { DiscountComponent } from './discount/discount.component';
 
 @NgModule({
   declarations: [ 
@@ -73,6 +74,8 @@ import { SupplierReturnComponent } from './supplier-return/supplier-return.compo
         RolesComponent,
         SupplierOrderComponent,
         SupplierReturnComponent
+        RolesComponent,
+        DiscountComponent
   ],
   imports: [
     BrowserModule,
