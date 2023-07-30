@@ -12,12 +12,6 @@ namespace BOX.Models
 		[ForeignKey("Stock_Take")]
 		public int StockTakeID { get; set; }
 		public virtual Stock_Take Stock_Take { get; set; }
-		[ForeignKey("QR_Code")]
-		public int QRCodeID { get; set; }
-		public virtual QR_Code QR_Code { get; set; }
-
-
-
 
 	}
 }

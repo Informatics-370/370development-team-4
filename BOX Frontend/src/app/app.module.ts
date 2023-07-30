@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
+import { NgxScannerQrcodeModule } from 'ngx-scanner-qrcode';
 
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -73,9 +74,10 @@ import { DiscountComponent } from './discount/discount.component';
         ResetPasswordComponent,
         RolesComponent,
         SupplierOrderComponent,
-        SupplierReturnComponent
+        SupplierReturnComponent,
         RolesComponent,
         DiscountComponent
+        
   ],
   imports: [
     BrowserModule,
@@ -83,7 +85,8 @@ import { DiscountComponent } from './discount/discount.component';
     FontAwesomeModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgxScannerQrcodeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

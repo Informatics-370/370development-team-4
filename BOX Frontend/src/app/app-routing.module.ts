@@ -24,12 +24,9 @@ import { CustomerHomepageComponent } from './customer-view/customer-homepage/cus
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
-import {EstimateLineComponent}from './estimate-line/estimate-line.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
-
-
 
 const routes: Routes = [
   { path: "", redirectTo: 'register', pathMatch: 'full' },
@@ -60,13 +57,9 @@ const routes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent},
   { path: 'roles', component: RolesComponent },
   {path: 'supplier-order',component:SupplierOrderComponent},
-  {path: 'supplier-return',component:SupplierReturnComponent}
-
+  {path: 'supplier-return',component:SupplierReturnComponent},
   { path: 'roles', component: RolesComponent },
   { path: 'discount', component: DiscountComponent }
-
-
-
 ];
 
 @NgModule({

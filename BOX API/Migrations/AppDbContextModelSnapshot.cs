@@ -822,24 +822,13 @@ namespace BOX.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-<<<<<<< HEAD
                     b.Property<int?>("RawMaterialID")
-=======
-                    b.Property<int>("SupplierID")
->>>>>>> Internal-Testing
                         .HasColumnType("int");
 
                     b.Property<int>("SupplierReturnID")
                         .HasColumnType("int");
 
-<<<<<<< HEAD
                     b.HasKey("SupplierOrderID", "SupplierID", "Supplier_Order_LineID");
-=======
-                    b.Property<int>("Supplier_Order_LineID")
-                        .HasColumnType("int");
-
-                    b.HasKey("SupplierOrderID", "FixedProductID", "RawMaterialID");
->>>>>>> Internal-Testing
 
                     b.HasIndex("FixedProductID");
 
@@ -1014,9 +1003,6 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WriteOffID"), 1L, 1);
 
-                    b.Property<int>("QRCodeID")
-                        .HasColumnType("int");
-
                     b.Property<int>("StockTakeID")
                         .HasColumnType("int");
 
@@ -1024,8 +1010,6 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("WriteOffID");
-
-                    b.HasIndex("QRCodeID");
 
                     b.HasIndex("StockTakeID");
 
@@ -1334,15 +1318,6 @@ namespace BOX.Migrations
                     b.HasOne("BOX.Models.Custom_Product", "Custom_Product")
                         .WithMany()
                         .HasForeignKey("CustomProductID");
-<<<<<<< HEAD
-=======
-
-                    b.HasOne("BOX.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
->>>>>>> Internal-Testing
 
                     b.HasOne("BOX.Models.Estimate", "Estimate")
                         .WithMany()
@@ -1353,15 +1328,12 @@ namespace BOX.Migrations
                     b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
                         .WithMany()
                         .HasForeignKey("FixedProductID");
-<<<<<<< HEAD
 
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-=======
->>>>>>> Internal-Testing
 
                     b.Navigation("Custom_Product");
 
@@ -1470,11 +1442,7 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-<<<<<<< HEAD
                     b.Navigation("User");
-=======
-                    b.Navigation("Employee");
->>>>>>> Internal-Testing
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_OrderLine", b =>
@@ -1486,12 +1454,6 @@ namespace BOX.Migrations
                     b.HasOne("BOX.Models.Raw_Material", "Raw_Material")
                         .WithMany()
                         .HasForeignKey("RawMaterialID");
-
-                    b.HasOne("BOX.Models.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("BOX.Models.Supplier", "Supplier")
                         .WithMany()
@@ -1543,12 +1505,6 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Write_Off", b =>
                 {
-                    b.HasOne("BOX.Models.QR_Code", "QR_Code")
-                        .WithMany()
-                        .HasForeignKey("QRCodeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BOX.Models.Stock_Take", "Stock_Take")
                         .WithMany()
                         .HasForeignKey("StockTakeID")
@@ -1560,8 +1516,6 @@ namespace BOX.Migrations
                         .HasForeignKey("WriteOffReasonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("QR_Code");
 
                     b.Navigation("Stock_Take");
 

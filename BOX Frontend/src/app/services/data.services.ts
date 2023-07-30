@@ -384,19 +384,19 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}Roles/UpdateRole/${roleId}`, updatedRole, this.httpOptions);
   }
 
-//Supplier Orders
-AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
-  return this.httpClient.post<any>(
-    `${this.apiUrl}SupplierOrder/AddSupplierOrder`, newSupplierOrder, this.httpOptions
-  );
-}
-}
+  //Supplier Orders
+  AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
+    return this.httpClient.post<any>(
+      `${this.apiUrl}SupplierOrder/AddSupplierOrder`, newSupplierOrder, this.httpOptions
+    );
+  }
 
   //------------DISCOUNTS------------ 
   GetDiscounts(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}Discount/GetAllDiscounts`)
       .pipe(map(result => result))
   }
+
 
   GetDiscount(discountId: number): Observable<Discount> {
     return this.httpClient.get<Discount>(`${this.apiUrl}Discount/GetDiscount/${discountId}`)

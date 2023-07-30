@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230730115612_Nulling PK of Custom Product")]
-    partial class NullingPKofCustomProduct
+    [Migration("20230730134954_deleteMigrations")]
+    partial class deleteMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -158,11 +158,11 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Custom_Product", b =>
                 {
-                    b.Property<int?>("CustomProductID")
+                    b.Property<int>("CustomProductID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("CustomProductID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomProductID"), 1L, 1);
 
                     b.Property<int>("FormulaID")
                         .HasColumnType("int");

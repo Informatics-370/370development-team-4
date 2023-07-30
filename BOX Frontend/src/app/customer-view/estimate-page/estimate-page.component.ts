@@ -35,6 +35,7 @@ export class EstimatePageComponent implements OnInit {
     { discountID: 4, percentage: 23, quantity: 20000 }
   ]; //will retrieve from backend when discount is up and running
   searchTerm: string = '';
+  customer: any;
   /*Status list: I see no need to retrieve this from the backend because it's static:
   1	Pending review
   2	Reviewed

@@ -99,6 +99,7 @@ namespace BOX.Controllers
             user.user_FirstName = updatedUser.FirstName;
             user.user_LastName = updatedUser.LastName;
             user.Email = updatedUser.Email;
+            user.UserName = updatedUser.Email;
             user.user_Address = updatedUser.Address;
             user.title = updatedUser.Title;
             user.PhoneNumber = updatedUser.PhoneNumber;

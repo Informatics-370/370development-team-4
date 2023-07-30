@@ -238,7 +238,7 @@ namespace BOX.Controllers
 					Customer_Order_Line orderLineRecord = new Customer_Order_Line
 					{
 						Customer_Order_LineID = i + 1, //e.g. 1, then 2, 3, etc.
-            UserId = customerOrderViewModel.UserId,
+						UserId = customerOrderViewModel.UserId,
 						CustomerOrderID = order.CustomerOrderID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
 						Customer_Order = order,
 						CustomProductID=1,
