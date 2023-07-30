@@ -18,12 +18,12 @@ import { ProductDetailsComponent } from './customer-view/product-details/product
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
-import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { LoginComponent } from './login/login.component';
 import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
+import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
@@ -48,10 +48,9 @@ const routes: Routes = [
   { path: 'product-details/:id', component: ProductDetailsComponent},
   { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent},
   { path: 'cart', component: CartPageComponent },
-  { path: 'quotes', component: EstimatePageComponent },
+  { path: 'estimate', component: EstimatePageComponent },
   { path: 'estimates', component: EstimateLineComponent},
   { path: 'login', component: LoginComponent },
-  {path:'estimates',component:EstimateLineComponent},
   { path: 'customer-homepage', component: CustomerHomepageComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent},

@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
+<<<<<<<< HEAD:BOX API/Migrations/20230730134954_deleteMigrations.Designer.cs
     [Migration("20230730134954_deleteMigrations")]
     partial class deleteMigrations
+========
+    [Migration("20230730132827_Initial Migration")]
+    partial class InitialMigration
+>>>>>>>> 253010651f707d7f65f85e41da5b9a2a9266073f:BOX API/Migrations/20230730132827_Initial Migration.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

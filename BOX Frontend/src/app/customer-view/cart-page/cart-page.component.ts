@@ -351,7 +351,7 @@ export class CartPageComponent {
 			estimateStatusID: 0,
 			estimateStatusDescription: '',
 			estimateDurationID: 0,
-			UserId: '3804c42b-f8cb-4df3-91cd-8334874b5cf4',
+			userId: 'e541dc51-b470-4d9f-a73c-ac877671e006',
 			customerFullName: '',
 			confirmedTotal: this.cartService.getCartTotal(this.applicableDiscount, this.randomdiscount),
 			estimate_Lines: []
@@ -380,7 +380,7 @@ export class CartPageComponent {
 			this.dataService.AddEstimate(newEstimate).subscribe((result) => {
 				console.log('New estimate: ', result)
 				this.cartService.emptyCart(); //clear cart
-				this.router.navigate(['/quotes']); //redirect to estimate page
+				this.router.navigate(['/estimate']); //redirect to estimate page
 			});
 		} catch (error) {
 			console.error('Error submitting estimate: ', error);

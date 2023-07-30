@@ -237,7 +237,7 @@ namespace BOX.Controllers
                     Estimate_Line estimateLineRecord = new Estimate_Line
                     {
                         EstimateLineID = i + 1, //e.g. 1, then 2, 3, etc.
-                      UserId = "3804c42b-f8cb-4df3-91cd-8334874b5cf4",
+                      UserId = "e541dc51-b470-4d9f-a73c-ac877671e006",
                         EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Estimate = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,

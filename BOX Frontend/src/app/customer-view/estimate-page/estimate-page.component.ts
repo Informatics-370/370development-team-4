@@ -49,7 +49,7 @@ export class EstimatePageComponent implements OnInit {
   ngOnInit(): void {
     // const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
     // let index = Math.floor((Math.random() * 5));
-    this.user.Id = '3804c42b-f8cb-4df3-91cd-8334874b5cf4';
+    this.user.Id = 'e541dc51-b470-4d9f-a73c-ac877671e006';
     this.getDataFromDB();
   }
 
@@ -82,7 +82,7 @@ export class EstimatePageComponent implements OnInit {
   async getCustomerEstimatesPromise() {
     this.loading = true;
     try {
-      this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.customer.ID).pipe(take(1)));
+      this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.user.Id).pipe(take(1)));
 
       this.displayCustomerEstimates(); //Execute only after data has been retrieved from the DB otherwise error
 
