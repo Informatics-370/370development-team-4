@@ -7,8 +7,68 @@
 
   <!--PAGE CONTENT-->
   <div class="col-md-9 col-sm-9 p-2">
+    <h3 class="p-3" style="color: black;">Place Order</h3>
+    <h5 class="p-3">Orders are as easy as 1, 2 3!</h5>
+    <!--Progress bar-->
     <div class="progress">
-      <div id="bar" class="progress-bar" style="width: 97%; background-color: #F49A00;">97%</div>
+      <div id="bar" class="progress-bar" style="width: 0%; background-color: #32AF99;"></div>
     </div>
+
+    <!--Tabs-->
+    <form [formGroup]="placeOrderForm">
+      <div class="row tab" *ngIf="tab == 1">
+        <h6>Choose delivery type</h6>
+
+        <div class="form-group">
+          <label for="pickUp" class="form-label modal-form-label">
+            <input id="pickUp" type="radio" formControlName="deliveryType" value="pick up">Pick up
+          </label><br/>
+
+          <label for="delivery" class="form-label modal-form-label">
+            <input id="delivery" type="radio" formControlName="deliveryType" value="delivery">Delivery
+          </label>
+        </div><br/>
+
+        <div class="form-group" *ngIf="deliveryType?.value == 'delivery'">
+          <label for="address" class="form-label modal-form-label bold">Is this the correct shipping address?</label>
+          <input id="address" type="text" formControlName="shippingAddress" class="form-control modal-form-input modal-form-text" 
+            value="123 Fake Road" required>
+        </div>
+      </div>
+
+      <div class="row tab" *ngIf="tab == 2">
+        <h6>Choose payment type</h6>
+
+        <div class="form-group">
+          <label for="paymentType" class="form-label modal-form-label">
+            <input id="paymentType" type="radio" formControlName="paymentType" value="immediately">Pay immediately
+          </label><br/>
+
+          <label for="paymentType" class="form-label modal-form-label">
+            <input id="paymentType" type="radio" formControlName="paymentType" value="cash">Cash on delivery
+          </label><br/>
+
+          <label for="paymentType" class="form-label modal-form-label">
+            <input id="paymentType" type="radio" formControlName="paymentType" value="credit" [disabled]="!creditAllowed" >Credit
+          </label><br/>
+          <span *ngIf="!creditAllowed">We're sorry but your credit balance is insufficient / you haven't been approved for credit. You can <a>apply for credit</a>.</span>
+        </div><br/>
+      </div>
+
+      <div class="row tab" *ngIf="tab == 3">
+        <div *ngIf="paymentType?.value == 'credit'">
+          <h6>Confirm</h6>
+        </div>
+
+        <div *ngIf="paymentType?.value != 'credit'">
+          <h6>PayFast</h6>
+        </div>
+      </div>      
+
+      <div class="form-progress-div">
+        <button *ngIf="tab > 1" class="btn btn-create" (click)="previousTab()">Previous</button>
+        <button class="btn btn-create btn-next" (click)="nextTab()">Next</button>
+      </div>
+    </form>
   </div>
 </div>

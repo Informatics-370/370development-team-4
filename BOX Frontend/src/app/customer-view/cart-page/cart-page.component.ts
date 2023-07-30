@@ -19,8 +19,6 @@ import { VAT } from '../../shared/vat';
   styleUrls: ['./cart-page.component.css']
 })
 
-
-
 /*  Kuziwa: Dealing with Estimates- There shall be three main parts to the cart's functionality regarding estimates:*/
 
 //In this section I will be retrieving from Local storage and dynamically displaying what is stored in local storage in cards to the customer. 
@@ -29,11 +27,6 @@ export class CartPageComponent {
   loading = true;
   products: Cart[] = [];
   discountList: Discount[] = []; //hold all bulk discounts
-  /*
-    { discountID: 1, percentage: 6, quantity: 50 },
-    { discountID: 2, percentage: 10, quantity: 400 },
-    { discountID: 3, percentage: 17, quantity: 7000 },
-    { discountID: 4, percentage: 23, quantity: 20000 } */
   totalQuantity: number = 0;
   applicableDiscount = 0; //bulk discount
   randomdiscount = 0; //customer discount
@@ -42,8 +35,6 @@ export class CartPageComponent {
   firstName: string = '';
   lastName: string = '';
   cartTotal = 0;
-
-
   customerId = 1; // Hardcoded Customer ID, replace with your desired value
   estimateId = 3; // You may choose to hardcode this or generate it as needed
 
@@ -68,18 +59,19 @@ export class CartPageComponent {
     this.calculateTotalQuantity();
     this.generateRandomDiscount();
     this.modal = document.getElementById('contactModal');
-    this.getDataFromDB();
+    this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
+    this.applicableDiscount = this.cartService.determineApplicableDiscount();
   }
 
   //function to get data from DB asynchronously (and simultaneously)
-  async getDataFromDB() {
+  /* async getDataFromDB() {
     try {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
       const getDiscountPromise = lastValueFrom(this.dataService.GetDiscounts().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
-      That's what the Promise.all method is supposed to be doing.*/
+      That's what the Promise.all method is supposed to be doing.
       const [allVAT, allDiscounts] = await Promise.all([
         getVATPromise,
         getDiscountPromise
@@ -95,9 +87,7 @@ export class CartPageComponent {
     } catch (error) {
       console.error('An error occurred:', error);
     }
-  }
-
-
+  } */
 
   //This calculates the number of items that exist in the cart so that we can calculate the total price
   calculateTotalQuantity() {
