@@ -57,7 +57,6 @@ namespace BOX.Controllers
 						CustomerStatusID=order.CustomerOrderStatusID,
 						CustomerID = orderLines[0].CustomerID,
 						OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
-
 						Date = order.Date,
 						DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
 						OrderStatusDescription = Status.Description,
@@ -94,39 +93,42 @@ namespace BOX.Controllers
 				List<CustomerOrderLineViewModel> orderLineList = new List<CustomerOrderLineViewModel>();
 
 				//put all estimate lines for this specific estimate in the list
-				foreach (var ol in orderLineList)
-				{
-					//when I display a specific estimate, I also display the fixed product unit price and description
-					var fixedProduct = await _repository.GetFixedProductAsync(ol.FixedProductID);
+				foreach (var ol in orderLines)
+                {
+                    int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
+                    //when I display a specific estimate, I also display the fixed product unit price and description
+                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 					var Status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
 
 					CustomerOrderLineViewModel elvm = new CustomerOrderLineViewModel()
 					{
-						CustomerOrderLineID = ol.CustomerOrderLineID,
+						CustomerOrderLineID = ol.Customer_Order_LineID,
 						CustomerOrderID = ol.CustomerOrderID,
-						FixedProductID = ol.FixedProductID,
+						FixedProductID = fpID,
 						FixedProductDescription = fixedProduct.Description,
 						FixedProductUnitPrice = fixedProduct.Price,
 						CustomProductID = 0,
 						Quantity = ol.Quantity,
-						CustomerRefundDescription = ol.CustomerRefundDescription,
 
 					};
 					orderLineList.Add(elvm);
 				}
 
+                var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
+                
 				var CustomerOrderViewModel = new CustomerOrderViewModel
 				{
 					CustomerOrderID = order.CustomerOrderID,
 					CustomerID = orderLines[0].CustomerID,
 					CustomerStatusID=order.CustomerOrderStatusID,
+					OrderStatusDescription = status.Description,
 					OrderDeliveryScheduleID=order.OrderDeliveryScheduleID,
 					DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
 					Date = order.Date,
 					CustomerOrders = orderLineList
 				};
 
-				return Ok(CustomerOrderViewModel); //return estimate VM which contains estimate info plus estimate lines info in list format
+				return Ok(CustomerOrderViewModel); //return order VM which contains order info plus order lines info in list format
 			}
 			catch (Exception)
 			{
@@ -185,6 +187,7 @@ namespace BOX.Controllers
 					{
 						CustomerOrderID = order.CustomerOrderID,
 						CustomerStatusID = order.CustomerOrderStatusID,
+						OrderStatusDescription = status.Description,
 						OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
 						DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
 						Date = order.Date,
