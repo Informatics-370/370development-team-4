@@ -18,6 +18,7 @@ import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variable
 import { EstimateVM } from '../shared/estimate-vm';
 import { Role } from '../shared/role';
 import { Discount } from '../shared/discount';
+import { OrderVM } from '../shared/order-vm';
 
 imports: [
   HttpClientModule
@@ -402,6 +403,31 @@ export class DataService {
 
   UpdateDiscount(discountId: number, discountModel: Discount): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
+  }
+
+  //---------------------------------------ORDER----------------------------------
+  GetAllCustomerOrders(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CustomerOrder/GetAllCustomerOrders`)
+      .pipe(map(result => result))
+  }
+
+  GetOrder(customerOrderId: number): Observable<OrderVM> {
+    return this.httpClient.get<OrderVM>(`${this.apiUrl}CustomerOrder/GetOrder/${customerOrderId}`)
+      .pipe(map(result => result));
+  }
+
+  GetOrdersByCustomer(customerId: number): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}CustomerOrder/GetOrderByCustomer/${customerId}`).pipe(map(result => result));
+  }
+
+  AddCustomerOrder(customerOrderViewModel: OrderVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}CustomerOrder/AddCustomerOrder`, customerOrderViewModel, this.httpOptions
+    );
+  }
+
+  UpdateOrderStatus(customerOrderId: number, customerOrderStatusId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
 
 }

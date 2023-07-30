@@ -3,9 +3,8 @@ import { DataService } from '../../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
 import { CartService } from '../../services/customer-services/cart.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Item } from '../../shared/item';
 import { Cart } from '../../shared/customer-interfaces/cart';
-import { Discount } from '../../shared/discount';
+import { Route, Router } from '@angular/router';
 import { OrderVM } from '../../shared/order-vm';
 import { OrderLineVM } from '../../shared/order-line-vm';
 declare var $: any;
@@ -31,16 +30,18 @@ export class PlaceOrderComponent {
   randomDiscount = 0;
   tab = 1;
   creditAllowed = true;
-  creditBalanceDue!: Date;
+  creditBalanceDate: Date = new Date(Date.now());
+  creditBalanceDue = '';
   progress = 0;
+  placedOrder!: OrderVM;
   //forms logic
   placeOrderForm: FormGroup;
 
-  constructor(private dataService: DataService, private cartService: CartService, private formBuilder: FormBuilder) {
+  constructor(private router: Router, private dataService: DataService, private cartService: CartService, private formBuilder: FormBuilder) {
     this.placeOrderForm = this.formBuilder.group({
-      deliveryType: ['pick up', Validators.required],
+      deliveryType: ['Pick up', Validators.required],
       shippingAddress: ['123 Fake Road, Pretoria North', Validators.required],
-      paymentType: ['immediately', Validators.required],
+      paymentType: ['Pay immediately', Validators.required],
     });
   }
 
@@ -51,6 +52,7 @@ export class PlaceOrderComponent {
     this.cartTotal = this.cartService.getCartTotal(this.randomDiscount);
     console.log(this.randomDiscount, this.cartTotal);
     this.checkCredit();
+    this.getCreditDueDate();
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -87,9 +89,9 @@ export class PlaceOrderComponent {
   changeTab(direction: string) {
     if (direction == 'next') this.tab++;
     else this.tab--;
-    
-    
-    switch(this.tab) {
+
+
+    switch (this.tab) {
       case 0 || 1:
         this.tab = 1;
         this.progress = 0;
@@ -99,19 +101,19 @@ export class PlaceOrderComponent {
         this.progress = 33;
         break;
 
-      case 3:
+      case 3 || 4:
         this.progress = 66;
         break;
 
-      case 4 || 5:
+      /* case 4 || 5:
         this.tab = 4;
         this.progress = 100;
-        break;
+        break; */
 
       default:
         this.tab = 1;
         this.progress = 0;
-        break;        
+        break;
     }
 
     console.log(this.tab + ' ' + this.progress);
@@ -119,20 +121,70 @@ export class PlaceOrderComponent {
     $('#bar').css('width', this.progress + '%');
   }
 
-  /* previousTab() {
-    this.tab--;
-    if (this.tab >= 1) {
-      this.progress -= 33;
-    }
-    else if (this.tab < 1) {
-      this.tab = 1;
-      this.progress = 0;
-    }
+  getCreditDueDate() {
+    let dueDate = this.creditBalanceDate.setDate(this.creditBalanceDate.getDate() + 30);
+    console.log(dueDate);
+    let newDate = new Date(dueDate);
+    this.creditBalanceDue = newDate.toLocaleDateString('za');
+  }
 
-    let progressBar = document.getElementById('bar');
-    console.log(this.progress)
-    if (progressBar) progressBar.style.width = progressBar + '%';
-  } */
+  /*-------------PLACE ORDER------------ */
+  placeOrder() {
+    //create order lines for each cart item
+    let orderLines: OrderLineVM[] = [];
+    this.cart.forEach(cartItem => {
+      let ol: OrderLineVM = {
+        customerOrderLineID: 0,
+        customerOrderID: 0,
+        fixedProductID: cartItem.fixedProduct.fixedProductID,
+        fixedProductDescription: '',
+        fixedProductUnitPrice: 0,
+        customProductID: 0,
+        customProductDescription: '',
+        customProductUnitPrice: 0,
+        quantity: cartItem.quantity,
+        customerRefundID: 0
+      }
+
+      orderLines.push(ol);
+    });
+
+    //create order vm for order
+    let now = new Date(Date.now());
+    let dateInCorrectFormat = now.toLocaleString("za", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    });
+    console.log(dateInCorrectFormat);
+    let newOrder: OrderVM = {
+      customerID: 1,
+      customerOrderID: 0,
+      customerStatusID: 0,
+      orderDeliveryScheduleID: 0,
+      date: '',
+      deliveryPhoto: '',
+      customerFullName: '',
+      orderStatusDescription: '',
+      customerOrders: orderLines
+    };
+
+    console.log('order before posting', newOrder);
+
+    try {
+      //post to backend
+      this.dataService.AddCustomerOrder(newOrder).subscribe((result) => {
+        this.placedOrder = result;
+        this.cartService.emptyCart(); //clear cart
+        this.router.navigate(['/order-history']); //redirect to order history page
+        //this.changeTab('next'); //go to success tab
+      });
+    } catch (error) {
+      console.error('Error submitting order: ', error);
+    }
+  }
 
   get deliveryType() { return this.placeOrderForm.get('deliveryType'); }
   get paymentType() { return this.placeOrderForm.get('paymentType'); }

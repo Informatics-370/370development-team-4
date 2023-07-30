@@ -38,6 +38,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { RolesComponent } from './roles/roles.component';
 import { DiscountComponent } from './discount/discount.component';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
+import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 
 @NgModule({
   declarations: [ 
@@ -72,7 +73,8 @@ import { PlaceOrderComponent } from './customer-view/place-order/place-order.com
         ResetPasswordComponent,
         RolesComponent,
         DiscountComponent,
-        PlaceOrderComponent
+        PlaceOrderComponent,
+        OrderHistoryComponent
   ],
   imports: [
     BrowserModule,

@@ -3,7 +3,6 @@ import { Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
-import { Item } from '../../shared/item';
 import { Cart } from '../../shared/customer-interfaces/cart';
 import { Discount } from '../../shared/discount';
 import { HttpClient } from '@angular/common/http';

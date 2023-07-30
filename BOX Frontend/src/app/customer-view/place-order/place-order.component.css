@@ -38,3 +38,12 @@ input[type='radio'] {
 }
 
 .btn-next:hover { background-color: #2a9783;}
+
+.btn-order, .btn-order:active {
+    padding: 1px 20px;
+    background-color: #e7a427;
+}
+
+.btn-order:hover { background-color: #d59724;}
+
+.light-bold {font-weight: 600;}

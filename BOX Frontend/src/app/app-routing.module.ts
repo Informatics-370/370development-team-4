@@ -26,6 +26,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { RolesComponent } from './roles/roles.component';
 import { DiscountComponent } from './discount/discount.component';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
+import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 
 
 const routes: Routes = [
@@ -56,8 +57,8 @@ const routes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent},
   { path: 'roles', component: RolesComponent },
   { path: 'discount', component: DiscountComponent },
-  { path: 'place-order', component: PlaceOrderComponent}
-
+  { path: 'place-order', component: PlaceOrderComponent},
+  { path: 'order-history', component: OrderHistoryComponent}
 
 ];
 

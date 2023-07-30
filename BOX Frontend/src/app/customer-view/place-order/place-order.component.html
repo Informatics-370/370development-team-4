@@ -21,18 +21,19 @@
 
         <div class="form-group">
           <label for="pickUp" class="form-label modal-form-label">
-            <input id="pickUp" type="radio" formControlName="deliveryType" value="pick up">Pick up
+            <input id="pickUp" type="radio" formControlName="deliveryType" value="Pick up">Pick up
           </label><br />
 
           <label for="delivery" class="form-label modal-form-label">
-            <input id="delivery" type="radio" formControlName="deliveryType" value="delivery">Delivery
-          </label>
+            <input id="delivery" type="radio" formControlName="deliveryType" value="Delivery">Delivery
+          </label><br />
+          Deliveries are free. We try to deliver within 24 hours of order placement.
         </div><br />
 
-        <div class="form-group" *ngIf="deliveryType?.value == 'delivery'">
+        <div class="form-group" *ngIf="deliveryType?.value == 'Delivery'">
           <label for="address" class="form-label modal-form-label bold">Is this the correct shipping address?</label>
-          <input id="address" type="text" formControlName="shippingAddress" class="form-control modal-form-input modal-form-text" 
-            required>
+          <input id="address" type="text" formControlName="shippingAddress"
+            class="form-control modal-form-input modal-form-text" required>
         </div>
       </div>
 
@@ -41,16 +42,15 @@
 
         <div class="form-group">
           <label for="paymentType" class="form-label modal-form-label">
-            <input id="paymentType" type="radio" formControlName="paymentType" value="immediately">Pay immediately
+            <input id="paymentType" type="radio" formControlName="paymentType" value="Pay immediately">Pay immediately
           </label><br />
 
           <label for="paymentType" class="form-label modal-form-label">
-            <input id="paymentType" type="radio" formControlName="paymentType" value="cash">Cash on delivery
+            <input id="paymentType" type="radio" formControlName="paymentType" value="Cash on delivery">Cash on delivery
           </label><br />
 
           <label for="paymentType" class="form-label modal-form-label">
-            <input id="paymentType" type="radio" formControlName="paymentType" value="credit"
-              [disabled]="!creditAllowed">Credit
+            <input id="paymentType" type="radio" formControlName="paymentType" value="Credit" >Credit
           </label><br />
           <span *ngIf="!creditAllowed">We're sorry but your credit balance is insufficient / you haven't been approved
             for credit. You can <a>apply for credit</a>.</span>
@@ -58,7 +58,7 @@
       </div>
 
       <div class="row tab" *ngIf="tab == 3">
-        <div *ngIf="paymentType?.value == 'credit'">
+        <div *ngIf="paymentType?.value == 'Credit'">
           <h6>Confirm</h6>
 
           You are ordering:
@@ -107,17 +107,39 @@
                   name="negotiatedTotal" required min="0" step="0.01" max="{{selectedEstimate.confirmedTotal}}">
               </td>
             </tr> -->
-          </table>
+          </table><br />
+
+          This order is payable on {{creditBalanceDue}}
         </div>
 
-        <div *ngIf="paymentType?.value != 'credit'">
+        <div *ngIf="paymentType?.value != 'Credit'">
           <h6>PayFast</h6>
         </div>
       </div>
 
+      <!-- <div class="row tab" *ngIf="tab == 4">
+        <h6 style="text-align: center;">Your order has been placed!</h6>
+
+        <div class="light-bold">Summary:</div>
+        <div *ngIf="placedOrder">
+          Order #: <span class="light-bold"></span><br/>
+          Date: <span class="light-bold"></span><br/>
+          Total: <span class="light-bold"></span><br/>
+          Delivery type: <span class="light-bold">{{deliveryType?.value}}</span><br/>
+          <span *ngIf="deliveryType?.value == 'Delivery'">Shipping address: <span class="light-bold">
+            {{placeOrderForm.get('shippingAddress')?.value}}
+          </span></span><br/>
+          Payment type: <span class="light-bold"> {{paymentType?.value}}</span><br/><br/>
+
+          <span *ngIf="deliveryType?.value == 'Delivery'">We try to deliver fixed products within 24 hours of the order
+            being placed. You'll get an email once you're order is scheduled for delivery.</span>
+        </div>
+      </div> -->
+
       <div *ngIf="tab < 4" class="form-progress-div">
         <button *ngIf="tab > 1" class="btn btn-create" (click)="changeTab('previous')">Previous</button>
-        <button class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
+        <button *ngIf="tab != 3" class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
+        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="placeOrder()">ORDER ></button>
       </div>
     </form>
   </div>
