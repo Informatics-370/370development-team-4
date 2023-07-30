@@ -48,6 +48,7 @@ export class CartPageComponent {
   //}
 
   ngOnInit(): void {
+    this.getDataFromDB();
     this.products = this.cartService.getCartItems(); //get items from cart using cart service
 
     this.loading = false;
@@ -59,19 +60,20 @@ export class CartPageComponent {
     this.calculateTotalQuantity();
     this.generateRandomDiscount();
     this.modal = document.getElementById('contactModal');
+
     this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
     this.applicableDiscount = this.cartService.determineApplicableDiscount();
   }
 
   //function to get data from DB asynchronously (and simultaneously)
-  /* async getDataFromDB() {
+  async getDataFromDB() {
     try {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
       const getDiscountPromise = lastValueFrom(this.dataService.GetDiscounts().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
-      That's what the Promise.all method is supposed to be doing.
+      That's what the Promise.all method is supposed to be doing.*/
       const [allVAT, allDiscounts] = await Promise.all([
         getVATPromise,
         getDiscountPromise
@@ -87,7 +89,7 @@ export class CartPageComponent {
     } catch (error) {
       console.error('An error occurred:', error);
     }
-  } */
+  }
 
   //This calculates the number of items that exist in the cart so that we can calculate the total price
   calculateTotalQuantity() {
