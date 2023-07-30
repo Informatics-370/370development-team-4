@@ -390,7 +390,7 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
     `${this.apiUrl}SupplierOrder/AddSupplierOrder`, newSupplierOrder, this.httpOptions
   );
 }
-}
+
 
   //------------DISCOUNTS------------ 
   GetDiscounts(): Observable<any> {

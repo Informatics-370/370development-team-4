@@ -7,7 +7,7 @@ export class VATInclusiveEstimate implements EstimateVM {
   estimateStatusDescription: string;
   estimateDurationID: number;
   confirmedTotal: number; //total before negotiations and after discount; includes VAT
-  customerID: number;
+  userId: string;
   customerFullName: string;
   estimate_Lines: EstimateLineVM[];
   vatPercentage: number; //whole number e.g. 25 for 25%
@@ -21,7 +21,7 @@ export class VATInclusiveEstimate implements EstimateVM {
     this.estimateStatusID = estimate.estimateStatusID;
     this.estimateStatusDescription = estimate.estimateStatusDescription;
     this.estimateDurationID = estimate.estimateDurationID;
-    this.customerID = estimate.customerID;
+    this.userId = estimate.userId;
     this.customerFullName = estimate.customerFullName;
     this.estimate_Lines = this.makePriceVATInclusive(estimate.estimate_Lines);
     this.negotiatedTotal = negotiatedTotal ? negotiatedTotal : this.confirmedTotal;

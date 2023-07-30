@@ -73,7 +73,7 @@ import { DiscountComponent } from './discount/discount.component';
         ResetPasswordComponent,
         RolesComponent,
         SupplierOrderComponent,
-        SupplierReturnComponent
+        SupplierReturnComponent,
         RolesComponent,
         DiscountComponent
   ],
