@@ -37,12 +37,13 @@ namespace BOX.Controllers
 					//put all customer order lines for this specific customer order in a list for the customer order VM
 					foreach (var ol in orderLines)
 					{
+                        int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
 
-						CustomerOrderLineViewModel colvm = new CustomerOrderLineViewModel
+                        CustomerOrderLineViewModel colvm = new CustomerOrderLineViewModel
 						{
 							CustomerOrderLineID = ol.Customer_Order_LineID,
 							CustomerOrderID = ol.CustomerOrderID,
-							FixedProductID = ol.FixedProductID,
+							FixedProductID = fpID,
 							CustomerRefundID=ol.CustomerRefundID,
 							CustomProductID = 0,
 							Quantity = ol.Quantity
@@ -154,17 +155,18 @@ namespace BOX.Controllers
 				//put all the customer's estimate lines in VM
 				foreach (var ol in orderLines)
 				{
-
-					var fixedProduct = await _repository.GetFixedProductAsync(ol.FixedProductID);
+                    int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
+                    int cpID = ol.CustomProductID == null ? 0 : ol.CustomProductID.Value;
+                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 
 					CustomerOrderLineViewModel clVM = new CustomerOrderLineViewModel
 					{
 						CustomerOrderLineID = ol.Customer_Order_LineID,
 						CustomerOrderID = ol.CustomerOrderID,
-						FixedProductID = ol.FixedProductID,
+						FixedProductID = fpID,
 						FixedProductDescription = fixedProduct.Description,
 						FixedProductUnitPrice = fixedProduct.Price,
-						CustomProductID = 0,
+						CustomProductID = cpID,
 						Quantity = ol.Quantity
 					};
 					allCustomerOrderLines.Add(clVM);
@@ -227,7 +229,7 @@ namespace BOX.Controllers
 				{
 					var orderLineVM = customerOrderViewModel.CustomerOrders[i];
 
-					/*the estimate_line entity's ID is concatenated using customer ID, estimate ID and estimate line ID. An 
+                    /*the estimate_line entity's ID is concatenated using customer ID, estimate ID and estimate line ID. An 
                     estimate with ID 5 by customer with ID 16, and 2 estimate lines will have 7 estimate_line records with IDs like so:
                         estimate ID: 5, customer ID: 16, and estimate line ID: 1
                         estimate ID: 5, customer ID: 16, and estimate line ID: 2
@@ -235,14 +237,14 @@ namespace BOX.Controllers
                         estimate ID: 6, customer ID: 16, and estimate line ID: 1
                         estimate ID: 6, customer ID: 16, and estimate line ID: 2
                         estimate ID: 6, customer ID: 16, and estimate line ID: 3 */
-					Customer_Order_Line orderLineRecord = new Customer_Order_Line
+                    Customer_Order_Line orderLineRecord = new Customer_Order_Line
 					{
 						Customer_Order_LineID = i + 1, //e.g. 1, then 2, 3, etc.
 						CustomerID = customerOrderViewModel.CustomerID,
 						CustomerOrderID = order.CustomerOrderID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
 						Customer_Order = order,
-						CustomProductID=1,
-						FixedProductID = orderLineVM.FixedProductID,
+						CustomProductID= orderLineVM.CustomProductID == 0 ? null : orderLineVM.CustomProductID,
+						FixedProductID = orderLineVM.FixedProductID == 0 ? null : orderLineVM.FixedProductID,
 						Quantity = orderLineVM.Quantity
 					};
 

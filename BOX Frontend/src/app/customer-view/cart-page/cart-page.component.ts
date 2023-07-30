@@ -67,8 +67,6 @@ export class CartPageComponent {
     this.calculateTotalQuantity();
     this.generateRandomDiscount();
     this.modal = document.getElementById('contactModal');
-
-
   }
   cartIcon = faShoppingCart; //This ensures we have a shopping cart icon from the font awesome library to show in the front end
 

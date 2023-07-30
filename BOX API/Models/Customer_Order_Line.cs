@@ -16,10 +16,10 @@ namespace BOX.Models
 		public int CustomerOrderID { get; set; }
 		public virtual Customer_Order Customer_Order { get; set; }
 		[ForeignKey("Fixed_Product")]
-		public int FixedProductID { get; set; }
+		public int? FixedProductID { get; set; }
 		public virtual Fixed_Product Fixed_Product { get; set; }
 		[ForeignKey("Custom_Product")]
-		public int CustomProductID { get; set; }// might need to set to nullable same as customer refund.
+		public int? CustomProductID { get; set; }// might need to set to nullable same as customer refund.
 		public virtual Custom_Product Custom_Product { get; set; }
 		[Required] public int Quantity { get; set; }
 

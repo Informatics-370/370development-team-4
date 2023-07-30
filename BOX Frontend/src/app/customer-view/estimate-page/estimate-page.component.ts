@@ -28,12 +28,7 @@ export class EstimatePageComponent implements OnInit {
   }; //will retrieve from backend when users are up and running
   vat!: VAT;
   fixedProducts: FixedProductVM[] = [];
-  discountList: Discount[] = [
-    { discountID: 1, percentage: 6, quantity: 50 },
-    { discountID: 2, percentage: 10, quantity: 400 },
-    { discountID: 3, percentage: 17, quantity: 7000 },
-    { discountID: 4, percentage: 23, quantity: 20000 }
-  ]; //will retrieve from backend when discount is up and running
+  discountList: Discount[] = []; //will retrieve from backend when discount is up and running
   searchTerm: string = '';
   /*Status list: I see no need to retrieve this from the backend because it's static:
   1	Pending review
@@ -58,17 +53,21 @@ export class EstimatePageComponent implements OnInit {
       //turn Observables that retrieve data from DB into promises
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+      const getDiscountPromise = lastValueFrom(this.dataService.GetDiscounts().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
-      const [allVAT, allFixedProducts] = await Promise.all([
+      const [allVAT, allFixedProducts, allDiscounts] = await Promise.all([
         getVATPromise,
-        getProductsPromise
+        getProductsPromise,
+        getDiscountPromise
       ]);
 
       //put results from DB in global arrays
       this.fixedProducts = allFixedProducts;
       this.vat = allVAT[0];
+      this.discountList = allDiscounts;
+      console.log('got discounts correctly', this.discountList);
 
       await this.getCustomerEstimatesPromise();
     } catch (error) {
