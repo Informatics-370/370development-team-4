@@ -281,6 +281,8 @@ export class ProductDetailsComponent {
       }
       else {
         //if not, create new cart item
+        fixedProdToAdd.price = this.getVATInclusive(fixedProdToAdd.price); //make fixed product price vat inclusive so cart is auto vat inclusive
+
         let newCartItem: Cart = {
           fixedProduct: fixedProdToAdd,
           sizeString: this.selectedProductVM.sizeStringArray[this.selectedSizeIndex],
@@ -411,8 +413,12 @@ export class ProductDetailsComponent {
     window.location.href = '/product-details/' + urlParameter;
     /* this.itemID = productItemID;
     this.displayProduct(); */
+  }  
+  
+  getVATInclusive(amount: number): number { 
+    let priceInclVAT = amount * (1 + this.vat.percentage/100);
+    return priceInclVAT;
   }
-
 }
 
 export interface SizeDropdrownItem {

@@ -53,7 +53,7 @@
               Subtotal: <span id="price"></span> (Number of items): <span id="quantity"></span>
             </p>
             <p>
-              Bulk Discount: <span>{{ discountPercentage }}%</span>
+              Bulk Discount: <span>{{ applicableDiscount }}%</span>
             </p>
             <p>
               Customer Discount: <span id="customerdiscount">%</span>
@@ -62,10 +62,10 @@
               Total Discount: <span>{{ calculateTotalDiscount() }}%</span>
             </p>
             <p>
-              Final Estimated Total Price: R{{ calculateFinalEstimatedTotalPrice().toFixed(2) }}
+              Final Estimated Total Price: {{ cartTotal | currency: 'ZAR':'symbol-narrow'}}
             </p>
             <p>
-              <button class="btn btn-info">Pay Now</button>
+              <button [routerLink]="['/place-order']" class="btn btn-info">Pay Now</button>
             </p>
             <p>
               <button class="btn btn-info" (click)="showGetInTouchWithUsModal()">Get In Touch With Us</button>
