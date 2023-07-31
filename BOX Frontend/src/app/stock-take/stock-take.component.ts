@@ -115,7 +115,7 @@ export class StockTakeComponent implements OnInit {
           fixedProductDescription: item.fixedProductDescription
         }))
     };
-
+    console.log(stockTakeViewModel)
     this.cancelWriteOff();
   
     // Make the HTTP POST request to the API

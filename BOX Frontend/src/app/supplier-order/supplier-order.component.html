@@ -1,97 +1,57 @@
 <div class="row">
   <!--SIDE NAVBAR-->
-  <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
-      <div class="container">
-          <div class="text-center pt-3">
-              <h2>Menu</h2>
-          </div>
-          <pre></pre>
-          <pre></pre>
-          <pre></pre>
+  <div class="col-md-2"><div class="app-menu"></div></div>
+  <div class="col-md-10">
+    <div class="container">
+      <h2>Record Supplier Order</h2>
+      <form [formGroup]="orderForm">
+        <!-- Supplier Name dropdown that gets all Supplier names for the user to select -->
+        <div class="form-group">
+          <label for="chooseSupplier">Supplier Name:</label>
+          <select id="chooseSupplier" formControlName="supplierID" name="supplierID" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
+            <option disabled value="NA">Please select a Supplier</option>
+            <option *ngFor="let supplier of suppliers" [value]="supplier.supplierID">{{ supplier.name }}</option>
+          </select>
+        </div>
+    
+        <!-- Product Type dropdown that shows Raw Materials/Fixed Products for the user to select -->
+        <div class="form-group">
+          <label for="chooseProdType">Product Type:</label>
+          <select id="chooseProdType" [(ngModel)]="selectedValue" (ngModelChange)="onProductTypeChange()" formControlName="prodType" name="prodType" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
+            <option disabled value="NA">Please select a Product Type</option>
+            <option value="Fixed Product">Fixed Product</option>
+            <option value="Raw Material">Raw Material</option>
+          </select>
+        </div>
+    
+        <!-- Product Items dropdown that gets all Product Items stored in the DB for what the user selected in product type -->
+        <div class="form-group">
+          <label for="prodItemID">Product Item:</label>
+          <select id="prodItemID" formControlName="prodItemID" name="prodItemID" aria-label="Default select example" class="form-select modal-form-input modal-form-text" (change)="onProductItemChange()">
+            <option disabled value="NA">Choose a Product Item</option>
           
-          <div class="text-center">
-              <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
-                  <fa-icon [icon]="['fas', 'home']"></fa-icon>
-                  Dashboard
-              </button><pre></pre>
-              <button [routerLink]="['/product-category']" class="btn btn-info text-start">
-                  <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
-                  Product Category
-              </button><pre></pre>
-              <button class="btn btn-info active text-start">
-                  <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
-                  Product Item
-              </button><pre></pre>
-              <button class="btn btn-info text-start">
-                  <fa-icon [icon]="['fas', 'tape']"></fa-icon>
-                  Size
-              </button><pre></pre>
-              <button class="btn btn-info text-start">
-                  <fa-icon [icon]="['fas', 'box']"></fa-icon>
-                  Product
-              </button><pre></pre>
-              <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
-                  <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                  Refund reason
-              </button><pre></pre>
-              <button [routerLink]="['/write-off-reason']" class="btn btn-info text-start">
-                  <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                  Write-off reason
-              </button><pre></pre>
-          </div>
-      </div>
+            <ng-container *ngIf="selectedValue === 'Fixed Product'">
+              <option *ngFor="let fixed of fixedProducts" [value]="fixed.fixedProductID">{{fixed.description}}</option>
+            </ng-container>
+          
+            <ng-container *ngIf="selectedValue === 'Raw Material'">
+              <option *ngFor="let raw of rawMaterials" [value]="raw.rawMaterialID">{{raw.description}}</option>
+            </ng-container>
+          </select>
+        </div>
+    
+        <!-- Quantity Input Field which increases the Quantity on hand attribute for either Raw material or fixed product -->
+        <div class="form-group">
+          <label for="quantity">Quantity:</label>
+          <input id="quantity" type="number" formControlName="quantity" class="form-control modal-form-input modal-form-text" placeholder="0" 
+            name="quantity" required min="0" step="1">
+        </div>
+    
+        <!-- Save Order button -->
+        <button type="button" (click)="onSaveOrder()" class="btn btn-primary">SAVE Order</button>
+      </form>
+    </div>
+  
   </div>
-
-
-  <div class="container">
-    <h2>Record Supplier Order</h2>
-    <form [formGroup]="orderForm">
-      <!-- Supplier Name dropdown that gets all Supplier names for the user to select -->
-      <div class="form-group">
-        <label for="chooseSupplier">Supplier Name:</label>
-        <select id="chooseSupplier" formControlName="supplierID" name="supplierID" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
-          <option disabled value="NA">Please select a Supplier</option>
-          <option *ngFor="let supplier of suppliers" [value]="supplier.supplierID">{{ supplier.name }}</option>
-        </select>
-      </div>
-  
-      <!-- Product Type dropdown that shows Raw Materials/Fixed Products for the user to select -->
-      <div class="form-group">
-        <label for="chooseProdType">Product Type:</label>
-        <select id="chooseProdType" [(ngModel)]="selectedValue" (ngModelChange)="onProductTypeChange()" formControlName="prodType" name="prodType" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
-          <option disabled value="NA">Please select a Product Type</option>
-          <option value="Fixed Product">Fixed Product</option>
-          <option value="Raw Material">Raw Material</option>
-        </select>
-      </div>
-  
-      <!-- Product Items dropdown that gets all Product Items stored in the DB for what the user selected in product type -->
-      <div class="form-group">
-        <label for="prodItemID">Product Item:</label>
-        <select id="prodItemID" formControlName="prodItemID" name="prodItemID" aria-label="Default select example" class="form-select modal-form-input modal-form-text" (change)="onProductItemChange()">
-          <option disabled value="NA">Choose a Product Item</option>
-        
-          <ng-container *ngIf="selectedValue === 'Fixed Product'">
-            <option *ngFor="let fixed of fixedProducts" [value]="fixed.fixedProductID">{{fixed.description}}</option>
-          </ng-container>
-        
-          <ng-container *ngIf="selectedValue === 'Raw Material'">
-            <option *ngFor="let raw of rawMaterials" [value]="raw.rawMaterialID">{{raw.description}}</option>
-          </ng-container>
-        </select>
-      </div>
-  
-      <!-- Quantity Input Field which increases the Quantity on hand attribute for either Raw material or fixed product -->
-      <div class="form-group">
-        <label for="quantity">Quantity:</label>
-        <input id="quantity" type="number" formControlName="quantity" class="form-control modal-form-input modal-form-text" placeholder="0" 
-          name="quantity" required min="0" step="1">
-      </div>
-  
-      <!-- Save Order button -->
-      <button type="button" (click)="onSaveOrder()" class="btn btn-primary">SAVE Order</button>
-    </form>
-  </div>
-
 </div>
 

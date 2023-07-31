@@ -22,7 +22,7 @@
 
         <!-- Menu Items -->
         <div class="mx-3 mt-4">
-          <a href="#" class="nav-link py-2 ripple item-active" aria-current="true">
+          <a [routerLink]="'/dashboard'" class="nav-link py-2 ripple item-active" aria-current="true">
             <fa-icon class="fa-icon-large" [icon]="['fas', 'industry']"></fa-icon>
             Dashboard
           </a><pre></pre>
@@ -38,13 +38,21 @@
             <fa-icon class="fa-icon-large" [icon]="['fas', 'truck']"></fa-icon>
             Supplier Orders
           </a><pre></pre>
-          <a href="#" class="nav-link py-2 ripple">
+          <a [routerLink]="'/stock-take'" class="nav-link py-2 ripple">
             <fa-icon class="fa-icon-large" [icon]="['fas', 'file-invoice']"></fa-icon>
             Inventory Levels
           </a><pre></pre>
-          <a href="#" class="nav-link py-2 ripple">
-            <fa-icon class="fa-icon-large" [icon]="['fas', 'chart-pie']"></fa-icon>
-            Analytics
+          <a [routerLink]="'/product-category'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'box-open']"></fa-icon>
+            Product Category
+          </a><pre></pre>
+          <a [routerLink]="'/product-item'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'box']"></fa-icon>
+            Product Item
+          </a><pre></pre>
+          <a [routerLink]="'/write-off-reason'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'trash-arrow-up']"></fa-icon>
+            Write Off Reasons
           </a><pre></pre>
           <div class="btn-group dropup fixed-bottom">
             <button id="settings" type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
