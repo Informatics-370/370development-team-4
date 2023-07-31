@@ -29,6 +29,7 @@ import { SupplierReturnComponent } from './supplier-return/supplier-return.compo
 import { DiscountComponent } from './discount/discount.component';
 import { StockTakeComponent } from './stock-take/stock-take.component';
 import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
+import{UsersViewComponent}from'./users-view/users-view.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'register', pathMatch: 'full' },
@@ -62,7 +63,8 @@ const routes: Routes = [
   { path: 'roles', component: RolesComponent },
   { path: 'discount', component: DiscountComponent },
   { path: 'stock-take', component: StockTakeComponent},
-  { path: 'stock-take-trail', component: StockTakeTrailComponent}
+  { path: 'stock-take-trail', component: StockTakeTrailComponent},
+  {path: 'users',component:UsersViewComponent}
 ];
 
 @NgModule({

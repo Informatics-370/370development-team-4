@@ -19,6 +19,7 @@ import { EstimateVM } from '../shared/estimate-vm';
 import { Role } from '../shared/role';
 import { SupplierOrderVM } from '../shared/supplierOrder-vm';
 import { Discount } from '../shared/discount';
+import { Users } from '../shared/user';
 
 imports: [
   HttpClientModule
@@ -416,6 +417,26 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
 
   UpdateDiscount(discountId: number, discountModel: Discount): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
+  }
+  //------------------------------------------------------Users----------------------------------------------------------
+  GetUsers(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}User/GetAllUsers`)
+      .pipe(map(result => result))
+  }
+
+
+   DeleteUser(emailOrPhoneNumber: string): Observable<any> {
+     return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
+   }
+
+   UpdateUser(email: string, updatedUser: Users): Observable<any> {
+     return this.httpClient.put<any>(`${this.apiUrl}User/UpdateUser/${email}`, updatedUser, this.httpOptions);
+   }
+
+   
+  GetUser(emailOrPhoneNumber: string): Observable<Users> {
+    return this.httpClient.get<Users>(`${this.apiUrl}User/GetUserByEmailOrPhoneNumber/${emailOrPhoneNumber}`)
+      .pipe(map(result => result));
   }
 
   //----------------------------------- Stock Take ----------------------------------------

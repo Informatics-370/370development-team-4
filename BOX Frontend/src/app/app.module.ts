@@ -5,8 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
-import { NgxScannerQrcodeModule } from 'ngx-scanner-qrcode';
-
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
@@ -42,6 +40,7 @@ import { SupplierReturnComponent } from './supplier-return/supplier-return.compo
 import { DiscountComponent } from './discount/discount.component';
 import { StockTakeComponent } from './stock-take/stock-take.component';
 import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
+import { UsersViewComponent } from './users-view/users-view.component';
 
 @NgModule({
   declarations: [ 
@@ -80,7 +79,8 @@ import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.com
         RolesComponent,
         DiscountComponent,
         StockTakeComponent,
-        StockTakeTrailComponent
+        StockTakeTrailComponent,
+        UsersViewComponent
         
   ],
   imports: [
@@ -90,7 +90,6 @@ import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.com
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    NgxScannerQrcodeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

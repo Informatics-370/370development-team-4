@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.Services;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Http;
@@ -110,7 +110,7 @@ namespace BOX.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteUser")]
+        [Route("DeleteUser/{emailOrPhoneNumber}")]
         public async Task<IActionResult> DeleteUser(string emailOrPhoneNumber)
         {
             var user = await _dbContext.Users
