@@ -139,6 +139,18 @@ export class OrderHistoryComponent {
     console.log('Search results:', this.filteredOrders);
   }
 
+  cancelOrder(orderId: number) {
+    try {
+      //statusID 3 = 'Cancelled'
+      this.dataService.UpdateOrderStatus(orderId, 3).subscribe((result) => {
+        console.log("Result", result);
+        this.getCustomerOrdersPromise(); //refresh list
+      });
+    } catch (error) {
+      console.error('Error updating status: ', error);
+    }
+  }
+
 }
 
 class OrderClass {

@@ -87,7 +87,7 @@
               </tr>
             </table>
             <div class="buttons" style="margin: auto;" *ngIf="order.statusID == 1 || order.statusID == 2">
-              <button class="btn btn-reject" >Cancel order</button>
+              <button class="btn btn-reject" (click)="cancelOrder(order.ID)">Cancel order</button>
             </div>
           </div>
         </div>
