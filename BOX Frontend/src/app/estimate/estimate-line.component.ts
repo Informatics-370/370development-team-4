@@ -263,7 +263,6 @@ export class EstimateLineComponent {
           estimateDurationID: 0,
           confirmedTotal: this.negotiatedTotal / (1 + this.vat.percentage / 100),
           estimate_Lines: updatedEstLines,
-          UserId: ''
         };
   
         console.log('Updated estimate: ', updatedEstimate);

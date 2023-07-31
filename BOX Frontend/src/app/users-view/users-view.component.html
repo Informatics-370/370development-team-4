@@ -1,0 +1,170 @@
+<div class="row">
+    <!--SIDE NAVBAR-->
+    <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
+        <div class="container">
+            <div class="text-center pt-3">
+                <h2>Menu</h2>
+            </div>
+            <pre></pre>
+            <pre></pre>
+            <pre></pre>
+            
+            <div class="text-center">
+                <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
+                    Dashboard
+                </button><pre></pre>
+                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
+                    Product Category
+                </button><pre></pre>
+                <button [routerLink]="['/product-item']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
+                    Product Item
+                </button><pre></pre>
+                <button class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'tape']"></fa-icon>
+                    Size
+                </button><pre></pre>
+                <button [routerLink]="['/fixed-product']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'box']"></fa-icon>
+                    Product
+                </button><pre></pre>
+                <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
+                    Refund reason
+                </button><pre></pre>
+                <button [routerLink]="['/write-off-reason']" class="btn btn-info text-start">
+                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
+                    Write-off reason
+                </button><pre></pre>
+                <button class="btn btn-info active text-start">
+                    <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
+                    VAT
+                </button><pre></pre>
+                <button [routerLink]="['/estimate-duration']" class="btn btn-info active text-start">
+                    <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
+                    Estimate Duration
+                </button><pre></pre>
+                <button [routerLink]="['/discount']" class="btn btn-info active text-start">
+                    <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
+                    Discount
+                </button><pre></pre>
+            </div>
+        </div>
+    </div>
+    
+    <!--Right Side-->
+    <div class="col-md-9">
+        <h3 class="p-3" style="color: black;">Users</h3>
+        <!--Search bar-->
+        <div id="searchbar" >
+            <input (keyup)="searchUser($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. John Doe" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
+
+        <hr class="hr hr-blurry m-3" />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name </th>
+                    <th scope="col">Username</th>
+                </tr>
+            </thead>
+            <tbody>                
+                <!--Error message if there's no VAT in the DB-->
+                <tr *ngIf="userCount==0">
+                    <td colspan="2">No Users have been created on the System.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all User entries...</td>
+                </tr>
+                <!--VAT data from API-->
+                <tr *ngFor="let user of filteredUsers">
+                    <td>
+                      <button title="Delete this User" class="CRUD-icon" (click)="openDeleteModal(user.email)" >
+                            <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
+                        </button>
+                        <button title="Update this User's Details" class="CRUD-icon" (click)="openUpdateModal(user.email)" >
+                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                        </button>                                              
+                    </td>
+                    <td>
+                        {{user.firstName}}
+                    </td>
+                    <td>
+                        {{user.lastName}}
+                    </td><td>
+                        {{user.email}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!--DELETE VAT MODAL-->
+<div class="modal fade" id="deleteVAT" tabindex="-1" #deleteModal>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Delete User</h4>
+          <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <p class="modal-form-input bold">Are you sure you want to delete this?</p>
+        </div>        
+
+        <!-- Modal footer -->
+        <div class="modal-footer justify-content-evenly">
+            <button class="btn btn-create modal-form-submit" (click)="deleteUser()" >Yes</button>
+            <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!--UPDATE VAT MODAL-->
+<div class="modal fade" id="updateVAT" tabindex="-1" #updateModal>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Edit User</h4>
+          <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="updateUserForm">
+            <div class="form-group">
+                <label for="uEmail" class="form-label modal-form-label bold">User Data</label>
+                <input id="uEmail" type="string" formControlName="uEmail" class="form-control modal-form-input modal-form-text" 
+                    name="uEmail">
+                    <input id="uAddress" type="string" formControlName="uAddress" class="form-control modal-form-input modal-form-text" 
+                    name="uAddress">
+            </div>
+            <!--Display validation error message-->
+            <!-- <div *ngIf="(uPercentage?.dirty || uPercentage?.touched || submitClicked) && 
+                uPercentage?.errors?.['required'] || uPercentage?.errors?.['min']" class="error-msg">
+                Please enter a whole number above 0.
+            </div> -->
+
+            <div class="form-submit-div">
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateUser()" >Save Changes</button>
+            </div>            
+          </form>
+        </div>
+        
+      </div>
+    </div>
+</div>
+<div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>

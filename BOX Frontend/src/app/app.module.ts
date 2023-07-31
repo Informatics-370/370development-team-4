@@ -5,8 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
-import { NgxScannerQrcodeModule } from 'ngx-scanner-qrcode';
-
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
@@ -40,6 +38,7 @@ import { RolesComponent } from './roles/roles.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
+import { UsersViewComponent } from './users-view/users-view.component';
 
 @NgModule({
   declarations: [ 
@@ -76,7 +75,8 @@ import { DiscountComponent } from './discount/discount.component';
         SupplierOrderComponent,
         SupplierReturnComponent,
         RolesComponent,
-        DiscountComponent
+        DiscountComponent,
+        UsersViewComponent
         
   ],
   imports: [
@@ -86,7 +86,6 @@ import { DiscountComponent } from './discount/discount.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    NgxScannerQrcodeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
