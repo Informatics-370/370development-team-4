@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-<<<<<<<< HEAD:BOX API/Migrations/20230730134954_deleteMigrations.Designer.cs
-    [Migration("20230730134954_deleteMigrations")]
-    partial class deleteMigrations
-========
-    [Migration("20230730132827_Initial Migration")]
-    partial class InitialMigration
->>>>>>>> 253010651f707d7f65f85e41da5b9a2a9266073f:BOX API/Migrations/20230730132827_Initial Migration.Designer.cs
+    [Migration("20230730200719_linkListWriteOffAndStockTake")]
+    partial class linkListWriteOffAndStockTake
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1010,7 +1005,10 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WriteOffID"), 1L, 1);
 
-                    b.Property<int>("QRCodeID")
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RawMaterialId")
                         .HasColumnType("int");
 
                     b.Property<int>("StockTakeID")
@@ -1021,7 +1019,7 @@ namespace BOX.Migrations
 
                     b.HasKey("WriteOffID");
 
-                    b.HasIndex("QRCodeID");
+                    b.HasIndex("RawMaterialId");
 
                     b.HasIndex("StockTakeID");
 
@@ -1517,14 +1515,14 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Write_Off", b =>
                 {
-                    b.HasOne("BOX.Models.QR_Code", "QR_Code")
+                    b.HasOne("BOX.Models.Raw_Material", "RawMaterial")
                         .WithMany()
-                        .HasForeignKey("QRCodeID")
+                        .HasForeignKey("RawMaterialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BOX.Models.Stock_Take", "Stock_Take")
-                        .WithMany()
+                        .WithMany("WriteOffs")
                         .HasForeignKey("StockTakeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1535,7 +1533,7 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("QR_Code");
+                    b.Navigation("RawMaterial");
 
                     b.Navigation("Stock_Take");
 
@@ -1591,6 +1589,11 @@ namespace BOX.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BOX.Models.Stock_Take", b =>
+                {
+                    b.Navigation("WriteOffs");
                 });
 #pragma warning restore 612, 618
         }

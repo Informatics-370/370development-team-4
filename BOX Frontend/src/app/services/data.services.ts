@@ -418,4 +418,8 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
     return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
   }
 
+  //----------------------------------- Stock Take ----------------------------------------
+  writeOff(stockTakeViewModel: any): Observable<any> {
+    return this.httpClient.post<any>(`${this.apiUrl}StockTake/WriteOff`, stockTakeViewModel);
+  }
 }

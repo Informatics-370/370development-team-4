@@ -579,7 +579,12 @@ namespace BOX.Models
 			return await query.ToArrayAsync();
 		}
 
-
+        //----------------------------------------------------- STOCK TAKE --------------------------------
+        public async Task<Stock_Take> GetStockTakeAsync(int stockTakeId)
+        {
+            IQueryable<Stock_Take> query = _appDbContext.Stock_Take.Where(st => st.StockTakeID == stockTakeId);
+            return await query.FirstOrDefaultAsync();
+        }
 
 		//---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
 		//Never remove this line of code, code above the line above.

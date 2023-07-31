@@ -27,6 +27,7 @@ import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
+import { StockTakeComponent } from './stock-take/stock-take.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'register', pathMatch: 'full' },
@@ -55,10 +56,11 @@ const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent},
   { path: 'roles', component: RolesComponent },
-  {path: 'supplier-order',component:SupplierOrderComponent},
-  {path: 'supplier-return',component:SupplierReturnComponent},
+  { path: 'supplier-order',component:SupplierOrderComponent},
+  { path: 'supplier-return',component:SupplierReturnComponent},
   { path: 'roles', component: RolesComponent },
-  { path: 'discount', component: DiscountComponent }
+  { path: 'discount', component: DiscountComponent },
+  { path: 'stock-take', component: StockTakeComponent}
 ];
 
 @NgModule({

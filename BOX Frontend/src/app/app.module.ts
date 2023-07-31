@@ -40,6 +40,7 @@ import { RolesComponent } from './roles/roles.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
+import { StockTakeComponent } from './stock-take/stock-take.component';
 
 @NgModule({
   declarations: [ 
@@ -76,7 +77,8 @@ import { DiscountComponent } from './discount/discount.component';
         SupplierOrderComponent,
         SupplierReturnComponent,
         RolesComponent,
-        DiscountComponent
+        DiscountComponent,
+        StockTakeComponent
         
   ],
   imports: [

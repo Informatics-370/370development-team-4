@@ -15,9 +15,5 @@ namespace BOX.Models
 		
 		[Required]
 		public string Date { get; set; }
-
-		//[ForeignKey("RawMaterials")]
-		//public int RawMaterialsId { get; set; }
-		//public virtual Raw_Material RawMaterials { get; set; }
-	}
+    }
 }
