@@ -41,6 +41,7 @@ import { SupplierOrderComponent } from './supplier-order/supplier-order.componen
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
 import { StockTakeComponent } from './stock-take/stock-take.component';
+import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
 
 @NgModule({
   declarations: [ 
@@ -78,7 +79,8 @@ import { StockTakeComponent } from './stock-take/stock-take.component';
         SupplierReturnComponent,
         RolesComponent,
         DiscountComponent,
-        StockTakeComponent
+        StockTakeComponent,
+        StockTakeTrailComponent
         
   ],
   imports: [

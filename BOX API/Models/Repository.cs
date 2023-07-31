@@ -580,6 +580,12 @@ namespace BOX.Models
 		}
 
         //----------------------------------------------------- STOCK TAKE --------------------------------
+        public async Task<Stock_Take[]> GetAllStockTakeAsync()
+        {
+            IQueryable<Stock_Take> query = _appDbContext.Stock_Take;
+            return await query.ToArrayAsync();
+        }
+
         public async Task<Stock_Take> GetStockTakeAsync(int stockTakeId)
         {
             IQueryable<Stock_Take> query = _appDbContext.Stock_Take.Where(st => st.StockTakeID == stockTakeId);
@@ -589,9 +595,9 @@ namespace BOX.Models
 		//---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
 		//Never remove this line of code, code above the line above.
 		public async Task<bool> SaveChangesAsync()
-    {
-      return await _appDbContext.SaveChangesAsync() > 0;
-    }
+        {
+            return await _appDbContext.SaveChangesAsync() > 0;
+        }
 
     }
 

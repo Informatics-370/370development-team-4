@@ -88,7 +88,42 @@ namespace BOX.Controllers
             {
                 return StatusCode(400, "Bad Request" + ex);
             }
-        }        
+        }
 
+        //=============================== GET ALL STOCK TAKE =====================================
+        [HttpGet]
+        [Route("GetAllStockTake")]
+        public async Task<IActionResult> GetAllStockTake()
+        {
+            try
+            {
+                var stockTakes = await _appDbContext.Stock_Take.Include(s => s.User).ToListAsync();
+
+                // Map the User ID to the Username in each stock take
+                foreach (var stockTake in stockTakes)
+                {
+                    stockTake.UserId = await GetUsernameById(stockTake.UserId);
+                }
+
+                return Ok(stockTakes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error" + ex);
+            }
+        }
+
+        // Helper method to get the username by the user ID
+        private async Task<string> GetUsernameById(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                return user.UserName;
+            }
+            return null;
+        }
     }
+
 }
+

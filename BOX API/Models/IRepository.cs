@@ -150,6 +150,7 @@ namespace BOX.Models
 		Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
 
         //--------------------------- STOCK TAKE ----------------------------------------
+        Task<Stock_Take[]> GetAllStockTakeAsync();
         Task<Stock_Take> GetStockTakeAsync(int stockTakeId);
 
 	}

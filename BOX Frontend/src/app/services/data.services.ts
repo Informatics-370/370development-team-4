@@ -422,4 +422,8 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
   writeOff(stockTakeViewModel: any): Observable<any> {
     return this.httpClient.post<any>(`${this.apiUrl}StockTake/WriteOff`, stockTakeViewModel);
   }
+
+  getAllStockTake(): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}StockTake/GetAllStockTake`);
+  }
 }
