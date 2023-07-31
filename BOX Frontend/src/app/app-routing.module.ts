@@ -27,6 +27,7 @@ import { RolesComponent } from './roles/roles.component';
 import { DiscountComponent } from './discount/discount.component';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
+import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 
 
 const routes: Routes = [
@@ -46,20 +47,21 @@ const routes: Routes = [
   { path: 'raw-material', component: RawMaterialComponent },
   { path: 'products', component: ProductsComponent },
   { path: 'products/:category', component: ProductsComponent },
-  { path: 'product-details/:id', component: ProductDetailsComponent},
-  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent},
+  { path: 'product-details/:id', component: ProductDetailsComponent },
+  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent },
   { path: 'cart', component: CartPageComponent },
   { path: 'quotes', component: EstimatePageComponent },
-  { path: 'estimates', component: EstimateLineComponent},
+  { path: 'estimates', component: EstimateLineComponent },
   { path: 'login', component: LoginComponent },
   { path: 'customer-homepage', component: CustomerHomepageComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'reset-password', component: ResetPasswordComponent},
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'roles', component: RolesComponent },
   { path: 'discount', component: DiscountComponent },
-  { path: 'place-order', component: PlaceOrderComponent},
-  { path: 'order-history', component: OrderHistoryComponent},
-  { path: 'order-history/:success', component: OrderHistoryComponent}
+  { path: 'place-order', component: PlaceOrderComponent },
+  { path: 'order-history', component: OrderHistoryComponent },
+  { path: 'order-history/:success', component: OrderHistoryComponent },
+  { path: 'customer-orders', component: CustomerOrdersComponent }
 
 ];
 

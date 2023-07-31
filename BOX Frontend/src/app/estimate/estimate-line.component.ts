@@ -183,31 +183,6 @@ export class EstimateLineComponent {
 
       const formData = this.addEstimateLineForm.value; //get form data
 
-      /* //add row to table
-      let newRow: HTMLTableRowElement = document.createElement('tr');
-      newRow.id = 'f-' + this.selectedProduct?.fixedProductID + '-' + formData.quantity;
-      
-      let newProductCell: HTMLTableCellElement = document.createElement('td');
-      newProductCell.innerHTML = this.selectedProduct ? this.selectedProduct.description : '';
-      newRow.appendChild(newProductCell);
-      
-      let newPriceCell: HTMLTableCellElement = document.createElement('td');
-      let price = this.selectedProduct ? this.currencyPipe.transform(this.selectedProduct.price, 'R') : '0';
-      newPriceCell.innerHTML = price ? price : '0';
-      newRow.appendChild(newPriceCell);
-
-      let newQtyCell: HTMLTableCellElement = document.createElement('td');
-      newQtyCell.innerHTML = Math.floor(formData.quantity).toString();
-      newRow.appendChild(newQtyCell);
-
-      let newTotalCell: HTMLTableCellElement = document.createElement('td');
-      let total = this.selectedProduct ? this.currencyPipe.transform(this.selectedProduct.price * formData.quantity, 'R') : '0';
-      newTotalCell.innerHTML = total ? total : '0';
-      newRow.appendChild(newTotalCell);
-
-      document.getElementById('estimate-details-tbody')?.appendChild(newRow);
-      console.log(newRow); */
-
       //add estimate line to global selectedEstimate so I can easily add to backend; NT you can't add custom product ot estimate this way
       let newEstimateLine: EstimateLineVM = {
         estimateID: this.selectedEstimate.estimateID,

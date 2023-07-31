@@ -39,6 +39,7 @@ import { RolesComponent } from './roles/roles.component';
 import { DiscountComponent } from './discount/discount.component';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
+import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 
 @NgModule({
   declarations: [ 
@@ -74,7 +75,8 @@ import { OrderHistoryComponent } from './customer-view/order-history/order-histo
         RolesComponent,
         DiscountComponent,
         PlaceOrderComponent,
-        OrderHistoryComponent
+        OrderHistoryComponent,
+        CustomerOrdersComponent
   ],
   imports: [
     BrowserModule,

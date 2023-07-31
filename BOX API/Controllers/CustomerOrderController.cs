@@ -25,7 +25,7 @@ namespace BOX.Controllers
 			{
 				var cusOrders = await _repository.GetAllCustomerOrdersAsync();
 
-				List<CustomerOrderViewModel> customerOrderViewModels = new List<CustomerOrderViewModel>(); //create array of VMs
+                List<CustomerOrderViewModel> customerOrderViewModels = new List<CustomerOrderViewModel>(); //create array of VMs
 				foreach (var order in cusOrders)
 				{
 					var Status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
@@ -33,17 +33,21 @@ namespace BOX.Controllers
 					//get all customer order lines associated with this order and create array from them
 					List<CustomerOrderLineViewModel> orderLineList = new List<CustomerOrderLineViewModel>();
 					var orderLines = await _repository.GetOrderLinesByOrderAsync(order.CustomerOrderID);
+                    if (orderLines == null) return NotFound("The customer order does not exist on the B.O.X System");
 
-					//put all customer order lines for this specific customer order in a list for the customer order VM
-					foreach (var ol in orderLines)
+                    //put all customer order lines for this specific customer order in a list for the customer order VM
+                    foreach (var ol in orderLines)
 					{
                         int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
+						var fp = await _repository.GetFixedProductAsync(fpID);
 
                         CustomerOrderLineViewModel colvm = new CustomerOrderLineViewModel
 						{
 							CustomerOrderLineID = ol.Customer_Order_LineID,
 							CustomerOrderID = ol.CustomerOrderID,
 							FixedProductID = fpID,
+							FixedProductDescription = fp.Description,
+							FixedProductUnitPrice = fp.Price,
 							CustomerRefundID=ol.CustomerRefundID,
 							CustomProductID = 0,
 							Quantity = ol.Quantity
