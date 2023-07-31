@@ -10,12 +10,11 @@ namespace BOX.Models
 	{
 		[Key] public int EstimateLineID { get; set; }
 
-		[ForeignKey("Customer")]
-		[Column(Order = 0)]
-		public int CustomerID { get; set; }
-		public virtual Customer Customer { get; set; }
+    [ForeignKey("User")]
+    public string UserId { get; set; }
+    public virtual User User { get; set; }
 
-		[ForeignKey("Estimate")]
+    [ForeignKey("Estimate")]
 		[Column(Order = 1)]
 		public int EstimateID { get; set; }
 		public virtual Estimate Estimate { get; set; }

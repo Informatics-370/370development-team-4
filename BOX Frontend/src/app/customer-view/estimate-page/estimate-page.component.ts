@@ -18,8 +18,9 @@ export class EstimatePageComponent implements OnInit {
   filteredEstimates: EstimateClass[] = []; //estimates to show user
   estimateCount = -1;
   loading = true;
-  customer = {
-    ID: 9,
+  cartIcon = faShoppingCart;
+  user = {
+    Id: '3804c42b-f8cb-4df3-91cd-8334874b5cf4',
     fullName: 'John Doe',
     discount: 0.05
   }; //will retrieve from backend when users are up and running
@@ -27,6 +28,7 @@ export class EstimatePageComponent implements OnInit {
   fixedProducts: FixedProductVM[] = [];
   discountList: Discount[] = [];
   searchTerm: string = '';
+  customer: any;
   /*Status list: I see no need to retrieve this from the backend because it's static:
   1	Pending review
   2	Reviewed
@@ -38,9 +40,9 @@ export class EstimatePageComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    const customerIDs = [3, 4, 5, 7, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
-    let index = Math.floor((Math.random() * 7));
-    this.customer.ID = 4;
+    // const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
+    // let index = Math.floor((Math.random() * 5));
+    this.user.Id = 'e541dc51-b470-4d9f-a73c-ac877671e006';
     this.getDataFromDB();
   }
 
@@ -76,7 +78,7 @@ export class EstimatePageComponent implements OnInit {
   async getCustomerEstimatesPromise() {
     this.loading = true;
     try {
-      this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.customer.ID).pipe(take(1)));
+      this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.user.Id).pipe(take(1)));
 
       this.displayCustomerEstimates(); //Execute only after data has been retrieved from the DB otherwise error
 
@@ -114,7 +116,7 @@ export class EstimatePageComponent implements OnInit {
     this.allCustomerEstimates = this.filteredEstimates; //store all the estimate someplace before I search below
     this.estimateCount = this.filteredEstimates.length; //update the number of estimates
 
-    console.log("All of customer " + this.customer.ID + "'s estimates: ", this.filteredEstimates);
+    console.log("All of customer " + this.user.Id + "'s estimates: ", this.filteredEstimates);
     this.loading = false;
   }
 

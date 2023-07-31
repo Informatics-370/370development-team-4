@@ -18,13 +18,18 @@ import { ProductDetailsComponent } from './customer-view/product-details/product
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
-import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { LoginComponent } from './login/login.component';
 import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
+import { EstimateLineComponent } from './estimate/estimate-line.component';
+import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
+import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
+import { StockTakeComponent } from './stock-take/stock-take.component';
+import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
+import{UsersViewComponent}from'./users-view/users-view.component';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
@@ -57,7 +62,13 @@ const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'roles', component: RolesComponent },
+  { path: 'supplier-order',component:SupplierOrderComponent},
+  { path: 'supplier-return',component:SupplierReturnComponent},
+  { path: 'roles', component: RolesComponent },
   { path: 'discount', component: DiscountComponent },
+  { path: 'stock-take', component: StockTakeComponent},
+  { path: 'stock-take-trail', component: StockTakeTrailComponent},
+  {path: 'users',component:UsersViewComponent},
   { path: 'place-order', component: PlaceOrderComponent },
   { path: 'order-history', component: OrderHistoryComponent },
   { path: 'order-history/:success', component: OrderHistoryComponent },

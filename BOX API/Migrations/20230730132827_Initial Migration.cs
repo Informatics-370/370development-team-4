@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace BOX.Migrations
 {
-    public partial class UpdateCharisDB : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -355,24 +355,6 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Admin",
-                columns: table => new
-                {
-                    AdminID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Admin", x => x.AdminID);
-                    table.ForeignKey(
-                        name: "FK_Admin_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -458,21 +440,70 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employee",
+                name: "Order_Delivery_Schedule",
                 columns: table => new
                 {
-                    EmployeeID = table.Column<int>(type: "int", nullable: false)
+                    OrderDeliveryScheduleID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employee", x => x.EmployeeID);
+                    table.PrimaryKey("PK_Order_Delivery_Schedule", x => x.OrderDeliveryScheduleID);
                     table.ForeignKey(
-                        name: "FK_Employee_AspNetUsers_UserId",
+                        name: "FK_Order_Delivery_Schedule_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Stock_Take",
+                columns: table => new
+                {
+                    StockTakeID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stock_Take", x => x.StockTakeID);
+                    table.ForeignKey(
+                        name: "FK_Stock_Take_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Credit_Application",
+                columns: table => new
+                {
+                    creditApplicationID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreditApplicationStatusID = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Application_Pdf = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Credit_Application", x => x.creditApplicationID);
+                    table.ForeignKey(
+                        name: "FK_Credit_Application_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Credit_Application_Credit_Application_Status_CreditApplicationStatusID",
+                        column: x => x.CreditApplicationStatusID,
+                        principalTable: "Credit_Application_Status",
+                        principalColumn: "CreditApplicationStatusID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -492,7 +523,7 @@ namespace BOX.Migrations
                         column: x => x.CustomerRefundReasonID,
                         principalTable: "Customer_Refund_Reason",
                         principalColumn: "CustomerRefundReasonID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -513,13 +544,13 @@ namespace BOX.Migrations
                         column: x => x.EstimateDurationID,
                         principalTable: "Estimate_Duration",
                         principalColumn: "EstimateDurationID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Estimate_Estimate_Status_EstimateStatusID",
                         column: x => x.EstimateStatusID,
                         principalTable: "Estimate_Status",
                         principalColumn: "EstimateStatusID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -636,73 +667,63 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customer",
+                name: "Customer_Order",
                 columns: table => new
                 {
-                    customerID = table.Column<int>(type: "int", nullable: false)
+                    CustomerOrderID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    EmployeeID = table.Column<int>(type: "int", nullable: false),
-                    isBusiness = table.Column<bool>(type: "bit", nullable: false),
-                    VAT_NO = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Credit_Limit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Credit_Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    CustomerOrderStatusID = table.Column<int>(type: "int", nullable: false),
+                    OrderDeliveryScheduleID = table.Column<int>(type: "int", nullable: true),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Delivery_Photo = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customer", x => x.customerID);
+                    table.PrimaryKey("PK_Customer_Order", x => x.CustomerOrderID);
                     table.ForeignKey(
-                        name: "FK_Customer_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Customer_Employee_EmployeeID",
-                        column: x => x.EmployeeID,
-                        principalTable: "Employee",
-                        principalColumn: "EmployeeID",
+                        name: "FK_Customer_Order_Customer_Order_Status_CustomerOrderStatusID",
+                        column: x => x.CustomerOrderStatusID,
+                        principalTable: "Customer_Order_Status",
+                        principalColumn: "CustomerOrderStatusID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Order_Delivery_Schedule_OrderDeliveryScheduleID",
+                        column: x => x.OrderDeliveryScheduleID,
+                        principalTable: "Order_Delivery_Schedule",
+                        principalColumn: "OrderDeliveryScheduleID");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Order_Delivery_Schedule",
+                name: "Write_Off",
                 columns: table => new
                 {
-                    OrderDeliveryScheduleID = table.Column<int>(type: "int", nullable: false)
+                    WriteOffID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeID = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    WriteOffReasonID = table.Column<int>(type: "int", nullable: false),
+                    StockTakeID = table.Column<int>(type: "int", nullable: false),
+                    QRCodeID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Order_Delivery_Schedule", x => x.OrderDeliveryScheduleID);
+                    table.PrimaryKey("PK_Write_Off", x => x.WriteOffID);
                     table.ForeignKey(
-                        name: "FK_Order_Delivery_Schedule_Employee_EmployeeID",
-                        column: x => x.EmployeeID,
-                        principalTable: "Employee",
-                        principalColumn: "EmployeeID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stock_Take",
-                columns: table => new
-                {
-                    StockTakeID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeID = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stock_Take", x => x.StockTakeID);
+                        name: "FK_Write_Off_QR_Code_QRCodeID",
+                        column: x => x.QRCodeID,
+                        principalTable: "QR_Code",
+                        principalColumn: "QRCodeID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Stock_Take_Employee_EmployeeID",
-                        column: x => x.EmployeeID,
-                        principalTable: "Employee",
-                        principalColumn: "EmployeeID",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_Write_Off_Stock_Take_StockTakeID",
+                        column: x => x.StockTakeID,
+                        principalTable: "Stock_Take",
+                        principalColumn: "StockTakeID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Write_Off_Write_Off_Reason_WriteOffReasonID",
+                        column: x => x.WriteOffReasonID,
+                        principalTable: "Write_Off_Reason",
+                        principalColumn: "WriteOffReasonID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -774,47 +795,13 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Credit_Application",
-                columns: table => new
-                {
-                    creditApplicationID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreditApplicationStatusID = table.Column<int>(type: "int", nullable: false),
-                    CustomerID = table.Column<int>(type: "int", nullable: false),
-                    AdminID = table.Column<int>(type: "int", nullable: false),
-                    Application_Pdf = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Credit_Application", x => x.creditApplicationID);
-                    table.ForeignKey(
-                        name: "FK_Credit_Application_Admin_AdminID",
-                        column: x => x.AdminID,
-                        principalTable: "Admin",
-                        principalColumn: "AdminID",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Credit_Application_Credit_Application_Status_CreditApplicationStatusID",
-                        column: x => x.CreditApplicationStatusID,
-                        principalTable: "Credit_Application_Status",
-                        principalColumn: "CreditApplicationStatusID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Credit_Application_Customer_CustomerID",
-                        column: x => x.CustomerID,
-                        principalTable: "Customer",
-                        principalColumn: "customerID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Payment",
                 columns: table => new
                 {
                     PaymentID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PaymentTypeID = table.Column<int>(type: "int", nullable: false),
-                    CustomerID = table.Column<int>(type: "int", nullable: false),
+                    CustomerOrderID = table.Column<int>(type: "int", nullable: false),
                     Date_And_Time = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -822,163 +809,16 @@ namespace BOX.Migrations
                 {
                     table.PrimaryKey("PK_Payment", x => x.PaymentID);
                     table.ForeignKey(
-                        name: "FK_Payment_Customer_CustomerID",
-                        column: x => x.CustomerID,
-                        principalTable: "Customer",
-                        principalColumn: "customerID",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_Payment_Customer_Order_CustomerOrderID",
+                        column: x => x.CustomerOrderID,
+                        principalTable: "Customer_Order",
+                        principalColumn: "CustomerOrderID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Payment_Payment_Type_PaymentTypeID",
                         column: x => x.PaymentTypeID,
                         principalTable: "Payment_Type",
                         principalColumn: "PaymentTypeID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Customer_Order",
-                columns: table => new
-                {
-                    CustomerOrderID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerOrderStatusID = table.Column<int>(type: "int", nullable: false),
-                    OrderDeliveryScheduleID = table.Column<int>(type: "int", nullable: true),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Delivery_Photo = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Customer_Order", x => x.CustomerOrderID);
-                    table.ForeignKey(
-                        name: "FK_Customer_Order_Customer_Order_Status_CustomerOrderStatusID",
-                        column: x => x.CustomerOrderStatusID,
-                        principalTable: "Customer_Order_Status",
-                        principalColumn: "CustomerOrderStatusID",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Customer_Order_Order_Delivery_Schedule_OrderDeliveryScheduleID",
-                        column: x => x.OrderDeliveryScheduleID,
-                        principalTable: "Order_Delivery_Schedule",
-                        principalColumn: "OrderDeliveryScheduleID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Write_Off",
-                columns: table => new
-                {
-                    WriteOffID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WriteOffReasonID = table.Column<int>(type: "int", nullable: false),
-                    StockTakeID = table.Column<int>(type: "int", nullable: false),
-                    QRCodeID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Write_Off", x => x.WriteOffID);
-                    table.ForeignKey(
-                        name: "FK_Write_Off_QR_Code_QRCodeID",
-                        column: x => x.QRCodeID,
-                        principalTable: "QR_Code",
-                        principalColumn: "QRCodeID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Write_Off_Stock_Take_StockTakeID",
-                        column: x => x.StockTakeID,
-                        principalTable: "Stock_Take",
-                        principalColumn: "StockTakeID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Write_Off_Write_Off_Reason_WriteOffReasonID",
-                        column: x => x.WriteOffReasonID,
-                        principalTable: "Write_Off_Reason",
-                        principalColumn: "WriteOffReasonID",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Estimate_Line",
-                columns: table => new
-                {
-                    CustomerID = table.Column<int>(type: "int", nullable: false),
-                    EstimateID = table.Column<int>(type: "int", nullable: false),
-                    FixedProductID = table.Column<int>(type: "int", nullable: false),
-                    EstimateLineID = table.Column<int>(type: "int", nullable: false),
-                    CustomProductID = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Estimate_Line", x => new { x.CustomerID, x.EstimateID, x.EstimateLineID });
-                    table.ForeignKey(
-                        name: "FK_Estimate_Line_Custom_Product_CustomProductID",
-                        column: x => x.CustomProductID,
-                        principalTable: "Custom_Product",
-                        principalColumn: "CustomProductID",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Estimate_Line_Customer_CustomerID",
-                        column: x => x.CustomerID,
-                        principalTable: "Customer",
-                        principalColumn: "customerID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Estimate_Line_Estimate_EstimateID",
-                        column: x => x.EstimateID,
-                        principalTable: "Estimate",
-                        principalColumn: "EstimateID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Estimate_Line_Fixed_Product_FixedProductID",
-                        column: x => x.FixedProductID,
-                        principalTable: "Fixed_Product",
-                        principalColumn: "FixedProductID",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Supplier_OrderLine",
-                columns: table => new
-                {
-                    SupplierOrderID = table.Column<int>(type: "int", nullable: false),
-                    FixedProductID = table.Column<int>(type: "int", nullable: false),
-                    RawMaterialID = table.Column<int>(type: "int", nullable: false),
-                    Supplier_Order_LineID = table.Column<int>(type: "int", nullable: false),
-                    SupplierReturnID = table.Column<int>(type: "int", nullable: false),
-                    SupplierID = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Supplier_OrderLine", x => new { x.SupplierOrderID, x.FixedProductID, x.RawMaterialID });
-                    table.ForeignKey(
-                        name: "FK_Supplier_OrderLine_Fixed_Product_FixedProductID",
-                        column: x => x.FixedProductID,
-                        principalTable: "Fixed_Product",
-                        principalColumn: "FixedProductID",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Supplier_OrderLine_Raw_Material_RawMaterialID",
-                        column: x => x.RawMaterialID,
-                        principalTable: "Raw_Material",
-                        principalColumn: "RawMaterialID",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Supplier_OrderLine_Supplier_Order_SupplierOrderID",
-                        column: x => x.SupplierOrderID,
-                        principalTable: "Supplier_Order",
-                        principalColumn: "SupplierOrderID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Supplier_OrderLine_Supplier_Return_SupplierReturnID",
-                        column: x => x.SupplierReturnID,
-                        principalTable: "Supplier_Return",
-                        principalColumn: "SupplierReturnID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Supplier_OrderLine_Supplier_SupplierID",
-                        column: x => x.SupplierID,
-                        principalTable: "Supplier",
-                        principalColumn: "SupplierID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -987,7 +827,7 @@ namespace BOX.Migrations
                 columns: table => new
                 {
                     Customer_Order_LineID = table.Column<int>(type: "int", nullable: false),
-                    CustomerID = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CustomerOrderID = table.Column<int>(type: "int", nullable: false),
                     CustomerRefundID = table.Column<int>(type: "int", nullable: true),
                     FixedProductID = table.Column<int>(type: "int", nullable: false),
@@ -996,19 +836,19 @@ namespace BOX.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customer_Order_Line", x => new { x.CustomerID, x.CustomerOrderID, x.Customer_Order_LineID });
+                    table.PrimaryKey("PK_Customer_Order_Line", x => new { x.UserId, x.CustomerOrderID, x.Customer_Order_LineID });
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Line_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Customer_Order_Line_Custom_Product_CustomProductID",
                         column: x => x.CustomProductID,
                         principalTable: "Custom_Product",
                         principalColumn: "CustomProductID",
                         onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Customer_Order_Line_Customer_CustomerID",
-                        column: x => x.CustomerID,
-                        principalTable: "Customer",
-                        principalColumn: "customerID",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Customer_Order_Line_Customer_Order_CustomerOrderID",
                         column: x => x.CustomerOrderID,
@@ -1028,10 +868,88 @@ namespace BOX.Migrations
                         onDelete: ReferentialAction.NoAction);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Admin_UserId",
-                table: "Admin",
-                column: "UserId");
+            migrationBuilder.CreateTable(
+                name: "Estimate_Line",
+                columns: table => new
+                {
+                    EstimateID = table.Column<int>(type: "int", nullable: false),
+                    FixedProductID = table.Column<int>(type: "int", nullable: true),
+                    EstimateLineID = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CustomProductID = table.Column<int>(type: "int", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Estimate_Line", x => new { x.UserId, x.EstimateID, x.EstimateLineID });
+                    table.ForeignKey(
+                        name: "FK_Estimate_Line_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Estimate_Line_Custom_Product_CustomProductID",
+                        column: x => x.CustomProductID,
+                        principalTable: "Custom_Product",
+                        principalColumn: "CustomProductID");
+                    table.ForeignKey(
+                        name: "FK_Estimate_Line_Estimate_EstimateID",
+                        column: x => x.EstimateID,
+                        principalTable: "Estimate",
+                        principalColumn: "EstimateID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Estimate_Line_Fixed_Product_FixedProductID",
+                        column: x => x.FixedProductID,
+                        principalTable: "Fixed_Product",
+                        principalColumn: "FixedProductID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Supplier_OrderLine",
+                columns: table => new
+                {
+                    Supplier_Order_LineID = table.Column<int>(type: "int", nullable: false),
+                    SupplierID = table.Column<int>(type: "int", nullable: false),
+                    SupplierOrderID = table.Column<int>(type: "int", nullable: false),
+                    SupplierReturnID = table.Column<int>(type: "int", nullable: false),
+                    FixedProductID = table.Column<int>(type: "int", nullable: true),
+                    RawMaterialID = table.Column<int>(type: "int", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Supplier_OrderLine", x => new { x.SupplierOrderID, x.SupplierID, x.Supplier_Order_LineID });
+                    table.ForeignKey(
+                        name: "FK_Supplier_OrderLine_Fixed_Product_FixedProductID",
+                        column: x => x.FixedProductID,
+                        principalTable: "Fixed_Product",
+                        principalColumn: "FixedProductID");
+                    table.ForeignKey(
+                        name: "FK_Supplier_OrderLine_Raw_Material_RawMaterialID",
+                        column: x => x.RawMaterialID,
+                        principalTable: "Raw_Material",
+                        principalColumn: "RawMaterialID");
+                    table.ForeignKey(
+                        name: "FK_Supplier_OrderLine_Supplier_Order_SupplierOrderID",
+                        column: x => x.SupplierOrderID,
+                        principalTable: "Supplier_Order",
+                        principalColumn: "SupplierOrderID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Supplier_OrderLine_Supplier_Return_SupplierReturnID",
+                        column: x => x.SupplierReturnID,
+                        principalTable: "Supplier_Return",
+                        principalColumn: "SupplierReturnID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Supplier_OrderLine_Supplier_SupplierID",
+                        column: x => x.SupplierID,
+                        principalTable: "Supplier",
+                        principalColumn: "SupplierID",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -1078,19 +996,14 @@ namespace BOX.Migrations
                 column: "SizeVariablesID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Credit_Application_AdminID",
-                table: "Credit_Application",
-                column: "AdminID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Credit_Application_CreditApplicationStatusID",
                 table: "Credit_Application",
                 column: "CreditApplicationStatusID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Credit_Application_CustomerID",
+                name: "IX_Credit_Application_UserId",
                 table: "Credit_Application",
-                column: "CustomerID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Custom_Product_FormulaID",
@@ -1101,16 +1014,6 @@ namespace BOX.Migrations
                 name: "IX_Custom_Product_ItemID",
                 table: "Custom_Product",
                 column: "ItemID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Customer_EmployeeID",
-                table: "Customer",
-                column: "EmployeeID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Customer_UserId",
-                table: "Customer",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_Order_CustomerOrderStatusID",
@@ -1146,11 +1049,6 @@ namespace BOX.Migrations
                 name: "IX_Customer_Refund_CustomerRefundReasonID",
                 table: "Customer_Refund",
                 column: "CustomerRefundReasonID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employee_UserId",
-                table: "Employee",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Estimate_EstimateDurationID",
@@ -1193,14 +1091,14 @@ namespace BOX.Migrations
                 column: "SizeID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Order_Delivery_Schedule_EmployeeID",
+                name: "IX_Order_Delivery_Schedule_UserId",
                 table: "Order_Delivery_Schedule",
-                column: "EmployeeID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payment_CustomerID",
+                name: "IX_Payment_CustomerOrderID",
                 table: "Payment",
-                column: "CustomerID");
+                column: "CustomerOrderID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payment_PaymentTypeID",
@@ -1223,9 +1121,9 @@ namespace BOX.Migrations
                 column: "CategoryID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stock_Take_EmployeeID",
+                name: "IX_Stock_Take_UserId",
                 table: "Stock_Take",
-                column: "EmployeeID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Supplier_OrderLine_FixedProductID",
@@ -1328,13 +1226,7 @@ namespace BOX.Migrations
                 name: "Size_Variables");
 
             migrationBuilder.DropTable(
-                name: "Admin");
-
-            migrationBuilder.DropTable(
                 name: "Credit_Application_Status");
-
-            migrationBuilder.DropTable(
-                name: "Customer_Order");
 
             migrationBuilder.DropTable(
                 name: "Customer_Refund");
@@ -1346,7 +1238,7 @@ namespace BOX.Migrations
                 name: "Estimate");
 
             migrationBuilder.DropTable(
-                name: "Customer");
+                name: "Customer_Order");
 
             migrationBuilder.DropTable(
                 name: "Payment_Type");
@@ -1379,12 +1271,6 @@ namespace BOX.Migrations
                 name: "Write_Off_Reason");
 
             migrationBuilder.DropTable(
-                name: "Customer_Order_Status");
-
-            migrationBuilder.DropTable(
-                name: "Order_Delivery_Schedule");
-
-            migrationBuilder.DropTable(
                 name: "Customer_Refund_Reason");
 
             migrationBuilder.DropTable(
@@ -1397,6 +1283,12 @@ namespace BOX.Migrations
                 name: "Estimate_Status");
 
             migrationBuilder.DropTable(
+                name: "Customer_Order_Status");
+
+            migrationBuilder.DropTable(
+                name: "Order_Delivery_Schedule");
+
+            migrationBuilder.DropTable(
                 name: "Product_Item");
 
             migrationBuilder.DropTable(
@@ -1406,13 +1298,10 @@ namespace BOX.Migrations
                 name: "QR_Code");
 
             migrationBuilder.DropTable(
-                name: "Employee");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Product_Category");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
         }
     }
 }

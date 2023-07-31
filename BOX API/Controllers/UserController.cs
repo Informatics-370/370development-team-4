@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.Services;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Http;
@@ -59,7 +59,7 @@ namespace BOX.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserByEmailOrPhoneNumber")]
+        [Route("GetUserByEmailOrPhoneNumber/{emailOrPhoneNumber}")]
         public async Task<ActionResult<UserDTO>> GetUserByEmailOrPhoneNumber(string emailOrPhoneNumber)
         {
             var user = await _dbContext.Users
@@ -84,7 +84,7 @@ namespace BOX.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateUser")]
+        [Route("UpdateUser/{emailOrPhoneNumber}")]
         public async Task<IActionResult> UpdateUser(string emailOrPhoneNumber, [FromBody] UserDTO updatedUser)
         {
             var user = await _dbContext.Users
@@ -109,7 +109,7 @@ namespace BOX.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteUser")]
+        [Route("DeleteUser/{emailOrPhoneNumber}")]
         public async Task<IActionResult> DeleteUser(string emailOrPhoneNumber)
         {
             var user = await _dbContext.Users

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace BOX.Models
@@ -6,9 +6,9 @@ namespace BOX.Models
 	public class Customer_Order_Line
 	{
 		[Key] public int Customer_Order_LineID { get; set; }
-		[ForeignKey("Customer")]
-		public int CustomerID { get; set; }
-		public virtual Customer Customer { get; set; }
+		[ForeignKey("User")]
+		public string UserId { get; set; }
+		public virtual User User { get; set; }
 		[ForeignKey("Customer_Refund")]
 		public int? CustomerRefundID { get; set; }
 		public virtual Customer_Refund Customer_Refund { get; set; }

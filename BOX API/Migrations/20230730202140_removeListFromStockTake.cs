@@ -4,7 +4,7 @@
 
 namespace BOX.Migrations
 {
-    public partial class MakefixedprodandcustomprodIDnullableinestmateline : Migration
+    public partial class removeListFromStockTake : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

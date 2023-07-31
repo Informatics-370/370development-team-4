@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
-
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
@@ -36,7 +35,12 @@ import { CustomerHomepageComponent } from './customer-view/customer-homepage/cus
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
+import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
+import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
+import { StockTakeComponent } from './stock-take/stock-take.component';
+import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
+import { UsersViewComponent } from './users-view/users-view.component';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
@@ -73,7 +77,13 @@ import { CustomerOrdersComponent } from './customer-orders/customer-orders.compo
         ForgotPasswordComponent,
         ResetPasswordComponent,
         RolesComponent,
+        SupplierOrderComponent,
+        SupplierReturnComponent,
+        RolesComponent,
         DiscountComponent,
+        StockTakeComponent,
+        StockTakeTrailComponent,
+        UsersViewComponent,
         PlaceOrderComponent,
         OrderHistoryComponent,
         CustomerOrdersComponent
@@ -84,7 +94,7 @@ import { CustomerOrdersComponent } from './customer-orders/customer-orders.compo
     FontAwesomeModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

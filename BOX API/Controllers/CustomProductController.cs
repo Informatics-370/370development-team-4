@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -98,7 +98,7 @@ namespace BOX.Controllers
 				// Create a new instance of Fixed_Product from the view model
 				var customProduct = new Custom_Product
 				{
-					CustomProductID = customProductViewModel.CustomProductID,
+					CustomProductID = 0,
 					FormulaID = customProductViewModel.FormulaID,
 					ItemID = customProductViewModel.ItemID,
 					Width = customProductViewModel.Width,

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 
@@ -7,7 +7,7 @@ namespace BOX.Models
 	public class Fixed_Product
 	{
         [Key]
-        public int FixedProductID { get; set; }
+        public int? FixedProductID { get; set; }
 
         [ForeignKey("QR_Code")]
         public int QRCodeID { get; set; }

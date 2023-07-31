@@ -1,53 +1,8 @@
 <div class="row">
     <!--SIDE NAVBAR-->
-    <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
-        <div class="container">
-            <div class="text-center pt-3">
-                <h2>Menu</h2>
-            </div>
-            <pre></pre>
-            <pre></pre>
-            <pre></pre>
-            
-            <div class="text-center">
-                <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'industry']"></fa-icon>
-                    Dashboard
-                </button><pre></pre>
-                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
-                    Product Category
-                </button><pre></pre>
-                <button [routerLink]="['/product-item']" class="btn btn-info active text-start">
-                    <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
-                    Product Item
-                </button><pre></pre>
-                <button class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'tape']"></fa-icon>
-                    Size
-                </button><pre></pre>
-                <button [routerLink]="['/fixed-product']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'box']"></fa-icon>
-                    Product
-                </button><pre></pre>
-                <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Refund reason
-                </button><pre></pre>
-                <button [routerLink]="['/write-off-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Write-off reason
-                </button><pre></pre>
-                <button [routerLink]="['/estimate-duration']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Estimate Duration
-                </button><pre></pre>
-            </div>
-        </div>
-    </div>
-
+    <div class="col-md-2"><div class="app-menu"></div></div>
     <!--Right Side-->
-    <div class="col-md-9">
+    <div class="col-md-10">
         <h3 class="p-3" style="color: black;">View Product Item</h3>
         <!--Search bar-->
         <div id="searchbar" >
