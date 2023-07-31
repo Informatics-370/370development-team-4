@@ -15,15 +15,6 @@ declare var $: any;
   styleUrls: ['./place-order.component.css']
 })
 export class PlaceOrderComponent {
-  /*Statuses:
-  1 Placed
-  2 In progress
-  3 Cancelled
-  4 Ready for delivery
-  5 Out for delivery
-  6 Completed
-  */
-
   cart: Cart[] = [];
   cartTotal = 0;
   totalBeforeDiscount = 0;
@@ -116,14 +107,12 @@ export class PlaceOrderComponent {
         break;
     }
 
-    console.log(this.tab + ' ' + this.progress);
     //update progress bar
     $('#bar').css('width', this.progress + '%');
   }
 
   getCreditDueDate() {
     let dueDate = this.creditBalanceDate.setDate(this.creditBalanceDate.getDate() + 30);
-    console.log(dueDate);
     let newDate = new Date(dueDate);
     this.creditBalanceDue = newDate.toLocaleDateString('za');
   }
@@ -150,21 +139,27 @@ export class PlaceOrderComponent {
     });
 
     //create order vm for order
+    //put date in correct format to post to DB
     let now = new Date(Date.now());
-    let dateInCorrectFormat = now.toLocaleString("za", {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    });
-    console.log(dateInCorrectFormat);
+    const yyyy = now.getFullYear();
+    let mm = String(now.getMonth() + 1); // month is zero-based
+    let dd = now.getDate().toString();
+    let hh = now.getHours().toString();
+    let min = now.getMinutes().toString();
+    
+    if (parseInt(dd) < 10) dd = '0' + dd;
+    if (parseInt(mm) < 10) mm = '0' + mm;
+    if (parseInt(hh) < 10) hh = '0' + hh;
+    if (parseInt(min) < 10) min = '0' + min;
+    
+    let dateInCorrectFormat = yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + min;
+    console.log('dateInCorrectFormat', dateInCorrectFormat); // 2023-07-31 18:23
     let newOrder: OrderVM = {
       customerID: 1,
       customerOrderID: 0,
       customerStatusID: 0,
       orderDeliveryScheduleID: 0,
-      date: '',
+      date: dateInCorrectFormat,
       deliveryPhoto: '',
       customerFullName: '',
       orderStatusDescription: '',

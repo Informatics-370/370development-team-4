@@ -152,8 +152,8 @@ namespace BOX.Controllers
                 method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
                 Hopefully this make sense to future Charis */
 
-
                 List<EstimateLineViewModel> allCustomerEstimateLines = new List<EstimateLineViewModel>();
+
                 //put all the customer's estimate lines in VM
                 foreach (var el in estimateLines)
                 {

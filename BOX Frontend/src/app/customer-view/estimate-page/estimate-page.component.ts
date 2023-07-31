@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../services/data.services';
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { EstimateVM } from '../../shared/estimate-vm';
 import { EstimateLineVM } from '../../shared/estimate-line-vm';
 import { Discount } from '../../shared/discount';
 import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { take, lastValueFrom } from 'rxjs';
-declare var $: any;
 
 @Component({
   selector: 'app-estimate-page',
@@ -20,7 +18,6 @@ export class EstimatePageComponent implements OnInit {
   filteredEstimates: EstimateClass[] = []; //estimates to show user
   estimateCount = -1;
   loading = true;
-  cartIcon = faShoppingCart;
   customer = {
     ID: 9,
     fullName: 'John Doe',
@@ -28,7 +25,7 @@ export class EstimatePageComponent implements OnInit {
   }; //will retrieve from backend when users are up and running
   vat!: VAT;
   fixedProducts: FixedProductVM[] = [];
-  discountList: Discount[] = []; //will retrieve from backend when discount is up and running
+  discountList: Discount[] = [];
   searchTerm: string = '';
   /*Status list: I see no need to retrieve this from the backend because it's static:
   1	Pending review
@@ -83,10 +80,10 @@ export class EstimatePageComponent implements OnInit {
 
       this.displayCustomerEstimates(); //Execute only after data has been retrieved from the DB otherwise error
 
-      return 'Successfully retrieved product from the database';
+      return 'Successfully retrieved estimates from the database';
     } catch (error) {
-      console.log('An error occurred while retrieving products: ' + error);
-      throw new Error('An error occurred while retrieving products: ' + error);
+      console.log('An error occurred while retrieving estimates: ' + error);
+      throw new Error('An error occurred while retrieving estimates: ' + error);
     }
   }
 

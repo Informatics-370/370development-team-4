@@ -68,9 +68,9 @@ namespace BOX.Controllers
 
 				return Ok(customerOrderViewModels);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ' ' + ex.InnerException);
 			}
 
 		}
@@ -152,9 +152,9 @@ namespace BOX.Controllers
                 method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
                 Hopefully this make sense to future Charis */
 
-
 				List<CustomerOrderLineViewModel> allCustomerOrderLines = new List<CustomerOrderLineViewModel>();
-				//put all the customer's estimate lines in VM
+				
+				//put all the customer's order lines in VM
 				foreach (var ol in orderLines)
 				{
                     int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;

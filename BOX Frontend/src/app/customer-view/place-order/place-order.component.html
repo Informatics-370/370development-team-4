@@ -117,26 +117,7 @@
         </div>
       </div>
 
-      <!-- <div class="row tab" *ngIf="tab == 4">
-        <h6 style="text-align: center;">Your order has been placed!</h6>
-
-        <div class="light-bold">Summary:</div>
-        <div *ngIf="placedOrder">
-          Order #: <span class="light-bold"></span><br/>
-          Date: <span class="light-bold"></span><br/>
-          Total: <span class="light-bold"></span><br/>
-          Delivery type: <span class="light-bold">{{deliveryType?.value}}</span><br/>
-          <span *ngIf="deliveryType?.value == 'Delivery'">Shipping address: <span class="light-bold">
-            {{placeOrderForm.get('shippingAddress')?.value}}
-          </span></span><br/>
-          Payment type: <span class="light-bold"> {{paymentType?.value}}</span><br/><br/>
-
-          <span *ngIf="deliveryType?.value == 'Delivery'">We try to deliver fixed products within 24 hours of the order
-            being placed. You'll get an email once you're order is scheduled for delivery.</span>
-        </div>
-      </div> -->
-
-      <div *ngIf="tab < 4" class="form-progress-div">
+      <div  class="form-progress-div">
         <button *ngIf="tab > 1" class="btn btn-create" (click)="changeTab('previous')">Previous</button>
         <button *ngIf="tab != 3" class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
         <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="placeOrder()">ORDER ></button>
