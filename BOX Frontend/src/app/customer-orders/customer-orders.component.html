@@ -1,0 +1,52 @@
+<div class="row" style="max-width: 100%;">
+    <!--Menu bar-->
+    <div class="col-md-3">
+      <div class="app-menu"></div>
+    </div>
+    <!--PAGE CONTENT-->
+    <div class="col-md-9 page-content">
+      <h3 class="p-3" style="color: black;">Customer Orders</h3>
+      <!--Search bar-->
+      <div id="searchbar">
+        <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+          placeholder="e.g. Search by ID, customer, status, price"  />
+        <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+      </div>
+  
+      <hr class="hr hr-blurry m-3" />
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 120px;">Process order</th>
+            <th style="width: 120px;" scope="col">Order ID</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Status</th>
+            <th scope="col">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!--Messages to the user-->
+          <tr>
+            <!--Message if there's no orders in the DB-->
+            <td *ngIf="orderCount == 0" colspan="5">No customers have placed orders.</td>
+            <!--Loading message while data is still being retrieved from the DB-->
+            <td *ngIf="loading" colspan="5">Please wait while we load all orders...</td>
+            <!--Error message-->
+            <td *ngIf="error" colspan="5">Error loading data from the database. Please contact support services.</td>
+          </tr>
+          <!--Category data from API-->
+          <tr *ngFor="let order of filteredOrders">
+            <td class="text-center">
+                <label class="form-check-label modal-form-label">
+                    <input id="check-{{order.customerOrderID}}" class="form-check-input modal-form-input" type="checkbox">
+                </label>                
+            </td>
+            <td>ORD{{order.customerOrderID}}</td>
+            <td>{{order.customerFullName}}</td>
+            <td>{{order.orderStatusDescription}}</td>
+            <td>{{order.total | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

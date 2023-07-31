@@ -4,4 +4,6 @@ export interface Size {
    height:number;
    length:number;
    volume:number;
+   weight: number;
+   categoryDescription:string;
 };

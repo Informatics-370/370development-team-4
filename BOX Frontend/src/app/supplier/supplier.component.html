@@ -1,0 +1,190 @@
+<div class="row">
+    <!--SIDE NAVBAR-->
+    <div class="col-md-2"><div class="app-menu"></div></div>
+    <!--Right Side-->
+    <div class="col-md-10">
+        <h3 class="p-3" style="color: black;">Suppliers</h3>
+        <!--Search bar-->
+        <div id="searchbar" >
+            <input (keyup)="searchSuppliers($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Mo Ali Distributors" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
+
+        <hr class="hr hr-blurry m-3" />
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addSupplier">Create Supplier</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col">Supplier </th>
+                </tr>
+            </thead>
+            <tbody>                
+                <!--Error message if there's no VAT in the DB-->
+                <tr *ngIf="supplierCount==0">
+                    <td colspan="2">No Supplier entries found. Please add a new Supplier to the system.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all Supplier entries...</td>
+                </tr>
+                <!--VAT data from API-->
+                <tr *ngFor="let supplier of filteredSuppliers">
+                    <td>
+                        <button class="CRUD-icon" (click)="openDeleteModal(supplier.supplierID)" >
+                            <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
+                        </button>
+                        <button class="CRUD-icon" (click)="openUpdateModal(supplier.supplierID)" >
+                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                        </button>                                              
+                    </td>
+                    <td>
+                       {{supplier.name}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--CRUD MODALS-->
+<!--ADD Supplier MODAL-->
+<div class="modal fade" id="addSupplier" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Create New Supplier</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="addSupplierForm">
+            <div class="form-group">
+                <label for="name" class="form-label modal-form-label bold">Name</label>
+                <input id="name" type="text" formControlName="name" class="form-control modal-form-input modal-form-text" placeholder="e.g. Mo Ali Distributors"name="name" required>
+                
+                <div *ngIf="(name?.dirty || name?.touched || submitClicked) && 
+                name?.errors?.['required'] || name?.errors?.['min']" class="error-msg">
+                Please enter a valid Supplier name.
+            </div>
+               <label for="email" class="form-label modal-form-label bold">Email</label>
+<input id="email" type="text" formControlName="email" class="form-control modal-form-input modal-form-text" placeholder="e.g. example@gmail.com" name="email" required>
+<div *ngIf="(email?.dirty || email?.touched || submitClicked) && (email?.errors?.['required'] || email?.errors?.['min'] || !email?.value?.includes('@'))" class="error-msg">
+  Please enter a valid Supplier email address.
+</div>
+
+                <label for="address" class="form-label modal-form-label bold">Address</label>
+                <input id="address" type="text" formControlName="address" class="form-control modal-form-input modal-form-text" placeholder="e.g. 123 Street Name, City, Province, Country"name="address" required>
+                <div *ngIf="(address?.dirty || address?.touched || submitClicked) && 
+                address?.errors?.['required'] || address?.errors?.['min']" class="error-msg">
+                Please enter a valid Supplier address.
+            </div> 
+            <label for="number" class="form-label modal-form-label bold">Number</label>
+            <input id="number" type="text" formControlName="number" class="form-control modal-form-input modal-form-text" placeholder="e.g. 0782554371" name="number" required maxlength="10" minlength="10">
+            <div *ngIf="(number?.dirty || number?.touched || submitClicked) && number?.errors?.['required']" class="error-msg">
+              Please enter a Supplier Phone Number.
+            </div>
+            <div *ngIf="(number?.value?.length < 10 && (number?.dirty || number?.touched))" class="error-msg">
+              Phone Number must have 10 characters.
+            </div>            
+            </div>
+            <!--Display validation error message-->
+          
+           
+        
+   
+
+            <div class="form-submit-div">
+                <button class="btn btn-create modal-form-submit" (click)="addSupplier()" >Add New Supplier</button>
+            </div>
+            
+          </form>
+        </div>
+        
+      </div>
+    </div>
+</div>
+
+<!--DELETE Supplier MODAL-->
+<div class="modal fade" id="deleteSupplier" tabindex="-1" #deleteModal>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Delete Supplier</h4>
+          <button class="close-modal" (click)="closeDeleteModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <p class="modal-form-input bold">Are you sure you want to delete this Supplier?</p>
+          <p class="modal-form-input"><span class="bold">Supplier: </span><span id="deleteDescription"></span></p>
+        </div>        
+
+        <!-- Modal footer -->
+        <div class="modal-footer justify-content-evenly">
+            <button class="btn btn-create modal-form-submit" (click)="deleteSupplier()" >Yes</button>
+            <button class="btn btn-create red-btn modal-form-submit" (click)="closeDeleteModal()">No</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!--UPDATE Supplier MODAL-->
+<div class="modal fade" id="updateSupplier" tabindex="-1" #updateModal>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Edit Supplier</h4>
+          <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="updateSupplierForm">
+            <div class="form-group">
+                <label for="uname" class="form-label modal-form-label bold">Name</label>
+                <input id="uname" type="text" formControlName="uname" class="form-control modal-form-input modal-form-text" placeholder="e.g. Mo Ali Distributors"name="uname" required>
+                
+                <div *ngIf="(uname?.dirty || uname?.touched || submitClicked) && 
+                uname?.errors?.['required'] || uname?.errors?.['min']" class="error-msg">
+                Please enter a valid Supplier name.
+            </div>
+               <label for="uemail" class="form-label modal-form-label bold">Email</label>
+<input id="uemail" type="text" formControlName="uemail" class="form-control modal-form-input modal-form-text" placeholder="e.g. example@gmail.com" name="uemail" required>
+<div *ngIf="(uemail?.dirty || uemail?.touched || submitClicked) && (uemail?.errors?.['required'] || uemail?.errors?.['min'] || !uemail?.value?.includes('@'))" class="error-msg">
+  Please enter a valid Supplier email address.
+</div>
+
+                <label for="uaddress" class="form-label modal-form-label bold">Address</label>
+                <input id="uaddress" type="text" formControlName="uaddress" class="form-control modal-form-input modal-form-text" placeholder="e.g. 123 Street Name, City, Province, Country"name="uaddress" required>
+                <div *ngIf="(uaddress?.dirty || uaddress?.touched || submitClicked) && 
+                uaddress?.errors?.['required'] || uaddress?.errors?.['min']" class="error-msg">
+                Please enter a valid Supplier address.
+            </div> 
+                <label for="unumber" class="form-label modal-form-label bold">Number</label>
+                <input id="unumber" type="text" formControlName="unumber" class="form-control modal-form-input modal-form-text" placeholder="e.g. 0782554371"name="unumber"  required maxlength="10" minlength="10">
+                <div *ngIf="(unumber?.dirty || unumber?.touched || submitClicked) && unumber?.errors?.['required']" class="error-msg">
+                    Please enter a Supplier Phone Number.
+                  </div>
+                  <div *ngIf="(unumber?.value?.length < 10 && (unumber?.dirty || unumber?.touched))" class="error-msg">
+                    Phone Number must have 10 characters.
+                  </div> 
+                  
+            </div>
+
+            <div class="form-submit-div">
+                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="updateSupplier()" >Save Changes</button>
+            </div>            
+          </form>
+        </div>
+        
+      </div>
+    </div>
+</div>
+
+<div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>

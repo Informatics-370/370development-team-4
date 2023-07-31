@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bootstrap 5 Side Bar Navigation</title>
+  <!-- bootstrap 5 css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous" />
+  <!-- BOX ICONS CSS-->
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- Menu Bar -->
+    <nav id="menu-bar" class="collapse d-lg-block sidebar collapse pt-4">
+      <div class="position-sticky">
+        <!-- Heading -->
+        <div class="text-center">
+            <h3 class="text-white">Menu</h3>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="mx-3 mt-4">
+          <a [routerLink]="'/dashboard'" class="nav-link py-2 ripple item-active" aria-current="true">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'industry']"></fa-icon>
+            Dashboard
+          </a><pre></pre>
+          <a href="#" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'clipboard-list']"></fa-icon>
+            Delivery Schedule
+          </a><pre></pre>
+          <a href="#" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'cart-flatbed']"></fa-icon>
+            Customer Orders
+          </a><pre></pre>
+          <a href="#" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'truck']"></fa-icon>
+            Supplier Orders
+          </a><pre></pre>
+          <a [routerLink]="'/stock-take'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'file-invoice']"></fa-icon>
+            Inventory Levels
+          </a><pre></pre>
+          <a [routerLink]="'/product-category'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'box-open']"></fa-icon>
+            Product Category
+          </a><pre></pre>
+          <a [routerLink]="'/product-item'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'box']"></fa-icon>
+            Product Item
+          </a><pre></pre>
+          <a [routerLink]="'/write-off-reason'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'trash-arrow-up']"></fa-icon>
+            Write Off Reasons
+          </a><pre></pre>
+          <div class="btn-group dropup fixed-bottom">
+            <!-- Use *ngIf to conditionally display the button based on login status -->
+            <button id="log" *ngIf="isLoggedIn()" (click)="logout()" type="button" class="btn text-white  " data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <fa-icon class="fa-icon-large" [icon]="['fas', 'sign-out-alt']"></fa-icon>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- End of Menu Bar -->
+
+  <!-- bootstrap js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+</body>
+
+</html>

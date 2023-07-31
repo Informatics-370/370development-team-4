@@ -18,19 +18,40 @@ namespace BOX.Controllers
       _repository = repository;
     }
 
-    [HttpGet]
+
+    [HttpGet] //READ FROM ENTITY
     [Route("GetAllSizes")]
-    public async Task<IActionResult> GetAllSizes()
+    public async Task<IActionResult> GetAllSizesAsync()
     {
       try
       {
+
         var results = await _repository.GetAllSizesAsync();
-        return Ok(results);
+
+        List<SizeViewModel> sizeViewModels = new List<SizeViewModel>();
+        foreach (var result in results)
+        {
+          var Category = await _repository.GetCategoryAsync(result.CategoryID);
+          SizeViewModel svm = new SizeViewModel()
+          {
+            SizeID = result.SizeID,
+            Width = result.Width,
+            Height = result.Height,
+            Weight = result.Weight,
+            Length = result.Length,
+            Volume = result.Volume,
+            CategoryID = result.CategoryID,
+            CategoryDescription = Category.Description,
+
+
+          };
+          sizeViewModels.Add(svm);
+
+        }
+        return Ok(sizeViewModels);
       }
       catch (Exception)
-      {
-        return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
-      }
+      { return StatusCode(500, "Internal Server Error. Please contact B.O.X support services."); }
     }
 
     [HttpGet]
@@ -42,8 +63,20 @@ namespace BOX.Controllers
         var result = await _repository.GetSizeAsync(sizeId);
 
         if (result == null) return NotFound("Size of product does not exist on system");
+        var Category = await _repository.GetCategoryAsync(result.CategoryID);
+        SizeViewModel svm = new SizeViewModel()
+        {
+          SizeID = result.SizeID,
+          Width = result.Width,
+          Height = result.Height,
+          Weight = result.Weight,
+          Length = result.Length,
+          Volume = result.Volume,
+          CategoryID = result.CategoryID,
+          CategoryDescription = Category.Description,
+        };
 
-        return Ok(result);
+        return Ok(svm);
       }
       catch (Exception)
       {
@@ -52,14 +85,14 @@ namespace BOX.Controllers
     }
 
     [HttpPost]
-    [Route("AddSize")]
-    public async Task<IActionResult> AddSize(SizeViewModel svm)
+    [Route("AddSizeUnit")]
+    public async Task<IActionResult> AddSizeUnit(SizeViewModel svm)
     {
-      var size = new Size_Units { Width = svm.Width,Height=svm.Height,Length=svm.Length,Weight=svm.Weight,Volume=svm.Volume };
+      var Size = new Size_Units {Volume=svm.Volume,Width=svm.Width,Height=svm.Height,Length=svm.Length,Weight=svm.Weight,CategoryID=svm.CategoryID};
 
       try
       {
-        _repository.Add(size);
+        _repository.Add(Size);
         await _repository.SaveChangesAsync();
       }
       catch (Exception)
@@ -67,7 +100,7 @@ namespace BOX.Controllers
         return BadRequest("Invalid transaction");
       }
 
-      return Ok(size);
+      return Ok(Size);
     }
 
     [HttpPut]
@@ -85,6 +118,7 @@ namespace BOX.Controllers
         existingSize.Length= sizeModel.Length;
         existingSize.Weight = sizeModel.Weight;
         existingSize.Volume = sizeModel.Volume;
+        existingSize.CategoryID = sizeModel.CategoryID;
 
         if (await _repository.SaveChangesAsync())
         {
