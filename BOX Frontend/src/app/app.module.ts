@@ -41,9 +41,11 @@ import { DiscountComponent } from './discount/discount.component';
 import { StockTakeComponent } from './stock-take/stock-take.component';
 import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
 import { UsersViewComponent } from './users-view/users-view.component';
+import { RegistrationSuccessPopupComponent } from './registration-success-popup/registration-success-popup.component';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
+
 
 @NgModule({
   declarations: [ 
@@ -86,7 +88,9 @@ import { CustomerOrdersComponent } from './customer-orders/customer-orders.compo
         UsersViewComponent,
         PlaceOrderComponent,
         OrderHistoryComponent,
-        CustomerOrdersComponent
+        CustomerOrdersComponent,
+        RegistrationSuccessPopupComponent
+        
   ],
   imports: [
     BrowserModule,

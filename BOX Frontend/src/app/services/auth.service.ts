@@ -27,4 +27,24 @@ export class AuthService {
     return this.http.post(`${this.authUrl}ForgotPassword`, emailData);
     
   }
+
+  isLoggedIn(): boolean {
+    const token = localStorage.getItem('access_token');
+    return !!token;
+  }
+
+  logout(): void {
+    localStorage.removeItem('access_token');
+  }
+
+  getUserRole(): string | null {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      const jwtData = token.split('.')[1];
+      const decodedJwtJsonData = window.atob(jwtData);
+      const decodedJwtData = JSON.parse(decodedJwtJsonData);
+      return decodedJwtData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    }
+    return null;
+  }
 }

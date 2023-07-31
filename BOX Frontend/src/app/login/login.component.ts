@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,7 +11,7 @@ export class LoginComponent {
   passwordVisible = false;
   confirmPasswordVisible = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   // ========================================= Password Validation =============================================
   togglePasswordVisibility(field: string) {
@@ -37,7 +38,8 @@ export class LoginComponent {
       (response: any) => {
         // Login successful
         console.log('Login successful:', response);
-        // Save the token in local storage or perform any other necessary actions
+        localStorage.setItem("access_token", response.token);
+        this.handleSuccessfulLogin(response);
       },
       (error: any) => {
         // Login failed
@@ -45,5 +47,54 @@ export class LoginComponent {
       }
     );    
   }
+
+  private handleSuccessfulLogin(response: any) {
+    const token = response.token;
+    const userRole = this.getUserRoleFromToken(token);
+    const userId = response.userId;
+
+    if (userId !== null) {
+      // Save the user ID to localStorage
+      localStorage.setItem('user_id', userId);
+    } else {
+      console.error('User ID not available in the JWT token');
+    }
+  
+
+    if (userRole === 'Admin') {
+      // Redirect to the dashboard for admin
+      this.router.navigate(['/dashboard']);
+    } else if (userRole === 'Customer') {
+      // Redirect to the customer homepage for customers
+      this.router.navigate(['/customer-homepage']);
+    } else {
+      // If the user role is unknown or not specified, you can handle it accordingly.
+    }
+  }
+
+  private getUserRoleFromToken(token: string): string | null {
+    try {
+      const jwtData = token.split('.')[1];
+      const decodedJwtJsonData = window.atob(jwtData);
+      const decodedJwtData = JSON.parse(decodedJwtJsonData);
+      return decodedJwtData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    } catch (error) {
+      console.error('Error decoding JWT token:', error);
+      return null;
+    }
+  }
+
+  private getUserIdFromToken(token: string): string | null {
+    try {
+      const jwtData = token.split('.')[1];
+      const decodedJwtJsonData = window.atob(jwtData);
+      const decodedJwtData = JSON.parse(decodedJwtJsonData);
+      return decodedJwtData['http://schemas.microsoft.com/ws/2008/06/identity/claims/userid']; // Replace 'userid' with the actual claim name for user ID
+    } catch (error) {
+      console.error('Error decoding JWT token:', error);
+      return null;
+    }
+  }
+  
 
 }

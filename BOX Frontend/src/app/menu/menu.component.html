@@ -55,9 +55,10 @@
             Write Off Reasons
           </a><pre></pre>
           <div class="btn-group dropup fixed-bottom">
-            <button id="settings" type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <fa-icon class="fa-icon-large" [icon]="['fas', 'cog']"></fa-icon>
-                Settings
+            <!-- Use *ngIf to conditionally display the button based on login status -->
+            <button id="log" *ngIf="isLoggedIn()" (click)="logout()" type="button" class="btn text-white  " data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <fa-icon class="fa-icon-large" [icon]="['fas', 'sign-out-alt']"></fa-icon>
+              Logout
             </button>
           </div>
         </div>
