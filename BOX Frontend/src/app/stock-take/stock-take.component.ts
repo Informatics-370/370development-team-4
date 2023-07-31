@@ -102,7 +102,7 @@ export class StockTakeComponent implements OnInit {
 
   saveChanges() {
     const stockTakeViewModel = {
-      UserId: '917744e7-dc08-4e82-8559-8c1274dba831',
+      UserId: localStorage.getItem('user_id'),
       Date: new Date().toISOString(),
       WriteOffs: this.inventory
         .filter(item => item.saveItem) // Only include items with saveItem set to true

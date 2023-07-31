@@ -41,6 +41,8 @@ import { DiscountComponent } from './discount/discount.component';
 import { StockTakeComponent } from './stock-take/stock-take.component';
 import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
 import { UsersViewComponent } from './users-view/users-view.component';
+import { RegistrationSuccessPopupComponent } from './registration-success-popup/registration-success-popup.component';
+
 
 @NgModule({
   declarations: [ 
@@ -80,7 +82,8 @@ import { UsersViewComponent } from './users-view/users-view.component';
         DiscountComponent,
         StockTakeComponent,
         StockTakeTrailComponent,
-        UsersViewComponent
+        UsersViewComponent,
+        RegistrationSuccessPopupComponent
         
   ],
   imports: [
