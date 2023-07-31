@@ -21,15 +21,22 @@ updateUserForm:FormGroup;
 @ViewChild('deleteModal') deleteModal: any;
 
 constructor(private dataService: DataService, private formBuilder: FormBuilder) {
-
   this.updateUserForm = this.formBuilder.group({
   })
+  console.log(this.updateUserForm)
 }
 
 
 
 ngOnInit(): void {
   this.getAllUsers();
+  this.updateUserForm.addControl('uEmail', this.formBuilder.control(''));
+  this.updateUserForm.get('uEmail')?.disabled;
+  this.updateUserForm.addControl('uTitle', this.formBuilder.control(''));
+  this.updateUserForm.addControl('uFirstName', this.formBuilder.control(''));
+  this.updateUserForm.addControl('uLastName', this.formBuilder.control(''));
+  this.updateUserForm.addControl('uPhoneNumber', this.formBuilder.control(''));
+  this.updateUserForm.addControl('uAddress', this.formBuilder.control(''));
 }
 getAllUsers() { //get all Users
   this.dataService.GetUsers().subscribe((result: any[]) => {
@@ -63,12 +70,16 @@ getAllUsers() { //get all Users
 
   //--------------------UPDATE USER LOGIC----------------
   openUpdateModal(emailOrPhoneNumber: string) {
-    //get vat and display data
+    
     this.dataService.GetUser(emailOrPhoneNumber).subscribe(
       (result) => {
         console.log('User to update: ', result);        
-        this.updateUserForm.setValue({          
+        this.updateUserForm.setValue({
           uEmail: result.email,
+          uTitle: result.title,   
+          uFirstName: result.firstName,
+          uLastName: result.lastName,       
+          uPhoneNumber: result.phoneNumber,
           uAddress:result.address
         }); 
 
@@ -150,15 +161,12 @@ updateUser() {
     //get form data
     const formValues = this.updateUserForm.value;
     let updatedUser: Users = {
-      userId: '',    
-      userName:'',
-      firstName:'',
-      lastName:'',
-      address:'',
-      title:'',
-      phoneNumber:'',
-      email:''
-    
+      firstName: formValues.uFirstName,
+      lastName: formValues.uLastName,
+      email: formValues.uEmail,
+      address: formValues.uAddress,
+      title: formValues.uTitle,
+      phoneNumber: formValues.uPhoneNumber    
     };
 
     console.log(updatedUser);

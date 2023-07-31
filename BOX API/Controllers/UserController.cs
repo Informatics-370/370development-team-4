@@ -59,7 +59,7 @@ namespace BOX.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserByEmailOrPhoneNumber")]
+        [Route("GetUserByEmailOrPhoneNumber/{emailOrPhoneNumber}")]
         public async Task<ActionResult<UserDTO>> GetUserByEmailOrPhoneNumber(string emailOrPhoneNumber)
         {
             var user = await _dbContext.Users
@@ -84,7 +84,7 @@ namespace BOX.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateUser")]
+        [Route("UpdateUser/{emailOrPhoneNumber}")]
         public async Task<IActionResult> UpdateUser(string emailOrPhoneNumber, [FromBody] UserDTO updatedUser)
         {
             var user = await _dbContext.Users
@@ -99,7 +99,6 @@ namespace BOX.Controllers
             user.user_FirstName = updatedUser.FirstName;
             user.user_LastName = updatedUser.LastName;
             user.Email = updatedUser.Email;
-            user.UserName = updatedUser.Email;
             user.user_Address = updatedUser.Address;
             user.title = updatedUser.Title;
             user.PhoneNumber = updatedUser.PhoneNumber;

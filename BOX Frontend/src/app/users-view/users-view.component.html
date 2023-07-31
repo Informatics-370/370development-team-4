@@ -1,61 +1,8 @@
 <div class="row">
     <!--SIDE NAVBAR-->
-    <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
-        <div class="container">
-            <div class="text-center pt-3">
-                <h2>Menu</h2>
-            </div>
-            <pre></pre>
-            <pre></pre>
-            <pre></pre>
-            
-            <div class="text-center">
-                <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
-                    Dashboard
-                </button><pre></pre>
-                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
-                    Product Category
-                </button><pre></pre>
-                <button [routerLink]="['/product-item']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
-                    Product Item
-                </button><pre></pre>
-                <button class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'tape']"></fa-icon>
-                    Size
-                </button><pre></pre>
-                <button [routerLink]="['/fixed-product']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'box']"></fa-icon>
-                    Product
-                </button><pre></pre>
-                <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Refund reason
-                </button><pre></pre>
-                <button [routerLink]="['/write-off-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Write-off reason
-                </button><pre></pre>
-                <button class="btn btn-info active text-start">
-                    <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
-                    VAT
-                </button><pre></pre>
-                <button [routerLink]="['/estimate-duration']" class="btn btn-info active text-start">
-                    <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
-                    Estimate Duration
-                </button><pre></pre>
-                <button [routerLink]="['/discount']" class="btn btn-info active text-start">
-                    <fa-icon [icon]="['fas', 'percentage']"></fa-icon>
-                    Discount
-                </button><pre></pre>
-            </div>
-        </div>
-    </div>
-    
+    <div class="col-md-2"><div class="app-menu"></div></div>    
     <!--Right Side-->
-    <div class="col-md-9">
+    <div class="col-md-10">
         <h3 class="p-3" style="color: black;">Users</h3>
         <!--Search bar-->
         <div id="searchbar" >
@@ -82,7 +29,7 @@
                 <tr *ngIf="loading">
                     <td colspan="2">Please wait while we load all User entries...</td>
                 </tr>
-                <!--VAT data from API-->
+                <!--User data from API-->
                 <tr *ngFor="let user of filteredUsers">
                     <td>
                       <button title="Delete this User" class="CRUD-icon" (click)="openDeleteModal(user.email)" >
@@ -146,10 +93,23 @@
         <div class="modal-body">
           <form [formGroup]="updateUserForm">
             <div class="form-group">
-                <label for="uEmail" class="form-label modal-form-label bold">User Data</label>
-                <input id="uEmail" type="string" formControlName="uEmail" class="form-control modal-form-input modal-form-text" 
-                    name="uEmail">
-                    <input id="uAddress" type="string" formControlName="uAddress" class="form-control modal-form-input modal-form-text" 
+                <label for="uEmail" class="form-label modal-form-label bold">Email</label>
+                <input id="uEmail" type="text" formControlName="uEmail" class="form-control modal-form-input modal-form-text" 
+                    name="uEmail" >
+                <label for="uTitle" class="form-label modal-form-label bold">Title</label>
+                <input id="uTitle" type="text" formControlName="uTitle" class="form-control modal-form-input modal-form-text" 
+                    name="uTitle">
+                <label for="uFirstName" class="form-label modal-form-label bold">First Name</label>
+                <input id="uFirstName" type="text" formControlName="uFirstName" class="form-control modal-form-input modal-form-text" 
+                    name="uFirstName">
+                <label for="uLastName" class="form-label modal-form-label bold">Last Name</label>
+                <input id="uLastName" type="text" formControlName="uLastName" class="form-control modal-form-input modal-form-text" 
+                    name="uLastName">
+                <label for="uPhoneNumber" class="form-label modal-form-label bold">Phone Number</label>
+                <input id="uPhoneNumber" type="text" formControlName="uPhoneNumber" class="form-control modal-form-input modal-form-text" 
+                    name="uPhoneNumber">
+                <label for="uAddress" class="form-label modal-form-label bold">Address</label>
+                <input id="uAddress" type="text" formControlName="uAddress" class="form-control modal-form-input modal-form-text" 
                     name="uAddress">
             </div>
             <!--Display validation error message-->
