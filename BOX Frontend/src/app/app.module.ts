@@ -38,6 +38,8 @@ import { RolesComponent } from './roles/roles.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
+import { StockTakeComponent } from './stock-take/stock-take.component';
+import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
 import { UsersViewComponent } from './users-view/users-view.component';
 
 @NgModule({
@@ -76,6 +78,8 @@ import { UsersViewComponent } from './users-view/users-view.component';
         SupplierReturnComponent,
         RolesComponent,
         DiscountComponent,
+        StockTakeComponent,
+        StockTakeTrailComponent,
         UsersViewComponent
         
   ],

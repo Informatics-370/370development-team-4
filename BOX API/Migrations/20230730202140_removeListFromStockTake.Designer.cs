@@ -4,6 +4,7 @@ using BOX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230730202140_removeListFromStockTake")]
+    partial class removeListFromStockTake
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1003,15 +1005,10 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WriteOffID"), 1L, 1);
 
-                    b.Property<int?>("FixedProductId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RawMaterialId")
-                        .IsRequired()
+                    b.Property<int>("RawMaterialId")
                         .HasColumnType("int");
 
                     b.Property<int>("StockTakeID")
@@ -1021,8 +1018,6 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("WriteOffID");
-
-                    b.HasIndex("FixedProductId");
 
                     b.HasIndex("RawMaterialId");
 
@@ -1520,12 +1515,6 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Write_Off", b =>
                 {
-                    b.HasOne("BOX.Models.Fixed_Product", "FixedProduct")
-                        .WithMany()
-                        .HasForeignKey("FixedProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BOX.Models.Raw_Material", "RawMaterial")
                         .WithMany()
                         .HasForeignKey("RawMaterialId")
@@ -1543,8 +1532,6 @@ namespace BOX.Migrations
                         .HasForeignKey("WriteOffReasonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("FixedProduct");
 
                     b.Navigation("RawMaterial");
 
