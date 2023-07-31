@@ -18,7 +18,6 @@ export class EstimatePageComponent implements OnInit {
   filteredEstimates: EstimateClass[] = []; //estimates to show user
   estimateCount = -1;
   loading = true;
-  cartIcon = faShoppingCart;
   user = {
     Id: '3804c42b-f8cb-4df3-91cd-8334874b5cf4',
     fullName: 'John Doe',
@@ -42,7 +41,7 @@ export class EstimatePageComponent implements OnInit {
   ngOnInit(): void {
     // const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
     // let index = Math.floor((Math.random() * 5));
-    this.user.Id = 'e541dc51-b470-4d9f-a73c-ac877671e006';
+    this.user.Id = '7f8fcf33-1585-47f3-8cc8-ef72cedfc290';
     this.getDataFromDB();
   }
 

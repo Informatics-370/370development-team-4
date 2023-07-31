@@ -79,7 +79,7 @@ export class CustomerOrdersComponent {
 class VATInclusiveOrder implements OrderVM {
   customerOrderID: number;
   customerStatusID: number;
-  customerID: number;
+  userId: string;
   orderDeliveryScheduleID: number;
   date: string;
   deliveryPhoto: string;
@@ -100,7 +100,7 @@ class VATInclusiveOrder implements OrderVM {
     this.orderDeliveryScheduleID = order.orderDeliveryScheduleID;
     this.date = order.date;
     this.deliveryPhoto = order.deliveryPhoto;
-    this.customerID = order.customerID;
+    this.userId = order.userId;
     this.customerFullName = order.customerFullName;
     this.negotiatedDiscount = negotiatedDiscount ? negotiatedDiscount : 0; //includes VAT
     this.total = this.getTotalBeforeDiscount();

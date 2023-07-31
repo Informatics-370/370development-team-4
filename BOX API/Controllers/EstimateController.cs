@@ -60,8 +60,8 @@ namespace BOX.Controllers
                         EstimateID = estimate.EstimateID,
                         EstimateStatusID = estimate.EstimateStatusID,
                         EstimateDurationID = estimate.EstimateDurationID,
-                      UserId = estimateLines[0].UserId,
-						EstimateStatusDescription = Status.Description,
+                        UserId = estimateLines[0].UserId,
+                        EstimateStatusDescription = Status.Description,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
                         Estimate_Lines = estimateLineList
                         //The Customer Name attribute does not appear here
@@ -72,9 +72,9 @@ namespace BOX.Controllers
 
                 return Ok(EstimateViewModels);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ' ' + ex.InnerException);
             }
 
         }
@@ -124,7 +124,7 @@ namespace BOX.Controllers
                     EstimateStatusDescription = status.Description,
                     EstimateDurationID = estimate.EstimateDurationID,
                     ConfirmedTotal = estimate.Confirmed_Total_Price,
-                  UserId = estimateLines[0].UserId,
+                    UserId = estimateLines[0].UserId,
                     Estimate_Lines = estimateLineList
                 };
 
@@ -188,7 +188,7 @@ namespace BOX.Controllers
                         EstimateStatusDescription = status.Description,
                         EstimateDurationID = estimate.EstimateDurationID,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
-                      UserId = customerId,
+                        UserId = customerId,
                         Estimate_Lines = allCustomerEstimateLines.Where(el => el.EstimateID == estimateID).ToList() //get all estimate lines for this estimate
                     };
 
@@ -237,7 +237,7 @@ namespace BOX.Controllers
                     Estimate_Line estimateLineRecord = new Estimate_Line
                     {
                         EstimateLineID = i + 1, //e.g. 1, then 2, 3, etc.
-                      UserId = "e541dc51-b470-4d9f-a73c-ac877671e006",
+                        UserId = estimateViewModel.UserId,
                         EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Estimate = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,
@@ -312,7 +312,7 @@ namespace BOX.Controllers
                         Estimate_Line estimateLineRecord = new Estimate_Line
                         {
                             EstimateLineID = index + 1,
-                          UserId = updatedEstimateVM.UserId,
+                            UserId = updatedEstimateVM.UserId,
                             EstimateID = estimateId,
                             FixedProductID = line.FixedProductID,
                             Quantity = line.Quantity

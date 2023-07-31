@@ -3,7 +3,7 @@ import { OrderLineVM } from "./order-line-vm";
 export interface OrderVM {
     customerOrderID: number;
     customerStatusID: number;
-    customerID: number;
+    userId: string;
     orderDeliveryScheduleID: number;
     date: string;
     deliveryPhoto: string;
