@@ -11,7 +11,7 @@
     <!--Search bar-->
     <div id="searchbar">
       <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
-        placeholder="Search order number, status"  />
+        placeholder="Search order number, status" (keyup)="searchOrders($event)" />
       <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
     </div>
 
@@ -30,7 +30,7 @@
           <!--Header-->
           <div class="estimate-header mb-4">
             <div class="flex-space-between" style="align-items: end;">
-              <span class="title light-bold">Qoute #{{order.ID}}</span>
+              <span class="title light-bold">Order #{{order.ID}}</span>
               Status:
             </div>
             <div class="flex-space-between" style="align-items: start;">
@@ -92,8 +92,6 @@
           </div>
         </div>
       </div>
-
-
     </div>
   </div>
 </div>

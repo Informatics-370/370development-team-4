@@ -122,6 +122,23 @@ export class OrderHistoryComponent {
     return parseFloat(priceInclVAT.toFixed(2))
   }
 
+  /*SEARCH*/
+  searchOrders(event: Event) {
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.filteredOrders = []; //clear array
+    for (let i = 0; i < this.allCustomerOrders.length; i++) {
+      //concatenate all the searchable info in one variable
+      let toSearch: string = String(this.allCustomerOrders[i].ID + this.allCustomerOrders[i].statusDescription).toLowerCase();
+
+      if (toSearch.includes(this.searchTerm.toLowerCase())) {
+        this.filteredOrders.push(this.allCustomerOrders[i]);
+      }
+    }
+
+    this.orderCount = this.filteredOrders.length; //update count
+    console.log('Search results:', this.filteredOrders);
+  }
+
 }
 
 class OrderClass {
