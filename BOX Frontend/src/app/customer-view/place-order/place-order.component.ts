@@ -173,7 +173,7 @@ export class PlaceOrderComponent {
       this.dataService.AddCustomerOrder(newOrder).subscribe((result) => {
         this.placedOrder = result;
         this.cartService.emptyCart(); //clear cart
-        this.router.navigate(['/order-history']); //redirect to order history page
+        this.router.navigate(['/order-history', 'success']); //redirect to order history page
         //this.changeTab('next'); //go to success tab
       });
     } catch (error) {

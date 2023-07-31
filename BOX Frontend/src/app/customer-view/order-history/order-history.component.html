@@ -17,14 +17,15 @@
 
     <hr class="hr hr-blurry m-3" />
     <!--Messages to user-->
-    <div class="m-3"> 
+    <div class="m-3" style="text-align: center;"> 
+      <span style="color: #e7a427; font-size: 1.1em;" *ngIf="success">Your order was placed successfully!</span><br/>
       <span *ngIf="loading">Getting your past orders...</span>
       <span *ngIf="orderCount == 0">No orders found.</span>
     </div>
     
     <div class="row estimates-container p-1">
 
-      <!--ESTIMATE CARD-->
+      <!--ORDER CARD-->
       <div class="col-md-6 col-sm-12 faux-card-container" *ngFor="let order of filteredOrders">
         <div class="faux-card">
           <!--Header-->

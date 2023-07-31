@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { OrderVM } from '../../shared/order-vm';
 import { OrderLineVM } from '../../shared/order-line-vm';
@@ -27,6 +28,7 @@ export class OrderHistoryComponent {
   fixedProducts: FixedProductVM[] = [];
   discountList: Discount[] = [];
   searchTerm: string = '';
+  success = false;
   /*Statuses:
   1 Placed
   2 In progress
@@ -36,12 +38,22 @@ export class OrderHistoryComponent {
   6 Completed
   */
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute) { }
   
   ngOnInit(): void {
     const customerIDs = [1, 2, 4]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
     let index = Math.floor((Math.random() * 3));
     this.customer.ID = customerIDs[index];
+    
+    //Retrieve the item ID from url
+    this.activatedRoute.paramMap.subscribe(params => {
+      let successMsg = params.get('success');
+      if (successMsg) {
+        this.success = true;
+        this.displaySuccessMessage();
+      }
+    });
+
     this.getDataFromDB();
   }
 
@@ -145,10 +157,19 @@ export class OrderHistoryComponent {
       this.dataService.UpdateOrderStatus(orderId, 3).subscribe((result) => {
         console.log("Result", result);
         this.getCustomerOrdersPromise(); //refresh list
+
+        //update credit balance for credit customer; cash happens off system
       });
     } catch (error) {
       console.error('Error updating status: ', error);
     }
+  }
+
+  displaySuccessMessage() {
+    setTimeout(() => {
+      this.success = false;
+    }, 10000);
+    return false
   }
 
 }

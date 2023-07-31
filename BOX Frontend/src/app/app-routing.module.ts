@@ -58,7 +58,8 @@ const routes: Routes = [
   { path: 'roles', component: RolesComponent },
   { path: 'discount', component: DiscountComponent },
   { path: 'place-order', component: PlaceOrderComponent},
-  { path: 'order-history', component: OrderHistoryComponent}
+  { path: 'order-history', component: OrderHistoryComponent},
+  { path: 'order-history/:success', component: OrderHistoryComponent}
 
 ];
 

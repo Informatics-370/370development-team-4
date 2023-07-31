@@ -72,14 +72,6 @@ export class ProductDetailsComponent {
       if (id) this.itemID = parseInt(id[0]);
     });
 
-    /* // generate static discount list
-    this.discountList.push(
-      { discountID: 1, percentage: 6, quantity: 50 },
-      { discountID: 2, percentage: 10, quantity: 400 },
-      { discountID: 3, percentage: 17, quantity: 7000 },
-      { discountID: 4, percentage: 23, quantity: 20000 }
-    ) */
-
     //Retrieve cart list from local storage; if there's nothing in cart, return empty array
     this.cart = JSON.parse(localStorage.getItem("MegaPack-cart") || "[]");
     console.log('cart', this.cart);
