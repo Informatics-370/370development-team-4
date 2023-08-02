@@ -112,6 +112,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IRepository, Repository>();
 
+// Add Google Cloud NLP API service registration
+var googleCloudSettings = builder.Configuration.GetSection("GoogleCloudSettings");
+var apiKey = googleCloudSettings["ApiKey"];
+builder.Services.AddSingleton<INlpService>(new GoogleNlpApiClient(apiKey));
+
 var app = builder.Build();
 
 // Data Seeding
