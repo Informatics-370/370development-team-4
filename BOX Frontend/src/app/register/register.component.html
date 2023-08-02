@@ -108,14 +108,8 @@
     
                                 <!-- Address Line 1 -->
                                 <div class="form-group">
-                                    <label for="addressOne" class="form-label text-black">Residential Address:</label>
-                                    <input type="text" id="addressOne" class="form-control" />
-                                </div><pre></pre>
-    
-                                <!-- Address Line 2 -->
-                                <div class="form-group">
-                                    <label for="postalAddress" class="form-label text-black">Postal Address:</label>
-                                    <input type="text" id="postalAddress" class="form-control" />
+                                    <label for="addressOne" class="form-label text-black">Address:</label>
+                                    <input type="text" id="addressOne" class="form-control" #addressInput />
                                 </div><pre></pre>
     
                                 <!-- Is Business -->
@@ -142,9 +136,9 @@
 
                                 <!-- Submit Button -->
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-lg text-uppercase text-white ripple shadow" (submit)="submitForm()">Register</button>
+                                    <button type="button" class="btn btn-lg text-uppercase text-white ripple shadow" (click)="submitForm()">Register</button>
                                     <p class="mt-4">Already Registered? <a [routerLink]="['/login']">Login Here</a></p>
-                                </div>
+                                 </div>
 
                             </form><!--End of Registration Form -->
 

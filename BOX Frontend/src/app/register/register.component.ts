@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 
@@ -13,10 +13,27 @@ export class RegisterComponent implements OnInit {
   confirmPasswordVisible = false;
   passwordsMatch = true;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  @ViewChild('addressInput', { static: true }) addressInput!: ElementRef<HTMLInputElement>;
 
+  constructor(private authService: AuthService, private router: Router) {}
+  
   ngOnInit() {
     this.handleCheckboxChange();
+    this.initAutocomplete();
+  }
+
+  initAutocomplete() {
+    const inputElement = this.addressInput.nativeElement;
+
+    const autocomplete = new google.maps.places.Autocomplete(inputElement);
+    autocomplete.setFields(['formatted_address']);
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place && place.formatted_address) {
+        console.log('Selected address:', place.formatted_address);
+      }
+    });
   }
 
   // ========================================= Password Validation =============================================
