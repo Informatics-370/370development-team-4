@@ -62,16 +62,24 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add configuration for required password
+
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    options.Password.RequireUppercase = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireDigit = true;
-    options.User.RequireUniqueEmail = true;
+    options.Password.RequireUppercase = true; // Must have an uppercase letter
+    options.Password.RequireLowercase = true; // Must have a lowercase letter
+    options.Password.RequireNonAlphanumeric = false; // Don't need a special character
+    options.Password.RequireDigit = true; // Must have a digit
+    options.Password.RequiredLength = 8; // Password must have a minmum of 8 characters
+    options.User.RequireUniqueEmail = true; // Requires a unique email
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+// Add configuration for required emails
+builder.Services.Configure<IdentityOptions>(
+    options => options.SignIn.RequireConfirmedEmail = true
+    );
 
 builder.Services.AddAuthentication()
                 .AddCookie()

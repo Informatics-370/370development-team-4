@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230731034118_Initial")]
-    partial class Initial
+    [Migration("20230802104628_ReAddCustomer")]
+    partial class ReAddCustomer
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -194,6 +194,38 @@ namespace BOX.Migrations
                     b.HasIndex("ItemID");
 
                     b.ToTable("Custom_Product");
+                });
+
+            modelBuilder.Entity("BOX.Models.Customer", b =>
+                {
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal?>("creditBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("creditLimit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("isBusiness")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("vatNo")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("CustomerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Customer");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>
@@ -1240,6 +1272,17 @@ namespace BOX.Migrations
                     b.Navigation("Cost_Price_Formula_Variables");
 
                     b.Navigation("Product_Item");
+                });
+
+            modelBuilder.Entity("BOX.Models.Customer", b =>
+                {
+                    b.HasOne("BOX.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>

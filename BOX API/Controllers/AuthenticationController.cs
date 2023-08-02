@@ -53,9 +53,10 @@ namespace BOX.Controllers
             // Assign role based on email address
             var role = uvm.emailaddress.EndsWith(".admin@megapack.com") ? "Admin" : "Customer";
 
+            // If the user is not found
             if (user == null)
             {
-                // Instantiate a new User
+                // Instantiate (create) a new User
                 user = new User
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -65,7 +66,20 @@ namespace BOX.Controllers
                     user_FirstName = uvm.firstName,
                     user_LastName = uvm.lastName,
                     user_Address = uvm.address,
-                    title = uvm.title
+                    title = uvm.title,
+                    TwoFactorEnabled = true
+                };
+
+                // Instantiate (create) a new Customer
+                var customer = new Customer
+                {
+                    CustomerId = Guid.NewGuid().ToString(),
+                    UserId = user.Id,
+                    isBusiness = uvm.isBusiness,
+                    vatNo = uvm.vatNo,
+                    creditLimit = 0, // default of 0
+                    creditBalance = 0, // default of 0
+                    discount = 0 // default of 0
                 };
 
                 var result = await _userManager.CreateAsync(user, uvm.password);
@@ -79,11 +93,25 @@ namespace BOX.Controllers
                         await _roleManager.CreateAsync(new IdentityRole(role));
                     }
 
+                    // Create the customer
+                    _repository.Add(customer);
+                    await _repository.SaveChangesAsync();
+
+                    // Assign the user to a customer role
                     await _userManager.AddToRoleAsync(user, role);
+
+                    // Add Token to Verify Email
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var protocol = "http://localhost:4200/confirm-email";
+                    var confirmEmailLink = protocol + "?token=" + HttpUtility.UrlEncode(token) + "&email=" + HttpUtility.UrlEncode(uvm.emailaddress);
+                    var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", "Dear user,\n\n Thank you for registering with MegaPack. Click the link below to verify your email: \n" + confirmEmailLink + "" + token );
+                    _emailService.SendEmail(message);
+
+                    // Return success
                     return Ok();
                 }
                 else
-                {
+                { 
                     return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact support.");
                 }
             }
@@ -92,6 +120,25 @@ namespace BOX.Controllers
                 return Forbid("Account already exists.");
             }
 
+        }
+
+        //----------------------------------- Confirm Email ---------------------------------------
+        [HttpGet]
+        [Route("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            // Check if the user exists
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, token);
+                if (result.Succeeded)
+                {
+                    return Ok("Email verified successfully");
+                }
+            }
+            return BadRequest();
         }
 
         //----------------------------------- Login --------------------------------------------
@@ -105,6 +152,28 @@ namespace BOX.Controllers
             {
                 try
                 {
+                    var authClaims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    };
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    foreach (var role in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+                    if (user.TwoFactorEnabled)
+                    {
+                        await _signInManager.SignOutAsync();
+                        await _signInManager.PasswordSignInAsync(user, dto.password, false, true);
+                        var signIn = await _signInManager.PasswordSignInAsync(user, dto.password, false, true);
+                        var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                        var body = "Dear user,\n\n Thank you for choosing MegaPack for your secure login. Plese use the following One-Time Password to complete your login process:\n OTP: " + token + "\n\n If you did not request this OTP, please ignore this email. \n\n Best regards, \n MegaPack Team";
+                        var message = new Message(new string[] { user.Email! }, "OTP Confirmation", body);
+                        _emailService.SendEmail(message);
+
+                        return Ok();
+                    }
                     return GenerateJwtToken(user);
                 }
                 catch (Exception ex)
@@ -116,6 +185,50 @@ namespace BOX.Controllers
             {
                 return NotFound("User does not exist");
             }
+        }
+
+
+        //----------------------------- Login with OTP ------------------------------------
+        [HttpPost]
+        [Route("Login2FA")]
+        public async Task<IActionResult> LoginWithOTP(string otp, string username)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(username);
+                var signIn = await _signInManager.TwoFactorSignInAsync("Email", otp, false, false);
+                if (signIn.Succeeded)
+                {
+                    if (user != null)
+                    {
+                        var authClaims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    };
+
+                        var userRoles = await _userManager.GetRolesAsync(user);
+                        foreach (var role in userRoles)
+                        {
+                            authClaims.Add(new Claim(ClaimTypes.Role, role));
+                        }
+
+                        return GenerateJwtToken(user);
+
+                    }
+                    else
+                    {
+                        //Return an error message if the user does not exist
+                        return StatusCode(StatusCodes.Status404NotFound, "Invalid OTP");
+                    }
+                }
+                return BadRequest("First verify your email before you can log in.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            
         }
 
         //-------------------------------- Generate JWT Token ---------------------------------

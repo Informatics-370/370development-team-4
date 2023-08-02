@@ -36,6 +36,7 @@ namespace BOX.Models
 		public DbSet<Credit_Application> Credit_Application { get; set; }
 		public DbSet<Credit_Application_Status> Credit_Application_Status{ get; set; }
 		public DbSet<Custom_Product> Custom_Product { get; set; }
+		public DbSet<Customer> Customer { get; set; }
 		public DbSet<Customer_Order_Status> Customer_Order_Status { get; set; }
 		public DbSet<Customer_Refund> Customer_Refund { get; set; }
 
