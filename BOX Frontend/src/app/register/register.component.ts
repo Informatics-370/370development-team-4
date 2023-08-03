@@ -12,20 +12,25 @@ export class RegisterComponent implements OnInit {
   passwordVisible = false;
   confirmPasswordVisible = false;
   passwordsMatch = true;
+  isBusiness: boolean = false;
 
   @ViewChild('addressInput', { static: true }) addressInput!: ElementRef<HTMLInputElement>;
 
   constructor(private authService: AuthService, private router: Router) {}
   
   ngOnInit() {
-    this.handleCheckboxChange();
     this.initAutocomplete();
+    // this.handleCheckboxChange();
   }
 
   initAutocomplete() {
     const inputElement = this.addressInput.nativeElement;
 
-    const autocomplete = new google.maps.places.Autocomplete(inputElement);
+    const autocompleteOptions = {
+      componentRestrictions: { country: 'ZA' } // Restrict to South Africa
+    };
+
+    const autocomplete = new google.maps.places.Autocomplete(inputElement, autocompleteOptions);
     autocomplete.setFields(['formatted_address']);
 
     autocomplete.addListener('place_changed', () => {
@@ -152,21 +157,27 @@ export class RegisterComponent implements OnInit {
   // Handle checkbox change event
   handleCheckboxChange() {
     const isBusinessCheckbox = document.getElementById('isBusiness') as HTMLInputElement;
-    const titleInput = document.getElementById('title') as HTMLInputElement;
+    // const titleInput = document.getElementById('title') as HTMLInputElement;
     const vatNoInput = document.getElementById('vatNo') as HTMLInputElement;
 
     if (isBusinessCheckbox.checked) {
-      titleInput.value = '';
-      titleInput.disabled = true;
+      // titleInput.value = '';
+      // titleInput.disabled = true;
       vatNoInput.disabled = false;
     } else {
-      titleInput.disabled = false;
+      // titleInput.disabled = false;
       vatNoInput.disabled = true;
     }
 
     // Clear title error message if the user is a business
     if (isBusinessCheckbox.checked) {
       this.clearTitleErrorMessage();
+    }
+
+    this.isBusiness = !this.isBusiness;
+    if (!this.isBusiness) {
+      // If the checkbox is unchecked, revert isBusiness to false
+      this.isBusiness = false;
     }
   }
 

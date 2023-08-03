@@ -28,26 +28,26 @@
                     <div class="col-lg-8">
                       <div class="card rounded-3 overflow-auto shadow">
                         <!-- Heading -->
-                        <h4 class="text-black text-center pt-4">{{'Create An Account'}}</h4>
+                        <h4 class="text-black text-center pt-4">{{'Create An Account' | uppercase }}</h4>
                         <div class="card-body">
                             <form class="px-md-2" (submit)="submitForm()">
                                 <div class="row">
                                     
                                     <!-- Details Input Row -->
-                                    <div class="col-2">
+                                    <div class="col-2" *ngIf="!isBusiness">
                                         <label class="form-label text-black" for="title">Title:</label>
                                         <input type="text" id="title" class="form-control" />
                                     </div>
     
-                                    <div class="col-5">
+                                    <div class="{{ isBusiness ? 'col-12' : 'col-5' }}">
                                         <!-- Name Input -->
                                         <div class="form-group">
-                                            <label for="firstName" class="form-label text-black">Name:</label>
+                                            <label for="firstName" class="form-label text-black">{{ isBusiness ? 'Company Name:' : 'Name:' }}</label>
                                             <input type="text" id="firstName" class="form-control" />
                                         </div><pre></pre>
                                     </div>
     
-                                    <div class="col-5">
+                                    <div class="col-5" *ngIf="!isBusiness">
                                         <!-- Last Name Input -->
                                         <div class="form-group">
                                             <label for="lastName" class="form-label text-black">Surname:</label>
