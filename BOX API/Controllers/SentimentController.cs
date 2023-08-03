@@ -23,10 +23,12 @@ namespace BOX.Controllers
                 return BadRequest("Invalid request data.");
             }
 
-            var sentimentScore = await _nlpService.AnalyzeSentimentAsync(request.Text);
+            string translatedText = await _nlpService.TranslateTextToEnglishAsync(request.Text);
+
+            var sentimentScore = await _nlpService.AnalyzeSentimentAsync(translatedText);
             var sentimentMessage = GetSentimentMessage(sentimentScore);
 
-            return Ok(new { SentimentScore = sentimentScore, SentimentMessage = sentimentMessage });
+            return Ok(new { SentimentScore = sentimentScore, SentimentMessage = sentimentMessage, TranslatedText = translatedText });
         }
 
         private string GetSentimentMessage(double score)
