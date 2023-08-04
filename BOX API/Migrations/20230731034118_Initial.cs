@@ -830,8 +830,8 @@ namespace BOX.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CustomerOrderID = table.Column<int>(type: "int", nullable: false),
                     CustomerRefundID = table.Column<int>(type: "int", nullable: true),
-                    FixedProductID = table.Column<int>(type: "int", nullable: false),
-                    CustomProductID = table.Column<int>(type: "int", nullable: false),
+                    FixedProductID = table.Column<int>(type: "int", nullable: true),
+                    CustomProductID = table.Column<int>(type: "int", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -847,8 +847,7 @@ namespace BOX.Migrations
                         name: "FK_Customer_Order_Line_Custom_Product_CustomProductID",
                         column: x => x.CustomProductID,
                         principalTable: "Custom_Product",
-                        principalColumn: "CustomProductID",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "CustomProductID");
                     table.ForeignKey(
                         name: "FK_Customer_Order_Line_Customer_Order_CustomerOrderID",
                         column: x => x.CustomerOrderID,
@@ -864,8 +863,7 @@ namespace BOX.Migrations
                         name: "FK_Customer_Order_Line_Fixed_Product_FixedProductID",
                         column: x => x.FixedProductID,
                         principalTable: "Fixed_Product",
-                        principalColumn: "FixedProductID",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "FixedProductID");
                 });
 
             migrationBuilder.CreateTable(

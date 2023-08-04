@@ -19,7 +19,7 @@ export class EstimatePageComponent implements OnInit {
   estimateCount = -1;
   loading = true;
   user = {
-    Id: '3804c42b-f8cb-4df3-91cd-8334874b5cf4',
+    Id: '91abe583-4b9a-4925-983e-f4e6daac6921',
     fullName: 'John Doe',
     discount: 0.05
   }; //will retrieve from backend when users are up and running

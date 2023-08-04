@@ -149,13 +149,6 @@ namespace BOX.Controllers
 				List<CustomerOrderViewModel> customerOrdere = new List<CustomerOrderViewModel>(); //create list to return
 				var orderLines = await _repository.GetOrderLinesByCustomerAsync(customerId); //get all estimate lines for this customer
 
-				/*What I want to do: get all the estimates a customer has ever made in a list of estimate VMs
-                But, the estimate entity doesn't contain the customerID, estimate lines does because it's the associative entity inbetween
-                so I get all the estimate lines made by a customer and I want to sort them into estimates i.e. estimateVM 1 should 
-                contain only its estimate lines. To do that, I first find out how many estimates there are, using the distinct() 
-                method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
-                Hopefully this make sense to future Charis */
-
 				List<CustomerOrderLineViewModel> allCustomerOrderLines = new List<CustomerOrderLineViewModel>();
 				
 				//put all the customer's order lines in VM
