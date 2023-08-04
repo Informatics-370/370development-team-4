@@ -1,4 +1,4 @@
-﻿namespace BOX.ViewModel
+namespace BOX.ViewModel
 {
 	public class CustomProductViewModel
 	{

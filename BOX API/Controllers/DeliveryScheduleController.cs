@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,13 +32,13 @@ namespace BOX.Controllers
 				List<DeliveryScheduleViewModel> DeliveryScheduleViewModels = new List<DeliveryScheduleViewModel>();
 				foreach (var schedule in delSchedules)
 				{
-					var employee = await _repository.GetEmployeeAsync(schedule.EmployeeID); //get Employee
+					//var employee = await _repository.GetEmployeeAsync(schedule.EmployeeID); //get Employee
 
 
 					DeliveryScheduleViewModel dsVM = new DeliveryScheduleViewModel()
 					{
 						OrderDeliveryScheduleID = schedule.OrderDeliveryScheduleID,
-						EmployeeID = schedule.EmployeeID,
+            UserId = schedule.UserId,
 						Date = schedule.Date
 						
 
@@ -73,7 +73,7 @@ namespace BOX.Controllers
 				var DeliveryScheduleViewModel = new DeliveryScheduleViewModel
 				{
 					OrderDeliveryScheduleID = delSchedule.OrderDeliveryScheduleID,
-					EmployeeID = delSchedule.EmployeeID,
+          UserId = delSchedule.UserId,
 					Date = delSchedule.Date
 
 				};
@@ -97,7 +97,7 @@ namespace BOX.Controllers
 
 				{
 					OrderDeliveryScheduleID = deliveryScheduleViewModel.OrderDeliveryScheduleID,
-					EmployeeID = deliveryScheduleViewModel.EmployeeID,
+          UserId = deliveryScheduleViewModel.UserId,
 					Date = deliveryScheduleViewModel.Date
 				};
 
@@ -112,7 +112,7 @@ namespace BOX.Controllers
 				var createdDeliveryScheduleViewModel = new DeliveryScheduleViewModel
 				{
 					OrderDeliveryScheduleID = delSchedule.OrderDeliveryScheduleID,
-					EmployeeID = delSchedule.EmployeeID,
+          UserId = delSchedule.UserId,
 					Date = delSchedule.Date
 
 				};
@@ -145,7 +145,7 @@ namespace BOX.Controllers
 				// Update the other properties of the order del schedule
 
 				existingDelSchedule.OrderDeliveryScheduleID = deliveryScheduleViewModel.OrderDeliveryScheduleID;
-				existingDelSchedule.EmployeeID = deliveryScheduleViewModel.EmployeeID;
+				existingDelSchedule.UserId = deliveryScheduleViewModel.UserId;
 				existingDelSchedule.Date = deliveryScheduleViewModel.Date;
 
 
@@ -157,7 +157,7 @@ namespace BOX.Controllers
 				{
 					
 					OrderDeliveryScheduleID = existingDelSchedule.OrderDeliveryScheduleID,
-					EmployeeID = existingDelSchedule.EmployeeID,
+          UserId = existingDelSchedule.UserId,
 					Date = existingDelSchedule.Date
 
 				};

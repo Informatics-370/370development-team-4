@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace BOX.Models
@@ -9,12 +9,9 @@ namespace BOX.Models
 		[ForeignKey("Credit_Application_Status")]
 		public int CreditApplicationStatusID { get; set; }
 		public virtual Credit_Application_Status Credit_Application_Status { get; set; }
-		[ForeignKey("Customer")]
-		public int CustomerID { get; set; }
-		public virtual Customer Customer { get; set; }
-		[ForeignKey("Admin")]
-		public int AdminID { get; set; }
-		public virtual Admin Admin { get; set; }
+		[ForeignKey("User")]
+		public string UserId { get; set; }
+		public virtual User User { get; set; }
 		public byte[] Application_Pdf { get; set; }
 
 	}

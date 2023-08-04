@@ -16,6 +16,11 @@ import { Supplier } from '../shared/supplier';
 import { Customer } from '../shared/customer';
 import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
 import { EstimateVM } from '../shared/estimate-vm';
+import { Role } from '../shared/role';
+import { SupplierOrderVM } from '../shared/supplierOrder-vm';
+import { Discount } from '../shared/discount';
+import { Users } from '../shared/user';
+import { OrderVM } from '../shared/order-vm';
 
 imports: [
   HttpClientModule
@@ -268,6 +273,10 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
   }
 
+  UpdateRawMaterialQuantity(rawId: number, rawQuantity: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}EditRawMaterialQuantity/{rawmaterialId}/{rawMaterialQuantityOnHand}`, this.httpOptions);
+  }
+
 
   //------------------------------Supplier--------------------------//
   GetAllSuppliers(): Observable<any> {
@@ -311,7 +320,7 @@ export class DataService {
       .pipe(map(result => result));
   }
 
-  GetEstimatesByCustomer(customerId: number): Observable<any> {
+  GetEstimatesByCustomer(customerId: string): Observable<any> {
     return this.httpClient.get<any>(`${this.apiUrl}Estimate/GetEstimateByCustomer/${customerId}`).pipe(map(result => result));
   }
 
@@ -319,6 +328,18 @@ export class DataService {
     return this.httpClient.post<any>(
       `${this.apiUrl}Estimate/AddEstimate`, estimateViewModel, this.httpOptions
     );
+  }
+
+  UpdateEstimate(estimateId: number, estimateViewModel: EstimateVM): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimate/${estimateId}`, estimateViewModel, this.httpOptions);
+  }
+
+  UpdateEstimateStatus(estimateId: number, statusId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimateStatus/${estimateId}/${statusId}`, this.httpOptions);
+  }
+
+  DeleteEstimate(estimateId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Estimate/DeleteEstimate/${estimateId}`, this.httpOptions);
   }
 
   //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------
@@ -335,4 +356,121 @@ export class DataService {
   UpdateFormulaVariables(formulaId: number, updatedCPFV: CostPriceFormulaVariables): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}CostPriceFormulaVariables/EditFormulaVariables/${formulaId}`, updatedCPFV, this.httpOptions);
   }
+
+      // Get all Roles
+  GetAllRoles(): Observable<Role[]> {
+    return this.httpClient.get<Role[]>(`${this.apiUrl}Roles/GetAllRoles`)
+      .pipe(map(result => result));
+  }
+
+  // Get a specific Role by ID
+  GetRole(roleId: number): Observable<Role> {
+    return this.httpClient.get<Role>(`${this.apiUrl}Roles/GetRole/${roleId}`)
+      .pipe(map(result => result));
+  }
+
+  // Add a new Role
+  AddRole(newRole: Role): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}Roles/CreateRole`, newRole, this.httpOptions
+    );
+  }
+
+  // Delete a Role by ID
+  DeleteRole(roleId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Roles/DeleteRole/${roleId}`, this.httpOptions);
+  }
+
+  // Update a Role by ID
+  UpdateRole(roleId: number, updatedRole: Role): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Roles/UpdateRole/${roleId}`, updatedRole, this.httpOptions);
+  }
+
+//Supplier Orders
+AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
+  return this.httpClient.post<any>(
+    `${this.apiUrl}SupplierOrder/AddSupplierOrder`, newSupplierOrder, this.httpOptions
+  );
+}
+
+
+  //------------DISCOUNTS------------ 
+  GetDiscounts(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Discount/GetAllDiscounts`)
+      .pipe(map(result => result))
+  }
+
+
+  GetDiscount(discountId: number): Observable<Discount> {
+    return this.httpClient.get<Discount>(`${this.apiUrl}Discount/GetDiscount/${discountId}`)
+      .pipe(map(result => result));
+  }
+
+  AddDiscount(rrvm: any): Observable<Discount> {
+    return this.httpClient.post<Discount>(
+      `${this.apiUrl}Discount/AddDiscount`, rrvm, this.httpOptions
+    );
+  }
+
+  DeleteDiscount(discountId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}Discount/DeleteDiscount/${discountId}`, this.httpOptions);
+  }
+
+  UpdateDiscount(discountId: number, discountModel: Discount): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
+  }
+  //------------------------------------------------------Users----------------------------------------------------------
+  GetUsers(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}User/GetAllUsers`)
+      .pipe(map(result => result))
+  }
+
+
+   DeleteUser(emailOrPhoneNumber: string): Observable<any> {
+     return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
+   }
+
+   UpdateUser(email: string, updatedUser: Users): Observable<any> {
+     return this.httpClient.put<any>(`${this.apiUrl}User/UpdateUser/${email}`, updatedUser, this.httpOptions);
+   }
+
+   
+  GetUser(emailOrPhoneNumber: string): Observable<Users> {
+    return this.httpClient.get<Users>(`${this.apiUrl}User/GetUserByEmailOrPhoneNumber/${emailOrPhoneNumber}`)
+      .pipe(map(result => result));
+  }
+
+  //----------------------------------- Stock Take ----------------------------------------
+  writeOff(stockTakeViewModel: any): Observable<any> {
+    return this.httpClient.post<any>(`${this.apiUrl}StockTake/WriteOff`, stockTakeViewModel);
+  }
+
+  getAllStockTake(): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}StockTake/GetAllStockTake`);
+  }
+  //---------------------------------------ORDER----------------------------------
+  GetAllCustomerOrders(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CustomerOrder/GetAllCustomerOrders`)
+      .pipe(map(result => result))
+  }
+
+  GetOrder(customerOrderId: number): Observable<OrderVM> {
+    return this.httpClient.get<OrderVM>(`${this.apiUrl}CustomerOrder/GetOrder/${customerOrderId}`)
+      .pipe(map(result => result));
+  }
+
+  GetOrdersByCustomer(customerId: number): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}CustomerOrder/GetOrderByCustomer/${customerId}`).pipe(map(result => result));
+  }
+
+  AddCustomerOrder(customerOrderViewModel: OrderVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}CustomerOrder/AddCustomerOrder`, customerOrderViewModel, this.httpOptions
+    );
+  }
+
+  UpdateOrderStatus(customerOrderId: number, customerOrderStatusId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
+  }
+
 }

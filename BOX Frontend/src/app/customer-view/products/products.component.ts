@@ -226,26 +226,7 @@ export class ProductsComponent {
 
     this.loading = false;
   }
-
-  /*OG DISPLAY PRODUCTS CODE:
-  let cardsContainerInnerHTML = '';
-  this.filteredProductVM.forEach(prod => { 
-    cardsContainerInnerHTML += 
-        '<div class="col-md-3 col-sm-6 card-container">' +
-          '<div class="card product-card" style="border: 0.5px solid rgba(219, 219, 219, 0.25);">' +
-            '<div class="card-img-top">' +
-              '<img class="card-img product-card-img" style="width: auto;" src="data:image/png;base64,'
-                + prod.productPhotoB64 + '"' + 'alt="' + prod.description + '">' +
-            '</div>' +
-            '<div class="card-body product-card-body">' +
-              '<p class="card-text">' + prod.description + '</p>' +
-            '</div>' +
-          '</div>' +
-        '</div>'; 
-    });
-    //productCardsContainer.innerHTML = cardsContainerInnerHTML;
-  */
-
+  
   redirectToProductDetails(itemID: number, itemDescription: string) {
     //url is expecting product with id 2 and description 'product description' to be '2-product-description', so combine string into that
     let urlParameter = itemID + '-' + itemDescription.replaceAll(' ', '-');

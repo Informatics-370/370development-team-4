@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
-
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
@@ -27,9 +26,26 @@ import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
-import { EstimateLineComponent } from './estimate-line/estimate-line.component';
+import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
+import { CustomerNavbarComponent } from './customer-view/customer-navbar/customer-navbar.component';
+import { LoginComponent } from './login/login.component';
+import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RolesComponent } from './roles/roles.component';
+import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
+import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
+import { DiscountComponent } from './discount/discount.component';
+import { StockTakeComponent } from './stock-take/stock-take.component';
+import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
+import { UsersViewComponent } from './users-view/users-view.component';
+import { RegistrationSuccessPopupComponent } from './registration-success-popup/registration-success-popup.component';
+import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
+import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
+import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
+
 
 @NgModule({
   declarations: [ 
@@ -56,7 +72,25 @@ import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formu
         CartPageComponent,
         EstimateLineComponent,
         EstimatePageComponent,
-        CostPriceFormulaComponent
+        CostPriceFormulaComponent,
+        CustomerNavbarComponent,
+        LoginComponent,
+        CustomerHomepageComponent,
+        ForgotPasswordComponent,
+        ResetPasswordComponent,
+        RolesComponent,
+        SupplierOrderComponent,
+        SupplierReturnComponent,
+        RolesComponent,
+        DiscountComponent,
+        StockTakeComponent,
+        StockTakeTrailComponent,
+        UsersViewComponent,
+        PlaceOrderComponent,
+        OrderHistoryComponent,
+        CustomerOrdersComponent,
+        RegistrationSuccessPopupComponent
+        
   ],
   imports: [
     BrowserModule,
@@ -64,7 +98,7 @@ import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formu
     FontAwesomeModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

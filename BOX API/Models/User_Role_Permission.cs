@@ -6,7 +6,7 @@ namespace BOX.Models
     public class User_Role_Permission
     {
         [ForeignKey("Role")]
-        public Guid RoleId { get; set; }
+        public int RoleId { get; set; }
         public virtual Role Role { get; set; }
 
         [ForeignKey("User_Permission")]

@@ -34,29 +34,37 @@ namespace BOX.Controllers
                     List<EstimateLineViewModel> estimateLineList = new List<EstimateLineViewModel>();
                     var estimateLines = await _repository.GetEstimateLinesByEstimateAsync(estimate.EstimateID);
 
+                    //an estimate must have at least 1 line else it's not a real order and will cause an error
+                    if (estimateLines == null) return NotFound("The estimate does not exist on the B.O.X System.");
+
                     //put all estimate lines for this specific estimate in a list for the estimate VM
                     foreach (var el in estimateLines)
                     {
+                        int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
+
                         EstimateLineViewModel elvm = new EstimateLineViewModel()
                         {
+                            //The attributes below all pertain to the Actual EstimateLine Entity except the CustomerID. Not the View Model**
                             EstimateLineID = el.EstimateLineID,
                             EstimateID = el.EstimateID,
-                            FixedProductID = el.FixedProductID,
+                            FixedProductID = fpID,
                             CustomProductID = 0,
                             Quantity = el.Quantity
+                            //The customerID is intentionally left out so that we get all the Estimates for every single Customer
                         };
                         estimateLineList.Add(elvm);
                     }
-
+                    //This is still contained in the greater for loop which is iterating for every single estimate that is the estimate VM
                     EstimateViewModel eVM = new EstimateViewModel()
                     {
                         EstimateID = estimate.EstimateID,
                         EstimateStatusID = estimate.EstimateStatusID,
                         EstimateDurationID = estimate.EstimateDurationID,
+                        UserId = estimateLines[0].UserId,
                         EstimateStatusDescription = Status.Description,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
-                        CustomerID = estimateLines[0].CustomerID,
                         Estimate_Lines = estimateLineList
+                        //The Customer Name attribute does not appear here
                     };
                     EstimateViewModels.Add(eVM);
                 }
@@ -64,9 +72,9 @@ namespace BOX.Controllers
 
                 return Ok(EstimateViewModels);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ' ' + ex.InnerException);
             }
 
         }
@@ -91,14 +99,15 @@ namespace BOX.Controllers
                 //put all estimate lines for this specific estimate in the list
                 foreach (var el in estimateLines)
                 {
+                    int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
                     //when I display a specific estimate, I also display the fixed product unit price and description
-                    var fixedProduct = await _repository.GetFixedProductAsync(el.FixedProductID);
+                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 
                     EstimateLineViewModel elvm = new EstimateLineViewModel()
                     {
                         EstimateLineID = el.EstimateLineID,
                         EstimateID = el.EstimateID,
-                        FixedProductID = el.FixedProductID,
+                        FixedProductID = fpID,
                         FixedProductDescription = fixedProduct.Description,
                         FixedProductUnitPrice = fixedProduct.Price,
                         CustomProductID = 0,
@@ -107,27 +116,29 @@ namespace BOX.Controllers
                     estimateLineList.Add(elvm);
                 }
 
+                var status = await _repository.GetEstimateStatusAsync(estimate.EstimateStatusID); //get status associated with this estimate
                 var EstimateViewModel = new EstimateViewModel
                 {
                     EstimateID = estimate.EstimateID,
                     EstimateStatusID = estimate.EstimateStatusID,
+                    EstimateStatusDescription = status.Description,
                     EstimateDurationID = estimate.EstimateDurationID,
                     ConfirmedTotal = estimate.Confirmed_Total_Price,
-                    CustomerID = estimateLines[0].CustomerID,
+                    UserId = estimateLines[0].UserId,
                     Estimate_Lines = estimateLineList
                 };
 
                 return Ok(EstimateViewModel); //return estimate VM which contains estimate info plus estimate lines info in list format
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ex.InnerException);
             }
         }
 
         [HttpGet]
         [Route("GetEstimateByCustomer/{customerId}")]
-        public async Task<IActionResult> GetEstimateByCustomer(int customerId)
+        public async Task<IActionResult> GetEstimateByCustomer(string customerId)
         {
             try
             {
@@ -141,18 +152,19 @@ namespace BOX.Controllers
                 method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
                 Hopefully this make sense to future Charis */
 
-
                 List<EstimateLineViewModel> allCustomerEstimateLines = new List<EstimateLineViewModel>();
+
                 //put all the customer's estimate lines in VM
                 foreach (var el in estimateLines)
                 {
-                    var fixedProduct = await _repository.GetFixedProductAsync(el.FixedProductID);
+                    int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
+                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 
                     EstimateLineViewModel elVM = new EstimateLineViewModel
                     {
                         EstimateLineID = el.EstimateLineID,
                         EstimateID = el.EstimateID,
-                        FixedProductID = el.FixedProductID,
+                        FixedProductID = fpID,
                         FixedProductDescription = fixedProduct.Description,
                         FixedProductUnitPrice = fixedProduct.Price,
                         Quantity = el.Quantity
@@ -176,7 +188,7 @@ namespace BOX.Controllers
                         EstimateStatusDescription = status.Description,
                         EstimateDurationID = estimate.EstimateDurationID,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
-                        CustomerID = customerId,
+                        UserId = customerId,
                         Estimate_Lines = allCustomerEstimateLines.Where(el => el.EstimateID == estimateID).ToList() //get all estimate lines for this estimate
                     };
 
@@ -201,7 +213,7 @@ namespace BOX.Controllers
             {
                 //hard coded values are constant or can only ever be 1 in the DB. It'll be fine as long as we remember to change it on each person's machine and 1ce and for all on the final server
                 EstimateStatusID = 1, //estimate status of 'Pending review'. Statuses can't be CRUDed so this can be hard coded
-                EstimateDurationID = 4, //estimate duration of 20 days.
+                EstimateDurationID = 1, //estimate duration of 20 days.
                 Confirmed_Total_Price = estimateViewModel.ConfirmedTotal
             }; //do not add value for estimateID manually else SQL won't auto generate it
 
@@ -225,7 +237,7 @@ namespace BOX.Controllers
                     Estimate_Line estimateLineRecord = new Estimate_Line
                     {
                         EstimateLineID = i + 1, //e.g. 1, then 2, 3, etc.
-                        CustomerID = estimateViewModel.CustomerID,
+                        UserId = estimateViewModel.UserId,
                         EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Estimate = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,
@@ -252,7 +264,7 @@ namespace BOX.Controllers
         public async Task<IActionResult> UpdateEstimate(int estimateId, [FromBody] EstimateViewModel updatedEstimateVM)
         {
             try
-            {                
+            {
                 var existingEstimate = await _repository.GetEstimateAsync(estimateId); //Retrieve the existing estimate from the database
                 if (existingEstimate == null) return NotFound($"The estimate does not exist on the B.O.X System");
 
@@ -262,7 +274,7 @@ namespace BOX.Controllers
                 //Update the estimate
                 existingEstimate.EstimateStatusID = 2; //status ID of 'Reviewed'.
                 existingEstimate.Confirmed_Total_Price = updatedEstimateVM.ConfirmedTotal;
-                
+
                 //await _repository.UpdateEstimateAsync(existingEstimate); // Update the Estimate in the repository
 
                 /*The next bit of code is a lil complicated but it was fun to write. Lengthy comments can explain to future me and anyone interested
@@ -300,7 +312,7 @@ namespace BOX.Controllers
                         Estimate_Line estimateLineRecord = new Estimate_Line
                         {
                             EstimateLineID = index + 1,
-                            CustomerID = updatedEstimateVM.CustomerID,
+                            UserId = updatedEstimateVM.UserId,
                             EstimateID = estimateId,
                             FixedProductID = line.FixedProductID,
                             Quantity = line.Quantity

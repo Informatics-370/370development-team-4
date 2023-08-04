@@ -14,6 +14,7 @@
 </head>
 
 <body>
+    <div class="app-customer-navbar"></div>
     <div class="row">
         <!-- Left Divider -->
         <div class="col-md-4" style="background-color: #31AF99; height: 150vh;">
@@ -48,10 +49,10 @@
     
                                     <div class="col-5">
                                         <!-- Last Name Input -->
-                                <div class="form-group">
-                                    <label for="lastName" class="form-label text-black">Surname:</label>
-                                    <input type="text" id="lastName" class="form-control" />
-                                </div><pre></pre>
+                                        <div class="form-group">
+                                            <label for="lastName" class="form-label text-black">Surname:</label>
+                                            <input type="text" id="lastName" class="form-control" />
+                                        </div><pre></pre>
                                     </div>
                                 </div><!-- End Details Input Row -->
     
@@ -141,7 +142,8 @@
 
                                 <!-- Submit Button -->
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-lg text-uppercase text-white ripple shadow" (click)="submitForm()">Submit</button>
+                                    <button type="submit" class="btn btn-lg text-uppercase text-white ripple shadow" (submit)="submitForm()">Register</button>
+                                    <p class="mt-4">Already Registered? <a [routerLink]="['/login']">Login Here</a></p>
                                 </div>
 
                             </form><!--End of Registration Form -->
@@ -154,5 +156,5 @@
               </section>
 
         </div>
-    </div>
+    </div>      
 </body>

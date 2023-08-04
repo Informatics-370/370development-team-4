@@ -1,49 +1,8 @@
 <div class="row">
     <!--SIDE NAVBAR-->
-    <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
-        <div class="container">
-            <div class="text-center pt-3">
-                <h2>Menu</h2>
-            </div>
-            <pre></pre>
-            <pre></pre>
-            <pre></pre>
-            
-            <div class="text-center">
-                <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
-                    Dashboard
-                </button><pre></pre>
-                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
-                    Product Category
-                </button><pre></pre>
-                <button class="btn btn-info active text-start">
-                    <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
-                    Product Item
-                </button><pre></pre>
-                <button class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'tape']"></fa-icon>
-                    Size
-                </button><pre></pre>
-                <button class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'box']"></fa-icon>
-                    Product
-                </button><pre></pre>
-                <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Refund reason
-                </button><pre></pre>
-                <button [routerLink]="['/write-off-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Write-off reason
-                </button><pre></pre>
-            </div>
-        </div>
-    </div>
-
+    <div class="col-md-2"><div class="app-menu"></div></div>
     <!--Right Side-->
-    <div class="col-md-9">
+    <div class="col-md-10">
         <h3 class="p-3" style="color: black;">View Size Units</h3>
         <!--Search bar-->
         <div id="searchbar" >
@@ -65,11 +24,11 @@
             <tbody>                
               <!--Error message if there's no items in the DB-->
               <tr *ngIf="sizeCount==0">
-                <td colspan="2">No Size Units found. Please add a new size unit to the system.</td>
+                <td colspan="3">No Size Units found. Please add a new size unit to the system.</td>
             </tr>
             <!--Loading message while data is still being retrieved from the DB-->
             <tr *ngIf="loading">
-                <td colspan="2">Please wait while we load all Size Units...</td>
+                <td colspan="3">Please wait while we load all Size Units...</td>
             </tr>
                 <!--Item data from API-->
                 <tr *ngFor="let size of filteredSizeUnits">

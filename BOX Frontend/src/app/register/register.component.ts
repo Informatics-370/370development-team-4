@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -10,6 +12,8 @@ export class RegisterComponent implements OnInit {
   passwordVisible = false;
   confirmPasswordVisible = false;
   passwordsMatch = true;
+
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.handleCheckboxChange();
@@ -208,5 +212,37 @@ export class RegisterComponent implements OnInit {
     } else {
       titleInput.disabled = false;
     }
+
+    // User object to be sent to the API
+    const user = {
+      emailaddress: (document.getElementById('email') as HTMLInputElement).value,
+      password: (document.getElementById('confirmPassword') as HTMLInputElement).value,
+      phoneNumber: (document.getElementById('cellNo') as HTMLInputElement).value,
+      firstName: (document.getElementById('firstName') as HTMLInputElement).value,
+      lastName: (document.getElementById('lastName') as HTMLInputElement).value,
+      address: (document.getElementById('addressOne') as HTMLInputElement).value,
+      title: (document.getElementById('title') as HTMLInputElement).value
+    };
+
+    console.log(user);
+
+    // Call the AuthService to register the user
+    this.authService.registerUser(user).subscribe(
+      () => {
+        // Registration successful
+        console.log('Registration successful');
+        this.showRegistrationSuccessPopup();
+        this.router.navigate(['/login']);
+      },
+      (error) => {
+        // Registration failed
+        console.error('Registration failed', error);
+      }
+    );
+  }
+
+  showRegistrationSuccessPopup() {
+    const popupElement = document.createElement('app-registration-success-popup');
+    document.body.appendChild(popupElement);
   }
 }
