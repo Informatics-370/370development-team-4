@@ -155,7 +155,7 @@ export class PlaceOrderComponent {
     let dateInCorrectFormat = yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + min;
     console.log('dateInCorrectFormat', dateInCorrectFormat); // 2023-07-31 18:23
     let newOrder: OrderVM = {
-      userId: '91abe583-4b9a-4925-983e-f4e6daac6921',
+      userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
       customerOrderID: 0,
       customerStatusID: 0,
       orderDeliveryScheduleID: 0,

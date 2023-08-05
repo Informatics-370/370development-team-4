@@ -41,7 +41,7 @@ export class EstimatePageComponent implements OnInit {
   ngOnInit(): void {
     // const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
     // let index = Math.floor((Math.random() * 5));
-    this.user.Id = '7f8fcf33-1585-47f3-8cc8-ef72cedfc290';
+    this.user.Id = 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8';
     this.getDataFromDB();
   }
 

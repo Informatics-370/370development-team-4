@@ -353,7 +353,7 @@ export class CartPageComponent {
       estimateStatusID: 0,
       estimateStatusDescription: '',
       estimateDurationID: 0,
-      userId: '7f8fcf33-1585-47f3-8cc8-ef72cedfc290',
+      userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
       customerFullName: '',
       confirmedTotal: this.cartService.getCartTotal(this.randomdiscount),
       estimate_Lines: []

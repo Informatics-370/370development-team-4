@@ -40,11 +40,7 @@ export class OrderHistoryComponent {
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute) { }
   
-  ngOnInit(): void {
-    const customerIDs = [1, 2, 4]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
-    let index = Math.floor((Math.random() * 3));
-    this.customer.ID = customerIDs[index];
-    
+  ngOnInit(): void {    
     //Retrieve the item ID from url
     this.activatedRoute.paramMap.subscribe(params => {
       let successMsg = params.get('success');
