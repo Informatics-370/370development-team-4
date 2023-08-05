@@ -89,7 +89,7 @@ export class CustomerOrdersComponent {
     this.filteredOrders = []; //clear array
     for (let i = 0; i < this.orders.length; i++) {
       //concatenate all the order info in one variable so user can search using any of them
-      let ordInformation: string = String('ORD' + this.orders[i].customerOrderID + ' ' +
+      let ordInformation: string = String('CUSORDR' + this.orders[i].customerOrderID + ' ' +
         this.orders[i].customerFullName + ' ' +
         this.orders[i].total + ' ' +
         this.orders[i].orderStatusDescription).toLowerCase();
@@ -103,6 +103,7 @@ export class CustomerOrdersComponent {
     console.log('Search results:', this.filteredOrders);
   }
 
+  /*--------------------PROCESS ORDERS----------------------------*/
   //disable/enable process button if one of the process order checkboxes was ticked/unticked
   checkboxChanged() {
     this.isAnyCheckboxChecked = this.filteredOrders.some(ord => ord.checked);
@@ -132,6 +133,15 @@ export class CustomerOrdersComponent {
       console.error('Error updating status: ', error);
     }
   }
+
+  /*-------------------OPEN ORDER DETAILS MODAL--------------------*/
+  async openViewOrderModal(id: number) {
+    //get order to show details of
+    let theOrder = await lastValueFrom(this.dataService.GetOrder(id).pipe(take(1)));
+    this.selectedOrder = new VATInclusiveOrder(theOrder, this.vat.percentage);
+    console.log('Order before adding', this.selectedOrder);
+    $('#viewOrder').modal('show');
+  }
 }
 
 class VATInclusiveOrder implements OrderVM {
@@ -146,13 +156,13 @@ class VATInclusiveOrder implements OrderVM {
   orderTotalExcludingVAT: number; //total before negotiations or discount
   customerOrders: OrderLineVM[];
   vatPercentage: number; //whole number e.g. 25 for 25%
-  total: number; //total before negotiations after discount
-  totalDiscount: number; //total discount in rands before negotiations; customer loyalty discount + bulk discount
-  negotiatedDiscount: number; //discount agreed on during negotiations
+  totalVAT: number; //total VAT on this order
+  total: number; //order total including VAT
   checked!: boolean; //keep track of process order checkbox value
 
-  constructor(order: OrderVM, vatPercentage: number, negotiatedDiscount?: number) {
-    this.customerOrders = this.makePriceVATInclusive(order.customerOrders);
+  constructor(order: OrderVM, vatPercentage: number) {
+    this.customerOrders = order.customerOrders;
+    this.orderTotalExcludingVAT = order.orderTotalExcludingVAT ? order.orderTotalExcludingVAT : this.getOrderTotalExcludingVAT();
     this.vatPercentage = vatPercentage;
     this.customerOrderID = order.customerOrderID;
     this.orderStatusID = order.orderStatusID;
@@ -161,48 +171,25 @@ class VATInclusiveOrder implements OrderVM {
     this.date = order.date;
     this.deliveryPhoto = order.deliveryPhoto;
     this.userId = order.userId;
-    this.orderTotalExcludingVAT = order.orderTotalExcludingVAT;
     this.customerFullName = order.customerFullName;
-    this.negotiatedDiscount = negotiatedDiscount ? negotiatedDiscount : 0; //includes VAT
-    this.total = this.getVATInclusiveAmount(this.orderTotalExcludingVAT);
-    this.totalDiscount = this.getDiscount();
+    this.total = this.orderTotalExcludingVAT * (1 + vatPercentage/100);
+    this.totalVAT = this.getTotalVAT();
 
     if (this.orderStatusID == 1) { //if order has status of Placed, then it can be changed to In progress
       this.checked = false; //set checkbox value
     }
   }
 
-  //this function takes the estimate lines and makes the product price vat inclusive
-  makePriceVATInclusive(orderLines: OrderLineVM[]): OrderLineVM[] {
-    let lines: OrderLineVM[] = [];
-
-    orderLines.forEach(ordL => {
-      ordL.fixedProductUnitPrice = this.getVATInclusiveAmount(ordL.fixedProductUnitPrice);
-      ordL.customProductUnitPrice = this.getVATInclusiveAmount(ordL.customProductUnitPrice);
-
-      lines.push(ordL);
+  getOrderTotalExcludingVAT(): number {
+    let totalBeforeVAT = 0;
+    this.customerOrders.forEach(ordLine => {
+      totalBeforeVAT += ordLine.fixedProductUnitPrice * ordLine.quantity;
     });
 
-    return lines;
+    return totalBeforeVAT;
   }
-
-  getVATInclusiveAmount(amount: number): number {
-    let priceInclVAT = amount * (1 + this.vatPercentage / 100);
-    return priceInclVAT;
-  }
-
-  getTotalBeforeDiscount(): number {
-    let total = 0;
-    this.customerOrders.forEach(line => {
-      total += line.fixedProductUnitPrice * line.quantity;
-    });
-
-    return total;
-  }
-
-  getDiscount(): number {
-    let totalBeforeDiscount = this.getTotalBeforeDiscount();
-    let discount = totalBeforeDiscount - this.total;
-    return discount;
+  
+  getTotalVAT(): number {
+    return this.orderTotalExcludingVAT * this.vatPercentage / 100;
   }
 }

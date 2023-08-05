@@ -1,56 +1,129 @@
 <div class="row" style="max-width: 100%;">
-    <!--Menu bar-->
-    <div class="col-md-3">
-      <div class="app-menu"></div>
+  <!--Menu bar-->
+  <div class="col-md-3">
+    <div class="app-menu"></div>
+  </div>
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 page-content">
+    <h3 class="p-3" style="color: black;">Customer Orders</h3>
+    <!--Search bar-->
+    <div id="searchbar">
+      <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+        (keyup)="searchOrders($event)" (change)="searchOrders($event)" (paste)="searchOrders($event)"
+        placeholder="e.g. Search by ID, customer, status, price" />
+      <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
     </div>
-    <!--PAGE CONTENT-->
-    <div class="col-md-9 page-content">
-      <h3 class="p-3" style="color: black;">Customer Orders</h3>
-      <!--Search bar-->
-      <div id="searchbar">
-        <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
-          (keyup)="searchOrders($event)"  (change)="searchOrders($event)"  (paste)="searchOrders($event)"
-          placeholder="e.g. Search by ID, customer, status, price"  />
-        <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
-      </div>
-  
-      <hr class="hr hr-blurry m-3" />
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col" style="width: 120px;">Process order</th>
-            <th style="width: 120px;" scope="col">Order ID</th>
-            <th scope="col">Customer</th>
-            <th scope="col">Status</th>
-            <th scope="col">Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!--Messages to the user-->
-          <tr>
-            <!--Message if there's no orders in the DB-->
-            <td *ngIf="orderCount == 0" colspan="5">No customers have placed orders.</td>
-            <!--Loading message while data is still being retrieved from the DB-->
-            <td *ngIf="loading" colspan="5">Please wait while we load all orders...</td>
-            <!--Error message-->
-            <td *ngIf="error" colspan="5">Error loading data from the database. Please contact support services.</td>
-          </tr>
-          <!--Category data from API-->
-          <tr *ngFor="let order of filteredOrders">
-            <td class="text-center">
-                <label class="form-check-label modal-form-label">
-                    <input *ngIf="order.orderStatusID == 1" [(ngModel)]="order.checked"
-                    class="form-check-input process-checkbox" type="checkbox" (change)="checkboxChanged()" >
-                </label>
-            </td>
-            <td>ORD{{order.customerOrderID}}</td>
-            <td>{{order.customerFullName == null ? 'John LongSurname' : order.customerFullName}}</td>
-            <td>{{order.orderStatusDescription}}</td>
-            <td>{{order.total | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
-          </tr>
-        </tbody>
-      </table>
 
-      <button class="btn btn-create" (click)="processOrders()" [disabled]="!isAnyCheckboxChecked">Process Orders</button>
+    <hr class="hr hr-blurry m-3" />
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 55px;"></th>
+          <th style="width: 120px;" scope="col">Order ID</th>
+          <th scope="col">Customer</th>
+          <th scope="col">Status</th>
+          <th scope="col">Price</th>
+          <th scope="col" style="width: 120px;">Process order</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!--Messages to the user-->
+        <tr>
+          <!--Message if there's no orders in the DB-->
+          <td *ngIf="orderCount == 0" colspan="6">No customers have placed orders.</td>
+          <!--Loading message while data is still being retrieved from the DB-->
+          <td *ngIf="loading" colspan="6">Please wait while we load all orders...</td>
+          <!--Error message-->
+          <td *ngIf="error" colspan="6">Error loading data from the database. Please contact support services.</td>
+        </tr>
+        <!--Category data from API-->
+        <tr *ngFor="let order of filteredOrders">
+          <td class="text-center">
+            <button title="View order details" class="CRUD-icon" (click)="openViewOrderModal(order.customerOrderID)">
+              <fa-icon [icon]="['fas', 'circle-info']"></fa-icon>
+            </button>
+          </td>
+          <td>CUSORDR{{order.customerOrderID}}</td>
+          <td>{{order.customerFullName == null ? 'John LongSurname' : order.customerFullName}}</td>
+          <td>{{order.orderStatusDescription}}</td>
+          <td>{{order.total | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
+          <td class="text-center">
+            <label class="form-check-label modal-form-label">
+              <input *ngIf="order.orderStatusID == 1" [(ngModel)]="order.checked"
+                class="form-check-input process-checkbox" type="checkbox" (change)="checkboxChanged()">
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button class="btn btn-create" (click)="processOrders()" [disabled]="!isAnyCheckboxChecked">Process Orders</button>
+  </div>
+</div>
+
+<!--VIEW ORDER DETAILS MODAL-->
+<div class="modal fade" id="viewOrder" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" *ngIf="selectedOrder != null">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 id="modal-title" class="modal-title">Order #CUSORDR{{selectedOrder.customerOrderID}}</h4>
+        <button class="close-modal" data-bs-dismiss="modal"><fa-icon
+            [icon]="['fas', 'window-close']"></fa-icon></button>
+      </div>
+
+      <!--BODY-->
+      <div class="modal-body">
+        <span class="bold">Customer: </span>{{selectedOrder.customerFullName}}<br />
+        <span class="bold">Status: </span>{{selectedOrder.orderStatusDescription}}<br />
+        <span class="bold">Date: </span>{{selectedOrder.date}}<br />
+        <span class="bold">Delivery date: </span>2023-09-07<br />
+        <span class="bold">Photo of delivery: </span>
+        <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{selectedOrder.deliveryPhoto}}"
+          alt='Not yet delivered' />
+
+        <!--Order details-->
+        <table id="estimate-details-table" class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Price</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody id="estimate-details-tbody">
+            <tr *ngFor="let orderLine of selectedOrder.customerOrders">
+              <td>{{orderLine.fixedProductDescription}}</td>
+              <td>{{orderLine.fixedProductUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{orderLine.quantity}}</td>
+              <td>{{orderLine.fixedProductUnitPrice * orderLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+          </tbody>
+        </table><br />
+
+        <table id="total-table">
+          <tr>
+            <td class="text-right" style="width: 80%;">Subtotal:</td>
+            <td>{{selectedOrder.orderTotalExcludingVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+          <tr>
+            <td class="text-right">VAT:</td>
+            <td>{{selectedOrder.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+          <tr>
+            <td class="text-right"><strong>Total:</strong></td>
+            <td>{{selectedOrder.total | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer justify-content-evenly">
+        <button class="btn btn-create modal-form-submit" data-bs-dismiss="modal">Close</button>
+      </div>
+
     </div>
   </div>
+</div>
