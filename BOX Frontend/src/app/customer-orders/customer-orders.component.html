@@ -39,7 +39,8 @@
           <tr *ngFor="let order of filteredOrders">
             <td class="text-center">
                 <label class="form-check-label modal-form-label">
-                    <input *ngIf="order.orderStatusID == 1" id="check-{{order.customerOrderID}}" class="form-check-input" type="checkbox">
+                    <input *ngIf="order.orderStatusID == 1" [(ngModel)]="order.checked"
+                    class="form-check-input process-checkbox" type="checkbox" (change)="checkboxChanged()" >
                 </label>
             </td>
             <td>ORD{{order.customerOrderID}}</td>
@@ -50,6 +51,6 @@
         </tbody>
       </table>
 
-      <button class="btn btn-create" >Process Orders</button>
+      <button class="btn btn-create" (click)="processOrders()" [disabled]="!isAnyCheckboxChecked">Process Orders</button>
     </div>
   </div>

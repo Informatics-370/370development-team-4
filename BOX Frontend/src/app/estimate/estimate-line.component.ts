@@ -160,15 +160,6 @@ export class EstimateLineComponent {
     return priceInclVAT;
   }
 
-  /* getVATInclusiveTotal(est: EstimateVM): number {
-    let totalInclVAT = 0;
-    est.estimate_Lines.forEach(estimateLine => {
-      totalInclVAT += estimateLine.fixedProductUnitPrice * (1 + this.vat.percentage / 100) * estimateLine.quantity;
-    });
-
-    return totalInclVAT;
-  } */
-
   //changing product using dropdown should change the max value of the qty input field to be whatever is the product's qty on hand
   //this method handles that
   changedProduct() {
