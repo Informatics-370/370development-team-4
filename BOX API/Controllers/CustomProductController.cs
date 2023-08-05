@@ -42,8 +42,8 @@ namespace BOX.Controllers
 						Width = cp.Width,
 						Length = cp.Length,
 						Height = cp.Height,
-						Logo = Convert.ToBase64String(cp.Logo),
-						Label = Convert.ToBase64String(cp.Label)
+						Label = Convert.ToBase64String(cp.Label),
+						Sides = cp.Sides
 					};
 					customProductViewModels.Add(cpVM);
 				}
@@ -76,8 +76,8 @@ namespace BOX.Controllers
 					Width = customProduct.Width,
 					Length = customProduct.Length,
 					Height = customProduct.Height,
-					Logo = Convert.ToBase64String(customProduct.Logo),
-					Label = Convert.ToBase64String(customProduct.Label)
+					Label = Convert.ToBase64String(customProduct.Label),
+					Sides = customProduct.Sides
 				};
 
 				return Ok(customProductViewModel);
@@ -104,9 +104,8 @@ namespace BOX.Controllers
 					Width = customProductViewModel.Width,
 					Length = customProductViewModel.Length,
 					Height = customProductViewModel.Height,
-					Logo = Convert.FromBase64String(customProductViewModel.Logo),
-					Label = Convert.FromBase64String(customProductViewModel.Label)
-					//Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64),
+					Label = Convert.FromBase64String(customProductViewModel.Label),
+					Sides = customProductViewModel.Sides
 				};
 
 
@@ -136,83 +135,5 @@ namespace BOX.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
 			}
 		}
-
-		//-------------------------------------------------- Update Fixed Product ----------------------------------------------------
-		[HttpPut]
-		[Route("UpdateCustomProduct/{customProductId}")]
-		public async Task<IActionResult> UpdateCustomProduct(int customProductId, [FromBody] CustomProductViewModel customProductViewModel)
-		{
-			try
-			{
-				// Retrieve the existing fixed product from the database
-				var existingCustomProduct = await _repository.GetCustomProductAsync(customProductViewModel.CustomProductID);
-
-				if (existingCustomProduct == null)
-				{
-					return NotFound("Custom Product not found");
-				}
-
-
-				// Update the other properties of the fixed product
-				existingCustomProduct.CustomProductID = customProductViewModel.CustomProductID;
-				existingCustomProduct.FormulaID = customProductViewModel.FormulaID;
-				existingCustomProduct.ItemID = customProductViewModel.ItemID;
-				existingCustomProduct.Width = customProductViewModel.Width;
-				existingCustomProduct.Length = customProductViewModel.Length;
-				existingCustomProduct.Height = customProductViewModel.Height;
-				existingCustomProduct.Logo = Convert.FromBase64String(customProductViewModel.Logo);
-				existingCustomProduct.Label = Convert.FromBase64String(customProductViewModel.Label);
-
-				// Update the fixed product in the repository
-				await _repository.UpdateCustomProductAsync(existingCustomProduct);
-
-				// Return the updated custom product
-				var updatedCustomProductViewModel = new CustomProductViewModel
-				{
-					CustomProductID = existingCustomProduct.CustomProductID,
-					FormulaID = existingCustomProduct.FormulaID,
-					ItemID = existingCustomProduct.ItemID,
-					Width = existingCustomProduct.Width,
-					Length = existingCustomProduct.Length,
-					Height = existingCustomProduct.Height
-					//Logo = Convert.ToBase64String(existingCustomProduct.Logo),
-					//Label = Convert.ToBase64String(existingCustomProduct.Label)
-				};
-
-				return Ok(updatedCustomProductViewModel);
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-			}
-		}
-
-		[HttpDelete]
-		[Route("DeleteCustomProduct/{customProductId}")]
-		public async Task<IActionResult> DeleteCustomProduct(int customProductId)
-		{
-			try
-			{
-				var existingCustomProduct = await _repository.GetCustomProductAsync(customProductId);
-
-				if (existingCustomProduct == null) return NotFound($"The Custom product does not exist on the B.O.X System");
-
-				_repository.Delete(existingCustomProduct);
-
-
-				if (await _repository.SaveChangesAsync()) return Ok(existingCustomProduct);
-
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
-			}
-			return BadRequest("Your request is invalid.");
-		}
-
-
-	}
-
-
-	
+	}	
 }

@@ -5,7 +5,6 @@ import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
 import { SizeVM } from '../../shared/size-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
-//import { Discount } from '../../shared/discount';
 import { VAT } from 'src/app/shared/vat';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';

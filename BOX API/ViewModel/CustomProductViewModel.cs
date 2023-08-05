@@ -9,8 +9,7 @@ namespace BOX.ViewModel
 		public decimal Width { get; set; }
 		public decimal Height { get; set; }
 		public decimal Length { get; set; }
-		public string Logo { get; set; }
 		public string Label { get; set; }
-
+		public int Sides { get; set; }
 	}
 }
