@@ -450,7 +450,7 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
   }
   //---------------------------------------ORDER----------------------------------
   GetAllCustomerOrders(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}CustomerOrder/GetAllCustomerOrders`)
+    return this.httpClient.get<any>(`${this.apiUrl}CustomerOrder/GetAllCustomerOrders`)
       .pipe(map(result => result))
   }
 

@@ -157,12 +157,13 @@ export class PlaceOrderComponent {
     let newOrder: OrderVM = {
       userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
       customerOrderID: 0,
-      customerStatusID: 0,
+      orderStatusID: 0,
       orderDeliveryScheduleID: 0,
       date: dateInCorrectFormat,
       deliveryPhoto: '',
       customerFullName: '',
       orderStatusDescription: '',
+      orderTotalExcludingVAT: 0,
       customerOrders: orderLines
     };
 

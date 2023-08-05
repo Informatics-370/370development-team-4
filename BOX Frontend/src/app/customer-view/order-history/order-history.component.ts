@@ -185,7 +185,7 @@ class OrderClass {
   constructor(order: OrderVM, orderLines: any[], negotiatedDiscount?: number) {
     this.orderLines = orderLines;
     this.ID = order.customerOrderID;
-    this.statusID = order.customerStatusID;
+    this.statusID = order.orderStatusID;
     this.statusDescription = order.orderStatusDescription; 
     this.date = order.date;
     this.deliveryScheduleID = order.orderDeliveryScheduleID;

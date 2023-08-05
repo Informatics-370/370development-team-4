@@ -54,7 +54,7 @@ export class CustomerOrdersComponent {
   async getOrdersPromise(): Promise<any> {
     try {
       let allOrders: OrderVM[] = await lastValueFrom(this.dataService.GetAllCustomerOrders().pipe(take(1)));
-      console.log(allOrders);
+      console.log('Orders straight from DB', allOrders);
       this.filteredOrders = [];
 
       allOrders.forEach((ord: OrderVM) => {
@@ -78,13 +78,14 @@ export class CustomerOrdersComponent {
 
 class VATInclusiveOrder implements OrderVM {
   customerOrderID: number;
-  customerStatusID: number;
   userId: string;
   orderDeliveryScheduleID: number;
   date: string;
   deliveryPhoto: string;
   customerFullName: string;
+  orderStatusID: number;
   orderStatusDescription: string;
+  orderTotalExcludingVAT: number; //total before negotiations or discount
   customerOrders: OrderLineVM[];
   vatPercentage: number; //whole number e.g. 25 for 25%
   total: number; //total before negotiations after discount
@@ -95,15 +96,16 @@ class VATInclusiveOrder implements OrderVM {
     this.customerOrders = this.makePriceVATInclusive(order.customerOrders);
     this.vatPercentage = vatPercentage;
     this.customerOrderID = order.customerOrderID;
-    this.customerStatusID = order.customerStatusID;
+    this.orderStatusID = order.orderStatusID;
     this.orderStatusDescription = order.orderStatusDescription;
     this.orderDeliveryScheduleID = order.orderDeliveryScheduleID;
     this.date = order.date;
     this.deliveryPhoto = order.deliveryPhoto;
     this.userId = order.userId;
+    this.orderTotalExcludingVAT = order.orderTotalExcludingVAT;
     this.customerFullName = order.customerFullName;
     this.negotiatedDiscount = negotiatedDiscount ? negotiatedDiscount : 0; //includes VAT
-    this.total = this.getTotalBeforeDiscount();
+    this.total = this.getVATInclusiveAmount(this.orderTotalExcludingVAT);
     this.totalDiscount = this.getDiscount();
   }
 

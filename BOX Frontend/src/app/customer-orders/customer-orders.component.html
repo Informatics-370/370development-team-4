@@ -38,11 +38,11 @@
           <tr *ngFor="let order of filteredOrders">
             <td class="text-center">
                 <label class="form-check-label modal-form-label">
-                    <input id="check-{{order.customerOrderID}}" class="form-check-input modal-form-input" type="checkbox">
+                    <input *ngIf="order.orderStatusID == 1" id="check-{{order.customerOrderID}}" class="form-check-input" type="checkbox">
                 </label>                
             </td>
             <td>ORD{{order.customerOrderID}}</td>
-            <td>{{order.customerFullName}}</td>
+            <td>{{order.customerFullName == null ? 'John LongSurname' : order.customerFullName}}</td>
             <td>{{order.orderStatusDescription}}</td>
             <td>{{order.total | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
           </tr>
