@@ -20,7 +20,7 @@ export class OrderHistoryComponent {
   orderCount = -1;
   loading = true;
   customer = {
-    ID: 1,
+    ID: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
     fullName: 'John Doe',
     discount: 0.05
   }; //will retrieve from backend when users are up and running
@@ -86,7 +86,7 @@ export class OrderHistoryComponent {
     try {
       this.customerOrders = await lastValueFrom(this.dataService.GetOrdersByCustomer(this.customer.ID).pipe(take(1)));
 
-      this.displayCustomerOrderes() //Execute only after data has been retrieved from the DB otherwise error
+      this.displayCustomerOrders() //Execute only after data has been retrieved from the DB otherwise error
 
       return 'Successfully retrieved orders from the database';
     } catch (error) {
@@ -95,7 +95,7 @@ export class OrderHistoryComponent {
     }
   }
 
-  displayCustomerOrderes() {
+  displayCustomerOrders() {
     this.filteredOrders = []; //empty array
     this.allCustomerOrders = [];
 
