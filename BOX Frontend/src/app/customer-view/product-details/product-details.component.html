@@ -73,11 +73,16 @@
                       (keyup)="changedQty()" (change)="changedQty()">
                   </div>
                   <div *ngIf="invalidQty" class="error-msg">
-                    Due to inventory level constraints, the mininum you can order is 1 and the maximum is
-                    {{maxQuantity}}
+                    Due to inventory level constraints, the mininum you can order is 1 and the maximum is {{maxQuantity}}
                   </div>
 
-                  <button class="btn btn-add-cart" (click)="addToCart()" [disabled]="outOfStock">Add to Cart</button>
+                  <div class="col-6" style="margin-bottom: 0.25rem;" *ngIf="canCustomise">
+                    <button class="btn btn-add-cart btn-customise" data-bs-toggle="modal" data-bs-target="#customise">Customise</button>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <button class="btn btn-add-cart" (click)="addToCart()" [disabled]="outOfStock">Add to Cart</button>
+                  </div>
+
                   <div *ngIf="cartSuccess" class="success-msg">
                     Successfully added to cart!
                   </div>
@@ -95,6 +100,40 @@
         <div id="related-products-container" class="row"></div>
 
       </div>
+    </div>
+  </div>
+</div>
+
+<!--CUSTOMISE PRODUCT MODAL-->
+<div class="modal fade" id="customise" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 id="modal-title" class="modal-title">Custom box</h4>
+        <button class="close-modal" data-bs-dismiss="modal"><fa-icon
+            [icon]="['fas', 'window-close']"></fa-icon></button>
+      </div>
+
+      <!--BODY-->
+      <div class="modal-body row">
+        <!--CSS GENERATED IMAGE-->
+        <div class="col-6">
+
+        </div>
+        
+        <!--FORM-->
+        <div class="col-6">
+
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer justify-content-evenly">
+        <button class="btn btn-add-cart modal-form-submit" data-bs-dismiss="modal">Add to cart</button>
+      </div>
+
     </div>
   </div>
 </div>

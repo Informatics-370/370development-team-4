@@ -52,12 +52,23 @@ export class ProductDetailsComponent {
   relatedProductsVMList: ProductVM[] = []; //list of max 6 related products
 
   //CUSTOMISE PRODUCT
+  canCustomise = false;
+  customiseForm: FormGroup; //customise form
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder, private router: Router, private renderer: Renderer2) {
     this.addToCartForm = this.formBuilder.group({
       sizeID: [{ value: '1' }, Validators.required],
       qty: [1, Validators.required]
+    });
+    
+    this.customiseForm = this.formBuilder.group({
+      height: [1, Validators.required],
+      width: [1, Validators.required],
+      length: [1, Validators.required],
+      itemID: [1, Validators.required],
+      sides: [1, Validators.required],
+      label: []
     });
   }
 
@@ -110,6 +121,12 @@ export class ProductDetailsComponent {
   displayProduct() {
     let matchingItem = this.items.find(item => item.itemID == this.itemID); //get the item with matching ID
     let matchingFixedProducts = this.fixedProducts.filter(fixedProd => fixedProd.itemID == this.itemID); //get all products with matching item ID
+
+    //determine if it can be customised
+    if (matchingItem?.description.toLocaleLowerCase() == 'single wall carton' || matchingItem?.description.toLocaleLowerCase() == 'single wall box' || matchingItem?.description.toLocaleLowerCase() == 'double wall carton' || matchingItem?.description.toLocaleLowerCase() == 'double wall box') {
+      this.canCustomise = true;
+    }
+
     /*sort matching fixed products by price so that sizes will also be in order from least expensive to most expensive, 
     which should result in smallest to biggest size*/
     matchingFixedProducts.sort((currentProd, nextProd) => {
