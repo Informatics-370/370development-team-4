@@ -74,6 +74,26 @@ export class CustomerOrdersComponent {
       throw new Error('An error occurred while retrieving orders: ' + error);
     }
   }
+
+  /*------------------SEARCH ORDERS----------------------*/
+  searchOrders(event: Event) {
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.filteredOrders = []; //clear array
+    for (let i = 0; i < this.orders.length; i++) {
+      //concatenate all the order info in one variable so user can search using any of them
+      let ordInformation: string = String('ORD' + this.orders[i].customerOrderID + ' ' +
+        this.orders[i].customerFullName + ' ' +
+        this.orders[i].total + ' ' +
+        this.orders[i].orderStatusDescription).toLowerCase();
+
+      if (ordInformation.includes(this.searchTerm.toLowerCase())) {
+        this.filteredOrders.push(this.orders[i]);
+      }
+    }
+
+    this.orderCount = this.filteredOrders.length; //update order count
+    console.log('Search results:', this.filteredOrders);
+  }
 }
 
 class VATInclusiveOrder implements OrderVM {

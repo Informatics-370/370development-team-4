@@ -9,6 +9,7 @@
       <!--Search bar-->
       <div id="searchbar">
         <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+          (keyup)="searchOrders($event)"  (change)="searchOrders($event)"  (paste)="searchOrders($event)"
           placeholder="e.g. Search by ID, customer, status, price"  />
         <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
       </div>
@@ -39,7 +40,7 @@
             <td class="text-center">
                 <label class="form-check-label modal-form-label">
                     <input *ngIf="order.orderStatusID == 1" id="check-{{order.customerOrderID}}" class="form-check-input" type="checkbox">
-                </label>                
+                </label>
             </td>
             <td>ORD{{order.customerOrderID}}</td>
             <td>{{order.customerFullName == null ? 'John LongSurname' : order.customerFullName}}</td>
@@ -48,5 +49,7 @@
           </tr>
         </tbody>
       </table>
+
+      <button class="btn btn-create" >Process Orders</button>
     </div>
   </div>
