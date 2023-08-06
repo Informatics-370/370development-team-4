@@ -55,6 +55,7 @@ export class ProductDetailsComponent {
   canCustomise = false;
   customiseForm: FormGroup; //customise form
   customisableItems: Item[] = []; //hold array of single wall carton and double wall carton
+  invalidFile = false;
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder, private router: Router, private renderer: Renderer2) {
@@ -421,11 +422,8 @@ export class ProductDetailsComponent {
   redirectToProductDetails(productItemID: number, itemDescription: string) {
     //url is expecting product with id 2 and description 'product description' to be '2-product-description', so combine string into that
     let urlParameter = productItemID + '-' + itemDescription.replaceAll(' ', '-');
-    /* this.router.navigate(['product-details', urlParameter]); //change URL */
     //update displayed product info
     window.location.href = '/product-details/' + urlParameter;
-    /* this.itemID = productItemID;
-    this.displayProduct(); */
   }
 
   getVATInclusive(amount: number): number {
@@ -433,6 +431,7 @@ export class ProductDetailsComponent {
     return priceInclVAT;
   }
   
+  /*---------------------CUSTOMISE BOX LOGIC----------------------*/
   //function to display image name since I decided to be fancy with a custom input button
   showImageName(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
@@ -440,7 +439,15 @@ export class ProductDetailsComponent {
     let imageName = document.getElementById('imageName') as HTMLSpanElement;
 
     if (chosenFile) { //if there is a file chosen
-      imageName.innerHTML = chosenFile.name; //display file name   
+      //if chosen file is pdf/jpg
+      if (chosenFile.type.includes('pdf') || chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) {
+        imageName.innerHTML = chosenFile.name; //display file name
+        this.invalidFile = false;
+      }
+      else {
+        imageName.style.display = 'none';
+        this.invalidFile = true;
+      }
     }
   }
 }

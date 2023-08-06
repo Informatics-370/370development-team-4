@@ -163,9 +163,10 @@
                         style="display: none;" (change)="showImageName($event)"/>
                     Upload file 
                 </label>
-                <span id="imageName" style="font-size: 90%;">
+                <span id="imageName" class="imageName">
                   <span class="bold">No file selected</span> (pdf or jpg)
                 </span>
+                <span class="imageName" *ngIf="invalidFile">Invalid file. Please choose a jpg or pdf file</span>
             </div>
             <div class="form-group">
               <label for="sides" class="form-label modal-form-label bold">No of sides to print on:</label>
