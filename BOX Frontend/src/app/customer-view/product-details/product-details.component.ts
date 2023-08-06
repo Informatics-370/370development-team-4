@@ -54,6 +54,7 @@ export class ProductDetailsComponent {
   //CUSTOMISE PRODUCT
   canCustomise = false;
   customiseForm: FormGroup; //customise form
+  customisableItems: Item[] = []; //hold array of single wall carton and double wall carton
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder, private router: Router, private renderer: Renderer2) {
@@ -61,7 +62,7 @@ export class ProductDetailsComponent {
       sizeID: [{ value: '1' }, Validators.required],
       qty: [1, Validators.required]
     });
-    
+
     this.customiseForm = this.formBuilder.group({
       height: [1, Validators.required],
       width: [1, Validators.required],
@@ -110,7 +111,11 @@ export class ProductDetailsComponent {
       this.fixedProducts = allFixedProducts;
       this.sizes = allSizes;
       this.vat = allVAT[0];
-      console.log(this.vat);
+      this.customisableItems = this.items.filter(item => 
+        item.description.toLocaleLowerCase() == 'single wall carton' || item.description.toLocaleLowerCase() == 'single wall box' || 
+        item.description.toLocaleLowerCase() == 'double wall carton' || item.description.toLocaleLowerCase() == 'double wall box'
+      );
+      console.log('customisableItems', this.customisableItems);
 
       this.displayProduct();
     } catch (error) {
@@ -176,7 +181,7 @@ export class ProductDetailsComponent {
           if (sizeDropdownString.trim() === '') sizeDropdownString = 'N/A';
 
           //create object; e.g. result: {sizeString: '150x150', price: 12.99, id: 15, qtyOnHand: 243500}
-          let priceInclVAT = fixedProd.price * (1 + this.vat.percentage/100); //let price shown incl vat
+          let priceInclVAT = fixedProd.price * (1 + this.vat.percentage / 100); //let price shown incl vat
 
           let sizeDropdownObject: SizeDropdrownItem = {
             sizeString: sizeDropdownString,
@@ -329,7 +334,7 @@ export class ProductDetailsComponent {
     //display max 6 related products
     let maxProducts: number = 6;
     if (matchingProductItems.length <= 4) maxProducts = matchingProductItems.length; //if there's less than 6 related products, don't loop 4 times
-    
+
     let relatedProductContainer = document.getElementById('related-products-container') as HTMLElement; //get row that holds related products
     relatedProductContainer.innerHTML = '';
 
@@ -421,11 +426,22 @@ export class ProductDetailsComponent {
     window.location.href = '/product-details/' + urlParameter;
     /* this.itemID = productItemID;
     this.displayProduct(); */
-  }  
-  
-  getVATInclusive(amount: number): number { 
-    let priceInclVAT = amount * (1 + this.vat.percentage/100);
+  }
+
+  getVATInclusive(amount: number): number {
+    let priceInclVAT = amount * (1 + this.vat.percentage / 100);
     return priceInclVAT;
+  }
+  
+  //function to display image name since I decided to be fancy with a custom input button
+  showImageName(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const chosenFile = inputElement.files?.[0];
+    let imageName = document.getElementById('imageName') as HTMLSpanElement;
+
+    if (chosenFile) { //if there is a file chosen
+      imageName.innerHTML = chosenFile.name; //display file name   
+    }
   }
 }
 

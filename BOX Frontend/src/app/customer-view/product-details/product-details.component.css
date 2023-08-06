@@ -111,3 +111,30 @@ button:disabled {
 }
 
 .not-clickable { cursor: default; }
+
+.customise-input {
+    display: inline-block;
+    width: 70%;
+    margin-left: .5em;
+    margin-right: .5em;
+    padding: 1px 2px;
+}
+
+.customise-hr { margin: 0; margin-bottom: 1rem; }
+
+.download {
+    background-color: white;
+    border: 1px solid #32AF99;
+    color: #32AF99;
+    /* color: #373435; */
+    margin-left: 0;
+    padding: 2px 1rem;
+    margin-bottom: 1rem;
+}
+
+.download:hover {
+    background-color: #32AF99;
+    color: white;
+}
+
+#imageName { margin-left: 0.75em; }

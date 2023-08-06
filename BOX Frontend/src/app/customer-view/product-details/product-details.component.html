@@ -17,8 +17,8 @@
           <!--DISPLAY PRODUCT INFO-->
           <div class="row align-items-center" *ngIf="!loading">
             <div class="col-sm-12 col-md-6 product-img special-img">
-              <img class="card-img product-card-img special-card-img" src="data:image/png;base64,{{selectedProductVM.productPhotoB64}}"
-                alt="Single wall box">
+              <img class="card-img product-card-img special-card-img"
+                src="data:image/png;base64,{{selectedProductVM.productPhotoB64}}" alt={{selectedProductVM.description}}>
             </div>
             <div class="col-sm-12 col-md-6 card-body product-card-body special-card-body">
               <h5 class="card-text">{{selectedProductVM.description}} (Standard)</h5>
@@ -30,9 +30,8 @@
               <p><span id="estimated-price">Unit price (estimate):<br />
                   <strong class="price">{{sizeDropdownArray[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
                 </span>
-                <span id="discount-applied"
-                  *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br />
-                  Total: <strong class="price"><br />{{total | currency: 'ZAR':'symbol-narrow'}}</strong>                  
+                <span id="discount-applied" *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br />
+                  Total: <strong class="price"><br />{{total | currency: 'ZAR':'symbol-narrow'}}</strong>
                 </span>
               </p>
 
@@ -118,22 +117,69 @@
 
       <!--BODY-->
       <div class="modal-body row">
-        <!--CSS GENERATED IMAGE-->
-        <div class="col-6">
-
+        <!--CSS GENERATED BOX-->
+        <div class="col-6 customised-box">
+          <div class="left face"></div>
+          <div class="right face"></div>
+          <div class="front face"></div>
+          <div class="back face"></div>
+          <div class="top face"></div>
+          <div class="bottom face"></div>
         </div>
-        
+
         <!--FORM-->
         <div class="col-6">
+          <form [formGroup]="customiseForm">
+            <div class="form-group">
+              <label for="itemID" class="form-label modal-form-label bold">Carton:</label>
+              <select formControlName="itemID" name="itemID" class="form-select modal-form-input modal-form-text customise-input">
+                <option *ngFor="let item of customisableItems" value={{item.itemID}}>{{item.description}}</option>
+              </select>
+            </div>
 
+            <div>Dimensions:</div><hr class="customise-hr hr-blurry"/>
+
+            <div class="form-group">
+              <label for="length" class="form-label modal-form-label bold">Length:</label>
+              <input type="number" formControlName="length" class="form-control modal-form-input modal-form-text customise-input" 
+                value="1000" name="length" required min="100" step="1"> mm
+            </div>
+            <div class="form-group">
+              <label for="width" class="form-label modal-form-label bold">Width:</label>
+              <input type="number" formControlName="width" class="form-control modal-form-input modal-form-text customise-input" 
+                value="500" name="width" required min="100" step="1"> mm
+            </div>
+            <div class="form-group">
+              <label for="height" class="form-label modal-form-label bold">Height:</label>
+              <input type="number" formControlName="height" class="form-control modal-form-input modal-form-text customise-input" 
+                value="1000" name="height" required min="100" step="1"> mm
+            </div>
+
+            <div>Printing:</div><hr class="customise-hr hr-blurry"/>
+                    
+            <div class="form-group" id="choose-img" class="display-photo">
+                <label class="form-label btn-create btn download">
+                    <input id="label" type="file" accept=".pdf,.jpeg" formControlName="label" name="label"
+                        style="display: none;" (change)="showImageName($event)"/>
+                    Upload file 
+                </label>
+                <span id="imageName" style="font-size: 90%;">
+                  <span class="bold">No file selected</span> (pdf or jpg)
+                </span>
+            </div>
+            <div class="form-group">
+              <label for="sides" class="form-label modal-form-label bold">No of sides to print on:</label>
+              <input type="number" formControlName="sides" class="form-control modal-form-input modal-form-text customise-input" 
+                value="1" name="sides" required min="1" max="6" step="1" style="width: 50%;">
+            </div>
+
+            <div class="form-submit-div">
+              <button class="btn btn-add-cart modal-form-submit" data-bs-dismiss="modal">Add to cart</button>
+            </div>
+
+          </form>
         </div>
       </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer justify-content-evenly">
-        <button class="btn btn-add-cart modal-form-submit" data-bs-dismiss="modal">Add to cart</button>
-      </div>
-
     </div>
   </div>
 </div>
