@@ -6,6 +6,7 @@ import { Size } from '../shared/Size';
 import { CategoryVM } from '../shared/category-vm';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
+import { CustomProductVM } from '../shared/custom-product-vm';
 import { RefundReason } from '../shared/refund-reason';
 import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
@@ -472,5 +473,16 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
   UpdateOrderStatus(customerOrderId: number, customerOrderStatusId: number): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
+
+    //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
+    GetAllCustomProducts(): Observable<any> {
+      return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)
+        .pipe(map(result => result))
+    }
+  
+    GetCustomProduct(customProductId: number): Observable<CustomProductVM> {
+      return this.httpClient.get<CustomProductVM>(`${this.apiUrl}CustomProduct/GetCustomProduct/${customProductId}`)
+        .pipe(map(result => result));
+    }
 
 }

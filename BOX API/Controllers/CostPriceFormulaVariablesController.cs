@@ -60,9 +60,9 @@ namespace BOX.Controllers
                 _repository.Add(newCPFV);
                 await _repository.SaveChangesAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest("Invalid transaction");
+                return BadRequest("Invalid transaction" + ex.Message + ex.InnerException);
             }
 
             return Ok(newCPFV);
