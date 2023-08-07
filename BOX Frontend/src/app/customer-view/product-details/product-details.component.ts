@@ -1,5 +1,5 @@
-import { Component, Renderer2 } from '@angular/core';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { Component, Renderer2, ElementRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
@@ -56,9 +56,60 @@ export class ProductDetailsComponent {
   customiseForm: FormGroup; //customise form
   customisableItems: Item[] = []; //hold array of single wall carton and double wall carton
   invalidFile = false;
+  sides = 1; //holds number of sides user wants to print on for a custom box
+  //hold styles for box preview that are calculated based on box dimensions
+  front: any = { //styles for box front face
+    width: '10em', /*box length*/
+    height: '8em', /*box height*/
+    transform: 'translateZ(2.5em)' /* half of box width */
+  }
+
+  back: any = { //styles for box back face
+    width: '10em', /*box length*/
+    height: '8em', /*box height*/
+    transform: 'translateZ(-2.5em)' /* half of box width */
+  }
+
+  left: any = { //styles for box left face
+    width: '5em', /*box width*/
+    height: '8em', /*box height*/
+    transform: 'translateX(-5em) rotateY(90deg);' /* half of box length */
+  }
+
+  right: any = { //styles for box right face
+    width: '5em', /*box width*/
+    height: '8em', /*box height*/
+    transform: 'translateX(5em) rotateY(90deg);' /* half of box length */
+  }
+
+  top: any = { //styles for box top face
+    width: '10em', /*box length*/
+    height: '5em', /*box width*/
+    transform: 'translateY(-4em) rotateX(90deg)' /*half of box height*/
+  }
+
+  bottom: any = { //styles for box bottom face
+    width: '10em', /*box length*/
+    height: '5em', /*box width*/
+    transform: 'translateY(4em) rotateX(90deg)' /*half of box height*/
+  }
+
+  topSpan: any = { //styles for box tape on top
+    width: '1em' /*box length divided by 10*/
+  }
+
+  frontBackSpan: any = { //styles for box tape on front
+    height: '2em', /*box height divided by 4*/
+    width: '1em' /*box length divided by 10*/
+  }
+
+  print: any = { //styles for box image
+    'max-width': '5em', /*box length divided by 2*/
+    'max-height': '4em' /*box height divided by 2*/
+  }
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder, private router: Router, private renderer: Renderer2) {
+    private formBuilder: FormBuilder, private renderer: Renderer2, private el: ElementRef) {
     this.addToCartForm = this.formBuilder.group({
       sizeID: [{ value: '1' }, Validators.required],
       qty: [1, Validators.required]
@@ -114,8 +165,8 @@ export class ProductDetailsComponent {
       this.fixedProducts = allFixedProducts;
       this.sizes = allSizes;
       this.vat = allVAT[0];
-      this.customisableItems = this.items.filter(item => 
-        item.description.toLocaleLowerCase() == 'single wall carton' || item.description.toLocaleLowerCase() == 'single wall box' || 
+      this.customisableItems = this.items.filter(item =>
+        item.description.toLocaleLowerCase() == 'single wall carton' || item.description.toLocaleLowerCase() == 'single wall box' ||
         item.description.toLocaleLowerCase() == 'double wall carton' || item.description.toLocaleLowerCase() == 'double wall box'
       );
       console.log('customisableItems', this.customisableItems);
@@ -432,19 +483,32 @@ export class ProductDetailsComponent {
     let priceInclVAT = amount * (1 + this.vat.percentage / 100);
     return priceInclVAT;
   }
-  
+
   /*---------------------CUSTOMISE BOX LOGIC----------------------*/
   //function to display image name since I decided to be fancy with a custom input button
   showImageName(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
     const chosenFile = inputElement.files?.[0];
     let imageName = document.getElementById('imageName') as HTMLSpanElement;
+    const imageElements = this.el.nativeElement.querySelectorAll('.print');
+
+    console.log(imageElements);
 
     if (chosenFile) { //if there is a file chosen
       //if chosen file is pdf/jpg
       if (chosenFile.type.includes('pdf') || chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) {
         imageName.innerHTML = chosenFile.name; //display file name
         this.invalidFile = false;
+
+        if (chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) { //if chosen file is an image
+          const reader = new FileReader();
+          reader.readAsDataURL(chosenFile); //NB!!
+          reader.onload = (e) => {
+            imageElements.forEach((imgElement: HTMLImageElement) => {
+              imgElement.src = e.target?.result as string; // Set the src attribute of the image element
+            });
+          };
+        }
       }
       else {
         imageName.style.display = 'none';
@@ -456,6 +520,75 @@ export class ProductDetailsComponent {
   //function to update custom box preview
   updateCustomBoxPreview(changes: any) {
     console.log(changes);
+    /*100mm = 1em
+    Max length that can be displayed = 15em aka 1500mm aka 150cm
+    Max width that can be displayed = 15em aka 1500mm aka 150cm
+    Max height that can be displayed = 15em aka 1500mm aka 150cm
+    */
+
+    let newLength: number = changes.length;
+    let newWidth: number = changes.width;
+    let newHeight: number = changes.height;
+
+    if (newLength > 1500) {
+      newLength = 1500;
+    }
+    if (newWidth > 1500) {
+      newWidth = 1500;
+    }
+    if (newHeight > 1500) {
+      newHeight = 1500;
+    }
+
+    this.front = { //styles for box front face
+      width: (newLength / 100).toFixed(1) + 'em', /*box length*/
+      height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
+      transform: 'translateZ(' + (newWidth / 200 ).toFixed(1) + 'em)' /* half of box width */
+    }
+
+    this.back = { //styles for box back face
+      width: (newLength / 100).toFixed(1) + 'em', /*box length*/
+      height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
+      transform: 'translateZ(-' + (newWidth / 200 ).toFixed(1) + 'em)' /* half of box width */
+    }
+
+    this.left = { //styles for box left face
+      width: (newWidth / 100).toFixed(1) + 'em', /*box width*/
+      height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
+      transform: 'translateX(-' + (newLength / 200 ).toFixed(1) + 'em) rotateY(90deg);' /* half of box length */
+    }
+
+    this.right = { //styles for box right face
+      width: (newWidth / 100).toFixed(1) + 'em', /*box width*/
+      height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
+      transform: 'translateX(' + (newLength / 200 ).toFixed(1) + 'em) rotateY(90deg);' /* half of box length */
+    }
+
+    this.top = { //styles for box top face
+      width: (newLength / 100).toFixed(1) + 'em', /*box length*/
+      height: (newWidth / 100).toFixed(1) + 'em', /*box width*/
+      transform: 'translateY(-' + (newHeight / 200 ).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
+    }
+
+    this.bottom = { //styles for box bottom face
+      width: (newLength / 100).toFixed(1) + 'em', /*box length*/
+      height: (newWidth / 100).toFixed(1) + 'em', /*box width*/
+      transform: 'translateY(' + (newHeight / 200 ).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
+    }
+
+    this.topSpan = { //styles for box tape on top
+      width: (newLength / 1000).toFixed(1) + 'em' /*box length divided by 10*/
+    }
+
+    this.frontBackSpan = { //styles for box tape on front
+      height: (newHeight / 400).toFixed(1) + 'em', /*box height divided by 4*/
+      width: (newLength / 1000).toFixed(1) + 'em' /*box length divided by 10*/
+    }
+
+    this.print = { //styles for box image
+      'max-width': (newLength / 200).toFixed(1) + 'em', /*box length divided by 2*/
+      'max-height': (newHeight / 200).toFixed(1) + 'em' /*box height divided by 2*/
+    }
   }
 }
 

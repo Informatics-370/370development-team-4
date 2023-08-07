@@ -124,18 +124,27 @@
         <!--CSS GENERATED BOX-->
         <div class="col-md-6 col-sm-12 customised-box">
           <div class="preview">
-            <div class="left face"></div>
-            <div class="right face"></div>
-            <div class="front face">
-              <span></span>
+            <div class="left face" [ngStyle]="left">
+              <img class="print left-img" src="" [hidden]="sides >= 4" />
             </div>
-            <div class="back face">
-              <span></span>
+            <div class="right face" [ngStyle]="right">
+              <img class="print right-img" src="" [hidden]="sides >= 3"/>
             </div>
-            <div class="top face">
-              <span></span>
+            <div class="front face" [ngStyle]="front">
+              <span [ngStyle]="frontBackSpan"></span>
+              <img class="print front-img" src="" [hidden]="sides >= 1"/>
             </div>
-            <div class="bottom face"></div>
+            <div class="back face" [ngStyle]="back">
+              <span [ngStyle]="frontBackSpan"></span>
+              <img class="print back-img" src="" [hidden]="sides >= 2"/>
+            </div>
+            <div class="top face" [ngStyle]="top">
+              <span [ngStyle]="topSpan"></span>
+              <img class="print top-img" src="" [hidden]="sides >= 5"/>
+            </div>
+            <div class="bottom face" [ngStyle]="bottom">
+              <img class="print bottom-img" src="" [hidden]="sides >= 6"/>
+            </div>
           </div>
           <span class="preview-text">
             This is only a preview and not an accurate representation of the final product. Contact MegaPack for enquiries.
@@ -191,9 +200,9 @@
             </div>
             <div class="form-group">
               <label for="sides" class="form-label modal-form-label bold">No of sides to print on:</label>
-              <input type="number" formControlName="sides"
-                class="form-control modal-form-input modal-form-text customise-input" value="1" name="sides" required
-                min="1" max="6" step="1" style="width: 50%;">
+              <input type="number" formControlName="sides" [(ngModel)]="sides"
+                class="form-control modal-form-input modal-form-text customise-input" name="sides" required
+                min="0" max="6" step="1" style="width: 50%;">
             </div>
 
             <div class="form-submit-div">
