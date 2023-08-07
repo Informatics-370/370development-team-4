@@ -112,11 +112,12 @@ button:disabled {
 
 .not-clickable { cursor: default; }
 
+/*CUSTOMISE PRODUCT FORM*/
 .customise-input {
     display: inline-block;
-    width: 70%;
+    width: 55%;
     margin-left: .5em;
-    margin-right: .5em;
+    margin-right: .25em;
     padding: 1px 2px;
 }
 
@@ -138,3 +139,106 @@ button:disabled {
 }
 
 .imageName { margin-left: 0.75em; font-size: 85%; }
+
+/*CSS GENERATED BOX*/
+.customised-box { position: relative; }
+
+.preview {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-style: preserve-3d;
+    transform: rotateX(-20deg);
+    animation: rotateBox 15s linear infinite;
+    width: 100%;
+    height: 100%;
+    min-height: 15em;
+}
+
+@keyframes rotateBox {
+    to {
+        transform: rotateX(-20deg) rotateY(360deg);
+    }
+}
+
+.face {
+    position: absolute;
+    background: #ca9864;
+    overflow: hidden;
+}
+
+/*100mm = 1em
+Max length that can be displayed = 15em aka 1500mm aka 150cm
+Max width that can be displayed = 15em aka 1500mm aka 150cm
+Max height that can be displayed = 15em aka 1500mm aka 150cm
+*/
+.front, .back {
+    background: #ca9864;
+    width: 10em; /*box length*/
+    height: 8em; /*box height*/
+}
+
+.front { transform: translateZ(2.5em); } /* half of box width */
+
+.back { transform: translateZ(-2.5em); } /* half of box width */
+
+.left, .right {
+    background: #d8aa77;
+    width: 5em; /*box width*/
+    height: 8em; /*box height*/
+}
+
+.left { transform: translateX(-5em) rotateY(90deg); } /* half of box length */
+
+.right { transform: translateX(5em) rotateY(90deg); } /* half of box length */
+
+.top, .bottom {
+    background: #e8bb84;
+    width: 10em; /*box length*/
+    height: 5em; /*box width*/
+}
+
+.top { transform: translateY(-4em) rotateX(90deg); } /*half of box height*/
+
+.bottom { transform: translateY(4em) rotateX(90deg); } /*half of box height*/
+
+.front span, .back span, .top span {
+    position: absolute;
+    background: #bd8c58;
+}
+
+.top span {
+    /*tape on top of box*/
+    height: 100%;
+    width: 1em; /*box length divided by 10*/
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.front span, .back span {
+    /*tape on the front and back sides of box*/
+    height: 2em; /*box height divided by 4*/
+    width: 1em; /*box length divided by 10*/
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.front span::before, .back span::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1em;
+    background: #ca9864;
+    left: 0;
+    bottom: -0.5em; /*box length divided by 20*/
+    transform: rotate(45deg);
+}
+
+.preview-text {
+    font-size: 70%; 
+    text-align: center;
+    line-height: 1.1em;
+    position: absolute;
+    bottom: 1em;
+}

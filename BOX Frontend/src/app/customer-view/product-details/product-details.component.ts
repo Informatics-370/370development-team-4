@@ -65,12 +65,16 @@ export class ProductDetailsComponent {
     });
 
     this.customiseForm = this.formBuilder.group({
-      height: [1, Validators.required],
-      width: [1, Validators.required],
-      length: [1, Validators.required],
+      height: [800, Validators.required],
+      width: [500, Validators.required],
+      length: [1000, Validators.required],
       itemID: [1, Validators.required],
       sides: [1, Validators.required],
       label: []
+    });
+
+    this.customiseForm.valueChanges.subscribe(changes => {
+      this.updateCustomBoxPreview(changes);
     });
   }
 
@@ -80,13 +84,11 @@ export class ProductDetailsComponent {
     this.activatedRoute.paramMap.subscribe(params => {
       //product with id 2 and description 'product description' will come as '2-product-description' so split it into array that is ['2', 'product-description']
       let id = params.get('id')?.split('-', 1);
-      console.log(id ? id[0] : 'no id');
       if (id) this.itemID = parseInt(id[0]);
     });
 
     //Retrieve cart list from local storage; if there's nothing in cart, return empty array
     this.cart = JSON.parse(localStorage.getItem("MegaPack-cart") || "[]");
-    console.log('cart', this.cart);
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -449,6 +451,11 @@ export class ProductDetailsComponent {
         this.invalidFile = true;
       }
     }
+  }
+
+  //function to update custom box preview
+  updateCustomBoxPreview(changes: any) {
+    console.log(changes);
   }
 }
 

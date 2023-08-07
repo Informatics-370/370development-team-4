@@ -28,9 +28,11 @@
               </ul>
 
               <p><span id="estimated-price">Unit price (estimate):<br />
-                  <strong class="price">{{sizeDropdownArray[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
+                  <strong class="price">{{sizeDropdownArray[selectedSizeIndex].price | currency:
+                    'ZAR':'symbol-narrow'}}</strong>
                 </span>
-                <span id="discount-applied" *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br />
+                <span id="discount-applied"
+                  *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br />
                   Total: <strong class="price"><br />{{total | currency: 'ZAR':'symbol-narrow'}}</strong>
                 </span>
               </p>
@@ -72,13 +74,15 @@
                       (keyup)="changedQty()" (change)="changedQty()">
                   </div>
                   <div *ngIf="invalidQty" class="error-msg">
-                    Due to inventory level constraints, the mininum you can order is 1 and the maximum is {{maxQuantity}}
+                    Due to inventory level constraints, the mininum you can order is 1 and the maximum is
+                    {{maxQuantity}}
                   </div>
 
                   <div class="col-6" style="margin-bottom: 0.25rem;" *ngIf="canCustomise">
-                    <button class="btn btn-add-cart btn-customise" data-bs-toggle="modal" data-bs-target="#customise">Customise</button>
+                    <button class="btn btn-add-cart btn-customise" data-bs-toggle="modal"
+                      data-bs-target="#customise">Customise</button>
                   </div>
-                  <div class="col-md-6 col-sm-12">
+                  <div class="col-md-6 col-xs-12">
                     <button class="btn btn-add-cart" (click)="addToCart()" [disabled]="outOfStock">Add to Cart</button>
                   </div>
 
@@ -118,60 +122,78 @@
       <!--BODY-->
       <div class="modal-body row">
         <!--CSS GENERATED BOX-->
-        <div class="col-6 customised-box">
-          <div class="left face"></div>
-          <div class="right face"></div>
-          <div class="front face"></div>
-          <div class="back face"></div>
-          <div class="top face"></div>
-          <div class="bottom face"></div>
+        <div class="col-md-6 col-sm-12 customised-box">
+          <div class="preview">
+            <div class="left face"></div>
+            <div class="right face"></div>
+            <div class="front face">
+              <span></span>
+            </div>
+            <div class="back face">
+              <span></span>
+            </div>
+            <div class="top face">
+              <span></span>
+            </div>
+            <div class="bottom face"></div>
+          </div>
+          <span class="preview-text">
+            This is only a preview and not an accurate representation of the final product. Contact MegaPack for enquiries.
+          </span>
         </div>
 
         <!--FORM-->
-        <div class="col-6">
+        <div class="col-md-6 col-sm-12">
           <form [formGroup]="customiseForm">
-            <div class="form-group">
-              <label for="itemID" class="form-label modal-form-label bold">Carton:</label>
-              <select formControlName="itemID" name="itemID" class="form-select modal-form-input modal-form-text customise-input">
+            <div class="form-group" style="text-align: center;">
+              <select style="width: 100%;" formControlName="itemID"
+                class="form-select modal-form-input modal-form-text customise-input">
                 <option *ngFor="let item of customisableItems" value={{item.itemID}}>{{item.description}}</option>
               </select>
             </div>
 
-            <div>Dimensions:</div><hr class="customise-hr hr-blurry"/>
+            <div>Dimensions:</div>
+            <hr class="customise-hr hr-blurry" />
 
             <div class="form-group">
               <label for="length" class="form-label modal-form-label bold">Length:</label>
-              <input type="number" formControlName="length" class="form-control modal-form-input modal-form-text customise-input" 
-                value="1000" name="length" required min="100" step="1"> mm
+              <input type="number" formControlName="length"
+                class="form-control modal-form-input modal-form-text customise-input" name="length" required min="100"
+                step="1"> mm
             </div>
             <div class="form-group">
               <label for="width" class="form-label modal-form-label bold">Width:</label>
-              <input type="number" formControlName="width" class="form-control modal-form-input modal-form-text customise-input" 
-                value="500" name="width" required min="100" step="1"> mm
+              <input type="number" formControlName="width"
+                class="form-control modal-form-input modal-form-text customise-input" name="width" required min="100"
+                step="1"> mm
             </div>
             <div class="form-group">
               <label for="height" class="form-label modal-form-label bold">Height:</label>
-              <input type="number" formControlName="height" class="form-control modal-form-input modal-form-text customise-input" 
-                value="1000" name="height" required min="100" step="1"> mm
+              <input type="number" formControlName="height"
+                class="form-control modal-form-input modal-form-text customise-input" name="height" required min="100"
+                step="1"> mm
             </div>
 
-            <div>Printing:</div><hr class="customise-hr hr-blurry"/>
-                    
+            <div>Printing:</div>
+            <hr class="customise-hr hr-blurry" />
+
             <div class="form-group" id="choose-img" class="display-photo">
-                <label class="form-label btn-create btn download">
-                    <input id="label" type="file" accept=".pdf,.jpeg" formControlName="label" name="label"
-                        style="display: none;" (change)="showImageName($event)"/>
-                    Upload file 
-                </label>
-                <span id="imageName" class="imageName">
-                  <span class="bold">No file selected</span> (pdf or jpg)
-                </span>
-                <span class="imageName" *ngIf="invalidFile">Invalid file. Please choose a jpg or pdf file</span>
+              <label class="form-label btn-create btn download">
+                <input id="label" type="file" accept=".pdf,.jpeg" formControlName="label" name="label"
+                  style="display: none;" (change)="showImageName($event)" />
+                Upload file
+              </label>
+              <span id="imageName" class="imageName">
+                <span class="bold">No file selected</span> (pdf or jpg)
+              </span>
+              <span class="imageName" *ngIf="invalidFile">Invalid file. Please choose a jpg or pdf file</span>
+              <div>We're sorry but we can't provide previews of pdf files</div>
             </div>
             <div class="form-group">
               <label for="sides" class="form-label modal-form-label bold">No of sides to print on:</label>
-              <input type="number" formControlName="sides" class="form-control modal-form-input modal-form-text customise-input" 
-                value="1" name="sides" required min="1" max="6" step="1" style="width: 50%;">
+              <input type="number" formControlName="sides"
+                class="form-control modal-form-input modal-form-text customise-input" value="1" name="sides" required
+                min="1" max="6" step="1" style="width: 50%;">
             </div>
 
             <div class="form-submit-div">
