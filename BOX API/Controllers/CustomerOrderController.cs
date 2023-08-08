@@ -41,14 +41,13 @@ namespace BOX.Controllers
                     {
                         int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
                         var fp = await _repository.GetFixedProductAsync(fpID);
-                        orderTotal += fp.Price * ol.Quantity;
 
                         CustomerOrderLineViewModel colvm = new CustomerOrderLineViewModel
                         {
-                            CustomerOrderLineID = ol.Customer_Order_LineID,
+                            CustomerOrderLineID = ol.CustomerOrderLineID,
                             CustomerOrderID = ol.CustomerOrderID,
                             FixedProductID = fpID,
-                            CustomerRefundID = ol.CustomerRefundID,
+                            CustomerRefundID = ol.CustomerReturnID,
                             CustomProductID = 0,
                             Quantity = ol.Quantity
                         };
@@ -59,7 +58,6 @@ namespace BOX.Controllers
                     {
                         CustomerOrderID = order.CustomerOrderID,
                         OrderStatusID = order.CustomerOrderStatusID,
-                        UserId = orderLines[0].UserId,
                         OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
                         Date = order.Date,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
@@ -107,11 +105,10 @@ namespace BOX.Controllers
 
                     CustomerOrderLineViewModel elvm = new CustomerOrderLineViewModel()
                     {
-                        CustomerOrderLineID = ol.Customer_Order_LineID,
+                        CustomerOrderLineID = ol.CustomerOrderLineID,
                         CustomerOrderID = ol.CustomerOrderID,
                         FixedProductID = fpID,
                         FixedProductDescription = fixedProduct.Description,
-                        FixedProductUnitPrice = fixedProduct.Price,
                         CustomProductID = 0,
                         Quantity = ol.Quantity,
 
@@ -124,7 +121,6 @@ namespace BOX.Controllers
                 var CustomerOrderViewModel = new CustomerOrderViewModel
                 {
                     CustomerOrderID = order.CustomerOrderID,
-                    UserId = orderLines[0].UserId,
                     OrderStatusID = order.CustomerOrderStatusID,
                     OrderStatusDescription = status.Description,
                     OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
@@ -141,68 +137,67 @@ namespace BOX.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("GetOrderByCustomer/{customerId}")]
-        public async Task<IActionResult> GetOrderByCustomer(string customerId)
-        {
-            try
-            {
-                List<CustomerOrderViewModel> customerOrdere = new List<CustomerOrderViewModel>(); //create list to return
-                var orderLines = await _repository.GetOrderLinesByCustomerAsync(customerId); //get all estimate lines for this customer
+        //[HttpGet]
+        //[Route("GetOrderByCustomer/{customerId}")]
+        //public async Task<IActionResult> GetOrderByCustomer(string customerId)
+        //{
+        //    try
+        //    {
+        //        List<CustomerOrderViewModel> customerOrdere = new List<CustomerOrderViewModel>(); //create list to return
+        //        var orderLines = await _repository.GetOrderLinesByCustomerAsync(customerId); //get all estimate lines for this customer
 
-                List<CustomerOrderLineViewModel> allCustomerOrderLines = new List<CustomerOrderLineViewModel>();
+        //        List<CustomerOrderLineViewModel> allCustomerOrderLines = new List<CustomerOrderLineViewModel>();
 
-                //put all the customer's order lines in VM
-                foreach (var ol in orderLines)
-                {
-                    int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
-                    int cpID = ol.CustomProductID == null ? 0 : ol.CustomProductID.Value;
-                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
+        //        //put all the customer's order lines in VM
+        //        foreach (var ol in orderLines)
+        //        {
+        //            int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
+        //            int cpID = ol.CustomProductID == null ? 0 : ol.CustomProductID.Value;
+        //            var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 
-                    CustomerOrderLineViewModel clVM = new CustomerOrderLineViewModel
-                    {
-                        CustomerOrderLineID = ol.Customer_Order_LineID,
-                        CustomerOrderID = ol.CustomerOrderID,
-                        FixedProductID = fpID,
-                        FixedProductDescription = fixedProduct.Description,
-                        FixedProductUnitPrice = fixedProduct.Price,
-                        CustomProductID = cpID,
-                        Quantity = ol.Quantity
-                    };
-                    allCustomerOrderLines.Add(clVM);
-                }
+        //            CustomerOrderLineViewModel clVM = new CustomerOrderLineViewModel
+        //            {
+        //                CustomerOrderLineID = ol.CustomerOrderLineID,
+        //                CustomerOrderID = ol.CustomerOrderID,
+        //                FixedProductID = fpID,
+        //                FixedProductDescription = fixedProduct.Description,
+        //                CustomProductID = cpID,
+        //                Quantity = ol.Quantity
+        //            };
+        //            allCustomerOrderLines.Add(clVM);
+        //        }
 
-                //Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
-                var distinctOrderLines = orderLines.Select(el => el.CustomerOrderID).Distinct(); //returns all distinct estimate IDs
-                int orderCount = distinctOrderLines.Count(); //count how many order there are
+        //        //Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
+        //        var distinctOrderLines = orderLines.Select(el => el.CustomerOrderID).Distinct(); //returns all distinct estimate IDs
+        //        int orderCount = distinctOrderLines.Count(); //count how many order there are
 
-                foreach (var orderID in distinctOrderLines) //get all the estimates using the distinct estimateIDs and estimateVM
-                {
-                    Customer_Order order = await _repository.GetCustomerOrderAsync(orderID);
-                    var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status data
+        //        foreach (var orderID in distinctOrderLines) //get all the estimates using the distinct estimateIDs and estimateVM
+        //        {
+        //            Customer_Order order = await _repository.GetCustomerOrderAsync(orderID);
+        //            var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status data
 
-                    CustomerOrderViewModel eVM = new CustomerOrderViewModel
-                    {
-                        CustomerOrderID = order.CustomerOrderID,
-                        OrderStatusID = order.CustomerOrderStatusID,
-                        OrderStatusDescription = status.Description,
-                        OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
-                        DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
-                        Date = order.Date,
-                        UserId = customerId,
-                        CustomerOrders = allCustomerOrderLines.Where(el => el.CustomerOrderID == orderID).ToList() //get all estimate lines for this estimate
-                    };
+        //            CustomerOrderViewModel eVM = new CustomerOrderViewModel
+        //            {
+        //                CustomerOrderID = order.CustomerOrderID,
+        //                OrderStatusID = order.CustomerOrderStatusID,
+        //                OrderStatusDescription = status.Description,
+        //                OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
+        //                DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
+        //                Date = order.Date,
+        //                UserId = customerId,
+        //                CustomerOrders = allCustomerOrderLines.Where(el => el.CustomerOrderID == orderID).ToList() //get all estimate lines for this estimate
+        //            };
 
-                    customerOrdere.Add(eVM);
-                }
+        //            customerOrdere.Add(eVM);
+        //        }
 
-                return Ok(customerOrdere);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-            }
-        }
+        //        return Ok(customerOrdere);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+        //    }
+        //}
 
         //-------------------------------------------------- Create Customer Order  ----------------------------------------------------
         [HttpPost]
@@ -240,8 +235,7 @@ namespace BOX.Controllers
                         estimate ID: 6, customer ID: 16, and estimate line ID: 3 */
                     Customer_Order_Line orderLineRecord = new Customer_Order_Line
                     {
-                        Customer_Order_LineID = i + 1, //e.g. 1, then 2, 3, etc.
-                        UserId = customerOrderViewModel.UserId,
+                        CustomerOrderLineID = i + 1, //e.g. 1, then 2, 3, etc.
                         CustomerOrderID = order.CustomerOrderID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Customer_Order = order,
                         CustomProductID = orderLineVM.CustomProductID == 0 ? null : orderLineVM.CustomProductID,

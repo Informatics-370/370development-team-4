@@ -56,7 +56,7 @@ namespace BOX.Controllers
 		[Route("AddVat")]
 		public async Task<IActionResult> AddVat(VAT newVAT)
 		{
-			var valt = new VAT { Percentage=newVAT.Percentage};
+			var valt = new VAT { Percentage=newVAT.Percentage, Date = DateTime.Now };
 
 			try
 			{

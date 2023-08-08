@@ -4,9 +4,9 @@ using System.Runtime.Serialization;
 
 namespace BOX.Models
 {
-	public class Estimate_Duration
+	public class Quote_Duration
 	{
-		[Key] public int EstimateDurationID { get; set; }
+		[Key] public int QuoteDurationID { get; set; }
 		[Required] public int Duration { get; set; }
 	}
 }

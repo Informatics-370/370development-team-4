@@ -17,7 +17,11 @@ namespace BOX.Models
 		public int? OrderDeliveryScheduleID { get; set; }
 		public virtual Order_Delivery_Schedule Order_Delivery_Schedule { get; set; }
 
-		[Required] public string Date { get; set; }
+        [ForeignKey("User")]
+        public string UserId { get; set; }
+        public virtual User User { get; set; }
+
+        [Required] public string Date { get; set; }
 		[Required] public byte[] Delivery_Photo { get; set; }
 
 	}

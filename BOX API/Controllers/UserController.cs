@@ -50,7 +50,6 @@ namespace BOX.Controllers
                     LastName = u.user_LastName,
                     Email = u.Email,
                     Address = u.user_Address,
-                    Title = u.title,
                     PhoneNumber = u.PhoneNumber
                 })
                 .ToListAsync();
@@ -70,7 +69,6 @@ namespace BOX.Controllers
                     LastName = u.user_LastName,
                     Email = u.Email,
                     Address = u.user_Address,
-                    Title = u.title,
                     PhoneNumber = u.PhoneNumber
                 })
                 .FirstOrDefaultAsync();
@@ -100,7 +98,6 @@ namespace BOX.Controllers
             user.user_LastName = updatedUser.LastName;
             user.Email = updatedUser.Email;
             user.user_Address = updatedUser.Address;
-            user.title = updatedUser.Title;
             user.PhoneNumber = updatedUser.PhoneNumber;
 
             await _dbContext.SaveChangesAsync();

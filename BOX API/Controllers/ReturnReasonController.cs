@@ -9,11 +9,11 @@ namespace BOX.Controllers
 
 	[Route("api/[controller]")]
 	[ApiController]
-	public class RefundReasonController : ControllerBase
+	public class ReturnReasonController : ControllerBase
 	{
 		private readonly IRepository _repository;
 
-		public RefundReasonController(IRepository repository)
+		public ReturnReasonController(IRepository repository)
 		{
 			_repository = repository;
 		}
@@ -55,7 +55,7 @@ namespace BOX.Controllers
 		[Route("AddRefundReason")]
 		public async Task<IActionResult> AddRefundReason(RefundReasonViewModel rrvm)
 		{
-			var customerrefundreason = new Customer_Refund_Reason { Description=rrvm.Description};
+			var customerrefundreason = new Customer_Return_Reason { Description=rrvm.Description};
 
 			try
 			{

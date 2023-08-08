@@ -53,8 +53,6 @@ namespace BOX.Controllers
 					SupplierOrderViewModel eVM = new SupplierOrderViewModel()
 					{
 						SupplierOrderID = order.SupplierOrderID,
-						SupplierID = orderLines[0].SupplierID,
-
 						Date = order.Date,
 						SupplierOrders = supplierOrderLineList
 					};
@@ -111,7 +109,6 @@ namespace BOX.Controllers
 				var SupplierOrderViewModel = new SupplierOrderViewModel
 				{
 					SupplierOrderID = order.SupplierOrderID,
-					SupplierID = orderLines[0].SupplierID,
 					Date = order.Date,
 					SupplierOrders = orderLineList
 				};
@@ -124,69 +121,68 @@ namespace BOX.Controllers
 			}
 		}
 
-		[HttpGet]
-		[Route("GetOrderBySupplier/{supplierId}")]
-		public async Task<IActionResult> GetOrderBySupplier(int supplierId)
-		{
-			try
-			{
-				List<SupplierOrderViewModel> supplierOrdere = new List<SupplierOrderViewModel>(); //create list to return
-				var orderLines = await _repository.GetSupplierOrderLinesBySupplierAsync(supplierId); //get all estimate lines for this customer
+		//[HttpGet]
+		//[Route("GetOrderBySupplier/{supplierId}")]
+		//public async Task<IActionResult> GetOrderBySupplier(int supplierId)
+		//{
+		//	try
+		//	{
+		//		List<SupplierOrderViewModel> supplierOrdere = new List<SupplierOrderViewModel>(); //create list to return
+		//		var orderLines = await _repository.GetSupplierOrderLinesBySupplierAsync(supplierId); //get all estimate lines for this customer
 
-				/*What I want to do: get all the estimates a customer has ever made in a list of estimate VMs
-                But, the estimate entity doesn't contain the customerID, estimate lines does because it's the associative entity inbetween
-                so I get all the estimate lines made by a customer and I want to sort them into estimates i.e. estimateVM 1 should 
-                contain only its estimate lines. To do that, I first find out how many estimates there are, using the distinct() 
-                method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
-                Hopefully this make sense to future Charis */
+		//		/*What I want to do: get all the estimates a customer has ever made in a list of estimate VMs
+  //              But, the estimate entity doesn't contain the customerID, estimate lines does because it's the associative entity inbetween
+  //              so I get all the estimate lines made by a customer and I want to sort them into estimates i.e. estimateVM 1 should 
+  //              contain only its estimate lines. To do that, I first find out how many estimates there are, using the distinct() 
+  //              method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
+  //              Hopefully this make sense to future Charis */
 
 
-				List<SupplierOrderLineViewModel> allSupplierOrderLines = new List<SupplierOrderLineViewModel>();
-				//put all the customer's estimate lines in VM
-				foreach (var ol in allSupplierOrderLines)
-				{
+		//		List<SupplierOrderLineViewModel> allSupplierOrderLines = new List<SupplierOrderLineViewModel>();
+		//		//put all the customer's estimate lines in VM
+		//		foreach (var ol in allSupplierOrderLines)
+		//		{
 
-					var fixedProduct = await _repository.GetFixedProductAsync(ol.Fixed_ProductID);
+		//			var fixedProduct = await _repository.GetFixedProductAsync(ol.Fixed_ProductID);
 
-					SupplierOrderLineViewModel slVM = new SupplierOrderLineViewModel
-					{
-						Supplier_OrderLineID = ol.Supplier_OrderLineID,
-						Supplier_OrderID = ol.Supplier_OrderID,
-						Fixed_ProductID = ol.Fixed_ProductID,
-						Raw_MaterialID=ol.Raw_MaterialID,
-						FixedProduct_Description = ol.FixedProduct_Description,
-						Raw_Material_Description =ol.Raw_Material_Description,
-						Quantity = ol.Quantity
-					};
-					allSupplierOrderLines.Add(slVM);
-				}
+		//			SupplierOrderLineViewModel slVM = new SupplierOrderLineViewModel
+		//			{
+		//				Supplier_OrderLineID = ol.Supplier_OrderLineID,
+		//				Supplier_OrderID = ol.Supplier_OrderID,
+		//				Fixed_ProductID = ol.Fixed_ProductID,
+		//				Raw_MaterialID=ol.Raw_MaterialID,
+		//				FixedProduct_Description = ol.FixedProduct_Description,
+		//				Raw_Material_Description =ol.Raw_Material_Description,
+		//				Quantity = ol.Quantity
+		//			};
+		//			allSupplierOrderLines.Add(slVM);
+		//		}
 
-				//Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
-				var distinctOrderLines = allSupplierOrderLines.Select(el => el.Supplier_OrderID).Distinct(); //returns all distinct estimate IDs
-				int orderCount = distinctOrderLines.Count(); //count how many order there are
+		//		//Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
+		//		var distinctOrderLines = allSupplierOrderLines.Select(el => el.Supplier_OrderID).Distinct(); //returns all distinct estimate IDs
+		//		int orderCount = distinctOrderLines.Count(); //count how many order there are
 
-				foreach (var orderID in distinctOrderLines) //get all the estimates using the distinct estimateIDs and estimateVM
-				{
-					Supplier_Order order = await _repository.GetSupplierOrderAsync(orderID);
+		//		foreach (var orderID in distinctOrderLines) //get all the estimates using the distinct estimateIDs and estimateVM
+		//		{
+		//			Supplier_Order order = await _repository.GetSupplierOrderAsync(orderID);
 
-					SupplierOrderViewModel soVM = new SupplierOrderViewModel
-					{
-						SupplierOrderID = order.SupplierOrderID,
-						SupplierID = orderLines[0].SupplierID,
-						Date = order.Date,
-						SupplierOrders = allSupplierOrderLines.Where(el => el.Supplier_OrderID == orderID).ToList() //get all estimate lines for this estimate
-					};
+		//			SupplierOrderViewModel soVM = new SupplierOrderViewModel
+		//			{
+		//				SupplierOrderID = order.SupplierOrderID,
+		//				Date = order.Date,
+		//				SupplierOrders = allSupplierOrderLines.Where(el => el.Supplier_OrderID == orderID).ToList() //get all estimate lines for this estimate
+		//			};
 
-					supplierOrdere.Add(soVM);
-				}
+		//			supplierOrdere.Add(soVM);
+		//		}
 
-				return Ok(supplierOrdere);
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-			}
-		}
+		//		return Ok(supplierOrdere);
+		//	}
+		//	catch (Exception)
+		//	{
+		//		return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+		//	}
+		//}
 
 		//-------------------------------------------------- Create Customer Order  ----------------------------------------------------
 		[HttpPost]
@@ -223,7 +219,6 @@ namespace BOX.Controllers
 					Supplier_OrderLine orderLineRecord = new Supplier_OrderLine
 					{
 						Supplier_Order_LineID = i + 1, //e.g. 1, then 2, 3, etc.
-						SupplierID = supplierOrderViewModel.SupplierID,
 						RawMaterialID=orderLineVM.Raw_MaterialID,
 						SupplierOrderID = order.SupplierOrderID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
 						Supplier_Order = order,

@@ -10,11 +10,11 @@ namespace BOX.Controllers
 
 	[Route("api/[controller]")]
 	[ApiController]
-	public class DiscountController : ControllerBase
+	public class BulkDiscountController : ControllerBase
 	{
 		private readonly IRepository _repository;
 
-		public DiscountController(IRepository repository)
+		public BulkDiscountController(IRepository repository)
 		{
 			_repository = repository;
 		}
@@ -54,9 +54,9 @@ namespace BOX.Controllers
 
 		[HttpPost]
 		[Route("AddDiscount")]
-		public async Task<IActionResult> AddDiscount(Discount newDiscount)
+		public async Task<IActionResult> AddDiscount(Bulk_Discount newDiscount)
 		{
-			var disc = new Discount { Percentage = newDiscount.Percentage, Quantity=newDiscount.Quantity };
+			var disc = new Bulk_Discount { Percentage = newDiscount.Percentage, Quantity=newDiscount.Quantity, Date = DateTime.Now };
 
 			try
 			{
@@ -73,7 +73,7 @@ namespace BOX.Controllers
 
 		[HttpPut]
 		[Route("EditDiscount/{discountId}")]
-		public async Task<ActionResult<Discount>> EditVat(int discountId, Discount updatedDiscount)
+		public async Task<ActionResult<Bulk_Discount>> EditVat(int discountId, Bulk_Discount updatedDiscount)
 		{
 			try
 			{

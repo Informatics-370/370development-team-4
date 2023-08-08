@@ -42,7 +42,6 @@ namespace BOX.Controllers
                         ItemID = fp.ItemID,
                         SizeID = fp.SizeID,
                         Description = fp.Description,
-                        Price = fp.Price,
                         ProductPhotoB64 = Convert.ToBase64String(fp.Product_Photo),
                         QuantityOnHand = fp.Quantity_On_Hand
                     };
@@ -76,7 +75,6 @@ namespace BOX.Controllers
                     ItemID = fixedProduct.ItemID,
                     SizeID = fixedProduct.SizeID,
                     Description = fixedProduct.Description,
-                    Price = fixedProduct.Price,
                     ProductPhotoB64 = Convert.ToBase64String(fixedProduct.Product_Photo),
                     QuantityOnHand = fixedProduct.Quantity_On_Hand
                 };
@@ -102,7 +100,6 @@ namespace BOX.Controllers
                     ItemID = fixedProductViewModel.ItemID,
                     SizeID = fixedProductViewModel.SizeID,
                     Description = fixedProductViewModel.Description,
-                    Price = fixedProductViewModel.Price,
                     Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64),
                     Quantity_On_Hand = 0
                 };
@@ -136,7 +133,6 @@ namespace BOX.Controllers
                     ItemID = fixedProduct.ItemID,
                     SizeID = fixedProduct.SizeID,
                     Description = fixedProduct.Description,
-                    Price = fixedProduct.Price
                 };
 
                 return Ok(createdFixedProductViewModel);
@@ -187,7 +183,6 @@ namespace BOX.Controllers
                 existingFixedProduct.ItemID = fixedProductViewModel.ItemID;
                 existingFixedProduct.SizeID = fixedProductViewModel.SizeID;
                 existingFixedProduct.Description = fixedProductViewModel.Description;
-                existingFixedProduct.Price = fixedProductViewModel.Price;
                 existingFixedProduct.Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64);
 
                 // Update the fixed product in the repository
@@ -201,7 +196,6 @@ namespace BOX.Controllers
                     ItemID = existingFixedProduct.ItemID,
                     SizeID = existingFixedProduct.SizeID,
                     Description = existingFixedProduct.Description,
-                    Price = existingFixedProduct.Price
                 };
 
                 return Ok(updatedFixedProductViewModel);

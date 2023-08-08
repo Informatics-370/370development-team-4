@@ -9,11 +9,11 @@ namespace BOX.Controllers
 
 	[Route("api/[controller]")]
 	[ApiController]
-	public class EstimateDurationController : ControllerBase
+	public class QuoteDurationController : ControllerBase
 	{
 		private readonly IRepository _repository;
 
-		public EstimateDurationController(IRepository repository)
+		public QuoteDurationController(IRepository repository)
 		{
 			_repository = repository;
 		}
@@ -24,7 +24,7 @@ namespace BOX.Controllers
 		{
 			try
 			{
-				var results = await _repository.GetAllEstimateDurationsAsync();
+				var results = await _repository.GetAllQuoteDurationsAsync();
 				return Ok(results);
 			}
 			catch (Exception)
@@ -39,7 +39,7 @@ namespace BOX.Controllers
 		{
 			try
 			{
-				var result = await _repository.GetEstimateDurationAsync(estimatedurationId);
+				var result = await _repository.GetQuoteDurationAsync(estimatedurationId);
 
 				if (result == null) return NotFound("Estimate Duration does not exist on system");
 
@@ -55,7 +55,7 @@ namespace BOX.Controllers
 		[Route("AddEstimateDuration")]
 		public async Task<IActionResult> AddEstimateDuration(EstimateDurationViewModel evm)
 		{
-			var estimateduration = new Estimate_Duration { Duration=evm.Duration};
+			var estimateduration = new Quote_Duration { Duration=evm.Duration};
 
 			try
 			{
@@ -76,7 +76,7 @@ namespace BOX.Controllers
 		{
 			try
 			{
-				var existingestimateduration = await _repository.GetEstimateDurationAsync(estimatedurationId);
+				var existingestimateduration = await _repository.GetQuoteDurationAsync(estimatedurationId);
 				if (existingestimateduration == null) return NotFound($"The Estimate Duration does not exist on the BOX System");
 
 
@@ -101,7 +101,7 @@ namespace BOX.Controllers
 		{
 			try
 			{
-				var existingestimateduration = await _repository.GetEstimateDurationAsync(estimatedurationId);
+				var existingestimateduration = await _repository.GetQuoteDurationAsync(estimatedurationId);
 
 				if (existingestimateduration == null) return NotFound($"The Estimate Duration does not exist on the BOX System");
 

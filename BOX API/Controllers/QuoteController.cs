@@ -7,11 +7,11 @@ namespace BOX.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EstimateController : ControllerBase
+    public class QuoteController : ControllerBase
     {
         private readonly IRepository _repository;
 
-        public EstimateController(IRepository repository)
+        public QuoteController(IRepository repository)
         {
             _repository = repository;
         }
@@ -23,16 +23,16 @@ namespace BOX.Controllers
         {
             try
             {
-                var estimates = await _repository.GetAllEstimatesAsync();
+                var estimates = await _repository.GetAllQuotesAsync();
 
                 List<EstimateViewModel> EstimateViewModels = new List<EstimateViewModel>(); //create array of VMs
                 foreach (var estimate in estimates)
                 {
-                    var Status = await _repository.GetEstimateStatusAsync(estimate.EstimateStatusID); //get status associated with this estimate
+                    var Status = await _repository.GetQuoteStatusAsync(estimate.QuoteStatusID); //get status associated with this estimate
 
                     //get all estimate lines associated with this estimate and create array from them
                     List<EstimateLineViewModel> estimateLineList = new List<EstimateLineViewModel>();
-                    var estimateLines = await _repository.GetEstimateLinesByEstimateAsync(estimate.EstimateID);
+                    var estimateLines = await _repository.GetQuoteLinesByQuoteAsync(estimate.QuoteID);
 
                     //an estimate must have at least 1 line else it's not a real order and will cause an error
                     if (estimateLines == null) return NotFound("The estimate does not exist on the B.O.X System.");
@@ -45,8 +45,8 @@ namespace BOX.Controllers
                         EstimateLineViewModel elvm = new EstimateLineViewModel()
                         {
                             //The attributes below all pertain to the Actual EstimateLine Entity except the CustomerID. Not the View Model**
-                            EstimateLineID = el.EstimateLineID,
-                            EstimateID = el.EstimateID,
+                            EstimateLineID = el.QuoteLineID,
+                            EstimateID = el.QuoteID,
                             FixedProductID = fpID,
                             CustomProductID = 0,
                             Quantity = el.Quantity
@@ -57,12 +57,10 @@ namespace BOX.Controllers
                     //This is still contained in the greater for loop which is iterating for every single estimate that is the estimate VM
                     EstimateViewModel eVM = new EstimateViewModel()
                     {
-                        EstimateID = estimate.EstimateID,
-                        EstimateStatusID = estimate.EstimateStatusID,
-                        EstimateDurationID = estimate.EstimateDurationID,
-                        UserId = estimateLines[0].UserId,
+                        EstimateID = estimate.QuoteID,
+                        EstimateStatusID = estimate.QuoteStatusID,
+                        EstimateDurationID = estimate.QuoteDurationID,
                         EstimateStatusDescription = Status.Description,
-                        ConfirmedTotal = estimate.Confirmed_Total_Price,
                         Estimate_Lines = estimateLineList
                         //The Customer Name attribute does not appear here
                     };
@@ -87,10 +85,10 @@ namespace BOX.Controllers
         {
             try
             {
-                var estimate = await _repository.GetEstimateAsync(estimateId);
+                var estimate = await _repository.GetQuoteAsync(estimateId);
                 if (estimate == null) return NotFound("The estimate does not exist on the B.O.X System");
 
-                var estimateLines = await _repository.GetEstimateLinesByEstimateAsync(estimate.EstimateID); //get all estimate lines associated with this estimate
+                var estimateLines = await _repository.GetQuoteLinesByQuoteAsync(estimate.QuoteID); //get all estimate lines associated with this estimate
                 if (estimateLines == null) return NotFound("The estimate does not exist on the B.O.X System"); //an estimate must have at least 1 line
 
                 //create list from estimate lines
@@ -105,26 +103,23 @@ namespace BOX.Controllers
 
                     EstimateLineViewModel elvm = new EstimateLineViewModel()
                     {
-                        EstimateLineID = el.EstimateLineID,
-                        EstimateID = el.EstimateID,
+                        EstimateLineID = el.QuoteLineID,
+                        EstimateID = el.QuoteID,
                         FixedProductID = fpID,
                         FixedProductDescription = fixedProduct.Description,
-                        FixedProductUnitPrice = fixedProduct.Price,
                         CustomProductID = 0,
                         Quantity = el.Quantity
                     };
                     estimateLineList.Add(elvm);
                 }
 
-                var status = await _repository.GetEstimateStatusAsync(estimate.EstimateStatusID); //get status associated with this estimate
+                var status = await _repository.GetQuoteStatusAsync(estimate.QuoteStatusID); //get status associated with this estimate
                 var EstimateViewModel = new EstimateViewModel
                 {
-                    EstimateID = estimate.EstimateID,
-                    EstimateStatusID = estimate.EstimateStatusID,
+                    EstimateID = estimate.QuoteID,
+                    EstimateStatusID = estimate.QuoteStatusID,
                     EstimateStatusDescription = status.Description,
-                    EstimateDurationID = estimate.EstimateDurationID,
-                    ConfirmedTotal = estimate.Confirmed_Total_Price,
-                    UserId = estimateLines[0].UserId,
+                    EstimateDurationID = estimate.QuoteDurationID,
                     Estimate_Lines = estimateLineList
                 };
 
@@ -136,72 +131,70 @@ namespace BOX.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("GetEstimateByCustomer/{customerId}")]
-        public async Task<IActionResult> GetEstimateByCustomer(string customerId)
-        {
-            try
-            {
-                List<EstimateViewModel> customerEstimates = new List<EstimateViewModel>(); //create list to return
-                var estimateLines = await _repository.GetEstimateLinesByCustomerAsync(customerId); //get all estimate lines for this customer
+        //[HttpGet]
+        //[Route("GetEstimateByCustomer/{customerId}")]
+        //public async Task<IActionResult> GetEstimateByCustomer(string customerId)
+        //{
+        //    try
+        //    {
+        //        List<EstimateViewModel> customerEstimates = new List<EstimateViewModel>(); //create list to return
+        //        var estimateLines = await _repository.GetEstimateLinesByCustomerAsync(customerId); //get all estimate lines for this customer
 
-                /*What I want to do: get all the estimates a customer has ever made in a list of estimate VMs
-                But, the estimate entity doesn't contain the customerID, estimate lines does because it's the associative entity inbetween
-                so I get all the estimate lines made by a customer and I want to sort them into estimates i.e. estimateVM 1 should 
-                contain only its estimate lines. To do that, I first find out how many estimates there are, using the distinct() 
-                method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
-                Hopefully this make sense to future Charis */
+        //        /*What I want to do: get all the estimates a customer has ever made in a list of estimate VMs
+        //        But, the estimate entity doesn't contain the customerID, estimate lines does because it's the associative entity inbetween
+        //        so I get all the estimate lines made by a customer and I want to sort them into estimates i.e. estimateVM 1 should 
+        //        contain only its estimate lines. To do that, I first find out how many estimates there are, using the distinct() 
+        //        method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
+        //        Hopefully this make sense to future Charis */
 
-                List<EstimateLineViewModel> allCustomerEstimateLines = new List<EstimateLineViewModel>();
+        //        List<EstimateLineViewModel> allCustomerEstimateLines = new List<EstimateLineViewModel>();
 
-                //put all the customer's estimate lines in VM
-                foreach (var el in estimateLines)
-                {
-                    int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
-                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
+        //        //put all the customer's estimate lines in VM
+        //        foreach (var el in estimateLines)
+        //        {
+        //            int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
+        //            var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 
-                    EstimateLineViewModel elVM = new EstimateLineViewModel
-                    {
-                        EstimateLineID = el.EstimateLineID,
-                        EstimateID = el.EstimateID,
-                        FixedProductID = fpID,
-                        FixedProductDescription = fixedProduct.Description,
-                        FixedProductUnitPrice = fixedProduct.Price,
-                        Quantity = el.Quantity
-                    };
-                    allCustomerEstimateLines.Add(elVM);
-                }
+        //            EstimateLineViewModel elVM = new EstimateLineViewModel
+        //            {
+        //                EstimateLineID = el.EstimateLineID,
+        //                EstimateID = el.EstimateID,
+        //                FixedProductID = fpID,
+        //                FixedProductDescription = fixedProduct.Description,
+        //                Quantity = el.Quantity
+        //            };
+        //            allCustomerEstimateLines.Add(elVM);
+        //        }
 
-                //Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
-                var distinctEstimateLines = estimateLines.Select(el => el.EstimateID).Distinct(); //returns all distinct estimate IDs
-                int estimateCount = distinctEstimateLines.Count(); //count how many estimates there are
+        //        //Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
+        //        var distinctEstimateLines = estimateLines.Select(el => el.EstimateID).Distinct(); //returns all distinct estimate IDs
+        //        int estimateCount = distinctEstimateLines.Count(); //count how many estimates there are
 
-                foreach (var estimateID in distinctEstimateLines) //get all the estimates using the distinct estimateIDs and estimateVM
-                {
-                    Estimate estimate = await _repository.GetEstimateAsync(estimateID);
-                    var status = await _repository.GetEstimateStatusAsync(estimate.EstimateStatusID); //get status data
+        //        foreach (var estimateID in distinctEstimateLines) //get all the estimates using the distinct estimateIDs and estimateVM
+        //        {
+        //            Quote estimate = await _repository.GetEstimateAsync(estimateID);
+        //            var status = await _repository.GetEstimateStatusAsync(estimate.QuoteStatusID); //get status data
 
-                    EstimateViewModel eVM = new EstimateViewModel
-                    {
-                        EstimateID = estimate.EstimateID,
-                        EstimateStatusID = estimate.EstimateStatusID,
-                        EstimateStatusDescription = status.Description,
-                        EstimateDurationID = estimate.EstimateDurationID,
-                        ConfirmedTotal = estimate.Confirmed_Total_Price,
-                        UserId = customerId,
-                        Estimate_Lines = allCustomerEstimateLines.Where(el => el.EstimateID == estimateID).ToList() //get all estimate lines for this estimate
-                    };
+        //            EstimateViewModel eVM = new EstimateViewModel
+        //            {
+        //                EstimateID = estimate.QuoteID,
+        //                EstimateStatusID = estimate.QuoteStatusID,
+        //                EstimateStatusDescription = status.Description,
+        //                EstimateDurationID = estimate.QuoteDurationID,
+        //                UserId = customerId,
+        //                Estimate_Lines = allCustomerEstimateLines.Where(el => el.EstimateID == estimateID).ToList() //get all estimate lines for this estimate
+        //            };
 
-                    customerEstimates.Add(eVM);
-                }
+        //            customerEstimates.Add(eVM);
+        //        }
 
-                return Ok(customerEstimates);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-            }
-        }
+        //        return Ok(customerEstimates);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+        //    }
+        //}
 
         //-------------------------------------------------- Create Estimate  ----------------------------------------------------
         [HttpPost]
@@ -209,12 +202,11 @@ namespace BOX.Controllers
         public async Task<IActionResult> AddEstimate([FromBody] EstimateViewModel estimateViewModel)
         {
             // Create a new instance of Estimate from the view model
-            var estimate = new Estimate
+            var estimate = new Quote
             {
                 //hard coded values are constant or can only ever be 1 in the DB. It'll be fine as long as we remember to change it on each person's machine and 1ce and for all on the final server
-                EstimateStatusID = 1, //estimate status of 'Pending review'. Statuses can't be CRUDed so this can be hard coded
-                EstimateDurationID = 1, //estimate duration of 20 days.
-                Confirmed_Total_Price = estimateViewModel.ConfirmedTotal
+                QuoteStatusID = 1, //estimate status of 'Pending review'. Statuses can't be CRUDed so this can be hard coded
+                QuoteDurationID = 1,
             }; //do not add value for estimateID manually else SQL won't auto generate it
 
             try
@@ -234,12 +226,11 @@ namespace BOX.Controllers
                         estimate ID: 6, customer ID: 16, and estimate line ID: 1
                         estimate ID: 6, customer ID: 16, and estimate line ID: 2
                         estimate ID: 6, customer ID: 16, and estimate line ID: 3 */
-                    Estimate_Line estimateLineRecord = new Estimate_Line
+                    Quote_Line estimateLineRecord = new Quote_Line
                     {
-                        EstimateLineID = i + 1, //e.g. 1, then 2, 3, etc.
-                        UserId = estimateViewModel.UserId,
-                        EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
-                        Estimate = estimate,
+                        QuoteLineID = i + 1, //e.g. 1, then 2, 3, etc.
+                        QuoteID = estimate.QuoteID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
+                        Quote = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,
                         Quantity = estimateLineVM.Quantity
                     };
@@ -265,15 +256,14 @@ namespace BOX.Controllers
         {
             try
             {
-                var existingEstimate = await _repository.GetEstimateAsync(estimateId); //Retrieve the existing estimate from the database
+                var existingEstimate = await _repository.GetQuoteAsync(estimateId); //Retrieve the existing estimate from the database
                 if (existingEstimate == null) return NotFound($"The estimate does not exist on the B.O.X System");
 
-                var existingEstimateLines = await _repository.GetEstimateLinesByEstimateAsync(estimateId); //get this estimate's lines
+                var existingEstimateLines = await _repository.GetQuoteLinesByQuoteAsync(estimateId); //get this estimate's lines
                 if (existingEstimateLines == null) return NotFound($"The estimate does not exist on the B.O.X System"); //every estimate must have at least 1 line
 
                 //Update the estimate
-                existingEstimate.EstimateStatusID = 2; //status ID of 'Reviewed'.
-                existingEstimate.Confirmed_Total_Price = updatedEstimateVM.ConfirmedTotal;
+                existingEstimate.QuoteStatusID = 2; //status ID of 'Reviewed'.
 
                 //await _repository.UpdateEstimateAsync(existingEstimate); // Update the Estimate in the repository
 
@@ -309,11 +299,10 @@ namespace BOX.Controllers
                         /*To understand how estimate_line entity IDs work, look at line 148 on this page.
                          e.g. because the last estimateLineID used was 3, I need to start from 4 which can be calculated by index + 1
                         On the next loop iteration, estimateLineID should be 5 which will still be = index + 1 */
-                        Estimate_Line estimateLineRecord = new Estimate_Line
+                        Quote_Line estimateLineRecord = new Quote_Line
                         {
-                            EstimateLineID = index + 1,
-                            UserId = updatedEstimateVM.UserId,
-                            EstimateID = estimateId,
+                            QuoteLineID = index + 1,
+                            QuoteID = estimateId,
                             FixedProductID = line.FixedProductID,
                             Quantity = line.Quantity
                         };
@@ -341,10 +330,10 @@ namespace BOX.Controllers
         {
             try
             {
-                var existingEstimate = await _repository.GetEstimateAsync(estimateId); //get estimate
+                var existingEstimate = await _repository.GetQuoteAsync(estimateId); //get estimate
                 if (existingEstimate == null) return NotFound($"The estimate does not exist on the B.O.X System");
 
-                var existingEstimateLines = await _repository.GetEstimateLinesByEstimateAsync(estimateId); //get this estimate's lines
+                var existingEstimateLines = await _repository.GetQuoteLinesByQuoteAsync(estimateId); //get this estimate's lines
                 if (existingEstimateLines == null) return NotFound($"The estimate does not exist on the B.O.X System");
 
                 //delete estimates lines
@@ -372,16 +361,16 @@ namespace BOX.Controllers
             try
             {
 
-                var existingEstimate = await _repository.GetEstimateAsync(estimateId); //get estimate
-                var existingStatus = await _repository.GetEstimateStatusAsync(statusId); //make sure the status exists
+                var existingEstimate = await _repository.GetQuoteAsync(estimateId); //get estimate
+                var existingStatus = await _repository.GetQuoteStatusAsync(statusId); //make sure the status exists
 
                 if (existingEstimate == null) return NotFound($"The estimate does not exist on the B.O.X System");
                 if (existingStatus == null) return NotFound($"The estimate status does not exist on the B.O.X System");
 
-                existingEstimate.EstimateStatusID = statusId; //update status
+                existingEstimate.QuoteStatusID = statusId; //update status
 
                 // Update the Estimate in the repository
-                await _repository.UpdateEstimateAsync(existingEstimate);
+                await _repository.UpdateQuoteAsync(existingEstimate);
 
                 return Ok(existingEstimate);
             }

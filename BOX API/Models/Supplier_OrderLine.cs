@@ -11,10 +11,6 @@ namespace BOX.Models
 		public int SupplierReturnID { get; set; }
 		public virtual Supplier_Return Supplier_Return { get; set; }
 
-		[ForeignKey("Supplier")]
-		public int SupplierID { get; set; }
-		public virtual Supplier Supplier { get; set; }
-
 		[ForeignKey("Supplier_Order")]
 		public int SupplierOrderID { get; set; }
 		public virtual Supplier_Order Supplier_Order { get; set; }

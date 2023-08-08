@@ -26,9 +26,6 @@ namespace BOX.Models
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public decimal Price { get; set; }
-
-        [Required]
         public byte[] Product_Photo { get; set; }
 
         [Required]

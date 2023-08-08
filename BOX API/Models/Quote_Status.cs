@@ -2,9 +2,9 @@
 
 namespace BOX.Models
 {
-	public class Estimate_Status
+	public class Quote_Status
 	{
-		[Key] public int EstimateStatusID { get; set; }
+		[Key] public int QuoteStatusID { get; set; }
 		[Required][MaxLength(30)] public string Description { get; set; } = string.Empty;
 	}
 }
