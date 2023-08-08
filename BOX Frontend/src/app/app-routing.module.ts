@@ -34,6 +34,7 @@ import { RoleAuthGuard } from './role-auth.guard';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 
 
 const routes: Routes = [
@@ -78,8 +79,8 @@ const routes: Routes = [
   { path: 'place-order', component: PlaceOrderComponent },
   { path: 'order-history', component: OrderHistoryComponent },
   { path: 'order-history/:success', component: OrderHistoryComponent },
-  { path: 'customer-orders', component: CustomerOrdersComponent }
-
+  { path: 'customer-orders', component: CustomerOrdersComponent },
+  { path: 'confirm-email', component: ConfirmEmailComponent}
 ];
 
 @NgModule({

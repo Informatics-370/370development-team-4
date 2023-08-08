@@ -69,47 +69,54 @@
                                         <!-- Cell Number Input -->
                                         <div class="form-group">
                                             <label for="cellNo" class="form-label text-black">Preferred Contact Number:</label>
-                                            <input type="tel" id="cellNo" class="form-control" />
+                                            <input type="tel" id="cellNo" class="form-control" maxlength="10"/>
                                         </div><pre></pre>
                                     </div>
                                 </div><!-- End Contact Details Row -->
     
                                 <!-- Password -->
                                 <div class="form-group">
-                                    <label for="password" class="form-label text-black">Password:</label>
-                                    <div class="input-group">
-                                      <input type="password" id="password" class="form-control" [type]="passwordVisible ? 'text' : 'password'" />
+                                  <label for="password" class="form-label text-black">Password:</label>
+                                  <div class="input-group">
+                                      <input type="password" id="password" class="form-control" [type]="passwordVisible ? 'text' : 'password'" (input)="checkPasswords()" minlength="8"/>
                                       <div class="input-group-append">
-                                        <span class="input-group-text" (click)="togglePasswordVisibility('password')">
-                                          <fa-icon [icon]="['fas', passwordVisible ? 'eye-slash' : 'eye']"></fa-icon>
-                                        </span>
+                                          <span class="input-group-text" (click)="togglePasswordVisibility('password')">
+                                              <fa-icon [icon]="['fas', passwordVisible ? 'eye-slash' : 'eye']"></fa-icon>
+                                          </span>
                                       </div>
-                                    </div>
                                   </div>
-                                  <pre></pre>
-    
+                                </div>
+                                <p class="text-muted">
+                                  <small>
+                                    Password should contain at least 8 characters, 
+                                    one lowercase letter, one uppercase letter and a 
+                                    digit
+                                  </small>
+                                </p>
+                                <pre></pre>
+
                                 <!-- Confirm Password -->
                                 <div class="form-group">
-                                    <label for="confirmPassword" class="form-label text-black">Confirm Password:</label>
-                                    <div class="input-group">
-                                      <input type="password" id="confirmPassword" class="form-control" [type]="confirmPasswordVisible ? 'text' : 'password'" />
+                                  <label for="confirmPassword" class="form-label text-black">Confirm Password:</label>
+                                  <div class="input-group">
+                                      <input type="password" id="confirmPassword" class="form-control" [type]="confirmPasswordVisible ? 'text' : 'password'" (input)="checkPasswords()" minlength="8"/>
                                       <div class="input-group-append">
-                                        <span class="input-group-text" (click)="togglePasswordVisibility('confirmPassword')">
-                                          <fa-icon [icon]="['fas', confirmPasswordVisible ? 'eye-slash' : 'eye']"></fa-icon>
-                                        </span>
+                                          <span class="input-group-text" (click)="togglePasswordVisibility('confirmPassword')">
+                                              <fa-icon [icon]="['fas', confirmPasswordVisible ? 'eye-slash' : 'eye']"></fa-icon>
+                                          </span>
                                       </div>
-                                    </div>
+                                  </div>
                                 </div>
                                 <!-- Password validation message -->
                                 <div *ngIf="!passwordsMatch" class="text-danger">
-                                    Passwords do not match
+                                  Passwords do not match
                                 </div>
                                 <pre></pre>
     
                                 <!-- Address Line 1 -->
                                 <div class="form-group">
                                     <label for="addressOne" class="form-label text-black">Address:</label>
-                                    <input type="text" id="addressOne" class="form-control" #addressInput />
+                                    <input type="text" id="addressInput" class="form-control" #addressInput />
                                 </div><pre></pre>
     
                                 <!-- Is Business -->
@@ -122,13 +129,10 @@
     
     
                                 <!-- VAT No -->
-                                <div class="form-group">
+                                <div class="form-group" *ngIf="isBusiness">
                                     <label for="vatNo" class="form-label text-black">VAT Number:</label>
-                                    <input type="text" id="vatNo" class="form-control" />
+                                    <input type="text" id="vatNo" class="form-control" maxlength="10"/>
                                 </div><pre></pre>
-
-                                <!-- Error Container -->
-                                <div id="errorContainer"></div>
 
                                 <pre></pre>
                                 <pre></pre>
@@ -150,5 +154,5 @@
               </section>
 
         </div>
-    </div>      
+    </div>
 </body>

@@ -473,4 +473,13 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
 
+  confirmEmail(token: string, email: string): Observable<any> {
+    const encodedToken = encodeURIComponent(token);
+    const encodedEmail = encodeURIComponent(email);
+    const url = `${this.apiUrl}Authentication/ConfirmEmail?token=${encodedToken}&email=${encodedEmail}`;
+    console.log(url);
+    return this.httpClient.get(url);
+  }
+  
+
 }

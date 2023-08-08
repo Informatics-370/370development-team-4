@@ -103,8 +103,8 @@ namespace BOX.Controllers
                     // Add Token to Verify Email
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var protocol = "http://localhost:4200/confirm-email";
-                    var confirmEmailLink = protocol + "?token=" + HttpUtility.UrlEncode(token) + "&email=" + HttpUtility.UrlEncode(uvm.emailaddress);
-                    var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", "Dear user,\n\n Thank you for registering with MegaPack. Click the link below to verify your email: \n" + confirmEmailLink + "" + token );
+                    var confirmEmailLink = protocol + "?token=" + HttpUtility.UrlEncode(token) + "&email=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(uvm.emailaddress));
+                    var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", "Dear user,\n\n Thank you for registering with MegaPack. Click the link below to verify your email: \n" + confirmEmailLink );
                     _emailService.SendEmail(message);
 
                     // Return success
@@ -128,14 +128,14 @@ namespace BOX.Controllers
         public async Task<IActionResult> ConfirmEmail(string token, string email)
         {
             // Check if the user exists
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(email);
 
             if (user != null)
             {
                 var result = await _userManager.ConfirmEmailAsync(user, token);
                 if (result.Succeeded)
                 {
-                    return Ok("Email verified successfully");
+                    return Ok();
                 }
             }
             return BadRequest();

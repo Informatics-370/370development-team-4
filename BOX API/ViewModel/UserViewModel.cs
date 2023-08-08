@@ -19,7 +19,6 @@ namespace BOX.ViewModel
         [StringLength(50)]
         public string firstName { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string lastName { get; set; }
 
@@ -33,7 +32,6 @@ namespace BOX.ViewModel
         [Required]
         public bool isBusiness { get; set; }
 
-        [Required]
         public string vatNo { get; set; }
     }
 }
