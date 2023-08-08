@@ -73,13 +73,13 @@ export class ProductDetailsComponent {
   left: any = { //styles for box left face
     width: '5em', /*box width*/
     height: '8em', /*box height*/
-    transform: 'translateX(-5em) rotateY(90deg);' /* half of box length */
+    transform: 'translateX(-5em) rotateY(90deg)' /* half of box length */
   }
 
   right: any = { //styles for box right face
     width: '5em', /*box width*/
     height: '8em', /*box height*/
-    transform: 'translateX(5em) rotateY(90deg);' /* half of box length */
+    transform: 'translateX(5em) rotateY(90deg)' /* half of box length */
   }
 
   top: any = { //styles for box top face
@@ -103,9 +103,18 @@ export class ProductDetailsComponent {
     width: '1em' /*box length divided by 10*/
   }
 
-  print: any = { //styles for box image
-    'max-width': '5em', /*box length divided by 2*/
-    'max-height': '4em' /*box height divided by 2*/
+  leftRightImg: any = { //styles for box image
+    'max-width': '4em', /*box width times 0.8*/
+    'max-height': '6.4em' /*box height times 0.8*/
+  }
+
+  frontBackImg: any = { //styles for box image
+    'max-width': '8em', /*box length times 0.8*/
+    'max-height': '6.4em' /*box height times 0.8*/
+  }
+
+  topBottomImg: any = { //styles for box image
+    'max-height': '4em' /*box width times 0.8*/
   }
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
@@ -519,61 +528,71 @@ export class ProductDetailsComponent {
 
   //function to update custom box preview
   updateCustomBoxPreview(changes: any) {
-    console.log(changes);
+    //first some validation aka no decimals allowed
+    changes.length = Math.round(changes.length);
+    changes.width = Math.round(changes.width);
+    changes.height = Math.round(changes.height);
+    this.sides = Math.round(this.sides);
+
     /*100mm = 1em
-    Max length that can be displayed = 15em aka 1500mm aka 150cm
-    Max width that can be displayed = 15em aka 1500mm aka 150cm
-    Max height that can be displayed = 15em aka 1500mm aka 150cm
+    Max length, width and height that can be displayed = 14em aka 1400mm aka 140cm
     */
 
     let newLength: number = changes.length;
     let newWidth: number = changes.width;
     let newHeight: number = changes.height;
 
-    if (newLength > 1500) {
-      newLength = 1500;
-    }
-    if (newWidth > 1500) {
-      newWidth = 1500;
-    }
-    if (newHeight > 1500) {
-      newHeight = 1500;
+    // Max size that can be displayed is 14em aka 1400mm
+    const maxSize = 1400;
+
+    // Check if any dimension exceeds the maximum size
+    if (newLength > maxSize || newWidth > maxSize || newHeight > maxSize) {
+      // Find the largest dimension
+      const largestDimension = Math.max(newLength, newWidth, newHeight);
+
+      // Calculate the scaling factor to fit within the max size
+      const scalingFactor = maxSize / largestDimension;
+
+      // Scale down all dimensions while maintaining the aspect ratio
+      newLength = Math.floor(newLength * scalingFactor);
+      newWidth = Math.floor(newWidth * scalingFactor);
+      newHeight = Math.floor(newHeight * scalingFactor);
     }
 
     this.front = { //styles for box front face
       width: (newLength / 100).toFixed(1) + 'em', /*box length*/
       height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
-      transform: 'translateZ(' + (newWidth / 200 ).toFixed(1) + 'em)' /* half of box width */
+      transform: 'translateZ(' + (newWidth / 200).toFixed(1) + 'em)' /* half of box width */
     }
 
     this.back = { //styles for box back face
       width: (newLength / 100).toFixed(1) + 'em', /*box length*/
       height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
-      transform: 'translateZ(-' + (newWidth / 200 ).toFixed(1) + 'em)' /* half of box width */
+      transform: 'translateZ(-' + (newWidth / 200).toFixed(1) + 'em)' /* half of box width */
     }
 
     this.left = { //styles for box left face
       width: (newWidth / 100).toFixed(1) + 'em', /*box width*/
       height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
-      transform: 'translateX(-' + (newLength / 200 ).toFixed(1) + 'em) rotateY(90deg);' /* half of box length */
+      transform: 'translateX(-' + (newLength / 200).toFixed(1) + 'em) rotateY(90deg)' /* half of box length */
     }
 
     this.right = { //styles for box right face
       width: (newWidth / 100).toFixed(1) + 'em', /*box width*/
       height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
-      transform: 'translateX(' + (newLength / 200 ).toFixed(1) + 'em) rotateY(90deg);' /* half of box length */
+      transform: 'translateX(' + (newLength / 200).toFixed(1) + 'em) rotateY(90deg)' /* half of box length */
     }
 
     this.top = { //styles for box top face
       width: (newLength / 100).toFixed(1) + 'em', /*box length*/
       height: (newWidth / 100).toFixed(1) + 'em', /*box width*/
-      transform: 'translateY(-' + (newHeight / 200 ).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
+      transform: 'translateY(-' + (newHeight / 200).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
     }
 
     this.bottom = { //styles for box bottom face
       width: (newLength / 100).toFixed(1) + 'em', /*box length*/
       height: (newWidth / 100).toFixed(1) + 'em', /*box width*/
-      transform: 'translateY(' + (newHeight / 200 ).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
+      transform: 'translateY(' + (newHeight / 200).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
     }
 
     this.topSpan = { //styles for box tape on top
@@ -585,9 +604,19 @@ export class ProductDetailsComponent {
       width: (newLength / 1000).toFixed(1) + 'em' /*box length divided by 10*/
     }
 
-    this.print = { //styles for box image
-      'max-width': (newLength / 200).toFixed(1) + 'em', /*box length divided by 2*/
-      'max-height': (newHeight / 200).toFixed(1) + 'em' /*box height divided by 2*/
+    this.topBottomImg = { //styles for box image
+      'max-height': (newWidth * 0.8 / 100).toFixed(1) + 'em', /*box width times 0.8*/
+      'max-width': (newLength * 0.8 / 100).toFixed(1) + 'em' /*box length times 0.8*/
+    }
+
+    this.leftRightImg = { //styles for box image
+      'max-width': (newWidth * 0.8 / 100).toFixed(1) + 'em', /*box width times 0.8*/
+      'max-height': (newHeight * 0.8 / 100).toFixed(1) + 'em' /*box height times 0.8*/
+    }
+  
+    this.frontBackImg = { //styles for box image
+      'max-width': (newLength * 0.8 / 100).toFixed(1) + 'em', /*box length times 0.8*/
+      'max-height': (newHeight * 0.8 / 100).toFixed(1) + 'em' /*box height times 0.8*/
     }
   }
 }

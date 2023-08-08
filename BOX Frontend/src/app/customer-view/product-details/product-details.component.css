@@ -181,27 +181,27 @@ Max height that can be displayed = 15em aka 1500mm aka 150cm
 
 /*.front { transform: translateZ(2.5em); } /* half of box width */
 
-.back { transform: translateZ(-2.5em); } /* half of box width */
+/*.back { transform: translateZ(-2.5em); } /* half of box width */
 
 .left, .right {
     background: #d8aa77;
-    width: 5em; /*box width*/
-    height: 8em; /*box height*/
+    /*width: 5em; /*box width*/
+    /*height: 8em; /*box height*/
 }
 
-.left { transform: translateX(-5em) rotateY(90deg); } /* half of box length */
+/*.left { transform: translateX(-5em) rotateY(90deg); } /* half of box length */
 
-.right { transform: translateX(5em) rotateY(90deg); } /* half of box length */
+/*.right { transform: translateX(5em) rotateY(90deg); } /* half of box length */
 
 .top, .bottom {
     background: #e8bb84;
-    width: 10em; /*box length*/
-    height: 5em; /*box width*/
+    /*width: 10em; /*box length*/
+    /*height: 5em; /*box width*/
 }
 
-.top { transform: translateY(-4em) rotateX(90deg); } /*half of box height*/
+/*.top { transform: translateY(-4em) rotateX(90deg); } /*half of box height*/
 
-.bottom { transform: translateY(4em) rotateX(90deg); } /*half of box height*/
+/*.bottom { transform: translateY(4em) rotateX(90deg); } /*half of box height*/
 
 .front span, .back span, .top span {
     position: absolute;
@@ -211,7 +211,7 @@ Max height that can be displayed = 15em aka 1500mm aka 150cm
 .top span {
     /*tape on top of box*/
     height: 100%;
-    width: 1em; /*box length divided by 10*/
+    /*width: 1em; /*box length divided by 10*/
     left: 50%;
     transform: translateX(-50%);
 }
@@ -219,7 +219,7 @@ Max height that can be displayed = 15em aka 1500mm aka 150cm
 .front span, .back span {
     /*tape on the front and back sides of box*/
     height: 2em; /*box height divided by 4*/
-    width: 1em; /*box length divided by 10*/
+    /*width: 1em; /*box length divided by 10*/
     left: 50%;
     transform: translateX(-50%);
 }
@@ -236,8 +236,8 @@ Max height that can be displayed = 15em aka 1500mm aka 150cm
 }
 
 .print {
-    max-width: 5em; /*box length divided by 2*/
-    max-height: 4em; /*box height divided by 2*/
+    /*max-width: 5em; /*box length divided by 2*/
+    /*max-height: 4em; /*box height divided by 2*/
     text-align: center;
     position: absolute;
     top: 50%;
@@ -252,4 +252,8 @@ Max height that can be displayed = 15em aka 1500mm aka 150cm
     line-height: 1.1em;
     position: absolute;
     bottom: 1em;
+}
+
+.hide {
+    display: none;
 }
