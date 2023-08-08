@@ -156,6 +156,52 @@ namespace BOX.Controllers
 
                 existingrawmaterial.Description = rawMaterialDescription;
 
+
+				if (await _repository.SaveChangesAsync())
+				{
+					return Ok(existingrawmaterial);
+				}
+			}
+			catch (Exception)
+			{
+				return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
+			}
+			return BadRequest("Your request is invalid.");
+		}
+
+		[HttpPut]
+		[Route("EditRawMaterialQuantity/{rawmaterialId}/{rawMaterialQuantityOnHand}")]
+		//changed it from expecting viewmodel to string because the VM needed extra properties for the Get methods and that was causing issues
+		public async Task<ActionResult<RawMaterialViewModel>> EditRawMaterialQuantity(int rawmaterialId, int rawMaterialQuantityOnHand)
+		{
+			try
+			{
+				var existingrawmaterial = await _repository.GetRawMaterialAsync(rawmaterialId);
+				if (existingrawmaterial == null) return NotFound($"The Raw Material does not exist on the B.O.X System");
+
+				//QR Code logic
+				var qrCodeBytes = GenerateQRCode(existingrawmaterial.Description); //generate QR code
+																		  //remove 'data:image/png;base64,' from string and convert to byte array to prevent casting error
+				byte[] byteArr = Convert.FromBase64String(qrCodeBytes.Remove(0, 22));
+
+				// Check if the existing raw material has a QR_Code instance
+				if (existingrawmaterial.QR_Code == null)
+				{
+					//If it doesn't, create a new QR_Code instance and assign the generated QR code bytes
+					existingrawmaterial.QR_Code = new QR_Code
+					{
+						QR_Code_Photo = byteArr
+					};
+
+				}
+				else
+				{
+					existingrawmaterial.QR_Code.QR_Code_Photo = byteArr;
+				}
+
+				existingrawmaterial.Quantity_On_Hand = rawMaterialQuantityOnHand;
+
+
 				if (await _repository.SaveChangesAsync())
 				{
 					return Ok(existingrawmaterial);

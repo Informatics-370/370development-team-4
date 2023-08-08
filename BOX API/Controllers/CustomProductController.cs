@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,13 +32,14 @@ namespace BOX.Controllers
 				List<CustomProductViewModel> customProductViewModels = new List<CustomProductViewModel>();
 				foreach (var cp in customProducts)
 				{
-					//var qrCode = await _repository.GetQRCodeAsync(fp.QRCodeID); //get QR code byte array; GetAllFixedMaterialsAsync returns null for QR code
+					var productItem = await _repository.GetItemAsync(cp.ItemID);
 
 					CustomProductViewModel cpVM = new CustomProductViewModel()
 					{
 						CustomProductID = cp.CustomProductID,
 						FormulaID = cp.FormulaID,
 						ItemID = cp.ItemID,
+						ItemDescription = productItem.Description,
 						Width = cp.Width,
 						Length = cp.Length,
 						Height = cp.Height,
@@ -98,7 +99,7 @@ namespace BOX.Controllers
 				// Create a new instance of Fixed_Product from the view model
 				var customProduct = new Custom_Product
 				{
-					CustomProductID = customProductViewModel.CustomProductID,
+					CustomProductID = 0,
 					FormulaID = customProductViewModel.FormulaID,
 					ItemID = customProductViewModel.ItemID,
 					Width = customProductViewModel.Width,

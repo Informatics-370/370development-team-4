@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace BOX.ViewModel
 {
 	public class RawMaterialViewModel
 	{
-		public int RawMaterialID { get; set; }
+		public int? RawMaterialID { get; set; }
 		public string Description { get; set; }
 		public int QRCodeID { get; set; }
 

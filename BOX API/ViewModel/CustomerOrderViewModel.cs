@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualBasic;
+using Microsoft.VisualBasic;
 
 namespace BOX.ViewModel
 {
@@ -6,7 +6,7 @@ namespace BOX.ViewModel
 	{
 		public int CustomerOrderID { get; set; }
 		public int CustomerStatusID { get; set; }
-		public int CustomerID { get; set;}
+		public string UserId { get; set;}
 		public int? OrderDeliveryScheduleID { get; set; }
 		public string Date { get; set; }
 		public string DeliveryPhoto { get; set; }

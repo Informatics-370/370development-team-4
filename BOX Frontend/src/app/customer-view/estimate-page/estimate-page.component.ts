@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../services/data.services';
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { EstimateVM } from '../../shared/estimate-vm';
 import { EstimateLineVM } from '../../shared/estimate-line-vm';
 import { Discount } from '../../shared/discount';
 import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { take, lastValueFrom } from 'rxjs';
-declare var $: any;
 
 @Component({
   selector: 'app-estimate-page',
@@ -20,21 +18,16 @@ export class EstimatePageComponent implements OnInit {
   filteredEstimates: EstimateClass[] = []; //estimates to show user
   estimateCount = -1;
   loading = true;
-  cartIcon = faShoppingCart;
-  customer = {
-    ID: 9,
+  user = {
+    Id: '3804c42b-f8cb-4df3-91cd-8334874b5cf4',
     fullName: 'John Doe',
     discount: 0.05
   }; //will retrieve from backend when users are up and running
   vat!: VAT;
   fixedProducts: FixedProductVM[] = [];
-  discountList: Discount[] = [
-    { discountID: 1, percentage: 6, quantity: 50 },
-    { discountID: 2, percentage: 10, quantity: 400 },
-    { discountID: 3, percentage: 17, quantity: 7000 },
-    { discountID: 4, percentage: 23, quantity: 20000 }
-  ]; //will retrieve from backend when discount is up and running
+  discountList: Discount[] = [];
   searchTerm: string = '';
+  customer: any;
   /*Status list: I see no need to retrieve this from the backend because it's static:
   1	Pending review
   2	Reviewed
@@ -46,9 +39,9 @@ export class EstimatePageComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    const customerIDs = [3, 4, 5, 7, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
-    let index = Math.floor((Math.random() * 7));
-    this.customer.ID = 4;
+    // const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
+    // let index = Math.floor((Math.random() * 5));
+    this.user.Id = '7f8fcf33-1585-47f3-8cc8-ef72cedfc290';
     this.getDataFromDB();
   }
 
@@ -58,17 +51,21 @@ export class EstimatePageComponent implements OnInit {
       //turn Observables that retrieve data from DB into promises
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+      const getDiscountPromise = lastValueFrom(this.dataService.GetDiscounts().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
-      const [allVAT, allFixedProducts] = await Promise.all([
+      const [allVAT, allFixedProducts, allDiscounts] = await Promise.all([
         getVATPromise,
-        getProductsPromise
+        getProductsPromise,
+        getDiscountPromise
       ]);
 
       //put results from DB in global arrays
       this.fixedProducts = allFixedProducts;
       this.vat = allVAT[0];
+      this.discountList = allDiscounts;
+      console.log('got discounts correctly', this.discountList);
 
       await this.getCustomerEstimatesPromise();
     } catch (error) {
@@ -80,14 +77,14 @@ export class EstimatePageComponent implements OnInit {
   async getCustomerEstimatesPromise() {
     this.loading = true;
     try {
-      this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.customer.ID).pipe(take(1)));
+      this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.user.Id).pipe(take(1)));
 
       this.displayCustomerEstimates(); //Execute only after data has been retrieved from the DB otherwise error
 
-      return 'Successfully retrieved product from the database';
+      return 'Successfully retrieved estimates from the database';
     } catch (error) {
-      console.log('An error occurred while retrieving products: ' + error);
-      throw new Error('An error occurred while retrieving products: ' + error);
+      console.log('An error occurred while retrieving estimates: ' + error);
+      throw new Error('An error occurred while retrieving estimates: ' + error);
     }
   }
 
@@ -118,7 +115,7 @@ export class EstimatePageComponent implements OnInit {
     this.allCustomerEstimates = this.filteredEstimates; //store all the estimate someplace before I search below
     this.estimateCount = this.filteredEstimates.length; //update the number of estimates
 
-    console.log("All of customer " + this.customer.ID + "'s estimates: ", this.filteredEstimates);
+    console.log("All of customer " + this.user.Id + "'s estimates: ", this.filteredEstimates);
     this.loading = false;
   }
 

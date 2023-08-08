@@ -97,7 +97,6 @@ namespace BOX.Controllers
         //----------------------------------- Login --------------------------------------------
         [HttpPost]
         [Route("Login")]
-        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDTO dto)
         {
             var user = await _userManager.FindByNameAsync(dto.emailaddress);
@@ -131,6 +130,7 @@ namespace BOX.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+                new Claim("UserId", user.Id)
             }.ToList();
 
             claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -150,6 +150,7 @@ namespace BOX.Controllers
             {
                 token = new JwtSecurityTokenHandler().WriteToken(token),
                 user = user.UserName,
+                userId = user.Id
             });
         }
 

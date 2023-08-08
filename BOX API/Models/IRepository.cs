@@ -43,7 +43,7 @@ namespace BOX.Models
 
         //-------------------------------------------------------- RAW MATERIAL ---------------------------------------------------------------
         Task<Raw_Material[]> GetAllRawMaterialsAsync();
-        Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId);
+        Task<Raw_Material> GetRawMaterialAsync(int? rawmaterialId);
 
 
         //------------------------------------------------------ ESTIMATE DURATION ------------------------------------------------------------
@@ -59,7 +59,7 @@ namespace BOX.Models
 
         //-------------------------------------------------------- FIXED PRODUCT -----------------------------------------------------------------
         Task<Fixed_Product[]> GetAllFixedProductsAsync();
-        Task<Fixed_Product> GetFixedProductAsync(int fixedProductId);
+        Task<Fixed_Product> GetFixedProductAsync(int? fixedProductId);
         Task UpdateFixedProductAsync(Fixed_Product fixedProduct);
 
 
@@ -77,21 +77,24 @@ namespace BOX.Models
         Task UpdateEstimateAsync(Estimate estimate);
 
         //-----------------------------------------------ESTIMATE LINE---------------------------------------------
+        Task<Estimate_Line[]> GetAllEstimateLinesAsync();
+        Task<Estimate_Line> GetEstimateLineAsync(int estimateId, string customerId,int estimateLineId);
         Task<Estimate_Line[]> GetEstimateLinesByEstimateAsync(int estimateId);
-        Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(int customerId);
+        Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(string customerId);
 
         //------------------------------------------------CUSTOMER--------------------------------------------------
-        Task<Customer> GetCustomerAsync(int customerId);
+        //Task<Customer> GetCustomerAsync(int customerId);
 
+ 
 
 		//------------------------------------------------EMPLOYEE------------------------------------------------------
-		Task<Employee> GetEmployeeAsync(int employeeId);
+		//Task<Employee> GetEmployeeAsync(int employeeId);
 
 
-        //-------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
-        Task<Custom_Product[]> GetAllCustomProductsAsync();
-        Task<Custom_Product> GetCustomProductAsync(int customProductId);
-        Task UpdateCustomProductAsync(Custom_Product customProduct);
+		//-------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
+		Task<Custom_Product[]> GetAllCustomProductsAsync();
+		Task<Custom_Product> GetCustomProductAsync(int? customProductId);
+		Task UpdateCustomProductAsync(Custom_Product customProduct);
 
 
         //------------------------------------------------------ CUSTOMER ORDER STATUS ------------------------------------------------------------
@@ -116,11 +119,11 @@ namespace BOX.Models
 
 
 
-        //-----------------------------------------------Customer Order LINE---------------------------------------------
-        Task<Customer_Order_Line[]> GetAllOrderLinesAsync();
-        Task<Customer_Order_Line> GetOrderLineAsync(int customerOrderId, int customerId, int customerOrderLineId);
-        Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
-        Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(int customerId);
+		//-----------------------------------------------Customer Order LINE---------------------------------------------
+		Task<Customer_Order_Line[]> GetAllOrderLinesAsync();
+		Task<Customer_Order_Line> GetOrderLineAsync(int customerOrderId, string customerId, int customerOrderLineId);
+		Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
+		Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(string customerId);
 
         //------------------------------------------------------------- Supplier Return -------------------------------------------------------------------
         Task<Supplier_Return[]> GetAllSupplierReturnsAsync();
@@ -138,17 +141,20 @@ namespace BOX.Models
         Task<Supplier_OrderLine[]> GetSupplierOrderLinesByOrderAsync(int supOrderId);
         Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId);
 
-	
+		//------------------------------------------------ROLE------------------------------------------------------
+		Task<Role[]> GetAllRolesAsync();
+		Task<Role> GetRoleAsync(int RoleId);
 
-        //------------------------------------------------ADMIN------------------------------------------------------
-        Task<Admin> GetAdminAsync(int adminId);
+		//--------------------------- CREDIT APPLICATION STATUS --------------------------
+		Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
+		Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
 
-        //------------------------------------------------ROLE------------------------------------------------------
-        Task<Role[]> GetAllRolesAsync();
-        Task<Role> GetRoleAsync(int RoleId);
+        //--------------------------- STOCK TAKE ----------------------------------------
+        Task<Stock_Take[]> GetAllStockTakeAsync();
+        Task<Stock_Take> GetStockTakeAsync(int stockTakeId);
 
-        //--------------------------- CREDIT APPLICATION STATUS --------------------------
-        Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
-        Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
-    }
-}
+	}
+
+      
+ }
+

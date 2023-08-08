@@ -60,7 +60,7 @@ namespace BOX.Controllers
                         EstimateID = estimate.EstimateID,
                         EstimateStatusID = estimate.EstimateStatusID,
                         EstimateDurationID = estimate.EstimateDurationID,
-                        CustomerID = estimateLines[0].CustomerID,
+                        UserId = estimateLines[0].UserId,
                         EstimateStatusDescription = Status.Description,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
                         Estimate_Lines = estimateLineList
@@ -72,9 +72,9 @@ namespace BOX.Controllers
 
                 return Ok(EstimateViewModels);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ' ' + ex.InnerException);
             }
 
         }
@@ -124,7 +124,7 @@ namespace BOX.Controllers
                     EstimateStatusDescription = status.Description,
                     EstimateDurationID = estimate.EstimateDurationID,
                     ConfirmedTotal = estimate.Confirmed_Total_Price,
-                    CustomerID = estimateLines[0].CustomerID,
+                    UserId = estimateLines[0].UserId,
                     Estimate_Lines = estimateLineList
                 };
 
@@ -138,7 +138,7 @@ namespace BOX.Controllers
 
         [HttpGet]
         [Route("GetEstimateByCustomer/{customerId}")]
-        public async Task<IActionResult> GetEstimateByCustomer(int customerId)
+        public async Task<IActionResult> GetEstimateByCustomer(string customerId)
         {
             try
             {
@@ -152,8 +152,8 @@ namespace BOX.Controllers
                 method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
                 Hopefully this make sense to future Charis */
 
-
                 List<EstimateLineViewModel> allCustomerEstimateLines = new List<EstimateLineViewModel>();
+
                 //put all the customer's estimate lines in VM
                 foreach (var el in estimateLines)
                 {
@@ -188,7 +188,7 @@ namespace BOX.Controllers
                         EstimateStatusDescription = status.Description,
                         EstimateDurationID = estimate.EstimateDurationID,
                         ConfirmedTotal = estimate.Confirmed_Total_Price,
-                        CustomerID = customerId,
+                        UserId = customerId,
                         Estimate_Lines = allCustomerEstimateLines.Where(el => el.EstimateID == estimateID).ToList() //get all estimate lines for this estimate
                     };
 
@@ -237,7 +237,7 @@ namespace BOX.Controllers
                     Estimate_Line estimateLineRecord = new Estimate_Line
                     {
                         EstimateLineID = i + 1, //e.g. 1, then 2, 3, etc.
-                        CustomerID = estimateViewModel.CustomerID,
+                        UserId = estimateViewModel.UserId,
                         EstimateID = estimate.EstimateID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
                         Estimate = estimate,
                         FixedProductID = estimateLineVM.FixedProductID,
@@ -312,7 +312,7 @@ namespace BOX.Controllers
                         Estimate_Line estimateLineRecord = new Estimate_Line
                         {
                             EstimateLineID = index + 1,
-                            CustomerID = updatedEstimateVM.CustomerID,
+                            UserId = updatedEstimateVM.UserId,
                             EstimateID = estimateId,
                             FixedProductID = line.FixedProductID,
                             Quantity = line.Quantity

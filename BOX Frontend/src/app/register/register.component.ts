@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -12,7 +13,7 @@ export class RegisterComponent implements OnInit {
   confirmPasswordVisible = false;
   passwordsMatch = true;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.handleCheckboxChange();
@@ -230,12 +231,18 @@ export class RegisterComponent implements OnInit {
       () => {
         // Registration successful
         console.log('Registration successful');
+        this.showRegistrationSuccessPopup();
+        this.router.navigate(['/login']);
       },
       (error) => {
         // Registration failed
         console.error('Registration failed', error);
       }
     );
+  }
 
+  showRegistrationSuccessPopup() {
+    const popupElement = document.createElement('app-registration-success-popup');
+    document.body.appendChild(popupElement);
   }
 }

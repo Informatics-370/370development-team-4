@@ -1,10 +1,12 @@
-﻿namespace BOX.ViewModel
+namespace BOX.ViewModel
 {
 	public class CustomProductViewModel
-	{
+	{ 
+
 
 		public int CustomProductID { get; set; }
 		public int ItemID { get; set; }
+		public string ItemDescription { get; set; }
 		public int FormulaID { get; set; }
 		public decimal Width { get; set; }
 		public decimal Height { get; set; }

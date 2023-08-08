@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +25,7 @@ namespace BOX.Controllers
 			{
 				var cusOrders = await _repository.GetAllCustomerOrdersAsync();
 
-				List<CustomerOrderViewModel> customerOrderViewModels = new List<CustomerOrderViewModel>(); //create array of VMs
+                List<CustomerOrderViewModel> customerOrderViewModels = new List<CustomerOrderViewModel>(); //create array of VMs
 				foreach (var order in cusOrders)
 				{
 					var Status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
@@ -33,16 +33,21 @@ namespace BOX.Controllers
 					//get all customer order lines associated with this order and create array from them
 					List<CustomerOrderLineViewModel> orderLineList = new List<CustomerOrderLineViewModel>();
 					var orderLines = await _repository.GetOrderLinesByOrderAsync(order.CustomerOrderID);
+                    if (orderLines == null) return NotFound("The customer order does not exist on the B.O.X System");
 
-					//put all customer order lines for this specific customer order in a list for the customer order VM
-					foreach (var ol in orderLines)
+                    //put all customer order lines for this specific customer order in a list for the customer order VM
+                    foreach (var ol in orderLines)
 					{
+                        int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
+						var fp = await _repository.GetFixedProductAsync(fpID);
 
-						CustomerOrderLineViewModel colvm = new CustomerOrderLineViewModel
+                        CustomerOrderLineViewModel colvm = new CustomerOrderLineViewModel
 						{
 							CustomerOrderLineID = ol.Customer_Order_LineID,
 							CustomerOrderID = ol.CustomerOrderID,
-							FixedProductID = ol.FixedProductID,
+							FixedProductID = fpID,
+							FixedProductDescription = fp.Description,
+							FixedProductUnitPrice = fp.Price,
 							CustomerRefundID=ol.CustomerRefundID,
 							CustomProductID = 0,
 							Quantity = ol.Quantity
@@ -54,9 +59,8 @@ namespace BOX.Controllers
 					{
 						CustomerOrderID = order.CustomerOrderID,
 						CustomerStatusID=order.CustomerOrderStatusID,
-						CustomerID = orderLines[0].CustomerID,
+            UserId = orderLines[0].UserId,
 						OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
-
 						Date = order.Date,
 						DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
 						OrderStatusDescription = Status.Description,
@@ -68,9 +72,9 @@ namespace BOX.Controllers
 
 				return Ok(customerOrderViewModels);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ' ' + ex.InnerException);
 			}
 
 		}
@@ -93,39 +97,42 @@ namespace BOX.Controllers
 				List<CustomerOrderLineViewModel> orderLineList = new List<CustomerOrderLineViewModel>();
 
 				//put all estimate lines for this specific estimate in the list
-				foreach (var ol in orderLineList)
-				{
-					//when I display a specific estimate, I also display the fixed product unit price and description
-					var fixedProduct = await _repository.GetFixedProductAsync(ol.FixedProductID);
+				foreach (var ol in orderLines)
+                {
+                    int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
+                    //when I display a specific estimate, I also display the fixed product unit price and description
+                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 					var Status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
 
 					CustomerOrderLineViewModel elvm = new CustomerOrderLineViewModel()
 					{
-						CustomerOrderLineID = ol.CustomerOrderLineID,
+						CustomerOrderLineID = ol.Customer_Order_LineID,
 						CustomerOrderID = ol.CustomerOrderID,
-						FixedProductID = ol.FixedProductID,
+						FixedProductID = fpID,
 						FixedProductDescription = fixedProduct.Description,
 						FixedProductUnitPrice = fixedProduct.Price,
 						CustomProductID = 0,
 						Quantity = ol.Quantity,
-						CustomerRefundDescription = ol.CustomerRefundDescription,
 
 					};
 					orderLineList.Add(elvm);
 				}
 
+                var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
+                
 				var CustomerOrderViewModel = new CustomerOrderViewModel
 				{
 					CustomerOrderID = order.CustomerOrderID,
-					CustomerID = orderLines[0].CustomerID,
+          UserId = orderLines[0].UserId,
 					CustomerStatusID=order.CustomerOrderStatusID,
+					OrderStatusDescription = status.Description,
 					OrderDeliveryScheduleID=order.OrderDeliveryScheduleID,
 					DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
 					Date = order.Date,
 					CustomerOrders = orderLineList
 				};
 
-				return Ok(CustomerOrderViewModel); //return estimate VM which contains estimate info plus estimate lines info in list format
+				return Ok(CustomerOrderViewModel); //return order VM which contains order info plus order lines info in list format
 			}
 			catch (Exception)
 			{
@@ -135,7 +142,7 @@ namespace BOX.Controllers
 
 		[HttpGet]
 		[Route("GetOrderByCustomer/{customerId}")]
-		public async Task<IActionResult> GetOrderByCustomer(int customerId)
+		public async Task<IActionResult> GetOrderByCustomer(string customerId)
 		{
 			try
 			{
@@ -149,22 +156,23 @@ namespace BOX.Controllers
                 method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
                 Hopefully this make sense to future Charis */
 
-
 				List<CustomerOrderLineViewModel> allCustomerOrderLines = new List<CustomerOrderLineViewModel>();
-				//put all the customer's estimate lines in VM
+				
+				//put all the customer's order lines in VM
 				foreach (var ol in orderLines)
 				{
-
-					var fixedProduct = await _repository.GetFixedProductAsync(ol.FixedProductID);
+                    int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
+                    int cpID = ol.CustomProductID == null ? 0 : ol.CustomProductID.Value;
+                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
 
 					CustomerOrderLineViewModel clVM = new CustomerOrderLineViewModel
 					{
 						CustomerOrderLineID = ol.Customer_Order_LineID,
 						CustomerOrderID = ol.CustomerOrderID,
-						FixedProductID = ol.FixedProductID,
+						FixedProductID = fpID,
 						FixedProductDescription = fixedProduct.Description,
 						FixedProductUnitPrice = fixedProduct.Price,
-						CustomProductID = 0,
+						CustomProductID = cpID,
 						Quantity = ol.Quantity
 					};
 					allCustomerOrderLines.Add(clVM);
@@ -183,10 +191,11 @@ namespace BOX.Controllers
 					{
 						CustomerOrderID = order.CustomerOrderID,
 						CustomerStatusID = order.CustomerOrderStatusID,
+						OrderStatusDescription = status.Description,
 						OrderDeliveryScheduleID = order.OrderDeliveryScheduleID,
 						DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
 						Date = order.Date,
-						CustomerID = customerId,
+            UserId = customerId,
 						CustomerOrders = allCustomerOrderLines.Where(el => el.CustomerOrderID == orderID).ToList() //get all estimate lines for this estimate
 					};
 
@@ -227,7 +236,7 @@ namespace BOX.Controllers
 				{
 					var orderLineVM = customerOrderViewModel.CustomerOrders[i];
 
-					/*the estimate_line entity's ID is concatenated using customer ID, estimate ID and estimate line ID. An 
+                    /*the estimate_line entity's ID is concatenated using customer ID, estimate ID and estimate line ID. An 
                     estimate with ID 5 by customer with ID 16, and 2 estimate lines will have 7 estimate_line records with IDs like so:
                         estimate ID: 5, customer ID: 16, and estimate line ID: 1
                         estimate ID: 5, customer ID: 16, and estimate line ID: 2
@@ -235,14 +244,14 @@ namespace BOX.Controllers
                         estimate ID: 6, customer ID: 16, and estimate line ID: 1
                         estimate ID: 6, customer ID: 16, and estimate line ID: 2
                         estimate ID: 6, customer ID: 16, and estimate line ID: 3 */
-					Customer_Order_Line orderLineRecord = new Customer_Order_Line
+                    Customer_Order_Line orderLineRecord = new Customer_Order_Line
 					{
 						Customer_Order_LineID = i + 1, //e.g. 1, then 2, 3, etc.
-						CustomerID = customerOrderViewModel.CustomerID,
+						UserId = customerOrderViewModel.UserId,
 						CustomerOrderID = order.CustomerOrderID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
 						Customer_Order = order,
-						CustomProductID=1,
-						FixedProductID = orderLineVM.FixedProductID,
+						CustomProductID= orderLineVM.CustomProductID == 0 ? null : orderLineVM.CustomProductID,
+						FixedProductID = orderLineVM.FixedProductID == 0 ? null : orderLineVM.FixedProductID,
 						Quantity = orderLineVM.Quantity
 					};
 

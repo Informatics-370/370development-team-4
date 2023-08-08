@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-2">
+      <div class="app-menu"></div>
+    </div>
+    <div class="col-10">
+      <div class="container mt-4">
+        <h2 class="display-6">Stock Take Trail</h2>
+        <button class="btn btn-primary mt-3" [routerLink]="'/stock-take'">Back</button>
+        <table class="table table-striped mt-4">
+          <thead>
+            <tr>
+              <th>Stock Take ID</th>
+              <th>User Name</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stockTake of stockTakes">
+              <td>{{ stockTake.stockTakeID }}</td>
+              <td>{{ stockTake.userId }}</td>
+              <td>{{ stockTake.date }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
