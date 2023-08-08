@@ -17,30 +17,30 @@ export class ConfirmEmailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.route.queryParams.subscribe(params => {
-    //   const token = params['token'];
-    //   const emailBase64 = params['email'];
+    this.route.queryParams.subscribe(params => {
+      const token = params['token'];
+      const emailBase64 = params['email'];
 
-    //   if (token && emailBase64) {
-    //     const email = atob(emailBase64);
-    //     this.confirmEmail(token, email);
-    //   }
-    // });
+      if (token && emailBase64) {
+        const email = atob(emailBase64);
+        this.confirmEmail(token, email);
+      }
+    });
   }
 
-  // confirmEmail(token: string, email: string): void {
-  //   console.log(token)
-  //   console.log(email)
-  //   this.dataService.confirmEmail(token, email).subscribe(
-  //     response => {
-  //       console.log('Email verified successfully', response);
-  //       this.emailVerified = true;
-  //       // You can show a success message or navigate to a success page
-  //     },
-  //     error => {
-  //       console.error('Error confirming email', error);
-  //       // Handle the error, e.g., show an error message
-  //     }
-  //   );
-  // }
+  confirmEmail(token: string, email: string): void {
+    console.log(token)
+    console.log(email)
+    this.dataService.confirmEmail(token, email).subscribe(
+      response => {
+        console.log('Email verified successfully', response);
+        this.emailVerified = true;
+        // You can show a success message or navigate to a success page
+      },
+      error => {
+        console.error('Error confirming email', error);
+        // Handle the error, e.g., show an error message
+      }
+    );
+  }
 }

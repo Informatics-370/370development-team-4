@@ -47,6 +47,7 @@ import { OrderHistoryComponent } from './customer-view/order-history/order-histo
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { FooterComponent } from './footer/footer.component';
+import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
 
 
 @NgModule({
@@ -93,7 +94,8 @@ import { FooterComponent } from './footer/footer.component';
         CustomerOrdersComponent,
         RegistrationSuccessPopupComponent,
         ConfirmEmailComponent,
-        FooterComponent
+        FooterComponent,
+        TwoFactorAuthComponent
         
   ],
   imports: [

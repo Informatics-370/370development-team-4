@@ -141,6 +141,28 @@ namespace BOX.Controllers
             return BadRequest();
         }
 
+        [HttpGet]
+        [Route("GetTwoFactorStatus")]
+        public async Task<IActionResult> GetTwoFactorStatus(string email)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(email);
+
+                if (user != null)
+                {
+                    return Ok(new { TwoFactorEnabled = user.TwoFactorEnabled });
+                }
+
+                return NotFound("User not found");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error: " + ex.Message);
+            }
+        }
+
+
         //----------------------------------- Login --------------------------------------------
         [HttpPost]
         [Route("Login")]

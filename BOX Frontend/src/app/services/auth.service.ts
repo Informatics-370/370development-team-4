@@ -14,6 +14,11 @@ export class AuthService {
     return this.http.post(`${this.authUrl}Register`, user);
   }
 
+  getTwoFactorStatus(email: string): Observable<any> {
+    const url = `${this.authUrl}GetTwoFactorStatus?email=${encodeURIComponent(email)}`;
+    return this.http.get(url);
+  }
+  
   
   login(loginData: any): Observable<any> {
     return this.http.post(`${this.authUrl}Login`, loginData);
@@ -25,7 +30,6 @@ export class AuthService {
 
   sendForgotPasswordLink(emailData: any): Observable<any> {
     return this.http.post(`${this.authUrl}ForgotPassword`, emailData);
-    
   }
 
   isLoggedIn(): boolean {

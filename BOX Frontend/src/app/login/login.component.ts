@@ -36,16 +36,27 @@ export class LoginComponent {
     // Call the AuthService to perform login
     this.authService.login(loginData).subscribe(
       (response: any) => {
-        // Login successful
-        console.log('Login successful:', response);
-        localStorage.setItem("access_token", response.token);
-        this.handleSuccessfulLogin(response);
+        this.authService.getTwoFactorStatus(loginData.emailaddress).subscribe(
+          (twoFactorResponse: any) => {
+            console.log('Two-Factor Response:', twoFactorResponse); // Log the entire response
+            if (twoFactorResponse.twoFactorEnabled === true) {
+              this.router.navigate(['/two-factor-auth']);
+            } else {
+              console.log('Login successful:', response);
+              localStorage.setItem("access_token", response.token);
+              this.handleSuccessfulLogin(response);
+            }
+          },
+          (twoFactorError: any) => {
+            console.error('Error getting TwoFactorEnabled status:', twoFactorError);
+          }
+        )
       },
       (error: any) => {
         // Login failed
         console.error('Login failed:', error);
       }
-    );    
+    );        
   }
 
   private handleSuccessfulLogin(response: any) {

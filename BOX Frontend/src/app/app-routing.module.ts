@@ -35,7 +35,7 @@ import { PlaceOrderComponent } from './customer-view/place-order/place-order.com
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
-
+import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'register', pathMatch: 'full' },
@@ -75,12 +75,13 @@ const routes: Routes = [
   { path: 'discount', component: DiscountComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
   { path: 'stock-take', component: StockTakeComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
   { path: 'stock-take-trail', component: StockTakeTrailComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
-  {path: 'users',component: UsersViewComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
+  { path: 'users',component: UsersViewComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
   { path: 'place-order', component: PlaceOrderComponent },
   { path: 'order-history', component: OrderHistoryComponent },
   { path: 'order-history/:success', component: OrderHistoryComponent },
   { path: 'customer-orders', component: CustomerOrdersComponent },
-  { path: 'confirm-email', component: ConfirmEmailComponent}
+  { path: 'confirm-email', component: ConfirmEmailComponent},
+  { path: 'two-factor-auth', component: TwoFactorAuthComponent}
 ];
 
 @NgModule({
