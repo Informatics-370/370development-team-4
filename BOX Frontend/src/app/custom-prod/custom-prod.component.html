@@ -1,0 +1,53 @@
+<div class="row">
+    <!--SIDE NAVBAR-->
+    <div class="col-md-2"><div class="app-menu"></div></div>
+    <!--Right Side-->
+    <div class="col-md-10">
+        <h3 class="p-3" style="color: black;">Custom Products</h3>
+        <!--Search bar-->
+        <div id="searchbar" >
+            <input (keyup)="searchCustomProducts($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col">ID</th>
+                    <th scope="col">Label</th>
+                    <th scope="col">Item</th>
+                    <th scope="col">Width x Height x Length</th>
+                    <th scope="col">No of sides</th>
+                </tr>
+            </thead>
+            <tbody>                
+                <!--Error message if there's no write-off reasons in the DB-->
+                <tr *ngIf="customproductCount==0">
+                    <td colspan="5">No custom products found.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="5">Please wait while we load all custom products...</td>
+                </tr>
+                <!--Reasons data from API-->
+                <tr *ngFor="let customproduct of filteredCustomProducts">
+                    <td>
+                        {{customproduct.customProductID}}
+                    </td>
+                    <td>
+                        <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{customproduct.label}}" alt="No image for this custom product" />
+                    </td>
+                    <td>
+                        {{customproduct.itemDescription}}
+                    </td>
+                    <td>
+                        {{customproduct.width}}mm x {{customproduct.height}}mm x {{customproduct.length}}mm
+                    </td>
+                    <td>
+                        {{customproduct.sides}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
