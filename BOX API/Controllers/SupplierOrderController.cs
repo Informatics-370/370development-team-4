@@ -163,7 +163,19 @@ namespace BOX.Controllers
 						Quantity = orderLineVM.Quantity
 					};
 
-					_repository.Add(orderLineRecord); //save estimate line in DB
+                    //update fixed product / raw material quantity on hand
+					if (orderLineVM.Fixed_ProductID > 0)
+					{
+						var fp = await _repository.GetFixedProductAsync(orderLineVM.Fixed_ProductID);
+						fp.Quantity_On_Hand += orderLineVM.Quantity;
+                    }
+                    else
+                    {
+                        var rm = await _repository.GetRawMaterialAsync(orderLineVM.Raw_MaterialID);
+                        rm.Quantity_On_Hand += orderLineVM.Quantity;
+                    }
+
+                    _repository.Add(orderLineRecord); //save order line in DB
 				}
 
 				// Save changes in the repository
@@ -176,6 +188,5 @@ namespace BOX.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services. " + ex.Message + " has inner exception of " + ex.InnerException);
 			}
 		}
-
 	}
 }

@@ -33,7 +33,7 @@ namespace BOX.Controllers
                 foreach (var fp in fixedProducts) 
                 {
                     var qrCode = await _repository.GetQRCodeAsync(fp.QRCodeID); //get QR code byte array; GetAllFixedMaterialsAsync returns null for QR code
-                    var price = await _repository.GetPriceByFixedProductAsync(fp.FixedProductID.Value);
+                    var price = await _repository.GetPriceByFixedProductAsync(fp.FixedProductID);
 
                     FixedProductViewModel fpVM = new FixedProductViewModel()
                     {
@@ -67,10 +67,11 @@ namespace BOX.Controllers
             {
                 var fixedProduct = await _repository.GetFixedProductAsync(fixedProductId);
 
-                if (fixedProduct == null)
-                    return NotFound("Fixed Product not found");
+                if (fixedProduct == null) return NotFound("Fixed Product not found");
 
                 var price = await _repository.GetPriceByFixedProductAsync(fixedProductId);
+                if (price == null) return NotFound("Fixed Product not found"); //every fixed product should have a price otherwise, it don't exist
+
                 var fixedProductViewModel = new FixedProductViewModel
                 {
                     FixedProductID = fixedProduct.FixedProductID,
@@ -132,7 +133,7 @@ namespace BOX.Controllers
                 //create new price record for fixed product
                 Price price = new Price()
                 {
-                    FixedProductID = fixedProduct.FixedProductID.Value,
+                    FixedProductID = fixedProduct.FixedProductID,
                     Amount = fixedProductViewModel.Price,
                     Date = DateTime.Now
                 };

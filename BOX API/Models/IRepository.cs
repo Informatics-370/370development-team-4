@@ -59,7 +59,7 @@ namespace BOX.Models
 
         //-------------------------------------------------------- FIXED PRODUCT -----------------------------------------------------------------
         Task<Fixed_Product[]> GetAllFixedProductsAsync();
-        Task<Fixed_Product> GetFixedProductAsync(int? fixedProductId);
+        Task<Fixed_Product> GetFixedProductAsync(int fixedProductId);
         Task UpdateFixedProductAsync(Fixed_Product fixedProduct);
 
 
@@ -149,6 +149,17 @@ namespace BOX.Models
 
         //------------------------------------------------------------- FIXED PRODUCT PRICE-------------------------------------------------------------------
         Task<Price> GetPriceByFixedProductAsync(int fixedProductId);
+
+        //-------------------------------------------------------- QUOTE REQUEST -----------------------------------------------------------------
+        Task<Quote_Request[]> GetAllQuoteRequestsAsync();
+        Task<Quote_Request> GetQuoteRequestAsync(int quoteRequestId);
+        Task<Quote_Request> GetQuoteRequestByCustomerAsync(string customerId);
+
+        //-----------------------------------------------QUOTE REQUEST LINE---------------------------------------------
+        Task<Quote_Request_Line[]> GetQuoteRequestLinesByQuoteRequestAsync(int quoteRequestId);
+
+        //----------------------------------------------- USERS -----------------------------------------------
+        Task<User> GetUserAsync(string userId);
 
     }
 

@@ -215,7 +215,7 @@ namespace BOX.Models
         }
 
         //Gets one Fixed Product according to the ID
-        public async Task<Fixed_Product> GetFixedProductAsync(int? fixedProductId)
+        public async Task<Fixed_Product> GetFixedProductAsync(int fixedProductId)
         {
             //Query to select fixed product where the ID passing through the API matches the ID in the Database
             IQueryable<Fixed_Product> query = _appDbContext.Fixed_Product.Where(c => c.FixedProductID == fixedProductId);
@@ -598,6 +598,41 @@ namespace BOX.Models
                 Price result = null;
                 return result;
             }
+        }
+        
+        //------------------------------------------------------- QUOTE REQUEST -----------------------------------------------------------------
+        public async Task<Quote_Request[]> GetAllQuoteRequestsAsync()
+        {
+            IQueryable<Quote_Request> query = _appDbContext.Quote_Request;
+            return await query.ToArrayAsync();
+        }
+
+        public async Task<Quote_Request> GetQuoteRequestAsync(int quoteRequestId)
+        {
+            IQueryable<Quote_Request> query = _appDbContext.Quote_Request.Where(c => c.QuoteRequestID == quoteRequestId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        //a customer can only have 1 quote request at a time
+        public async Task<Quote_Request> GetQuoteRequestByCustomerAsync(string customerId)
+        {
+            IQueryable<Quote_Request> query = _appDbContext.Quote_Request.Where(c => c.UserId == customerId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        //------------------------------------------------------ QUOTE REQUEST LINE------------------------------------------------------------
+        //Gets all Request lines for a specific QR
+        public async Task<Quote_Request_Line[]> GetQuoteRequestLinesByQuoteRequestAsync(int quoteRequestId)
+        {
+            IQueryable<Quote_Request_Line> query = _appDbContext.Quote_Request_Line.Where(c => c.QuoteRequestID == quoteRequestId);
+            return await query.ToArrayAsync();
+        }
+        
+        //----------------------------------------------- USERS -----------------------------------------------        
+        public async Task<User> GetUserAsync(string userId)
+        {
+            IQueryable<User> query = _appDbContext.User.Where(c => c.Id == userId);
+            return await query.FirstOrDefaultAsync();
         }
 
         //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
