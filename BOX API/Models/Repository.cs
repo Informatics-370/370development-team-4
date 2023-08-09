@@ -131,12 +131,30 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-        //Get VAT By ID
-        public async Task<VAT> GetVatAsync(int vatId)
+        //Get applicable VAT i.e. VAT with most recent date
+        public async Task<VAT> GetVatAsync()
         {
-            //Query to select vat where the ID passing through the API matches the ID in the Database
-            IQueryable<VAT> query = _appDbContext.VAT.Where(c => c.VatID == vatId);
-            return await query.FirstOrDefaultAsync();
+            var allVAT = _appDbContext.VAT.ToArray(); //don't want it to run async because I need the data converted to array before I can execute next line
+
+            if (allVAT != null)
+            {
+                VAT vatWithMostRecentDate = allVAT[0];
+
+                foreach (var vat in allVAT)
+                {
+                    if (vat.Date > vatWithMostRecentDate.Date)
+                    {
+                        vatWithMostRecentDate = vat;
+                    }
+                }
+
+                return vatWithMostRecentDate;
+            }
+            else
+            {
+                VAT result = null;
+                return result;
+            }
         }
 
         //------------------------------------------------------ QUOTE DURATION ------------------------------------------------------------

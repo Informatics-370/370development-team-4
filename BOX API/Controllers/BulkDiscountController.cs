@@ -56,7 +56,7 @@ namespace BOX.Controllers
 		[Route("AddDiscount")]
 		public async Task<IActionResult> AddDiscount(Bulk_Discount newDiscount)
 		{
-			var disc = new Bulk_Discount { Percentage = newDiscount.Percentage, Quantity=newDiscount.Quantity, Date = DateTime.Now };
+			var disc = new Bulk_Discount { Percentage = newDiscount.Percentage, Quantity=newDiscount.Quantity };
 
 			try
 			{

@@ -20,7 +20,7 @@ namespace BOX.Controllers
 		}
 
 		[HttpGet]
-		[Route("GetAllVATs")]
+		[Route("GetAllVAT")]
 		public async Task<IActionResult> GetAllVATs()
 		{
 			try
@@ -34,13 +34,14 @@ namespace BOX.Controllers
 			}
 		}
 
+		//GET THE VAT THAT IS APPLICABLE i.e. VAT WITH MOST RECENT DATE
 		[HttpGet]
-		[Route("GetVat/{vatId}")]
-		public async Task<IActionResult> GetVatAsync(int vatId)
+		[Route("GetVAT")]
+		public async Task<IActionResult> GetVatAsync()
 		{
 			try
 			{
-				var result = await _repository.GetVatAsync(vatId);
+				var result = await _repository.GetVatAsync();
 
 				if (result == null) return NotFound("VAT does not exist on system");
 
@@ -53,7 +54,7 @@ namespace BOX.Controllers
 		}
 
 		[HttpPost]
-		[Route("AddVat")]
+		[Route("AddVAT")]
 		public async Task<IActionResult> AddVat(VAT newVAT)
 		{
 			var valt = new VAT { Percentage=newVAT.Percentage, Date = DateTime.Now };
@@ -70,55 +71,6 @@ namespace BOX.Controllers
 
 			return Ok(valt);
 		}
-
-		[HttpPut]
-		[Route("EditVat/{vatId}")]
-		public async Task<ActionResult<VAT>> EditVat(int vatId, VAT updatedVAT)
-		{
-			try
-			{
-				var existingvat = await _repository.GetVatAsync(vatId);
-				if (existingvat == null) return NotFound($"The VAT does not exist on the BOX System");
-
-
-				existingvat.Percentage = updatedVAT.Percentage;
-				
-
-				if (await _repository.SaveChangesAsync())
-				{
-					return Ok(existingvat);
-				}
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support.");
-			}
-			return BadRequest("Your request is invalid.");
-		}
-
-		[HttpDelete]
-		[Route("DeleteVat/{vatId}")]
-		public async Task<IActionResult> DeleteVat(int vatId)
-		{
-			try
-			{
-				var existingvat = await _repository.GetVatAsync(vatId);
-
-				if (existingvat == null) return NotFound($"The Vat does not exist on the BOX System");
-
-				_repository.Delete(existingvat);
-
-				if (await _repository.SaveChangesAsync()) return Ok(existingvat);
-
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact support.");
-			}
-			return BadRequest("Your request is invalid.");
-		}
-
-
 	}
 }
 
