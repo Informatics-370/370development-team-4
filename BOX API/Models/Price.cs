@@ -11,6 +11,7 @@ namespace BOX.Models
         [ForeignKey("Fixed_Product")]
         public int FixedProductID { get; set; }
         public virtual Fixed_Product Fixed_Product { get; set; }
-        [Required] public DateOnly Date { get; set; }
+        [Required] public decimal Amount { get; set; }
+        [Required] public DateTime Date { get; set; }
     }
 }

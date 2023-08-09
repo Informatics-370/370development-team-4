@@ -150,6 +150,9 @@ namespace BOX.Models
         Task<Stock_Take[]> GetAllStockTakeAsync();
         Task<Stock_Take> GetStockTakeAsync(int stockTakeId);
 
+        //------------------------------------------------------------- FIXED PRODUCT PRICE-------------------------------------------------------------------
+        Task<Price> GetPriceByFixedProductAsync(int fixedProductId);
+
     }
 
 }

@@ -49,12 +49,17 @@ namespace BOX.Models
         public DbSet<Payment> Payment { get; set; }
 
         public DbSet<Payment_Type> Payment_Type { get; set; }
+        public DbSet<Price> Price { get; set; }
+        public DbSet<Price_Match_File> Price_Match_File { get; set; }
 
         public DbSet<Product_Category> Product_Category { get; set; }
 
         public DbSet<Product_Item> Product_Item { get; set; }
+        public DbSet<Quote_Request> Quote_Request { get; set; }
+        public DbSet<Quote_Request_Line> Quote_Request_Line { get; set; }
         public DbSet<QR_Code> QR_Code { get; set; }
         public DbSet<Raw_Material> Raw_Material { get; set; }
+        public DbSet<Reject_Reason> Reject_Reason { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<Size_Units> Size_Units { get; set; }
         public DbSet<Stock_Take> Stock_Take { get; set; }
@@ -62,6 +67,7 @@ namespace BOX.Models
         public DbSet<Supplier_Order> Supplier_Order { get; set; }
         public DbSet<Supplier_OrderLine> Supplier_OrderLine { get; set; }
         public DbSet<Supplier_Return> Supplier_Return { get; set; }
+        public DbSet<Title> Title { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<User_Permission> User_Permission { get; set; }
         public DbSet<VAT> VAT { get; set; }

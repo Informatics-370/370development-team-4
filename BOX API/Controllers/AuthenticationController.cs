@@ -64,7 +64,8 @@ namespace BOX.Controllers
                     PhoneNumber = uvm.phoneNumber,
                     user_FirstName = uvm.firstName,
                     user_LastName = uvm.lastName,
-                    user_Address = uvm.address
+                    user_Address = uvm.address,
+                    TitleID = 1
                 };
 
                 var result = await _userManager.CreateAsync(user, uvm.password);

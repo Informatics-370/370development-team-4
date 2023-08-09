@@ -580,6 +580,33 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
+        //----------------------------------------------------- FIXED PRODUCT PRICE --------------------------------
+        //Get applicable price i.e. price with matching fixed product ID and most recent date
+        public async Task<Price> GetPriceByFixedProductAsync(int fixedProductId)
+        {
+            var allFixedProductPrices = _appDbContext.Price.Where(c => c.FixedProductID == fixedProductId).ToArray(); //don't want it to run async because I need the data converted to array before I can execute next line
+
+            if (allFixedProductPrices != null)
+            {
+                Price priceWithMostRecentDate = allFixedProductPrices[0];
+
+                foreach (var price in allFixedProductPrices)
+                {
+                    if (price.Date > priceWithMostRecentDate.Date)
+                    {
+                        priceWithMostRecentDate = price;
+                    }
+                }
+
+                return priceWithMostRecentDate;
+            }
+            else
+            {
+                Price result = null;
+                return result;
+            }
+        }
+
         //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
         //Never remove this line of code, code above the line above.
         public async Task<bool> SaveChangesAsync()

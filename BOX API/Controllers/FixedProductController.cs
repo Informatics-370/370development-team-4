@@ -33,6 +33,7 @@ namespace BOX.Controllers
                 foreach (var fp in fixedProducts) 
                 {
                     var qrCode = await _repository.GetQRCodeAsync(fp.QRCodeID); //get QR code byte array; GetAllFixedMaterialsAsync returns null for QR code
+                    var price = await _repository.GetPriceByFixedProductAsync(fp.FixedProductID.Value);
 
                     FixedProductViewModel fpVM = new FixedProductViewModel()
                     {
@@ -43,7 +44,8 @@ namespace BOX.Controllers
                         SizeID = fp.SizeID,
                         Description = fp.Description,
                         ProductPhotoB64 = Convert.ToBase64String(fp.Product_Photo),
-                        QuantityOnHand = fp.Quantity_On_Hand
+                        QuantityOnHand = fp.Quantity_On_Hand,
+                        Price = price.Amount
                     };
                     fixedProductViewModels.Add(fpVM);
                 }
@@ -68,6 +70,7 @@ namespace BOX.Controllers
                 if (fixedProduct == null)
                     return NotFound("Fixed Product not found");
 
+                var price = await _repository.GetPriceByFixedProductAsync(fixedProductId);
                 var fixedProductViewModel = new FixedProductViewModel
                 {
                     FixedProductID = fixedProduct.FixedProductID,
@@ -76,7 +79,8 @@ namespace BOX.Controllers
                     SizeID = fixedProduct.SizeID,
                     Description = fixedProduct.Description,
                     ProductPhotoB64 = Convert.ToBase64String(fixedProduct.Product_Photo),
-                    QuantityOnHand = fixedProduct.Quantity_On_Hand
+                    QuantityOnHand = fixedProduct.Quantity_On_Hand,
+                    Price = price.Amount
                 };
 
                 return Ok(fixedProductViewModel);
@@ -125,6 +129,18 @@ namespace BOX.Controllers
                 // Save changes in the repository
                 await _repository.SaveChangesAsync();
 
+                //create new price record for fixed product
+                Price price = new Price()
+                {
+                    FixedProductID = fixedProduct.FixedProductID.Value,
+                    Amount = fixedProductViewModel.Price,
+                    Date = DateTime.Now
+                };
+
+                _repository.Add(price);
+                // Save changes in the repository
+                await _repository.SaveChangesAsync();
+
                 // Return the created fixed product
                 var createdFixedProductViewModel = new FixedProductViewModel
                 {
@@ -133,6 +149,7 @@ namespace BOX.Controllers
                     ItemID = fixedProduct.ItemID,
                     SizeID = fixedProduct.SizeID,
                     Description = fixedProduct.Description,
+                    Price = fixedProductViewModel.Price
                 };
 
                 return Ok(createdFixedProductViewModel);
@@ -185,8 +202,20 @@ namespace BOX.Controllers
                 existingFixedProduct.Description = fixedProductViewModel.Description;
                 existingFixedProduct.Product_Photo = Convert.FromBase64String(fixedProductViewModel.ProductPhotoB64);
 
+                //create new price record for updated price
+                Price price = new Price()
+                {
+                    FixedProductID = fixedProductId,
+                    Amount = fixedProductViewModel.Price,
+                    Date = DateTime.Now
+                };
+
                 // Update the fixed product in the repository
                 await _repository.UpdateFixedProductAsync(existingFixedProduct);
+
+                _repository.Add(price);
+                // Save changes to price in the repository
+                await _repository.SaveChangesAsync();
 
                 // Return the updated fixed product
                 var updatedFixedProductViewModel = new FixedProductViewModel
@@ -196,6 +225,7 @@ namespace BOX.Controllers
                     ItemID = existingFixedProduct.ItemID,
                     SizeID = existingFixedProduct.SizeID,
                     Description = existingFixedProduct.Description,
+                    Price = price.Amount
                 };
 
                 return Ok(updatedFixedProductViewModel);
