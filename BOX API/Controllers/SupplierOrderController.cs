@@ -43,7 +43,6 @@ namespace BOX.Controllers
 							Supplier_OrderID = ol.SupplierOrderID,
 							Fixed_ProductID = ol.FixedProductID,
 							Raw_MaterialID = ol.RawMaterialID,
-							Supplier_ReturnID = ol.SupplierReturnID,
 							Quantity = ol.Quantity
 						};
 						supplierOrderLineList.Add(solvm);

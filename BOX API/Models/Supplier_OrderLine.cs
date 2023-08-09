@@ -8,7 +8,7 @@ namespace BOX.Models
 		public int Supplier_Order_LineID { get; set; }
 
 		[ForeignKey("Supplier_Return")]
-		public int SupplierReturnID { get; set; }
+		public int? SupplierReturnID { get; set; }
 		public virtual Supplier_Return Supplier_Return { get; set; }
 
 		[ForeignKey("Supplier_Order")]

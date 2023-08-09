@@ -1698,9 +1698,7 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Supplier_Return", "Supplier_Return")
                         .WithMany()
-                        .HasForeignKey("SupplierReturnID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SupplierReturnID");
 
                     b.Navigation("Fixed_Product");
 

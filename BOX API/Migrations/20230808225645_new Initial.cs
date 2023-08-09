@@ -770,7 +770,7 @@ namespace BOX.Migrations
                 {
                     Supplier_Order_LineID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SupplierReturnID = table.Column<int>(type: "int", nullable: false),
+                    SupplierReturnID = table.Column<int>(type: "int", nullable: true),
                     SupplierOrderID = table.Column<int>(type: "int", nullable: false),
                     FixedProductID = table.Column<int>(type: "int", nullable: true),
                     RawMaterialID = table.Column<int>(type: "int", nullable: true),
@@ -799,8 +799,7 @@ namespace BOX.Migrations
                         name: "FK_Supplier_OrderLine_Supplier_Return_SupplierReturnID",
                         column: x => x.SupplierReturnID,
                         principalTable: "Supplier_Return",
-                        principalColumn: "SupplierReturnID",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "SupplierReturnID");
                 });
 
             migrationBuilder.CreateTable(
