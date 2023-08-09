@@ -41,23 +41,23 @@ namespace BOX.Controllers
 						{
 							Supplier_OrderLineID = ol.Supplier_Order_LineID,
 							Supplier_OrderID = ol.SupplierOrderID,
-							Fixed_ProductID = ol.FixedProductID,
-							Raw_MaterialID = ol.RawMaterialID,
+							Fixed_ProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
+							Raw_MaterialID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value,
+							Supplier_ReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
 							Quantity = ol.Quantity
 						};
 						supplierOrderLineList.Add(solvm);
-
 					}
 
 					SupplierOrderViewModel eVM = new SupplierOrderViewModel()
 					{
 						SupplierOrderID = order.SupplierOrderID,
-						Date = order.Date,
+						SupplierID = order.SupplierID,
+						Date = order.Date.ToString(),
 						SupplierOrders = supplierOrderLineList
 					};
 					supplierOrderViewModels.Add(eVM);
 				}
-
 
 				return Ok(supplierOrderViewModels);
 			}
@@ -82,37 +82,50 @@ namespace BOX.Controllers
 				var orderLines = await _repository.GetSupplierOrderLinesByOrderAsync(order.SupplierOrderID); //get all order lines associated with this order
 				if (orderLines == null) return NotFound("The Supplier Order does not exist on the B.O.X System"); //an order must have at least 1 line
 
-				//create list from estimate lines
+				//create list from order lines
 				List<SupplierOrderLineViewModel> orderLineList = new List<SupplierOrderLineViewModel>();
 
-				//put all estimate lines for this specific estimate in the list
-				foreach (var ol in orderLineList)
+				//put all order lines for this specific order in the list
+				foreach (var ol in orderLines)
 				{
-					//when I display a specific estimate, I also display the fixed product unit price and description
-					var fixedProduct = await _repository.GetFixedProductAsync(ol.Fixed_ProductID);
+					Fixed_Product fixedProduct = new Fixed_Product();
+					Raw_Material rawMat = new Raw_Material();
 
-					SupplierOrderLineViewModel slvm = new SupplierOrderLineViewModel()
+					if (ol.FixedProductID != null) //this orderline holds a fixed product
+                    {
+                        int fpID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value;
+                        fixedProduct = await _repository.GetFixedProductAsync(fpID);
+                    }
+					else //this orderline holds a raw material 
 					{
-						Supplier_OrderLineID = ol.Supplier_OrderLineID,
-						Supplier_OrderID = ol.Supplier_OrderID,
-						Supplier_ReturnID = ol.Supplier_ReturnID,
-						Fixed_ProductID = ol.Fixed_ProductID,
-						Raw_Material_Description = ol.Raw_Material_Description,
-						FixedProduct_Description = ol.FixedProduct_Description,
-						Quantity = ol.Quantity
+                        int rmID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value;
+                        rawMat = await _repository.GetRawMaterialAsync(rmID);
+                    }                    
 
+                    SupplierOrderLineViewModel slvm = new SupplierOrderLineViewModel()
+					{
+						Supplier_OrderLineID = ol.Supplier_Order_LineID,
+						Supplier_OrderID = ol.SupplierOrderID,
+						Supplier_ReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
+						Fixed_ProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
+                        FixedProduct_Description = fixedProduct.Description == null ? "" : fixedProduct.Description,
+                        Raw_MaterialID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value,
+						Raw_Material_Description = rawMat.Description == null ? "" : rawMat.Description,
+                        Quantity = ol.Quantity
 					};
+
 					orderLineList.Add(slvm);
 				}
 
 				var SupplierOrderViewModel = new SupplierOrderViewModel
 				{
 					SupplierOrderID = order.SupplierOrderID,
-					Date = order.Date,
+					Date = order.Date.ToString(),
+					SupplierID = order.SupplierID,
 					SupplierOrders = orderLineList
 				};
 
-				return Ok(SupplierOrderViewModel); //return estimate VM which contains estimate info plus estimate lines info in list format
+				return Ok(SupplierOrderViewModel); //return supplier VM which contains supplier order info plus order lines info in list format
 			}
 			catch (Exception)
 			{
@@ -120,109 +133,33 @@ namespace BOX.Controllers
 			}
 		}
 
-		//[HttpGet]
-		//[Route("GetOrderBySupplier/{supplierId}")]
-		//public async Task<IActionResult> GetOrderBySupplier(int supplierId)
-		//{
-		//	try
-		//	{
-		//		List<SupplierOrderViewModel> supplierOrdere = new List<SupplierOrderViewModel>(); //create list to return
-		//		var orderLines = await _repository.GetSupplierOrderLinesBySupplierAsync(supplierId); //get all estimate lines for this customer
-
-		//		/*What I want to do: get all the estimates a customer has ever made in a list of estimate VMs
-  //              But, the estimate entity doesn't contain the customerID, estimate lines does because it's the associative entity inbetween
-  //              so I get all the estimate lines made by a customer and I want to sort them into estimates i.e. estimateVM 1 should 
-  //              contain only its estimate lines. To do that, I first find out how many estimates there are, using the distinct() 
-  //              method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
-  //              Hopefully this make sense to future Charis */
-
-
-		//		List<SupplierOrderLineViewModel> allSupplierOrderLines = new List<SupplierOrderLineViewModel>();
-		//		//put all the customer's estimate lines in VM
-		//		foreach (var ol in allSupplierOrderLines)
-		//		{
-
-		//			var fixedProduct = await _repository.GetFixedProductAsync(ol.Fixed_ProductID);
-
-		//			SupplierOrderLineViewModel slVM = new SupplierOrderLineViewModel
-		//			{
-		//				Supplier_OrderLineID = ol.Supplier_OrderLineID,
-		//				Supplier_OrderID = ol.Supplier_OrderID,
-		//				Fixed_ProductID = ol.Fixed_ProductID,
-		//				Raw_MaterialID=ol.Raw_MaterialID,
-		//				FixedProduct_Description = ol.FixedProduct_Description,
-		//				Raw_Material_Description =ol.Raw_Material_Description,
-		//				Quantity = ol.Quantity
-		//			};
-		//			allSupplierOrderLines.Add(slVM);
-		//		}
-
-		//		//Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
-		//		var distinctOrderLines = allSupplierOrderLines.Select(el => el.Supplier_OrderID).Distinct(); //returns all distinct estimate IDs
-		//		int orderCount = distinctOrderLines.Count(); //count how many order there are
-
-		//		foreach (var orderID in distinctOrderLines) //get all the estimates using the distinct estimateIDs and estimateVM
-		//		{
-		//			Supplier_Order order = await _repository.GetSupplierOrderAsync(orderID);
-
-		//			SupplierOrderViewModel soVM = new SupplierOrderViewModel
-		//			{
-		//				SupplierOrderID = order.SupplierOrderID,
-		//				Date = order.Date,
-		//				SupplierOrders = allSupplierOrderLines.Where(el => el.Supplier_OrderID == orderID).ToList() //get all estimate lines for this estimate
-		//			};
-
-		//			supplierOrdere.Add(soVM);
-		//		}
-
-		//		return Ok(supplierOrdere);
-		//	}
-		//	catch (Exception)
-		//	{
-		//		return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-		//	}
-		//}
-
-		//-------------------------------------------------- Create Customer Order  ----------------------------------------------------
 		[HttpPost]
 		[Route("AddSupplierOrder")]
 		public async Task<IActionResult> AddSupplierOrder([FromBody] SupplierOrderViewModel supplierOrderViewModel)
 		{
-			// Create a new instance of Customer from the view model
+			// Create a new instance of supplier order from the view model
 			var order = new Supplier_Order
 			{
-				//hard coded values are constant or can only ever be 1 in the DB. It'll be fine as long as we remember to change it on each person's machine and 1ce and for all on the final server
-				Date = supplierOrderViewModel.Date
-
-			}; //do not add value for estimateID manually else SQL won't auto generate it
-
+				SupplierID = supplierOrderViewModel.SupplierID,
+				Date = DateTime.Now
+			};
 
 			try
 			{
-
 				_repository.Add(order); // Save the order in the repository
+                await _repository.SaveChangesAsync(); // Save changes in the repository
 
-				//get all estimate lines from the VM and put in estimate_line entity
-				for (int i = 0; i < supplierOrderViewModel.SupplierOrders.Count(); i++)
+                //get all order lines from the VM and put in order line entity
+                for (int i = 0; i < supplierOrderViewModel.SupplierOrders.Count(); i++)
 				{
 					var orderLineVM = supplierOrderViewModel.SupplierOrders[i];
 
-					/*the estimate_line entity's ID is concatenated using customer ID, estimate ID and estimate line ID. An 
-                    estimate with ID 5 by customer with ID 16, and 2 estimate lines will have 7 estimate_line records with IDs like so:
-                        estimate ID: 5, customer ID: 16, and estimate line ID: 1
-                        estimate ID: 5, customer ID: 16, and estimate line ID: 2
-                    a new estimate by customer 16 with 3 estimate lines will be
-                        estimate ID: 6, customer ID: 16, and estimate line ID: 1
-                        estimate ID: 6, customer ID: 16, and estimate line ID: 2
-                        estimate ID: 6, customer ID: 16, and estimate line ID: 3 */
 					Supplier_OrderLine orderLineRecord = new Supplier_OrderLine
 					{
-						Supplier_Order_LineID = i + 1, //e.g. 1, then 2, 3, etc.
-						RawMaterialID=orderLineVM.Raw_MaterialID,
-						SupplierOrderID = order.SupplierOrderID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
+						RawMaterialID = orderLineVM.Raw_MaterialID == 0 ? null : orderLineVM.Raw_MaterialID,
+						SupplierOrderID = order.SupplierOrderID, //it's NB to save the order 1st so SQL generates its ID
 						Supplier_Order = order,
-						SupplierReturnID=orderLineVM.Supplier_ReturnID,
-						FixedProductID = orderLineVM.Fixed_ProductID,
+						FixedProductID = orderLineVM.Fixed_ProductID == 0 ? null : orderLineVM.Fixed_ProductID,
 						Quantity = orderLineVM.Quantity
 					};
 

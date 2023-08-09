@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230808225645_new Initial")]
+    [Migration("20230809113406_new Initial")]
     partial class newInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,9 +63,6 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiscountID"), 1L, 1);
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("Percentage")
                         .HasColumnType("int");
@@ -318,6 +315,9 @@ namespace BOX.Migrations
                     b.Property<int>("CustomerReturnReasonID")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("CustomerReturnID");
 
                     b.HasIndex("CustomerReturnReasonID");
@@ -475,6 +475,47 @@ namespace BOX.Migrations
                     b.HasKey("PaymentTypeID");
 
                     b.ToTable("Payment_Type");
+                });
+
+            modelBuilder.Entity("BOX.Models.Price", b =>
+                {
+                    b.Property<int>("PriceID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PriceID"), 1L, 1);
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FixedProductID")
+                        .HasColumnType("int");
+
+                    b.HasKey("PriceID");
+
+                    b.HasIndex("FixedProductID");
+
+                    b.ToTable("Price");
+                });
+
+            modelBuilder.Entity("BOX.Models.Price_Match_File", b =>
+                {
+                    b.Property<int>("PriceMatchFileID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PriceMatchFileID"), 1L, 1);
+
+                    b.Property<byte[]>("File")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("PriceMatchFileID");
+
+                    b.ToTable("Price_Match_File");
                 });
 
             modelBuilder.Entity("BOX.Models.Product_Category", b =>
@@ -649,6 +690,37 @@ namespace BOX.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Quote_Request");
+                });
+
+            modelBuilder.Entity("BOX.Models.Quote_Request_Line", b =>
+                {
+                    b.Property<int>("QuoteRequestLineID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuoteRequestLineID"), 1L, 1);
+
+                    b.Property<int?>("CustomProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FixedProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuoteRequestID")
+                        .HasColumnType("int");
+
+                    b.HasKey("QuoteRequestLineID");
+
+                    b.HasIndex("CustomProductID");
+
+                    b.HasIndex("FixedProductID");
+
+                    b.HasIndex("QuoteRequestID");
+
+                    b.ToTable("Quote_Request_Line");
                 });
 
             modelBuilder.Entity("BOX.Models.Quote_Status", b =>
@@ -855,9 +927,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierOrderID"), 1L, 1);
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("SupplierID")
                         .HasColumnType("int");
@@ -889,7 +960,7 @@ namespace BOX.Migrations
                     b.Property<int>("SupplierOrderID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SupplierReturnID")
+                    b.Property<int?>("SupplierReturnID")
                         .HasColumnType("int");
 
                     b.HasKey("Supplier_Order_LineID");
@@ -913,9 +984,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("SupplierReturnID"), 1L, 1);
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -1447,6 +1517,17 @@ namespace BOX.Migrations
                     b.Navigation("Payment_Type");
                 });
 
+            modelBuilder.Entity("BOX.Models.Price", b =>
+                {
+                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
+                        .WithMany()
+                        .HasForeignKey("FixedProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fixed_Product");
+                });
+
             modelBuilder.Entity("BOX.Models.Product_Item", b =>
                 {
                     b.HasOne("BOX.Models.Product_Category", "Product_Category")
@@ -1535,6 +1616,29 @@ namespace BOX.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BOX.Models.Quote_Request_Line", b =>
+                {
+                    b.HasOne("BOX.Models.Custom_Product", "Custom_Product")
+                        .WithMany()
+                        .HasForeignKey("CustomProductID");
+
+                    b.HasOne("BOX.Models.Fixed_Product", "Fixed_Product")
+                        .WithMany()
+                        .HasForeignKey("FixedProductID");
+
+                    b.HasOne("BOX.Models.Quote_Request", "Quote_Request")
+                        .WithMany()
+                        .HasForeignKey("QuoteRequestID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Custom_Product");
+
+                    b.Navigation("Fixed_Product");
+
+                    b.Navigation("Quote_Request");
+                });
+
             modelBuilder.Entity("BOX.Models.Raw_Material", b =>
                 {
                     b.HasOne("BOX.Models.QR_Code", "QR_Code")
@@ -1597,9 +1701,7 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Supplier_Return", "Supplier_Return")
                         .WithMany()
-                        .HasForeignKey("SupplierReturnID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SupplierReturnID");
 
                     b.Navigation("Fixed_Product");
 

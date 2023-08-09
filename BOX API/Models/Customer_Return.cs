@@ -9,7 +9,8 @@ namespace BOX.Models
 		[ForeignKey("Customer_Return_Reason")]
 		public int CustomerReturnReasonID { get; set; }
 		public virtual Customer_Return_Reason Customer_Return_Reason { get; set; }
-		[Required] public decimal Amount { get; set; }
+        [Required] public DateTime Date { get; set; }
+        [Required] public decimal Amount { get; set; }
 
 	}
 }

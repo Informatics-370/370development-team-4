@@ -12,6 +12,6 @@ namespace BOX.Models
         [ForeignKey("Supplier")]
         public int SupplierID { get; set; }
         public virtual Supplier Supplier { get; set; }
-        [Required] public string Date { get; set; }
+        [Required] public DateTime Date { get; set; }
 	}
 }

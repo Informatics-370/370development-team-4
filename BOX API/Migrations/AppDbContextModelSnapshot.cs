@@ -313,11 +313,14 @@ namespace BOX.Migrations
                     b.Property<int>("CustomerReturnReasonID")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("CustomerReturnID");
 
                     b.HasIndex("CustomerReturnReasonID");
 
-                    b.ToTable("Customer_Refund");
+                    b.ToTable("Customer_Return");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Return_Reason", b =>
@@ -335,7 +338,7 @@ namespace BOX.Migrations
 
                     b.HasKey("CustomerReturnReasonID");
 
-                    b.ToTable("Customer_Refund_Reason");
+                    b.ToTable("Customer_Return_Reason");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Review", b =>
@@ -922,9 +925,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierOrderID"), 1L, 1);
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("SupplierID")
                         .HasColumnType("int");
@@ -956,7 +958,7 @@ namespace BOX.Migrations
                     b.Property<int>("SupplierOrderID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SupplierReturnID")
+                    b.Property<int?>("SupplierReturnID")
                         .HasColumnType("int");
 
                     b.HasKey("Supplier_Order_LineID");
@@ -980,9 +982,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("SupplierReturnID"), 1L, 1);
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");

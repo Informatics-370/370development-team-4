@@ -98,7 +98,7 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customer_Refund_Reason",
+                name: "Customer_Return_Reason",
                 columns: table => new
                 {
                     CustomerReturnReasonID = table.Column<int>(type: "int", nullable: false)
@@ -107,7 +107,7 @@ namespace BOX.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customer_Refund_Reason", x => x.CustomerReturnReasonID);
+                    table.PrimaryKey("PK_Customer_Return_Reason", x => x.CustomerReturnReasonID);
                 });
 
             migrationBuilder.CreateTable(
@@ -136,6 +136,19 @@ namespace BOX.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payment_Type", x => x.PaymentTypeID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Price_Match_File",
+                columns: table => new
+                {
+                    PriceMatchFileID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    File = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Price_Match_File", x => x.PriceMatchFileID);
                 });
 
             migrationBuilder.CreateTable(
@@ -255,7 +268,7 @@ namespace BOX.Migrations
                 {
                     SupplierReturnID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -338,21 +351,22 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customer_Refund",
+                name: "Customer_Return",
                 columns: table => new
                 {
                     CustomerReturnID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CustomerReturnReasonID = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customer_Refund", x => x.CustomerReturnID);
+                    table.PrimaryKey("PK_Customer_Return", x => x.CustomerReturnID);
                     table.ForeignKey(
-                        name: "FK_Customer_Refund_Customer_Refund_Reason_CustomerReturnReasonID",
+                        name: "FK_Customer_Return_Customer_Return_Reason_CustomerReturnReasonID",
                         column: x => x.CustomerReturnReasonID,
-                        principalTable: "Customer_Refund_Reason",
+                        principalTable: "Customer_Return_Reason",
                         principalColumn: "CustomerReturnReasonID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -453,7 +467,7 @@ namespace BOX.Migrations
                     SupplierOrderID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SupplierID = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -765,6 +779,27 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Price",
+                columns: table => new
+                {
+                    PriceID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FixedProductID = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Price", x => x.PriceID);
+                    table.ForeignKey(
+                        name: "FK_Price_Fixed_Product_FixedProductID",
+                        column: x => x.FixedProductID,
+                        principalTable: "Fixed_Product",
+                        principalColumn: "FixedProductID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Supplier_OrderLine",
                 columns: table => new
                 {
@@ -885,6 +920,38 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Quote_Request_Line",
+                columns: table => new
+                {
+                    QuoteRequestLineID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuoteRequestID = table.Column<int>(type: "int", nullable: false),
+                    FixedProductID = table.Column<int>(type: "int", nullable: true),
+                    CustomProductID = table.Column<int>(type: "int", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quote_Request_Line", x => x.QuoteRequestLineID);
+                    table.ForeignKey(
+                        name: "FK_Quote_Request_Line_Custom_Product_CustomProductID",
+                        column: x => x.CustomProductID,
+                        principalTable: "Custom_Product",
+                        principalColumn: "CustomProductID");
+                    table.ForeignKey(
+                        name: "FK_Quote_Request_Line_Fixed_Product_FixedProductID",
+                        column: x => x.FixedProductID,
+                        principalTable: "Fixed_Product",
+                        principalColumn: "FixedProductID");
+                    table.ForeignKey(
+                        name: "FK_Quote_Request_Line_Quote_Request_QuoteRequestID",
+                        column: x => x.QuoteRequestID,
+                        principalTable: "Quote_Request",
+                        principalColumn: "QuoteRequestID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Write_Off",
                 columns: table => new
                 {
@@ -904,13 +971,13 @@ namespace BOX.Migrations
                         column: x => x.FixedProductId,
                         principalTable: "Fixed_Product",
                         principalColumn: "FixedProductID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Write_Off_Raw_Material_RawMaterialId",
                         column: x => x.RawMaterialId,
                         principalTable: "Raw_Material",
                         principalColumn: "RawMaterialID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Write_Off_Stock_Take_StockTakeID",
                         column: x => x.StockTakeID,
@@ -953,9 +1020,9 @@ namespace BOX.Migrations
                         principalColumn: "CustomerOrderID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Customer_Order_Line_Customer_Refund_CustomerReturnID",
+                        name: "FK_Customer_Order_Line_Customer_Return_CustomerReturnID",
                         column: x => x.CustomerReturnID,
-                        principalTable: "Customer_Refund",
+                        principalTable: "Customer_Return",
                         principalColumn: "CustomerReturnID");
                     table.ForeignKey(
                         name: "FK_Customer_Order_Line_Fixed_Product_FixedProductID",
@@ -1130,8 +1197,8 @@ namespace BOX.Migrations
                 column: "FixedProductID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Customer_Refund_CustomerReturnReasonID",
-                table: "Customer_Refund",
+                name: "IX_Customer_Return_CustomerReturnReasonID",
+                table: "Customer_Return",
                 column: "CustomerReturnReasonID");
 
             migrationBuilder.CreateIndex(
@@ -1163,6 +1230,11 @@ namespace BOX.Migrations
                 name: "IX_Payment_PaymentTypeID",
                 table: "Payment",
                 column: "PaymentTypeID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Price_FixedProductID",
+                table: "Price",
+                column: "FixedProductID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_Item_CategoryID",
@@ -1213,6 +1285,21 @@ namespace BOX.Migrations
                 name: "IX_Quote_Request_UserId",
                 table: "Quote_Request",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quote_Request_Line_CustomProductID",
+                table: "Quote_Request_Line",
+                column: "CustomProductID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quote_Request_Line_FixedProductID",
+                table: "Quote_Request_Line",
+                column: "FixedProductID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quote_Request_Line_QuoteRequestID",
+                table: "Quote_Request_Line",
+                column: "QuoteRequestID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Raw_Material_QRCodeID",
@@ -1319,7 +1406,16 @@ namespace BOX.Migrations
                 name: "Payment");
 
             migrationBuilder.DropTable(
+                name: "Price");
+
+            migrationBuilder.DropTable(
+                name: "Price_Match_File");
+
+            migrationBuilder.DropTable(
                 name: "Quote_Line");
+
+            migrationBuilder.DropTable(
+                name: "Quote_Request_Line");
 
             migrationBuilder.DropTable(
                 name: "Supplier_OrderLine");
@@ -1343,7 +1439,7 @@ namespace BOX.Migrations
                 name: "Credit_Application_Status");
 
             migrationBuilder.DropTable(
-                name: "Customer_Refund");
+                name: "Customer_Return");
 
             migrationBuilder.DropTable(
                 name: "Customer_Order");
@@ -1352,10 +1448,10 @@ namespace BOX.Migrations
                 name: "Payment_Type");
 
             migrationBuilder.DropTable(
-                name: "Custom_Product");
+                name: "Quote");
 
             migrationBuilder.DropTable(
-                name: "Quote");
+                name: "Custom_Product");
 
             migrationBuilder.DropTable(
                 name: "Supplier_Order");
@@ -1382,16 +1478,13 @@ namespace BOX.Migrations
                 name: "Write_Off_Reason");
 
             migrationBuilder.DropTable(
-                name: "Customer_Refund_Reason");
+                name: "Customer_Return_Reason");
 
             migrationBuilder.DropTable(
                 name: "Customer_Order_Status");
 
             migrationBuilder.DropTable(
                 name: "Order_Delivery_Schedule");
-
-            migrationBuilder.DropTable(
-                name: "cost_Price_Formula_Variables");
 
             migrationBuilder.DropTable(
                 name: "Quote_Duration");
@@ -1404,6 +1497,9 @@ namespace BOX.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reject_Reason");
+
+            migrationBuilder.DropTable(
+                name: "cost_Price_Formula_Variables");
 
             migrationBuilder.DropTable(
                 name: "Supplier");

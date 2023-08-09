@@ -560,13 +560,6 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-        //Gets all Supplier order lines from every order Supplier "A" has ever made---------- This will help us to create a report for how much we have ordered from each Supplier
-        //public async Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId)
-        //{
-        //    IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.SupplierID == supplierId);
-        //    return await query.ToArrayAsync();
-        //}
-
         //----------------------------------------------------- STOCK TAKE --------------------------------
         public async Task<Stock_Take[]> GetAllStockTakeAsync()
         {

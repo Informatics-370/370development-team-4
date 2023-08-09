@@ -131,12 +131,9 @@ namespace BOX.Models
         Task<Supplier_Order[]> GetAllSupplierOrdersAsync();
         Task<Supplier_Order> GetSupplierOrderAsync(int supplierOrderId);
 
-
-
         //-----------------------------------------------SUPPLIER ORDER LINE---------------------------------------------
         Task<Supplier_OrderLine[]> GetAllSupplierOrderLinesAsync();
         Task<Supplier_OrderLine[]> GetSupplierOrderLinesByOrderAsync(int supOrderId);
-        //Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId);
 
         //------------------------------------------------ROLE------------------------------------------------------
         Task<Role[]> GetAllRolesAsync();

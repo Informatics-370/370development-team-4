@@ -55,7 +55,7 @@ namespace BOX.Controllers
 		[Route("AddSupplierReturn")]
 		public async Task<IActionResult> AddSupplierReturn(SupplierReturnViewModel srVM)
 		{
-			var supplierReturn = new Supplier_Return { Date = srVM.Date, Quantity= srVM.Quantity };
+			var supplierReturn = new Supplier_Return { Date = DateTime.Now, Quantity= srVM.Quantity };
 
 			try
 			{
@@ -70,33 +70,30 @@ namespace BOX.Controllers
 			return Ok(supplierReturn);
 		}
 
-		[HttpPut]
-		[Route("EditSupplierReturn/{supplierReturnId}")]
-		public async Task<ActionResult<CustomerOrderStatusViewModel>> EditSupplierReturn(int supplierReturnId, SupplierReturnViewModel srVM)
-		{
-			try
-			{
-				var existingSupplierReturn = await _repository.GetSupplierReturnAsync(supplierReturnId);
-				if (existingSupplierReturn == null) return NotFound($"The Supplier Return does not exist on the BOX System");
+		//[HttpPut]
+		//[Route("EditSupplierReturn/{supplierReturnId}")]
+		//public async Task<ActionResult<CustomerOrderStatusViewModel>> EditSupplierReturn(int supplierReturnId, SupplierReturnViewModel srVM)
+		//{
+		//	try
+		//	{
+		//		var existingSupplierReturn = await _repository.GetSupplierReturnAsync(supplierReturnId);
+		//		if (existingSupplierReturn == null) return NotFound($"The Supplier Return does not exist on the BOX System");
 
 
-				existingSupplierReturn.Date = srVM.Date;
-				existingSupplierReturn.Quantity = srVM.Quantity;
+		//		existingSupplierReturn.Date = srVM.Date;
+		//		existingSupplierReturn.Quantity = srVM.Quantity;
 
-				if (await _repository.SaveChangesAsync())
-				{
-					return Ok(existingSupplierReturn);
-				}
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support.");
-			}
-			return BadRequest("Your request is invalid.");
-		}
-
-		
-
+		//		if (await _repository.SaveChangesAsync())
+		//		{
+		//			return Ok(existingSupplierReturn);
+		//		}
+		//	}
+		//	catch (Exception)
+		//	{
+		//		return StatusCode(500, "Internal Server Error. Please contact BOX support.");
+		//	}
+		//	return BadRequest("Your request is invalid.");
+		//}
 	}
 }
 
