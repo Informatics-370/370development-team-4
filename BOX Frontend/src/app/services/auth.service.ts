@@ -14,6 +14,10 @@ export class AuthService {
     return this.http.post(`${this.authUrl}Register`, user);
   }
 
+  registerEmployee(user: any): Observable<any> {
+    return this.http.post(`${this.authUrl}RegisterEmployee`, user);
+  }  
+
   getTwoFactorStatus(email: string): Observable<any> {
     const url = `${this.authUrl}GetTwoFactorStatus?email=${encodeURIComponent(email)}`;
     return this.http.get(url);
@@ -22,6 +26,16 @@ export class AuthService {
   
   login(loginData: any): Observable<any> {
     return this.http.post(`${this.authUrl}Login`, loginData);
+  }
+
+  loginWithOTP(otp: string, username: string): Observable<any> {
+    const body = {
+      otp: otp,
+      username: username
+    };
+    console.log(body)
+    console.log(`${this.authUrl}Login2FA`, body)
+    return this.http.post(`${this.authUrl}Login2FA`, body);
   }
 
   ChangePassword(forgotPasswordData: any): Observable<any> {

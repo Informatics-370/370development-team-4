@@ -426,8 +426,8 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
   }
 
 
-   DeleteUser(emailOrPhoneNumber: string): Observable<any> {
-     return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
+   DeleteUser(email: string): Observable<any> {
+     return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${email}`, this.httpOptions);
    }
 
    UpdateUser(email: string, updatedUser: Users): Observable<any> {
@@ -435,8 +435,8 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
    }
 
    
-  GetUser(emailOrPhoneNumber: string): Observable<Users> {
-    return this.httpClient.get<Users>(`${this.apiUrl}User/GetUserByEmailOrPhoneNumber/${emailOrPhoneNumber}`)
+  GetUser(email: string): Observable<Users> {
+    return this.httpClient.get<Users>(`${this.apiUrl}User/GetUserByEmail/${email}`)
       .pipe(map(result => result));
   }
 
@@ -473,6 +473,7 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
 
+  //---------------------------------------- Confirm Email ----------------------------------------
   confirmEmail(token: string, email: string): Observable<any> {
     const encodedToken = encodeURIComponent(token);
     const encodedEmail = encodeURIComponent(email);
@@ -481,5 +482,10 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
     return this.httpClient.get(url);
   }
   
+  //---------------------------------------- Employees ----------------------------------------
+  GetEmployees(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Employee/GetAllEmployees`)
+      .pipe(map(result => result))
+  }
 
 }

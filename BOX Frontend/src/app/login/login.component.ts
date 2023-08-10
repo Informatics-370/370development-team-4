@@ -40,7 +40,7 @@ export class LoginComponent {
           (twoFactorResponse: any) => {
             console.log('Two-Factor Response:', twoFactorResponse); // Log the entire response
             if (twoFactorResponse.twoFactorEnabled === true) {
-              this.router.navigate(['/two-factor-auth']);
+              this.router.navigate(['/two-factor-auth', { email: loginData.emailaddress }]);
             } else {
               console.log('Login successful:', response);
               localStorage.setItem("access_token", response.token);
@@ -72,7 +72,7 @@ export class LoginComponent {
     }
   
 
-    if (userRole === 'Admin') {
+    if (userRole == 'Admin' || 'Employee') {
       // Redirect to the dashboard for admin
       this.router.navigate(['/dashboard']);
     } else if (userRole === 'Customer') {

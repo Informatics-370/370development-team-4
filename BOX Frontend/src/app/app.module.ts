@@ -48,6 +48,8 @@ import { CustomerOrdersComponent } from './customer-orders/customer-orders.compo
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { FooterComponent } from './footer/footer.component';
 import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
+import { EmployeesComponent } from './employees/employees.component';
+import { ProfilePageComponent } from './profile-page/profile-page.component';
 
 
 @NgModule({
@@ -95,7 +97,9 @@ import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.compon
         RegistrationSuccessPopupComponent,
         ConfirmEmailComponent,
         FooterComponent,
-        TwoFactorAuthComponent
+        TwoFactorAuthComponent,
+        EmployeesComponent,
+        ProfilePageComponent
         
   ],
   imports: [

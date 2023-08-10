@@ -221,7 +221,7 @@ namespace BOX.Controllers
             try
             {
                 var user = await _userManager.FindByNameAsync(username);
-                var signIn = await _signInManager.TwoFactorSignInAsync("Email", otp, false, false);
+                var signIn = await _signInManager.TwoFactorSignInAsync("Email", otp, false, true);
                 if (signIn.Succeeded)
                 {
                     if (user != null)
@@ -376,7 +376,7 @@ namespace BOX.Controllers
         //***************************** Employee **********************************
         [HttpPost]
         [Route("RegisterEmployee")]
-        public async Task<IActionResult> RegisterEmployee(UserViewModel uvm)
+        public async Task<IActionResult> RegisterEmployee(EmployeeViewModel uvm)
         {
             //Takes the user email
             var user = await _userManager.FindByNameAsync(uvm.emailaddress);
@@ -432,12 +432,12 @@ namespace BOX.Controllers
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var protocol = "http://localhost:4200/confirm-email";
                     var confirmEmailLink = protocol + "?token=" + HttpUtility.UrlEncode(token) + "&email=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(uvm.emailaddress));
-                    var details = $"Your new login details are as follows: \n Username: { uvm.emailaddress } \n Password</b>: { password } \n\n Please update your password as soon as possible";
-                    var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", "Dear { uvm.firstName} { uvm.lastName },\n\nCongratulations and Welcome to MegaPack! \nClick the link below to verify your email. You need to confirm your email before you are able to login: \n" + confirmEmailLink + "\n\n" + details);
+                    var details = $"Your new login details are as follows: \n Username: { uvm.emailaddress } \n Password: { password } \n\n Please update your password as soon as possible";
+                    var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", $"Dear { uvm.firstName } { uvm.lastName },\n\nCongratulations and Welcome to MegaPack! \nClick the link below to verify your email. You need to confirm your email before you are able to login: \n" + confirmEmailLink + "\n\n" + details);
                     _emailService.SendEmail(message);
 
                     // Return success
-                    return Ok(password);
+                    return Ok();
                 }
                 else
                 {
@@ -461,8 +461,8 @@ namespace BOX.Controllers
             var password = new StringBuilder(passwordLength);
 
             // Ensure at least one uppercase letter, one lowercase letter, and one digit
-            password.Append(allowedChars[random.Next(26)]); // At least one uppercase letter
-            password.Append(allowedChars[random.Next(26, 52)]); // At least one lowercase letter
+            password.Append(allowedChars[random.Next(26)]); // At least one lowercase letter
+            password.Append(allowedChars[random.Next(26, 52)]); // At least one uppercase letter
             password.Append(allowedChars[random.Next(52, 62)]); // At least one digit
 
             // Fill the rest of the password with random characters
@@ -474,7 +474,7 @@ namespace BOX.Controllers
             return password.ToString();
         }
 
-
+        //
     }
 
 }

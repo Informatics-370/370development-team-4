@@ -59,11 +59,11 @@ namespace BOX.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserByEmailOrPhoneNumber/{emailOrPhoneNumber}")]
-        public async Task<ActionResult<UserDTO>> GetUserByEmailOrPhoneNumber(string emailOrPhoneNumber)
+        [Route("GetUserByEmail/{email}")]
+        public async Task<ActionResult<UserDTO>> GetUserByEmail(string email)
         {
             var user = await _dbContext.Users
-                .Where(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber)
+                .Where(u => u.Email == email)
                 .Select(u => new UserDTO
                 {
                     FirstName = u.user_FirstName,
@@ -84,11 +84,11 @@ namespace BOX.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateUser/{emailOrPhoneNumber}")]
-        public async Task<IActionResult> UpdateUser(string emailOrPhoneNumber, [FromBody] UserDTO updatedUser)
+        [Route("UpdateUser/{email}")]
+        public async Task<IActionResult> UpdateUser(string email, [FromBody] UserDTO updatedUser)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber);
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
             {
@@ -109,11 +109,11 @@ namespace BOX.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteUser/{emailOrPhoneNumber}")]
-        public async Task<IActionResult> DeleteUser(string emailOrPhoneNumber)
+        [Route("DeleteUser/{email}")]
+        public async Task<IActionResult> DeleteUser(string email)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber);
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
             {
