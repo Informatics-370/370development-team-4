@@ -45,7 +45,7 @@ namespace BOX.Models
 		public DbSet<Customer_Review> Customer_Review { get; set; }
 
 		public DbSet<Discount> Discount { get; set; }
-
+		public DbSet<Employee> Employee { get; set; }
 		public DbSet<Estimate> Estimate { get; set; }
 		public DbSet<Estimate_Duration> Estimate_Duration { get; set; }
 

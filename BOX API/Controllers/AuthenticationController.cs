@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
 
@@ -42,13 +43,15 @@ namespace BOX.Controllers
             _emailService = emailService;
         }
 
-        //----------------------------------- Register -----------------------------------------
+        //***************************** Customer **********************************
+        //=========================== REGISTRATION ================================
+        //----------------------------- Register ----------------------------------
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> Register(UserViewModel uvm)
         {
             //Takes the user email
-            var user = await _userManager.FindByIdAsync(uvm.emailaddress);
+            var user = await _userManager.FindByNameAsync(uvm.emailaddress);
 
             // Assign role based on email address
             var role = uvm.emailaddress.EndsWith(".admin@megapack.com") ? "Admin" : "Customer";
@@ -122,7 +125,7 @@ namespace BOX.Controllers
 
         }
 
-        //----------------------------------- Confirm Email ---------------------------------------
+        //--------------------------- Confirm Email -------------------------------
         [HttpGet]
         [Route("ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail(string token, string email)
@@ -141,9 +144,10 @@ namespace BOX.Controllers
             return BadRequest();
         }
 
+        //----------------------- Get Email Confirmation --------------------------
         [HttpGet]
-        [Route("GetTwoFactorStatus")]
-        public async Task<IActionResult> GetTwoFactorStatus(string email)
+        [Route("GetConfirmEmailStatus")]
+        public async Task<IActionResult> GetConfirmEmailStatus(string email)
         {
             try
             {
@@ -151,7 +155,7 @@ namespace BOX.Controllers
 
                 if (user != null)
                 {
-                    return Ok(new { TwoFactorEnabled = user.TwoFactorEnabled });
+                    return Ok(new { EmailConfirmed = user.EmailConfirmed });
                 }
 
                 return NotFound("User not found");
@@ -162,8 +166,8 @@ namespace BOX.Controllers
             }
         }
 
-
-        //----------------------------------- Login --------------------------------------------
+        //=============================== Login ===================================
+        //------------------------------- Login -----------------------------------
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginDTO dto)
@@ -209,8 +213,7 @@ namespace BOX.Controllers
             }
         }
 
-
-        //----------------------------- Login with OTP ------------------------------------
+        //-------------------------- Login with OTP -------------------------------
         [HttpPost]
         [Route("Login2FA")]
         public async Task<IActionResult> LoginWithOTP(string otp, string username)
@@ -253,7 +256,7 @@ namespace BOX.Controllers
             
         }
 
-        //-------------------------------- Generate JWT Token ---------------------------------
+        //------------------------ Generate JWT Token -----------------------------
         [HttpGet]
         private ActionResult GenerateJwtToken(User user)
         {
@@ -289,7 +292,29 @@ namespace BOX.Controllers
             });
         }
 
-        //-------------------------------- Forgot Password ---------------------------------
+        //----------------------- Get Two Factor Status ---------------------------
+        [HttpGet]
+        [Route("GetTwoFactorStatus")]
+        public async Task<IActionResult> GetTwoFactorStatus(string email)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(email);
+
+                if (user != null)
+                {
+                    return Ok(new { TwoFactorEnabled = user.TwoFactorEnabled });
+                }
+
+                return NotFound("User not found");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error: " + ex.Message);
+            }
+        }
+        
+        //-------------------------- Forgot Password ------------------------------
         //Sends the email to the user
         [HttpPost]
         [Route("ForgotPassword")]
@@ -313,7 +338,7 @@ namespace BOX.Controllers
             return Ok("Password reset link sent successfully");
         }
 
-        //Acutally change the password
+        //-------------------------- Change Password ------------------------------
         [HttpPost]
         [Route("ChangePassword")]
         [AllowAnonymous]
@@ -338,6 +363,7 @@ namespace BOX.Controllers
             return StatusCode(StatusCodes.Status400BadRequest, "Error");
         }
 
+        //--------------------------- Reset Password ------------------------------
         [HttpGet]
         [Route("ResetPassword")]
         [AllowAnonymous]
@@ -347,5 +373,108 @@ namespace BOX.Controllers
             return Ok(new { model });
         }
 
+        //***************************** Employee **********************************
+        [HttpPost]
+        [Route("RegisterEmployee")]
+        public async Task<IActionResult> RegisterEmployee(UserViewModel uvm)
+        {
+            //Takes the user email
+            var user = await _userManager.FindByNameAsync(uvm.emailaddress);
+
+            // Assign role based on email address
+            var role = "Employee";
+
+            // If the user is not found
+            if (user == null)
+            {
+                // Instantiate (create) a new User
+                user = new User
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = uvm.emailaddress,
+                    Email = uvm.emailaddress,
+                    PhoneNumber = uvm.phoneNumber,
+                    user_FirstName = uvm.firstName,
+                    user_LastName = uvm.lastName,
+                    user_Address = uvm.address,
+                    title = uvm.title,
+                    TwoFactorEnabled = false
+                };
+
+                // Instantiate (create) a new Employee
+                var employee = new Employee
+                {
+                    EmployeeId = Guid.NewGuid().ToString(),
+                    UserId = user.Id
+                };
+
+                var password = GenerateRandomPassword();
+
+                var result = await _userManager.CreateAsync(user, password);
+
+                if (result.Succeeded)
+                {
+                    // Check if role exists, create it if necessary
+                    var roleExists = await _roleManager.RoleExistsAsync(role);
+                    if (!roleExists)
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(role));
+                    }
+
+                    // Create the customer
+                    _repository.Add(employee);
+                    await _repository.SaveChangesAsync();
+
+                    // Assign the user to a customer role
+                    await _userManager.AddToRoleAsync(user, role);
+
+                    // Add Token to Verify Email
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var protocol = "http://localhost:4200/confirm-email";
+                    var confirmEmailLink = protocol + "?token=" + HttpUtility.UrlEncode(token) + "&email=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(uvm.emailaddress));
+                    var details = $"Your new login details are as follows: \n Username: { uvm.emailaddress } \n Password</b>: { password } \n\n Please update your password as soon as possible";
+                    var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", "Dear { uvm.firstName} { uvm.lastName },\n\nCongratulations and Welcome to MegaPack! \nClick the link below to verify your email. You need to confirm your email before you are able to login: \n" + confirmEmailLink + "\n\n" + details);
+                    _emailService.SendEmail(message);
+
+                    // Return success
+                    return Ok(password);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact support.");
+                }
+            }
+            else
+            {
+                return Forbid("Account already exists.");
+            }
+
+        }
+
+        // Method to generate a random password
+        private string GenerateRandomPassword()
+        {
+            const string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=<>?";
+            const int passwordLength = 12;
+
+            var random = new Random();
+            var password = new StringBuilder(passwordLength);
+
+            // Ensure at least one uppercase letter, one lowercase letter, and one digit
+            password.Append(allowedChars[random.Next(26)]); // At least one uppercase letter
+            password.Append(allowedChars[random.Next(26, 52)]); // At least one lowercase letter
+            password.Append(allowedChars[random.Next(52, 62)]); // At least one digit
+
+            // Fill the rest of the password with random characters
+            for (int i = 3; i < passwordLength; i++)
+            {
+                password.Append(allowedChars[random.Next(allowedChars.Length)]);
+            }
+
+            return password.ToString();
+        }
+
+
     }
+
 }
