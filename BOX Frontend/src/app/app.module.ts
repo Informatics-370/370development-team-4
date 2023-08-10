@@ -45,6 +45,7 @@ import { RegistrationSuccessPopupComponent } from './registration-success-popup/
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
+import { CustomProdComponent } from './custom-prod/custom-prod.component';
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { FooterComponent } from './footer/footer.component';
 import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
@@ -95,6 +96,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
         OrderHistoryComponent,
         CustomerOrdersComponent,
         RegistrationSuccessPopupComponent,
+        CustomProdComponent,
         ConfirmEmailComponent,
         FooterComponent,
         TwoFactorAuthComponent,
