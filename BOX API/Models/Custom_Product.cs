@@ -13,9 +13,9 @@ namespace BOX.Models
         [ForeignKey("Cost_Price_Formula_Variables")]
         public int FormulaID { get; set; }
         public virtual Cost_Price_Formula_Variables Cost_Price_Formula_Variables { get; set; }
-        [Required] public decimal Width { get; set; }
-        [Required] public decimal Height { get; set; }
-        [Required] public decimal Length { get; set; }
+        [Required] public int Width { get; set; }
+        [Required] public int Height { get; set; }
+        [Required] public int Length { get; set; }
         [Required] public byte[] Label { get; set; } //what should be printed
         [Required] public int Sides { get; set; } //number of sides to print on
 

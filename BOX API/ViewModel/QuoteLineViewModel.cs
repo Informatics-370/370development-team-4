@@ -3,15 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BOX.ViewModel
 {
-    public class QuoteRequestLineViewModel
+    public class QuoteLineViewModel
     {
+        public int QuoteLineID { get; set; }
         public int QuoteRequestLineID { get; set; }
         public int FixedProductID { get; set; }
         public string FixedProductDescription { get; set; }
-        public decimal FixedProductSuggestedPrice { get; set; }
         public int CustomProductID { get; set; }
         public string CustomProductDescription { get; set; }
-        public decimal CustomProductSuggestedPrice { get; set; }
-        public int Quantity { get; set; }
+        public decimal SuggestedUnitPrice { get; set; }
+        public decimal ConfirmedUnitPrice { get; set; }
+        public int Quantity { get; set; }        
     }
 }

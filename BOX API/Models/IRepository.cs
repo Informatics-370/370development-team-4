@@ -31,9 +31,9 @@ namespace BOX.Models
         Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeOffReasonId);
 
 
-        //--------------------------------------------------------- REFUND REASON -------------------------------------------------------------
-        Task<Customer_Return_Reason[]> GetAllCustomerRefundfReasonsAsync();
-        Task<Customer_Return_Reason> GetCustomerRefundReasonAsync(int sizeId);
+        //--------------------------------------------------------- RETURN REASON -------------------------------------------------------------
+        Task<Customer_Return_Reason[]> GetAllCustomerReturnReasonsAsync();
+        Task<Customer_Return_Reason> GetCustomerReturnReasonAsync(int sizeId);
 
 
         //------------------------------------------------------------- VAT -------------------------------------------------------------------
@@ -43,7 +43,7 @@ namespace BOX.Models
 
         //-------------------------------------------------------- RAW MATERIAL ---------------------------------------------------------------
         Task<Raw_Material[]> GetAllRawMaterialsAsync();
-        Task<Raw_Material> GetRawMaterialAsync(int? rawmaterialId);
+        Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId);
 
 
         //------------------------------------------------------ QUOTE DURATION ------------------------------------------------------------
@@ -74,12 +74,11 @@ namespace BOX.Models
         //---------------------------------------------QUOTE--------------------------------------------------------------------
         Task<Quote[]> GetAllQuotesAsync();
         Task<Quote> GetQuoteAsync(int quoteId);
+        Task<Quote[]> GetQuotesByCustomerAsync(string customerId);
         Task UpdateQuoteAsync(Quote quote);
 
         //-----------------------------------------------QUOTE LINE---------------------------------------------
-        Task<Quote_Line[]> GetAllQuoteLinesAsync();
         Task<Quote_Line[]> GetQuoteLinesByQuoteAsync(int quoteId);
-        //Task<Quote_Line[]> GetQuoteLinesByCustomerAsync(string customerId);
 
         //------------------------------------------------CUSTOMER--------------------------------------------------
         //Task<Customer> GetCustomerAsync(int customerId);
@@ -92,7 +91,7 @@ namespace BOX.Models
 
         //-------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
         Task<Custom_Product[]> GetAllCustomProductsAsync();
-        Task<Custom_Product> GetCustomProductAsync(int? customProductId);
+        Task<Custom_Product> GetCustomProductAsync(int customProductId);
         Task UpdateCustomProductAsync(Custom_Product customProduct);
 
 
@@ -160,7 +159,10 @@ namespace BOX.Models
 
         //----------------------------------------------- USERS -----------------------------------------------
         Task<User> GetUserAsync(string userId);
+        Task<string>GetUserFullNameAsync(string userId);
 
+        //----------------------------------------------- REJECT REASON -----------------------------------------------
+        Task<Reject_Reason> GetRejectReasonAsync(int rejectReasonId);
     }
 
 }

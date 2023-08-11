@@ -25,7 +25,7 @@ namespace BOX.Models
         public virtual Quote_Request Quote_Request { get; set; }
 
         [ForeignKey("Reject_Reason")]
-        public int RejectReasonID { get; set; }
+        public int? RejectReasonID { get; set; }
         public virtual Reject_Reason Reject_Reason { get; set; }
 
         [Required] public DateTime Date_Generated { get; set; }

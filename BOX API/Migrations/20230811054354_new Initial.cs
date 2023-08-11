@@ -204,19 +204,6 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reject_Reason",
-                columns: table => new
-                {
-                    RejectReasonID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Reject_Reason", x => x.RejectReasonID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Role",
                 columns: table => new
                 {
@@ -372,6 +359,25 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Reject_Reason",
+                columns: table => new
+                {
+                    RejectReasonID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PriceMatchFileID = table.Column<int>(type: "int", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reject_Reason", x => x.RejectReasonID);
+                    table.ForeignKey(
+                        name: "FK_Reject_Reason_Price_Match_File_PriceMatchFileID",
+                        column: x => x.PriceMatchFileID,
+                        principalTable: "Price_Match_File",
+                        principalColumn: "PriceMatchFileID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Product_Item",
                 columns: table => new
                 {
@@ -512,7 +518,7 @@ namespace BOX.Migrations
                         column: x => x.TitleID,
                         principalTable: "Title",
                         principalColumn: "TitleID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -547,9 +553,9 @@ namespace BOX.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ItemID = table.Column<int>(type: "int", nullable: false),
                     FormulaID = table.Column<int>(type: "int", nullable: false),
-                    Width = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Height = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Length = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Width = table.Column<int>(type: "int", nullable: false),
+                    Height = table.Column<int>(type: "int", nullable: false),
+                    Length = table.Column<int>(type: "int", nullable: false),
                     Label = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     Sides = table.Column<int>(type: "int", nullable: false)
                 },
@@ -881,7 +887,7 @@ namespace BOX.Migrations
                     QuoteDurationID = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     QuoteRequestID = table.Column<int>(type: "int", nullable: false),
-                    RejectReasonID = table.Column<int>(type: "int", nullable: false),
+                    RejectReasonID = table.Column<int>(type: "int", nullable: true),
                     Date_Generated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -915,8 +921,7 @@ namespace BOX.Migrations
                         name: "FK_Quote_Reject_Reason_RejectReasonID",
                         column: x => x.RejectReasonID,
                         principalTable: "Reject_Reason",
-                        principalColumn: "RejectReasonID",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "RejectReasonID");
                 });
 
             migrationBuilder.CreateTable(
@@ -971,13 +976,13 @@ namespace BOX.Migrations
                         column: x => x.FixedProductId,
                         principalTable: "Fixed_Product",
                         principalColumn: "FixedProductID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Write_Off_Raw_Material_RawMaterialId",
                         column: x => x.RawMaterialId,
                         principalTable: "Raw_Material",
                         principalColumn: "RawMaterialID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Write_Off_Stock_Take_StockTakeID",
                         column: x => x.StockTakeID,
@@ -1050,7 +1055,7 @@ namespace BOX.Migrations
                         column: x => x.CustomerOrderID,
                         principalTable: "Customer_Order",
                         principalColumn: "CustomerOrderID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Payment_Payment_Type_PaymentTypeID",
                         column: x => x.PaymentTypeID,
@@ -1307,6 +1312,11 @@ namespace BOX.Migrations
                 column: "QRCodeID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Reject_Reason_PriceMatchFileID",
+                table: "Reject_Reason",
+                column: "PriceMatchFileID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Size_Units_CategoryID",
                 table: "Size_Units",
                 column: "CategoryID");
@@ -1407,9 +1417,6 @@ namespace BOX.Migrations
 
             migrationBuilder.DropTable(
                 name: "Price");
-
-            migrationBuilder.DropTable(
-                name: "Price_Match_File");
 
             migrationBuilder.DropTable(
                 name: "Quote_Line");
@@ -1515,6 +1522,9 @@ namespace BOX.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Price_Match_File");
 
             migrationBuilder.DropTable(
                 name: "Product_Category");

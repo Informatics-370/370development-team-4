@@ -25,23 +25,5 @@ namespace BOX.Models
 
         [Required] public int Quantity { get; set; }
         [Required] public decimal Confirmed_Unit_Price { get; set; }
-
-        //This is to ensure we retrieve the details in string and integer format when we view Quote Line:
-
-        //This stuff is input in the QuoteLineView Model, the IDs are all we input in the actual Class
-        ////Customer Name:
-        //public string CustomerName { get; set; }
-        ////Fixed product Name:
-        //public string FixedProductName { get; set; }
-        ////Admin Name:
-        //public string AdminName { get; set; }
-        ////Custom Product Name:
-        //public string CustomProductName { get; set; }
-        ////Quote Details, Status and Duration:
-        //public string QuoteStatusDescription { get; set; }
-        //public int QuoteDurationNumber { get; set; }
-
-
-
     }
 }

@@ -177,8 +177,8 @@ namespace BOX.Migrations
                     b.Property<int>("FormulaID")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Height")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
 
                     b.Property<int>("ItemID")
                         .HasColumnType("int");
@@ -187,14 +187,14 @@ namespace BOX.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<decimal>("Length")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Length")
+                        .HasColumnType("int");
 
                     b.Property<int>("Sides")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Width")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Width")
+                        .HasColumnType("int");
 
                     b.HasKey("CustomProductID");
 
@@ -367,11 +367,11 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Fixed_Product", b =>
                 {
-                    b.Property<int?>("FixedProductID")
+                    b.Property<int>("FixedProductID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("FixedProductID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FixedProductID"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -594,7 +594,7 @@ namespace BOX.Migrations
                     b.Property<int>("QuoteStatusID")
                         .HasColumnType("int");
 
-                    b.Property<int>("RejectReasonID")
+                    b.Property<int?>("RejectReasonID")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -777,7 +777,12 @@ namespace BOX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PriceMatchFileID")
+                        .HasColumnType("int");
+
                     b.HasKey("RejectReasonID");
+
+                    b.HasIndex("PriceMatchFileID");
 
                     b.ToTable("Reject_Reason");
                 });
@@ -1559,9 +1564,7 @@ namespace BOX.Migrations
 
                     b.HasOne("BOX.Models.Reject_Reason", "Reject_Reason")
                         .WithMany()
-                        .HasForeignKey("RejectReasonID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RejectReasonID");
 
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
@@ -1646,6 +1649,15 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("QR_Code");
+                });
+
+            modelBuilder.Entity("BOX.Models.Reject_Reason", b =>
+                {
+                    b.HasOne("BOX.Models.Price_Match_File", "Price_Match_File")
+                        .WithMany()
+                        .HasForeignKey("PriceMatchFileID");
+
+                    b.Navigation("Price_Match_File");
                 });
 
             modelBuilder.Entity("BOX.Models.Size_Units", b =>

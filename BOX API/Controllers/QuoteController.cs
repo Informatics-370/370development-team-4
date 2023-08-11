@@ -1,6 +1,7 @@
 using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 
 namespace BOX.Controllers
@@ -16,114 +17,135 @@ namespace BOX.Controllers
             _repository = repository;
         }
 
-        //-------------------------------------------------- Get All Estimates --------------------------------------------------
         [HttpGet]
-        [Route("GetAllEstimates")]
-        public async Task<IActionResult> GetAllEstimates()
+        [Route("GetAllQuotes")]
+        public async Task<IActionResult> GetAllQuotes()
         {
             try
             {
-                var estimates = await _repository.GetAllQuotesAsync();
+                var quotes = await _repository.GetAllQuotesAsync();
 
-                List<EstimateViewModel> EstimateViewModels = new List<EstimateViewModel>(); //create array of VMs
-                foreach (var estimate in estimates)
+                List<QuoteViewModel> qouteViewModels = new List<QuoteViewModel>(); //create array of VMs
+                foreach (var quote in quotes)
                 {
-                    var Status = await _repository.GetQuoteStatusAsync(estimate.QuoteStatusID); //get status associated with this estimate
+                    //get all quote lines associated with this quote and create array from them
+                    List<QuoteLineViewModel> qlList = new List<QuoteLineViewModel>();
+                    var quoteLines = await _repository.GetQuoteLinesByQuoteAsync(quote.QuoteID);
 
-                    //get all estimate lines associated with this estimate and create array from them
-                    List<EstimateLineViewModel> estimateLineList = new List<EstimateLineViewModel>();
-                    var estimateLines = await _repository.GetQuoteLinesByQuoteAsync(estimate.QuoteID);
-
-                    //an estimate must have at least 1 line else it's not a real order and will cause an error
-                    if (estimateLines == null) return NotFound("The estimate does not exist on the B.O.X System.");
-
-                    //put all estimate lines for this specific estimate in a list for the estimate VM
-                    foreach (var el in estimateLines)
+                    //put all quote lines for this specific quote in a list for the quote VM
+                    foreach (var ql in quoteLines)
                     {
-                        int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
-
-                        EstimateLineViewModel elvm = new EstimateLineViewModel()
+                        QuoteLineViewModel qlVM = new QuoteLineViewModel
                         {
-                            //The attributes below all pertain to the Actual EstimateLine Entity except the CustomerID. Not the View Model**
-                            EstimateLineID = el.QuoteLineID,
-                            EstimateID = el.QuoteID,
-                            FixedProductID = fpID,
-                            CustomProductID = 0,
-                            Quantity = el.Quantity
-                            //The customerID is intentionally left out so that we get all the Estimates for every single Customer
+                            QuoteLineID = ql.QuoteLineID,
+                            FixedProductID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value,
+                            CustomProductID = ql.CustomProductID == null ? 0 : ql.CustomProductID.Value,
+                            ConfirmedUnitPrice = ql.Confirmed_Unit_Price,
+                            Quantity = ql.Quantity
                         };
-                        estimateLineList.Add(elvm);
+                        qlList.Add(qlVM);
                     }
-                    //This is still contained in the greater for loop which is iterating for every single estimate that is the estimate VM
-                    EstimateViewModel eVM = new EstimateViewModel()
+
+                    string fullName = await _repository.GetUserFullNameAsync(quote.UserId);
+                    var status = await _repository.GetQuoteStatusAsync(quote.QuoteStatusID);
+
+                    QuoteViewModel qrVM = new QuoteViewModel
                     {
-                        EstimateID = estimate.QuoteID,
-                        EstimateStatusID = estimate.QuoteStatusID,
-                        EstimateDurationID = estimate.QuoteDurationID,
-                        EstimateStatusDescription = Status.Description,
-                        Estimate_Lines = estimateLineList
-                        //The Customer Name attribute does not appear here
+                        QuoteID = quote.QuoteID,
+                        QuoteRequestID = quote.QuoteRequestID,
+                        QuoteStatusID = quote.QuoteStatusID,
+                        QuoteStatusDescription = status.Description,
+                        UserId = quote.UserId,
+                        UserFullName = fullName,
+                        QuoteDurationID = quote.QuoteDurationID,
+                        DateGenerated = quote.Date_Generated,
+                        RejectReasonID = quote.RejectReasonID == null ? 0 : quote.RejectReasonID.Value,
+                        Lines = qlList
                     };
-                    EstimateViewModels.Add(eVM);
+                    qouteViewModels.Add(qrVM);
                 }
 
-
-                return Ok(EstimateViewModels);
+                return Ok(qouteViewModels);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ' ' + ex.InnerException);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
             }
 
         }
 
-
-        //-------------------------------------------------- Get Estimate By ID ------------------------------------------------
+        //-------------------------------------------------- Get QUOTE By ID ------------------------------------------------
         [HttpGet]
-        [Route("GetEstimate/{estimateId}")]
-        public async Task<IActionResult> GetEstimate(int estimateId)
+        [Route("GetQuote/{quoteId}")]
+        public async Task<IActionResult> GetQuote(int quoteId)
         {
             try
             {
-                var estimate = await _repository.GetQuoteAsync(estimateId);
-                if (estimate == null) return NotFound("The estimate does not exist on the B.O.X System");
+                var quote = await _repository.GetQuoteAsync(quoteId);
+                if (quote == null) return NotFound("The quote does not exist on the B.O.X System");
 
-                var estimateLines = await _repository.GetQuoteLinesByQuoteAsync(estimate.QuoteID); //get all estimate lines associated with this estimate
-                if (estimateLines == null) return NotFound("The estimate does not exist on the B.O.X System"); //an estimate must have at least 1 line
+                var quoteLines = await _repository.GetQuoteLinesByQuoteAsync(quote.QuoteID); //get all quote lines associated with this quote
+                if (quoteLines == null) return NotFound("The quote does not exist on the B.O.X System"); //an quote must have at least 1 line
 
-                //create list from estimate lines
-                List<EstimateLineViewModel> estimateLineList = new List<EstimateLineViewModel>();
+                List<QuoteLineViewModel> qlList = new List<QuoteLineViewModel>(); //create array
 
-                //put all estimate lines for this specific estimate in the list
-                foreach (var el in estimateLines)
+                //put all quote lines for this specific quote in a list for the quote VM
+                foreach (var ql in quoteLines)
                 {
-                    int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
-                    //when I display a specific estimate, I also display the fixed product unit price and description
-                    var fixedProduct = await _repository.GetFixedProductAsync(fpID);
+                    int fpID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value;
+                    Fixed_Product fixedProduct = await _repository.GetFixedProductAsync(fpID);
+                    string customProdDescription = "Custom product ";
 
-                    EstimateLineViewModel elvm = new EstimateLineViewModel()
+                    if (ql.CustomProductID != null) //this orderline holds a custom product
                     {
-                        EstimateLineID = el.QuoteLineID,
-                        EstimateID = el.QuoteID,
-                        FixedProductID = fpID,
+                        int cpID = ql.CustomProductID.Value;
+                        Custom_Product customProduct = await _repository.GetCustomProductAsync(cpID);
+
+                        //concatenate custom product string
+                        customProdDescription += customProduct.Length + "mm x " + customProduct.Width + "mm x " + customProduct.Height + "mm";
+                    }
+
+                    QuoteLineViewModel qlVM = new QuoteLineViewModel
+                    {
+                        QuoteLineID = ql.QuoteLineID,
+                        FixedProductID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value,
                         FixedProductDescription = fixedProduct.Description,
-                        CustomProductID = 0,
-                        Quantity = el.Quantity
+                        CustomProductID = ql.CustomProductID == null ? 0 : ql.CustomProductID.Value,
+                        CustomProductDescription = customProdDescription,
+                        ConfirmedUnitPrice = ql.Confirmed_Unit_Price,
+                        Quantity = ql.Quantity
                     };
-                    estimateLineList.Add(elvm);
+                    qlList.Add(qlVM);
                 }
 
-                var status = await _repository.GetQuoteStatusAsync(estimate.QuoteStatusID); //get status associated with this estimate
-                var EstimateViewModel = new EstimateViewModel
+                string fullName = await _repository.GetUserFullNameAsync(quote.UserId);
+                var status = await _repository.GetQuoteStatusAsync(quote.QuoteStatusID);
+                var rejectReason = new Reject_Reason();
+
+                if (quote.RejectReasonID != null)
                 {
-                    EstimateID = estimate.QuoteID,
-                    EstimateStatusID = estimate.QuoteStatusID,
-                    EstimateStatusDescription = status.Description,
-                    EstimateDurationID = estimate.QuoteDurationID,
-                    Estimate_Lines = estimateLineList
+                    int rejectReasonID = quote.RejectReasonID.Value;
+                    rejectReason = await _repository.GetRejectReasonAsync(rejectReasonID);
+                }
+                string priceMatchFileB64 = rejectReason.Price_Match_File != null ? Convert.ToBase64String(rejectReason.Price_Match_File.File) : "";
+
+                QuoteViewModel qrVM = new QuoteViewModel
+                {
+                    QuoteID = quote.QuoteID,
+                    QuoteRequestID = quote.QuoteRequestID,
+                    QuoteStatusID = quote.QuoteStatusID,
+                    QuoteStatusDescription = status.Description,
+                    UserId = quote.UserId,
+                    UserFullName = fullName,
+                    QuoteDurationID = quote.QuoteDurationID,
+                    DateGenerated = quote.Date_Generated,
+                    RejectReasonID = rejectReason.RejectReasonID,
+                    RejectReasonDescription = rejectReason.Description,
+                    PriceMatchFileB64 = priceMatchFileB64,
+                    Lines = qlList
                 };
 
-                return Ok(EstimateViewModel); //return estimate VM which contains estimate info plus estimate lines info in list format
+                return Ok(qrVM); //return quote VM which contains quote info plus quote lines info in list format
             }
             catch (Exception ex)
             {
@@ -131,117 +153,131 @@ namespace BOX.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("GetEstimateByCustomer/{customerId}")]
-        //public async Task<IActionResult> GetEstimateByCustomer(string customerId)
-        //{
-        //    try
-        //    {
-        //        List<EstimateViewModel> customerEstimates = new List<EstimateViewModel>(); //create list to return
-        //        var estimateLines = await _repository.GetEstimateLinesByCustomerAsync(customerId); //get all estimate lines for this customer
-
-        //        /*What I want to do: get all the estimates a customer has ever made in a list of estimate VMs
-        //        But, the estimate entity doesn't contain the customerID, estimate lines does because it's the associative entity inbetween
-        //        so I get all the estimate lines made by a customer and I want to sort them into estimates i.e. estimateVM 1 should 
-        //        contain only its estimate lines. To do that, I first find out how many estimates there are, using the distinct() 
-        //        method and create estimateVMs for them. Then I loop through each estimate line and sort them into their estimates.
-        //        Hopefully this make sense to future Charis */
-
-        //        List<EstimateLineViewModel> allCustomerEstimateLines = new List<EstimateLineViewModel>();
-
-        //        //put all the customer's estimate lines in VM
-        //        foreach (var el in estimateLines)
-        //        {
-        //            int fpID = el.FixedProductID == null ? 0 : el.FixedProductID.Value;
-        //            var fixedProduct = await _repository.GetFixedProductAsync(fpID);
-
-        //            EstimateLineViewModel elVM = new EstimateLineViewModel
-        //            {
-        //                EstimateLineID = el.EstimateLineID,
-        //                EstimateID = el.EstimateID,
-        //                FixedProductID = fpID,
-        //                FixedProductDescription = fixedProduct.Description,
-        //                Quantity = el.Quantity
-        //            };
-        //            allCustomerEstimateLines.Add(elVM);
-        //        }
-
-        //        //Create estimate VMs for all the customer's estimates then group estimate lines into the estimate VMs
-        //        var distinctEstimateLines = estimateLines.Select(el => el.EstimateID).Distinct(); //returns all distinct estimate IDs
-        //        int estimateCount = distinctEstimateLines.Count(); //count how many estimates there are
-
-        //        foreach (var estimateID in distinctEstimateLines) //get all the estimates using the distinct estimateIDs and estimateVM
-        //        {
-        //            Quote estimate = await _repository.GetEstimateAsync(estimateID);
-        //            var status = await _repository.GetEstimateStatusAsync(estimate.QuoteStatusID); //get status data
-
-        //            EstimateViewModel eVM = new EstimateViewModel
-        //            {
-        //                EstimateID = estimate.QuoteID,
-        //                EstimateStatusID = estimate.QuoteStatusID,
-        //                EstimateStatusDescription = status.Description,
-        //                EstimateDurationID = estimate.QuoteDurationID,
-        //                UserId = customerId,
-        //                Estimate_Lines = allCustomerEstimateLines.Where(el => el.EstimateID == estimateID).ToList() //get all estimate lines for this estimate
-        //            };
-
-        //            customerEstimates.Add(eVM);
-        //        }
-
-        //        return Ok(customerEstimates);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-        //    }
-        //}
-
-        //-------------------------------------------------- Create Estimate  ----------------------------------------------------
-        [HttpPost]
-        [Route("AddEstimate")]
-        public async Task<IActionResult> AddEstimate([FromBody] EstimateViewModel estimateViewModel)
+        [HttpGet]
+        [Route("GetQuoteByCustomer/{customerId}")]
+        public async Task<IActionResult> GetQuoteByCustomer(string customerId)
         {
-            // Create a new instance of Estimate from the view model
-            var estimate = new Quote
+            try
+            {
+                List<QuoteViewModel> customerQuoteVMs = new List<QuoteViewModel>(); //create list to return
+                var quotes = await _repository.GetQuotesByCustomerAsync(customerId); //get all quotes for this customer
+
+                List<QuoteLineViewModel> allCustomerQuoteLines = new List<QuoteLineViewModel>();
+
+                foreach (var quote in quotes)
+                {
+                    //get all quote lines associated with this quote and create array from them
+                    List<QuoteLineViewModel> qlList = new List<QuoteLineViewModel>();
+                    var quoteLines = await _repository.GetQuoteLinesByQuoteAsync(quote.QuoteID);
+
+                    //put all quote lines for this specific quote in a list for the quote VM
+                    foreach (var ql in quoteLines)
+                    {
+                        int fpID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value;
+                        Fixed_Product fixedProduct = await _repository.GetFixedProductAsync(fpID);
+                        string customProdDescription = "Custom product ";
+
+                        if (ql.CustomProductID != null) //this orderline holds a custom product
+                        {
+                            int cpID = ql.CustomProductID.Value;
+                            Custom_Product customProduct = await _repository.GetCustomProductAsync(cpID);
+
+                            //concatenate custom product string
+                            customProdDescription += customProduct.Length + "mm x " + customProduct.Width + "mm x " + customProduct.Height + "mm";
+                        }
+                        
+                        QuoteLineViewModel qlVM = new QuoteLineViewModel
+                        {
+                            QuoteLineID = ql.QuoteLineID,
+                            FixedProductID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value,
+                            FixedProductDescription = fixedProduct.Description,
+                            CustomProductID = ql.CustomProductID == null ? 0 : ql.CustomProductID.Value,
+                            CustomProductDescription = customProdDescription,
+                            ConfirmedUnitPrice = ql.Confirmed_Unit_Price,
+                            Quantity = ql.Quantity
+                        };
+                        qlList.Add(qlVM);
+                    }
+
+                    string fullName = await _repository.GetUserFullNameAsync(quote.UserId);
+                    var status = await _repository.GetQuoteStatusAsync(quote.QuoteStatusID);
+                    var rejectReason = new Reject_Reason();
+
+                    if (quote.RejectReasonID != null)
+                    {
+                        int rejectReasonID = quote.RejectReasonID.Value;
+                        rejectReason = await _repository.GetRejectReasonAsync(rejectReasonID);
+                    }
+                    string priceMatchFileB64 = rejectReason.Price_Match_File != null ? Convert.ToBase64String(rejectReason.Price_Match_File.File) : "";
+
+                    QuoteViewModel qrVM = new QuoteViewModel
+                    {
+                        QuoteID = quote.QuoteID,
+                        QuoteStatusID = quote.QuoteStatusID,
+                        QuoteStatusDescription = status.Description,
+                        UserId = quote.UserId,
+                        UserFullName = fullName,
+                        QuoteDurationID = quote.QuoteDurationID,
+                        DateGenerated = quote.Date_Generated,
+                        RejectReasonID = rejectReason.RejectReasonID,
+                        RejectReasonDescription = rejectReason.Description,
+                        PriceMatchFileB64 = priceMatchFileB64,
+                        Lines = qlList
+                    };
+                    customerQuoteVMs.Add(qrVM);
+                }
+
+                return Ok(customerQuoteVMs);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
+        //-------------------------------------------------- Create Quote  ----------------------------------------------------
+        [HttpPost]
+        [Route("AddQuote")]
+        public async Task<IActionResult> AddQuote([FromBody] QuoteViewModel quoteViewModel)
+        {
+            // Create a new instance of Quote from the view model
+            var quote = new Quote
             {
                 //hard coded values are constant or can only ever be 1 in the DB. It'll be fine as long as we remember to change it on each person's machine and 1ce and for all on the final server
-                QuoteStatusID = 1, //estimate status of 'Pending review'. Statuses can't be CRUDed so this can be hard coded
+                QuoteRequestID = quoteViewModel.QuoteRequestID,
+                QuoteStatusID = 1, //quote status of 'Pending review'. Statuses can't be CRUDed so this can be hard coded
                 QuoteDurationID = 1,
-            }; //do not add value for estimateID manually else SQL won't auto generate it
+                UserId = quoteViewModel.UserId,
+                Date_Generated = DateTime.Now
+            }; //do not add value for quoteID manually else SQL won't auto generate it
 
             try
             {
-                _repository.Add(estimate); // Save the estimate in the repository
+                _repository.Add(quote); // Save the quote in the repository
+                await _repository.SaveChangesAsync(); //save changes so quote ID is generated
 
-                //get all estimate lines from the VM and put in estimate_line entity
-                for (int i = 0; i < estimateViewModel.Estimate_Lines.Count(); i++)
+                //get all quote lines from the VM and put in quote_line entity
+                for (int i = 0; i < quoteViewModel.Lines.Count(); i++)
                 {
-                    var estimateLineVM = estimateViewModel.Estimate_Lines[i];
+                    var quoteLineVM = quoteViewModel.Lines[i];
 
-                    /*the estimate_line entity's ID is concatenated using customer ID, estimate ID and estimate line ID. An 
-                    estimate with ID 5 by customer with ID 16, and 2 estimate lines will have 7 estimate_line records with IDs like so:
-                        estimate ID: 5, customer ID: 16, and estimate line ID: 1
-                        estimate ID: 5, customer ID: 16, and estimate line ID: 2
-                    a new estimate by customer 16 with 3 estimate lines will be
-                        estimate ID: 6, customer ID: 16, and estimate line ID: 1
-                        estimate ID: 6, customer ID: 16, and estimate line ID: 2
-                        estimate ID: 6, customer ID: 16, and estimate line ID: 3 */
-                    Quote_Line estimateLineRecord = new Quote_Line
+                    Quote_Line quoteLineRecord = new Quote_Line
                     {
-                        QuoteLineID = i + 1, //e.g. 1, then 2, 3, etc.
-                        QuoteID = estimate.QuoteID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
-                        Quote = estimate,
-                        FixedProductID = estimateLineVM.FixedProductID,
-                        Quantity = estimateLineVM.Quantity
+                        QuoteID = quote.QuoteID, //it's NB to save the quote 1st so SQL generates its ID to use in the quote line concatenated ID
+                        Quote = quote,
+                        FixedProductID = quoteLineVM.FixedProductID == 0 ? null : quoteLineVM.FixedProductID,
+                        CustomProductID = quoteLineVM.CustomProductID == 0 ? null : quoteLineVM.CustomProductID,
+                        Confirmed_Unit_Price = quoteLineVM.ConfirmedUnitPrice,
+                        Quantity = quoteLineVM.Quantity
                     };
 
-                    _repository.Add(estimateLineRecord); //save estimate line in DB
+                    _repository.Add(quoteLineRecord); //save quote line in DB
                 }
 
                 // Save changes in the repository
                 await _repository.SaveChangesAsync();
 
-                return Ok(estimateViewModel);
+                return Ok(quoteViewModel);
             }
             catch (Exception ex)
             {
@@ -249,102 +285,27 @@ namespace BOX.Controllers
             }
         }
 
-        //--------------------------------------------------UPDATE ESTIMATE--------------------------------------------
-        [HttpPut]
-        [Route("UpdateEstimate/{estimateId}")]
-        public async Task<IActionResult> UpdateEstimate(int estimateId, [FromBody] EstimateViewModel updatedEstimateVM)
-        {
-            try
-            {
-                var existingEstimate = await _repository.GetQuoteAsync(estimateId); //Retrieve the existing estimate from the database
-                if (existingEstimate == null) return NotFound($"The estimate does not exist on the B.O.X System");
-
-                var existingEstimateLines = await _repository.GetQuoteLinesByQuoteAsync(estimateId); //get this estimate's lines
-                if (existingEstimateLines == null) return NotFound($"The estimate does not exist on the B.O.X System"); //every estimate must have at least 1 line
-
-                //Update the estimate
-                existingEstimate.QuoteStatusID = 2; //status ID of 'Reviewed'.
-
-                //await _repository.UpdateEstimateAsync(existingEstimate); // Update the Estimate in the repository
-
-                /*The next bit of code is a lil complicated but it was fun to write. Lengthy comments can explain to future me and anyone interested
-                update estimate lines only if there are updates to apply; shouldn't they be able to update estimate quantity? If they can, the code below must change
-                can only add new lines and can't change previous lines so the code below ignores previous lines 
-                (because they are untouched) and only creates new lines */
-
-                /*EXAMPLE: customer added 3 things to cart and clicked 'Get in touch with us'. After negotiations, price changed 
-                and they now want 5 things, i.e. 2 new products were added to their estimate.
-                Therefore original estimateLinesCount = 3 (original length) and updated estimate VM line count = 5 */
-                int estimateLinesCount = existingEstimateLines.Length; //e.g. 3
-
-                //e.g. if (5 != 3); if no new products were added it will be if (3 != 3), which is false so estimate lines won't be updated
-                if (updatedEstimateVM.Estimate_Lines.Count() != estimateLinesCount)
-                {
-                    int newEstimateLinesCount = updatedEstimateVM.Estimate_Lines.Count() - estimateLinesCount; //5 - 3 = 2
-
-                    //create new estimate lines to represent the products added to the estimate to put in the DB
-                    for (int i = 0; i < newEstimateLinesCount; i++) //e.g. loop 2 times when i = 0 and 1 to create 2 new estimate lines
-                    {
-                        /*updatedEstimateVM's estimate lines has all the estimate lines, e.g. the 3 original products in the cart 
-                        plus the 2 the customer asked to be added during negotiations. They will look like this: 
-                            [orignalEstimateLine1, originalEstimateLine2, originalEstimateLine3, newEstimateLine1, newEstimateLine2 ]
-                        The original 3 are unchanged so I don't want them. I'll start with the 1st new line that has index of 3
-                        This index can be calculated as: estimateLinesCount + i = 3 + 0 = 3
-                        On the 2nd loop iteration, I want the 2nd new estimate line and the index of 4 will be calculated the same way:
-                            estimateLinesCount + i = 3 + 1 = 4
-                         */
-                        int index = estimateLinesCount + i; //calculate index
-                        var line = updatedEstimateVM.Estimate_Lines[index];
-
-                        /*To understand how estimate_line entity IDs work, look at line 148 on this page.
-                         e.g. because the last estimateLineID used was 3, I need to start from 4 which can be calculated by index + 1
-                        On the next loop iteration, estimateLineID should be 5 which will still be = index + 1 */
-                        Quote_Line estimateLineRecord = new Quote_Line
-                        {
-                            QuoteLineID = index + 1,
-                            QuoteID = estimateId,
-                            FixedProductID = line.FixedProductID,
-                            Quantity = line.Quantity
-                        };
-
-                        _repository.Add(estimateLineRecord); //save new estimate lines in DB. In our example, 2 new estimate lines are saved
-                    }
-                }
-
-                if (await _repository.SaveChangesAsync()) return Ok(updatedEstimateVM);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-            }
-
-            return BadRequest("Your request is invalid.");
-        }
-
-        /*I added delete method because, while I see value in keeping estimates on the system, the rest of the team has not been
-        convinced and we did say the discussions of the estimate meeting were final so I don't expect them to change their minds.
-        I also just want to be able to delete any estimates I make for testing purposes */
         [HttpDelete]
-        [Route("DeleteEstimate/{estimateId}")]
-        public async Task<IActionResult> DeleteEstimate(int estimateId)
+        [Route("DeleteQuote/{quoteId}")]
+        public async Task<IActionResult> DeleteQuote(int quoteId)
         {
             try
             {
-                var existingEstimate = await _repository.GetQuoteAsync(estimateId); //get estimate
-                if (existingEstimate == null) return NotFound($"The estimate does not exist on the B.O.X System");
+                var existingQuote = await _repository.GetQuoteAsync(quoteId); //get quote
+                if (existingQuote == null) return NotFound($"The quote does not exist on the B.O.X System");
 
-                var existingEstimateLines = await _repository.GetQuoteLinesByQuoteAsync(estimateId); //get this estimate's lines
-                if (existingEstimateLines == null) return NotFound($"The estimate does not exist on the B.O.X System");
+                var existingQuoteLines = await _repository.GetQuoteLinesByQuoteAsync(quoteId); //get this quote's lines
+                if (existingQuoteLines == null) return NotFound($"The quote does not exist on the B.O.X System");
 
-                //delete estimates lines
-                foreach (var line in existingEstimateLines)
+                //delete quotes lines
+                foreach (var line in existingQuoteLines)
                 {
                     _repository.Delete(line);
                 }
 
-                _repository.Delete(existingEstimate); //delete estimate
+                _repository.Delete(existingQuote); //delete quote
 
-                if (await _repository.SaveChangesAsync()) return Ok(existingEstimate);
+                if (await _repository.SaveChangesAsync()) return Ok(existingQuote);
 
             }
             catch (Exception)
@@ -355,24 +316,24 @@ namespace BOX.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateEstimateStatus/{estimateId}/{statusId}")]
-        public async Task<IActionResult> UpdateEstimateStatus(int estimateId, int statusId)
+        [Route("UpdateQuoteStatus/{quoteId}/{statusId}")]
+        public async Task<IActionResult> UpdateQuoteStatus(int quoteId, int statusId)
         {
             try
             {
 
-                var existingEstimate = await _repository.GetQuoteAsync(estimateId); //get estimate
+                var existingQuote = await _repository.GetQuoteAsync(quoteId); //get quote
                 var existingStatus = await _repository.GetQuoteStatusAsync(statusId); //make sure the status exists
 
-                if (existingEstimate == null) return NotFound($"The estimate does not exist on the B.O.X System");
-                if (existingStatus == null) return NotFound($"The estimate status does not exist on the B.O.X System");
+                if (existingQuote == null) return NotFound($"The quote does not exist on the B.O.X System");
+                if (existingStatus == null) return NotFound($"The quote status does not exist on the B.O.X System");
 
-                existingEstimate.QuoteStatusID = statusId; //update status
+                existingQuote.QuoteStatusID = statusId; //update status
 
-                // Update the Estimate in the repository
-                await _repository.UpdateQuoteAsync(existingEstimate);
+                // Update the Quote in the repository
+                await _repository.UpdateQuoteAsync(existingQuote);
 
-                return Ok(existingEstimate);
+                return Ok(existingQuote);
             }
             catch (Exception)
             {

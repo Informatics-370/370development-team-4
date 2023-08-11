@@ -24,7 +24,7 @@ namespace BOX.Controllers
 		{
 			try
 			{
-				var results = await _repository.GetAllCustomerRefundfReasonsAsync();
+				var results = await _repository.GetAllCustomerReturnReasonsAsync();
 				return Ok(results);
 			}
 			catch (Exception)
@@ -39,7 +39,7 @@ namespace BOX.Controllers
 		{
 			try
 			{
-				var result = await _repository.GetCustomerRefundReasonAsync(customerrefundreasonId);
+				var result = await _repository.GetCustomerReturnReasonAsync(customerrefundreasonId);
 
 				if (result == null) return NotFound("Customer Refund Reason does not exist on system");
 
@@ -76,7 +76,7 @@ namespace BOX.Controllers
 		{
 			try
 			{
-				var existingrefundreason = await _repository.GetCustomerRefundReasonAsync(customerrefundreasonId);
+				var existingrefundreason = await _repository.GetCustomerReturnReasonAsync(customerrefundreasonId);
 				if (existingrefundreason == null) return NotFound($"The Refund Reason does not exist on the BOX System");
 
 
@@ -101,7 +101,7 @@ namespace BOX.Controllers
 		{
 			try
 			{
-				var existingRefundReason = await _repository.GetCustomerRefundReasonAsync(customerrefundreasonId);
+				var existingRefundReason = await _repository.GetCustomerReturnReasonAsync(customerrefundreasonId);
 
 				if (existingRefundReason == null) return NotFound($"The Customer Refund Reason does not exist on the BOX System");
 

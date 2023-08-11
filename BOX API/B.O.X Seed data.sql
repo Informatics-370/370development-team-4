@@ -21,11 +21,11 @@ GO
 INSERT INTO [dbo].[Quote_Status]
            ([Description])
      VALUES
-           ('Pending review'),
-           ('Reviewed'),
+           ('Generated'),
            ('Cancelled'),
            ('Accepted'),
            ('Rejected'),
+           ('Rejected and will renegotiate'),
            ('Expired')
 GO
 
@@ -53,17 +53,18 @@ INSERT INTO [dbo].[cost_Price_Formula_Variables]
            ,[Factory_Cost]
            ,[Mark_Up])
      VALUES
-           ('Single Wall Carton', 30, 30, 45, 25),
-           ('Double Wall Carton', 30, 30, 45, 25)
+           ('Single Wall Carton', 50, 20, 10, 30),
+           ('Double Wall Carton', 70, 20, 10, 30)
 GO
 
 INSERT INTO [dbo].[Reject_Reason]
-           ([Description])
+           ([PriceMatchFileID]
+           ,[Description])
      VALUES
-           ('I got a better price elsewhere. Can you beat that price?'),
-           ('I got a better price elsewhere.'),
-           ('I don''t want these products anymore.'),
-           ('Other')
+           (null,  'I got a better price elsewhere. Can you beat that price?'),
+           (null, 'I got a better price elsewhere.'),
+           (null, 'I don''t want these products anymore.'),
+           (null, 'Other')
 GO
 
 INSERT INTO [dbo].[Title]

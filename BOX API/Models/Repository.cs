@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 namespace BOX.Models
 {
@@ -106,17 +107,17 @@ namespace BOX.Models
         //--------------------------------------------------------- REFUND REASON -------------------------------------------------------------
 
         //Get All Refund Reasons
-        public async Task<Customer_Return_Reason[]> GetAllCustomerRefundfReasonsAsync()
+        public async Task<Customer_Return_Reason[]> GetAllCustomerReturnReasonsAsync()
         {
-            IQueryable<Customer_Return_Reason> query = _appDbContext.Customer_Refund_Reason;
+            IQueryable<Customer_Return_Reason> query = _appDbContext.Customer_Return_Reason;
             return await query.ToArrayAsync();
         }
 
         //Gets one Refund Reason according to the ID
-        public async Task<Customer_Return_Reason> GetCustomerRefundReasonAsync(int customerrefundreasonId)
+        public async Task<Customer_Return_Reason> GetCustomerReturnReasonAsync(int customerrefundreasonId)
         {
             //Query to select refund reason where the ID passing through the API matches the ID in the Database
-            IQueryable<Customer_Return_Reason> query = _appDbContext.Customer_Refund_Reason.Where(c => c.CustomerReturnReasonID == customerrefundreasonId);
+            IQueryable<Customer_Return_Reason> query = _appDbContext.Customer_Return_Reason.Where(c => c.CustomerReturnReasonID == customerrefundreasonId);
             return await query.FirstOrDefaultAsync();
         }
 
@@ -181,7 +182,7 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-        public async Task<Raw_Material> GetRawMaterialAsync(int? rawmaterialId)
+        public async Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId)
         {
             //Query to select raw material where the ID passing through the API matches the ID in the Database
             IQueryable<Raw_Material> query = _appDbContext.Raw_Material.Where(c => c.RawMaterialID == rawmaterialId);
@@ -275,13 +276,19 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-
         //Gets one Quote  according to the ID
         public async Task<Quote> GetQuoteAsync(int quoteId)
         {
             //Query to select quote where the ID passing through the API matches the ID in the Database
             IQueryable<Quote> query = _appDbContext.Quote.Where(c => c.QuoteID == quoteId);
             return await query.FirstOrDefaultAsync();
+        }
+        
+        //get all quotes for customer A
+        public async Task<Quote[]> GetQuotesByCustomerAsync(string customerId)
+        {
+            IQueryable<Quote> query = _appDbContext.Quote.Where(c => c.UserId == customerId);
+            return await query.ToArrayAsync();
         }
 
         public async Task UpdateQuoteAsync(Quote quote)
@@ -293,11 +300,6 @@ namespace BOX.Models
         }
 
         //------------------------------------------------------ QUOTE LINE------------------------------------------------------------
-        public async Task<Quote_Line[]> GetAllQuoteLinesAsync()
-        {
-            IQueryable<Quote_Line> query = _appDbContext.Quote_Line;
-            return await query.ToArrayAsync();
-        }
 
         //gets all quote lines for a specific quote
         public async Task<Quote_Line[]> GetQuoteLinesByQuoteAsync(int quoteId)
@@ -305,13 +307,6 @@ namespace BOX.Models
             IQueryable<Quote_Line> query = _appDbContext.Quote_Line.Where(c => c.QuoteID == quoteId);
             return await query.ToArrayAsync();
         }
-
-        //Gets all quote lines from every quote customer A has ever made
-        //public async Task<Quote_Line[]> GetQuoteLinesByCustomerAsync(string customerId)
-        //{
-        //    IQueryable<Quote_Line> query = _appDbContext.Quote_Line.Where(c => c.UserId == customerId);
-        //    return await query.ToArrayAsync();
-        //}
 
         ////----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
         //public async Task<Customer> GetCustomerAsync(int customerId)
@@ -379,7 +374,7 @@ namespace BOX.Models
         }
 
         //Gets one Fixed Product according to the ID
-        public async Task<Custom_Product> GetCustomProductAsync(int? customProductId)
+        public async Task<Custom_Product> GetCustomProductAsync(int customProductId)
         {
             //Query to select fixed product where the ID passing through the API matches the ID in the Database
             IQueryable<Custom_Product> query = _appDbContext.Custom_Product.Where(c => c.CustomProductID == customProductId);
@@ -633,6 +628,48 @@ namespace BOX.Models
         {
             IQueryable<User> query = _appDbContext.User.Where(c => c.Id == userId);
             return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<string> GetUserFullNameAsync(string userId)
+        {
+            //get user
+            var usersAsArray = _appDbContext.User.Where(c => c.Id == userId).ToArray();
+            User user = usersAsArray.FirstOrDefault();
+
+            Title title = null;
+            string fullName = "";
+
+            //get title
+            if (user.TitleID != null)
+            {
+                var titleAsArray = _appDbContext.Title.Where(c => c.TitleID == user.TitleID);
+                title = titleAsArray.FirstOrDefault();
+                //concatenate name
+                fullName = title.Description + " " + user.user_FirstName + " " + user.user_LastName;
+            }
+            else
+            {
+                //concatenate name
+                fullName = user.user_FirstName + " " + user.user_LastName;
+            }
+
+            return fullName;
+        }
+
+        //----------------------------------------------- REJECT REASON -----------------------------------------------
+        public async Task<Reject_Reason> GetRejectReasonAsync(int rejectReasonId)
+        {
+            var query = _appDbContext.Reject_Reason.Where(c => c.RejectReasonID == rejectReasonId).ToArray();
+            Reject_Reason rejectReason = query[0];
+
+            //get price match file if there is
+            if (rejectReason.PriceMatchFileID != null) //if there is a price match file
+            {
+                var priceMatchFile = _appDbContext.Price_Match_File.Where(c => c.PriceMatchFileID == rejectReason.PriceMatchFileID).FirstOrDefault();
+                rejectReason.Price_Match_File = priceMatchFile;
+            }
+
+            return rejectReason;
         }
 
         //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
