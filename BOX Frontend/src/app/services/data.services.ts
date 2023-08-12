@@ -375,28 +375,28 @@ export class DataService {
 
   //------------DISCOUNTS------------ 
   GetDiscounts(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}Discount/GetAllDiscounts`)
+    return this.httpClient.get(`${this.apiUrl}BulkDiscount/GetAllDiscounts`)
       .pipe(map(result => result))
   }
 
 
   GetDiscount(discountId: number): Observable<Discount> {
-    return this.httpClient.get<Discount>(`${this.apiUrl}Discount/GetDiscount/${discountId}`)
+    return this.httpClient.get<Discount>(`${this.apiUrl}BulkDiscount/GetDiscount/${discountId}`)
       .pipe(map(result => result));
   }
 
   AddDiscount(rrvm: any): Observable<Discount> {
     return this.httpClient.post<Discount>(
-      `${this.apiUrl}Discount/AddDiscount`, rrvm, this.httpOptions
+      `${this.apiUrl}BulkDiscount/AddDiscount`, rrvm, this.httpOptions
     );
   }
 
   DeleteDiscount(discountId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}Discount/DeleteDiscount/${discountId}`, this.httpOptions);
+    return this.httpClient.delete<any>(`${this.apiUrl}BulkDiscount/DeleteDiscount/${discountId}`, this.httpOptions);
   }
 
   UpdateDiscount(discountId: number, discountModel: Discount): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
+    return this.httpClient.put<any>(`${this.apiUrl}BulkDiscount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
   }
   //------------------------------------------------------Users----------------------------------------------------------
   GetUsers(): Observable<any> {
