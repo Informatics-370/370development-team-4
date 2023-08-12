@@ -20,7 +20,6 @@ import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
-import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
@@ -65,7 +64,6 @@ import { CustomProdComponent } from './custom-prod/custom-prod.component';
         SupplierComponent,
         StartupDivComponent,
         FixedProductComponent,
-        EstimateDurationComponent,
         RawMaterialComponent,
         ProductsComponent,
         CategoriesMenuComponent,

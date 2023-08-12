@@ -11,7 +11,6 @@ import { SizeUnitsComponent } from './size-units/size-units.component';
 import { VatComponent } from './vat/vat.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
-import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
@@ -38,7 +37,7 @@ import { CustomProdComponent } from './custom-prod/custom-prod.component';
 
 
 const routes: Routes = [
-  { path: "", redirectTo: 'register', pathMatch: 'full' },
+  { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
   { path: "dashboard", component: DashboardComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
   { path: "register", component: RegisterComponent },
   { path: "product-item", component: ProductItemTestComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
@@ -50,7 +49,6 @@ const routes: Routes = [
   { path: 'vat', component: VatComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
   { path: "supplier", component: SupplierComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
   { path: "fixed-product", component: FixedProductComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: 'estimate-duration', component: EstimateDurationComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
   { path: 'raw-material', component: RawMaterialComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
   { path: 'products', component: ProductsComponent },
   { path: 'products/:category', component: ProductsComponent },

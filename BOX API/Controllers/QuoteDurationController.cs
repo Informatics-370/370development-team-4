@@ -18,20 +18,20 @@ namespace BOX.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        [Route("GetAllQuoteDurations")]
-        public async Task<IActionResult> GetAllQuoteDurations()
-        {
-            try
-            {
-                var results = await _repository.GetAllQuoteDurationsAsync();
-                return Ok(results);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
-            }
-        }
+        //[HttpGet]
+        //[Route("GetAllQuoteDurations")]
+        //public async Task<IActionResult> GetAllQuoteDurations()
+        //{
+        //    try
+        //    {
+        //        var results = await _repository.GetAllQuoteDurationsAsync();
+        //        return Ok(results);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
+        //    }
+        //}
 
         [HttpGet]
         [Route("GetQuoteDuration/{quotedurationId}")]
@@ -51,24 +51,24 @@ namespace BOX.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("AddQuoteDuration")]
-        public async Task<IActionResult> AddQuoteDuration(QuoteDurationViewModel evm)
-        {
-            var quoteduration = new Quote_Duration { Duration = evm.Duration };
+        //[HttpPost]
+        //[Route("AddQuoteDuration")]
+        //public async Task<IActionResult> AddQuoteDuration(QuoteDurationViewModel evm)
+        //{
+        //    var quoteduration = new Quote_Duration { Duration = evm.Duration };
 
-            try
-            {
-                _repository.Add(quoteduration);
-                await _repository.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                return BadRequest("Invalid transaction");
-            }
+        //    try
+        //    {
+        //        _repository.Add(quoteduration);
+        //        await _repository.SaveChangesAsync();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return BadRequest("Invalid transaction");
+        //    }
 
-            return Ok(quoteduration);
-        }
+        //    return Ok(quoteduration);
+        //}
 
         [HttpPut]
         [Route("EditQuoteDuration/{quotedurationId}")]
@@ -95,28 +95,26 @@ namespace BOX.Controllers
             return BadRequest("Your request is invalid.");
         }
 
-        [HttpDelete]
-        [Route("DeleteQuoteDuration/{quotedurationId}")]
-        public async Task<IActionResult> DeleteQuoteDuration(int quotedurationId)
-        {
-            try
-            {
-                var existingquoteduration = await _repository.GetQuoteDurationAsync(quotedurationId);
+        //[HttpDelete]
+        //[Route("DeleteQuoteDuration/{quotedurationId}")]
+        //public async Task<IActionResult> DeleteQuoteDuration(int quotedurationId)
+        //{
+        //    try
+        //    {
+        //        var existingquoteduration = await _repository.GetQuoteDurationAsync(quotedurationId);
 
-                if (existingquoteduration == null) return NotFound($"The Quote Duration does not exist on the BOX System");
+        //        if (existingquoteduration == null) return NotFound($"The Quote Duration does not exist on the BOX System");
 
-                _repository.Delete(existingquoteduration);
+        //        _repository.Delete(existingquoteduration);
 
-                if (await _repository.SaveChangesAsync()) return Ok(existingquoteduration);
+        //        if (await _repository.SaveChangesAsync()) return Ok(existingquoteduration);
 
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error. Please contact support.");
-            }
-            return BadRequest("Your request is invalid.");
-        }
-
-
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(500, "Internal Server Error. Please contact support.");
+        //    }
+        //    return BadRequest("Your request is invalid.");
+        //}
     }
 }

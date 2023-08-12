@@ -7,11 +7,11 @@ import { CategoryVM } from '../shared/category-vm';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { CustomProductVM } from '../shared/custom-product-vm';
-import { RefundReason } from '../shared/refund-reason';
+import { ReturnReason } from '../shared/return-reason';
 import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
-import { EstimateDuration } from '../shared/estimate-duration';
+import { QuoteDuration } from '../shared/quote-duration';
 import { SizeVM } from '../shared/size-vm';
 import { Supplier } from '../shared/supplier';
 import { Customer } from '../shared/customer';
@@ -124,30 +124,31 @@ export class DataService {
     return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
   }
 
-  //------------CUSTOMER REFUND REASON------------ [Give it its own service?]
-  GetRefundReasons(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}RefundReason/GetAllCustomerRefundReasons`)
+  //------------CUSTOMER RETURN REASON------------ [Give it its own service?]
+  GetReturnReasons(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}ReturnReason/GetAllCustomerReturnReasons`)
       .pipe(map(result => result))
   }
 
-  GetRefundReason(customerrefundreasonId: number): Observable<RefundReason> {
-    return this.httpClient.get<RefundReason>(`${this.apiUrl}RefundReason/GetCustomerRefundReason/${customerrefundreasonId}`)
+  GetReturnReason(customerreturnreasonId: number): Observable<ReturnReason> {
+    return this.httpClient.get<ReturnReason>(`${this.apiUrl}ReturnReason/GetCustomerReturnReason/${customerreturnreasonId}`)
       .pipe(map(result => result));
   }
 
-  AddReason(rrvm: any): Observable<RefundReason> {
-    return this.httpClient.post<RefundReason>(
-      `${this.apiUrl}RefundReason/AddRefundReason`, rrvm, this.httpOptions
+  AddReason(rrvm: any): Observable<ReturnReason> {
+    return this.httpClient.post<ReturnReason>(
+      `${this.apiUrl}ReturnReason/AddReturnReason`, rrvm, this.httpOptions
     );
   }
 
-  DeleteRefundReason(customerrefundreasonId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}RefundReason/DeleteCustomerRefundReason/${customerrefundreasonId}`, this.httpOptions);
+  DeleteReturnReason(customerreturnreasonId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}ReturnReason/DeleteCustomerReturnReason/${customerreturnreasonId}`, this.httpOptions);
   }
 
-  UpdateRefundReason(customerrefundreasonId: number, refundreasonModel: any): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}RefundReason/EditCustomerRefundReason/${customerrefundreasonId}`, refundreasonModel, this.httpOptions);
+  UpdateReturnReason(customerreturnreasonId: number, returnreasonModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}ReturnReason/EditCustomerReturnReason/${customerreturnreasonId}`, returnreasonModel, this.httpOptions);
   }
+
 
   //----------WRITE-OFF REASON---------------
   GetWriteOffReasons(): Observable<any> {
@@ -224,29 +225,14 @@ export class DataService {
     return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
   }
 
-  //------------ESTIMATE DURATION------------ 
-  GetEstimateDurations(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}EstimateDuration/GetAllEstimateDurations`)
-      .pipe(map(result => result))
-  }
-
-  GetEstimateDuration(estimatedurationId: number): Observable<EstimateDuration> {
-    return this.httpClient.get<EstimateDuration>(`${this.apiUrl}EstimateDuration/GetEstimateDuration/${estimatedurationId}`)
+  //------------QUOTE DURATION------------
+  GetQuoteDuration(quotedurationId: number): Observable<QuoteDuration> {
+    return this.httpClient.get<QuoteDuration>(`${this.apiUrl}QuoteDuration/GetQuoteDuration/${quotedurationId}`)
       .pipe(map(result => result));
   }
 
-  AddEstimateDuration(rrvm: any): Observable<EstimateDuration> {
-    return this.httpClient.post<EstimateDuration>(
-      `${this.apiUrl}EstimateDuration/AddEstimateDuration`, rrvm, this.httpOptions
-    );
-  }
-
-  DeleteEstimateDuration(estimatedurationId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}EstimateDuration/DeleteEstimateDuration/${estimatedurationId}`, this.httpOptions);
-  }
-
-  UpdateEstimateDuration(estimatedurationId: number, estimatedurationModel: any): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}EstimateDuration/EditEstimateDuration/${estimatedurationId}`, estimatedurationModel, this.httpOptions);
+  UpdateQuoteDuration(quotedurationId: number, quotedurationModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}QuoteDuration/EditQuoteDuration/${quotedurationId}`, quotedurationModel, this.httpOptions);
   }
 
   //----------RAW MATERIAL---------------
@@ -358,7 +344,7 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}CostPriceFormulaVariables/EditFormulaVariables/${formulaId}`, updatedCPFV, this.httpOptions);
   }
 
-      // Get all Roles
+  // Get all Roles
   GetAllRoles(): Observable<Role[]> {
     return this.httpClient.get<Role[]>(`${this.apiUrl}Roles/GetAllRoles`)
       .pipe(map(result => result));
@@ -387,12 +373,12 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}Roles/UpdateRole/${roleId}`, updatedRole, this.httpOptions);
   }
 
-//Supplier Orders
-AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
-  return this.httpClient.post<any>(
-    `${this.apiUrl}SupplierOrder/AddSupplierOrder`, newSupplierOrder, this.httpOptions
-  );
-}
+  //Supplier Orders
+  AddSupplierOrder(newSupplierOrder: SupplierOrderVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}SupplierOrder/AddSupplierOrder`, newSupplierOrder, this.httpOptions
+    );
+  }
 
 
   //------------DISCOUNTS------------ 
@@ -427,15 +413,15 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
   }
 
 
-   DeleteUser(emailOrPhoneNumber: string): Observable<any> {
-     return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
-   }
+  DeleteUser(emailOrPhoneNumber: string): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
+  }
 
-   UpdateUser(email: string, updatedUser: Users): Observable<any> {
-     return this.httpClient.put<any>(`${this.apiUrl}User/UpdateUser/${email}`, updatedUser, this.httpOptions);
-   }
+  UpdateUser(email: string, updatedUser: Users): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}User/UpdateUser/${email}`, updatedUser, this.httpOptions);
+  }
 
-   
+
   GetUser(emailOrPhoneNumber: string): Observable<Users> {
     return this.httpClient.get<Users>(`${this.apiUrl}User/GetUserByEmailOrPhoneNumber/${emailOrPhoneNumber}`)
       .pipe(map(result => result));
@@ -474,16 +460,16 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
 
-    //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
-    GetAllCustomProducts(): Observable<any> {
-      return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)
-        .pipe(map(result => result))
-    }
-  
-    GetCustomProduct(customProductId: number): Observable<CustomProductVM> {
-      return this.httpClient.get<CustomProductVM>(`${this.apiUrl}CustomProduct/GetCustomProduct/${customProductId}`)
-        .pipe(map(result => result));
-    }
+  //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
+  GetAllCustomProducts(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)
+      .pipe(map(result => result))
+  }
+
+  GetCustomProduct(customProductId: number): Observable<CustomProductVM> {
+    return this.httpClient.get<CustomProductVM>(`${this.apiUrl}CustomProduct/GetCustomProduct/${customProductId}`)
+      .pipe(map(result => result));
+  }
 
   AddCustomProduct(customProductViewModel: CustomProductVM): Observable<any> {
     return this.httpClient.post<any>(

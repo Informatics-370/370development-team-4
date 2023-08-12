@@ -1,8 +1,7 @@
 ﻿namespace BOX.ViewModel
 {
-	public class RefundReasonViewModel
+	public class ReturnReasonViewModel
 	{
 		public string Description { get; set; }
-
 	}
 }

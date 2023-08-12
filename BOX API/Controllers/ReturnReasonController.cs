@@ -7,118 +7,114 @@ using Microsoft.AspNetCore.Mvc;
 namespace BOX.Controllers
 {
 
-	[Route("api/[controller]")]
-	[ApiController]
-	public class ReturnReasonController : ControllerBase
-	{
-		private readonly IRepository _repository;
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ReturnReasonController : ControllerBase
+    {
+        private readonly IRepository _repository;
 
-		public ReturnReasonController(IRepository repository)
-		{
-			_repository = repository;
-		}
+        public ReturnReasonController(IRepository repository)
+        {
+            _repository = repository;
+        }
 
-		[HttpGet]
-		[Route("GetAllCustomerRefundReasons")]
-		public async Task<IActionResult> GetAllCustomerRefundReasons()
-		{
-			try
-			{
-				var results = await _repository.GetAllCustomerReturnReasonsAsync();
-				return Ok(results);
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
-			}
-		}
+        [HttpGet]
+        [Route("GetAllCustomerReturnReasons")]
+        public async Task<IActionResult> GetAllCustomerReturnReasons()
+        {
+            try
+            {
+                var results = await _repository.GetAllCustomerReturnReasonsAsync();
+                return Ok(results);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
+            }
+        }
 
-		[HttpGet]
-		[Route("GetCustomerRefundReason/{customerrefundreasonId}")]
-		public async Task<IActionResult> GetCustomerRefundReasonAsync(int customerrefundreasonId)
-		{
-			try
-			{
-				var result = await _repository.GetCustomerReturnReasonAsync(customerrefundreasonId);
+        [HttpGet]
+        [Route("GetCustomerReturnReason/{customerreturnreasonId}")]
+        public async Task<IActionResult> GetCustomerReturnReasonAsync(int customerreturnreasonId)
+        {
+            try
+            {
+                var result = await _repository.GetCustomerReturnReasonAsync(customerreturnreasonId);
 
-				if (result == null) return NotFound("Customer Refund Reason does not exist on system");
+                if (result == null) return NotFound("Customer Return Reason does not exist on system");
 
-				return Ok(result);
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support");
-			}
-		}
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact BOX support");
+            }
+        }
 
-		[HttpPost]
-		[Route("AddRefundReason")]
-		public async Task<IActionResult> AddRefundReason(RefundReasonViewModel rrvm)
-		{
-			var customerrefundreason = new Customer_Return_Reason { Description=rrvm.Description};
+        [HttpPost]
+        [Route("AddReturnReason")]
+        public async Task<IActionResult> AddReturnReason(ReturnReasonViewModel rrvm)
+        {
+            var customerreturnreason = new Customer_Return_Reason { Description = rrvm.Description };
 
-			try
-			{
-				_repository.Add(customerrefundreason);
-				await _repository.SaveChangesAsync();
-			}
-			catch (Exception)
-			{
-				return BadRequest("Invalid transaction");
-			}
+            try
+            {
+                _repository.Add(customerreturnreason);
+                await _repository.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid transaction");
+            }
 
-			return Ok(customerrefundreason);
-		}
+            return Ok(customerreturnreason);
+        }
 
-		[HttpPut]
-		[Route("EditCustomerRefundReason/{customerrefundreasonId}")]
-		public async Task<ActionResult<RefundReasonViewModel>> EditCustomerRefundReason(int customerrefundreasonId, RefundReasonViewModel refundreasonModel)
-		{
-			try
-			{
-				var existingrefundreason = await _repository.GetCustomerReturnReasonAsync(customerrefundreasonId);
-				if (existingrefundreason == null) return NotFound($"The Refund Reason does not exist on the BOX System");
-
-
-				existingrefundreason.Description = refundreasonModel.Description;
-				
-
-				if (await _repository.SaveChangesAsync())
-				{
-					return Ok(existingrefundreason);
-				}
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support.");
-			}
-			return BadRequest("Your request is invalid.");
-		}
-
-		[HttpDelete]
-		[Route("DeleteCustomerRefundReason/{customerrefundreasonId}")]
-		public async Task<IActionResult> DeleteCustomerRefundReason(int customerrefundreasonId)
-		{
-			try
-			{
-				var existingRefundReason = await _repository.GetCustomerReturnReasonAsync(customerrefundreasonId);
-
-				if (existingRefundReason == null) return NotFound($"The Customer Refund Reason does not exist on the BOX System");
-
-				_repository.Delete(existingRefundReason);
-
-				if (await _repository.SaveChangesAsync()) return Ok(existingRefundReason);
-
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support.");
-			}
-			return BadRequest("Your request is invalid.");
-		}
+        [HttpPut]
+        [Route("EditCustomerReturnReason/{customerreturnreasonId}")]
+        public async Task<ActionResult<ReturnReasonViewModel>> EditCustomerReturnReason(int customerreturnreasonId, ReturnReasonViewModel returnreasonModel)
+        {
+            try
+            {
+                var existingreturnreason = await _repository.GetCustomerReturnReasonAsync(customerreturnreasonId);
+                if (existingreturnreason == null) return NotFound($"The Return Reason does not exist on the BOX System");
 
 
-	}
+                existingreturnreason.Description = returnreasonModel.Description;
+
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    return Ok(existingreturnreason);
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact BOX support.");
+            }
+            return BadRequest("Your request is invalid.");
+        }
+
+        [HttpDelete]
+        [Route("DeleteCustomerReturnReason/{customerreturnreasonId}")]
+        public async Task<IActionResult> DeleteCustomerReturnReason(int customerreturnreasonId)
+        {
+            try
+            {
+                var existingReturnReason = await _repository.GetCustomerReturnReasonAsync(customerreturnreasonId);
+
+                if (existingReturnReason == null) return NotFound($"The Customer Return Reason does not exist on the BOX System");
+
+                _repository.Delete(existingReturnReason);
+
+                if (await _repository.SaveChangesAsync()) return Ok(existingReturnReason);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact BOX support.");
+            }
+            return BadRequest("Your request is invalid.");
+        }
+    }
 }
-
-
