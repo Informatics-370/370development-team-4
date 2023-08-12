@@ -55,8 +55,8 @@ namespace BOX.Controllers
                         QuoteRequestID = quote.QuoteRequestID,
                         QuoteStatusID = quote.QuoteStatusID,
                         QuoteStatusDescription = status.Description,
-                        UserId = quote.UserId,
-                        UserFullName = fullName,
+                        CustomerId = quote.UserId,
+                        CustomerFullName = fullName,
                         QuoteDurationID = quote.QuoteDurationID,
                         DateGenerated = quote.Date_Generated,
                         RejectReasonID = quote.RejectReasonID == null ? 0 : quote.RejectReasonID.Value,
@@ -92,17 +92,21 @@ namespace BOX.Controllers
                 //put all quote lines for this specific quote in a list for the quote VM
                 foreach (var ql in quoteLines)
                 {
-                    int fpID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value;
-                    Fixed_Product fixedProduct = await _repository.GetFixedProductAsync(fpID);
+                    Fixed_Product fixedProduct = new Fixed_Product();
                     string customProdDescription = "Custom product ";
 
-                    if (ql.CustomProductID != null) //this orderline holds a custom product
+                    if (ql.CustomProductID != null) //this line holds a custom product
                     {
                         int cpID = ql.CustomProductID.Value;
                         Custom_Product customProduct = await _repository.GetCustomProductAsync(cpID);
 
                         //concatenate custom product string
                         customProdDescription += customProduct.Length + "mm x " + customProduct.Width + "mm x " + customProduct.Height + "mm";
+                    }
+                    else //this line holds a fixed product
+                    {
+                        int fpID = ql.FixedProductID.Value;
+                        fixedProduct = await _repository.GetFixedProductAsync(fpID);
                     }
 
                     QuoteLineViewModel qlVM = new QuoteLineViewModel
@@ -135,8 +139,8 @@ namespace BOX.Controllers
                     QuoteRequestID = quote.QuoteRequestID,
                     QuoteStatusID = quote.QuoteStatusID,
                     QuoteStatusDescription = status.Description,
-                    UserId = quote.UserId,
-                    UserFullName = fullName,
+                    CustomerId = quote.UserId,
+                    CustomerFullName = fullName,
                     QuoteDurationID = quote.QuoteDurationID,
                     DateGenerated = quote.Date_Generated,
                     RejectReasonID = rejectReason.RejectReasonID,
@@ -162,13 +166,13 @@ namespace BOX.Controllers
                 List<QuoteViewModel> customerQuoteVMs = new List<QuoteViewModel>(); //create list to return
                 var quotes = await _repository.GetQuotesByCustomerAsync(customerId); //get all quotes for this customer
 
-                List<QuoteLineViewModel> allCustomerQuoteLines = new List<QuoteLineViewModel>();
-
                 foreach (var quote in quotes)
                 {
                     //get all quote lines associated with this quote and create array from them
                     List<QuoteLineViewModel> qlList = new List<QuoteLineViewModel>();
+
                     var quoteLines = await _repository.GetQuoteLinesByQuoteAsync(quote.QuoteID);
+                    if (quoteLines == null) return NotFound("The quote does not exist on the B.O.X System"); //an quote must have at least 1 line
 
                     //put all quote lines for this specific quote in a list for the quote VM
                     foreach (var ql in quoteLines)
@@ -177,7 +181,7 @@ namespace BOX.Controllers
                         Fixed_Product fixedProduct = await _repository.GetFixedProductAsync(fpID);
                         string customProdDescription = "Custom product ";
 
-                        if (ql.CustomProductID != null) //this orderline holds a custom product
+                        if (ql.CustomProductID != null) //this quote line holds a custom product
                         {
                             int cpID = ql.CustomProductID.Value;
                             Custom_Product customProduct = await _repository.GetCustomProductAsync(cpID);
@@ -215,8 +219,8 @@ namespace BOX.Controllers
                         QuoteID = quote.QuoteID,
                         QuoteStatusID = quote.QuoteStatusID,
                         QuoteStatusDescription = status.Description,
-                        UserId = quote.UserId,
-                        UserFullName = fullName,
+                        CustomerId = quote.UserId,
+                        CustomerFullName = fullName,
                         QuoteDurationID = quote.QuoteDurationID,
                         DateGenerated = quote.Date_Generated,
                         RejectReasonID = rejectReason.RejectReasonID,
@@ -240,6 +244,10 @@ namespace BOX.Controllers
         [Route("AddQuote")]
         public async Task<IActionResult> AddQuote([FromBody] QuoteViewModel quoteViewModel)
         {
+            // Start a database transaction; because of this, nothing is fully saved until the end i.e. unless quote and quote lines are created successfully with no errors, the quote isn't created
+            //this prevents having a quote with no lines which was an issue when I was testing
+            using var transaction = _repository.BeginTransaction();
+
             // Create a new instance of Quote from the view model
             var quote = new Quote
             {
@@ -247,7 +255,7 @@ namespace BOX.Controllers
                 QuoteRequestID = quoteViewModel.QuoteRequestID,
                 QuoteStatusID = 1, //quote status of 'Pending review'. Statuses can't be CRUDed so this can be hard coded
                 QuoteDurationID = 1,
-                UserId = quoteViewModel.UserId,
+                UserId = quoteViewModel.CustomerId,
                 Date_Generated = DateTime.Now
             }; //do not add value for quoteID manually else SQL won't auto generate it
 
@@ -276,11 +284,13 @@ namespace BOX.Controllers
 
                 // Save changes in the repository
                 await _repository.SaveChangesAsync();
+                transaction.Commit(); //commit transaction i.e. save fully
 
                 return Ok(quoteViewModel);
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services. " + ex.Message + " has inner exception of " + ex.InnerException);
             }
         }

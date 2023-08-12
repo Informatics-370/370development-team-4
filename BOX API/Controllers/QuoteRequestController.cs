@@ -52,8 +52,8 @@ namespace BOX.Controllers
                     QuoteViewModel qrVM = new QuoteViewModel
                     {
                         QuoteRequestID = request.QuoteRequestID,
-                        UserId = request.UserId,
-                        UserFullName = fullName,
+                        CustomerId = request.UserId,
+                        CustomerFullName = fullName,
                         DateRequested = request.Date,
                         //Lines = qrLineList
                     };
@@ -141,8 +141,8 @@ namespace BOX.Controllers
                 QuoteViewModel qrVM = new QuoteViewModel
                 {
                     QuoteRequestID = quoteRequest.QuoteRequestID,
-                    UserId = quoteRequest.UserId,
-                    UserFullName = fullName,
+                    CustomerId = quoteRequest.UserId,
+                    CustomerFullName = fullName,
                     DateRequested = quoteRequest.Date,
                     Lines = qrLineList
                 };
@@ -159,10 +159,14 @@ namespace BOX.Controllers
         [Route("AddQuoteRequest")]
         public async Task<IActionResult> AddQuoteRequest([FromBody] QuoteViewModel quoteRequestViewModel)
         {
+            // Start a database transaction; because of this, nothing is fully saved until the end i.e. unless request and request lines are created successfully with no errors, the request isn't created
+            //this prevents having a request with no request lines which was an issue when I was testing
+            using var transaction = _repository.BeginTransaction();
+
             // Create a new instance of quote request from the view model
             var quoteRequest = new Quote_Request
             {
-                UserId = quoteRequestViewModel.UserId,
+                UserId = quoteRequestViewModel.CustomerId,
                 Date = DateTime.Now
             };
 
@@ -189,11 +193,13 @@ namespace BOX.Controllers
 
                 // Save changes in the repository
                 await _repository.SaveChangesAsync();
+                transaction.Commit(); //commit transaction
 
                 return Ok(quoteRequestViewModel);
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services. " + ex.Message + " has inner exception of " + ex.InnerException);
             }
         }

@@ -1,6 +1,6 @@
 ﻿namespace BOX.ViewModel
 {
-	public class EstimateDurationViewModel
+	public class QuoteDurationViewModel
 	{
 	public int Duration { get; set; }
 

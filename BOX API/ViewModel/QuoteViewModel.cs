@@ -7,8 +7,8 @@ namespace BOX.ViewModel
     {
         public int QuoteRequestID { get; set; }
         public int QuoteID { get; set; }
-        public string UserId { get; set; }
-        public string UserFullName { get; set; }
+        public string CustomerId { get; set; }
+        public string CustomerFullName { get; set; }
         public DateTime DateRequested { get; set; } //date the quote was requested
         public int RejectReasonID { get; set; }
         public string RejectReasonDescription { get; set; }

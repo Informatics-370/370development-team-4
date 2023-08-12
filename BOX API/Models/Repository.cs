@@ -1,5 +1,8 @@
+using BOX.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+
 namespace BOX.Models
 {
 
@@ -221,6 +224,14 @@ namespace BOX.Models
             //Query to select fixed product where the ID passing through the API matches the ID in the Database
             IQueryable<Fixed_Product> query = _appDbContext.Fixed_Product.Where(c => c.FixedProductID == fixedProductId);
             return await query.FirstOrDefaultAsync();
+        }
+
+        //Gets Fixed Product SYNCHRONOUSLY
+        public Fixed_Product GetFixedProduct(int fixedProductId)
+        {
+            //Query to select fixed product where the ID passing through the API matches the ID in the Database
+            IQueryable<Fixed_Product> query = _appDbContext.Fixed_Product.Where(c => c.FixedProductID == fixedProductId);
+            return query.FirstOrDefault();
         }
 
         public async Task UpdateFixedProductAsync(Fixed_Product fixedProduct)
@@ -466,36 +477,26 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task UpdateCustomerOrderAsync(Customer_Order customerOrder)
+        //Gets all customer order lines from every order customer "A" has ever made
+        public async Task<Customer_Order[]> GetOrdersByCustomerAsync(string customerId)
         {
-            // Update the Customer Order entity in the data storage
-            _appDbContext.Update(customerOrder);
-
-            await _appDbContext.SaveChangesAsync();
-        }
-
-        //------------------------------------------------------ Customer Order LINE------------------------------------------------------------
-
-
-        public async Task<Customer_Order_Line[]> GetAllOrderLinesAsync()
-        {
-            IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line;
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.UserId == customerId);
             return await query.ToArrayAsync();
         }
 
+        public async Task<Customer_Order[]> GetCustomerOrdersByDeliverySchedule(int orderDeliveryScheduleId)
+        {
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.OrderDeliveryScheduleID == orderDeliveryScheduleId);
+            return await query.ToArrayAsync();
+        }
+
+        //------------------------------------------------------ Customer Order LINE------------------------------------------------------------
         //gets all Customer Order lines for a specific order
         public async Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId)
         {
             IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerOrderID == orderId);
             return await query.ToArrayAsync();
         }
-
-        //Gets all customer order lines from every order customer "A" has ever made
-        //public async Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(string customerId)
-        //{
-        //    IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.UserId == customerId);
-        //    return await query.ToArrayAsync();
-        //}
 
         //------------------------------------------------------------- Supplier Return  -------------------------------------------------------------------
 
@@ -672,7 +673,19 @@ namespace BOX.Models
             return rejectReason;
         }
 
-        //---------------------------------------------------------- SAVE CHANGES -----------------------------------------------------------
+        //
+        public IDbContextTransaction BeginTransaction()
+        {
+            return _appDbContext.Database.BeginTransaction();
+        }
+
+        //---------------------------------------------------------- SAVE CHANGES SYNCHRONOUSLY -----------------------------------------------------------
+        public bool SaveChanges()
+        {
+            return _appDbContext.SaveChanges() > 0;
+        }
+
+        //---------------------------------------------------------- SAVE CHANGES ASYNC -----------------------------------------------------------
         //Never remove this line of code, code above the line above.
         public async Task<bool> SaveChangesAsync()
         {

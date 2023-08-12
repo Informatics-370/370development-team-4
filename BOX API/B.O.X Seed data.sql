@@ -71,7 +71,6 @@ INSERT INTO [dbo].[Title]
            ([Description])
      VALUES
            ('Mr'),
-           ('Miss'),
            ('Ms'),
            ('Mrs'),
            ('Prof'),

@@ -7,118 +7,116 @@ using Microsoft.AspNetCore.Mvc;
 namespace BOX.Controllers
 {
 
-	[Route("api/[controller]")]
-	[ApiController]
-	public class QuoteDurationController : ControllerBase
-	{
-		private readonly IRepository _repository;
+    [Route("api/[controller]")]
+    [ApiController]
+    public class QuoteDurationController : ControllerBase
+    {
+        private readonly IRepository _repository;
 
-		public QuoteDurationController(IRepository repository)
-		{
-			_repository = repository;
-		}
+        public QuoteDurationController(IRepository repository)
+        {
+            _repository = repository;
+        }
 
-		[HttpGet]
-		[Route("GetAllEstimateDurations")]
-		public async Task<IActionResult> GetAllEstimateDurations()
-		{
-			try
-			{
-				var results = await _repository.GetAllQuoteDurationsAsync();
-				return Ok(results);
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
-			}
-		}
+        [HttpGet]
+        [Route("GetAllQuoteDurations")]
+        public async Task<IActionResult> GetAllQuoteDurations()
+        {
+            try
+            {
+                var results = await _repository.GetAllQuoteDurationsAsync();
+                return Ok(results);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
+            }
+        }
 
-		[HttpGet]
-		[Route("GetEstimateDuration/{estimatedurationId}")]
-		public async Task<IActionResult> GetEstimateDurationAsync(int estimatedurationId)
-		{
-			try
-			{
-				var result = await _repository.GetQuoteDurationAsync(estimatedurationId);
+        [HttpGet]
+        [Route("GetQuoteDuration/{quotedurationId}")]
+        public async Task<IActionResult> GetQuoteDurationAsync(int quotedurationId)
+        {
+            try
+            {
+                var result = await _repository.GetQuoteDurationAsync(quotedurationId);
 
-				if (result == null) return NotFound("Estimate Duration does not exist on system");
+                if (result == null) return NotFound("Quote Duration does not exist on system");
 
-				return Ok(result);
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support");
-			}
-		}
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact BOX support");
+            }
+        }
 
-		[HttpPost]
-		[Route("AddEstimateDuration")]
-		public async Task<IActionResult> AddEstimateDuration(EstimateDurationViewModel evm)
-		{
-			var estimateduration = new Quote_Duration { Duration=evm.Duration};
+        [HttpPost]
+        [Route("AddQuoteDuration")]
+        public async Task<IActionResult> AddQuoteDuration(QuoteDurationViewModel evm)
+        {
+            var quoteduration = new Quote_Duration { Duration = evm.Duration };
 
-			try
-			{
-				_repository.Add(estimateduration);
-				await _repository.SaveChangesAsync();
-			}
-			catch (Exception)
-			{
-				return BadRequest("Invalid transaction");
-			}
+            try
+            {
+                _repository.Add(quoteduration);
+                await _repository.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid transaction");
+            }
 
-			return Ok(estimateduration);
-		}
+            return Ok(quoteduration);
+        }
 
-		[HttpPut]
-		[Route("EditEstimateDuration/{estimatedurationId}")]
-		public async Task<ActionResult<EstimateDurationViewModel>> EditEstimateDuration(int estimatedurationId, EstimateDurationViewModel estimateModel)
-		{
-			try
-			{
-				var existingestimateduration = await _repository.GetQuoteDurationAsync(estimatedurationId);
-				if (existingestimateduration == null) return NotFound($"The Estimate Duration does not exist on the BOX System");
-
-
-				existingestimateduration.Duration = estimateModel.Duration;
-				
-
-				if (await _repository.SaveChangesAsync())
-				{
-					return Ok(existingestimateduration);
-				}
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact BOX support.");
-			}
-			return BadRequest("Your request is invalid.");
-		}
-
-		[HttpDelete]
-		[Route("DeleteEstimateDuration/{estimatedurationId}")]
-		public async Task<IActionResult> DeleteEstimateDuration(int estimatedurationId)
-		{
-			try
-			{
-				var existingestimateduration = await _repository.GetQuoteDurationAsync(estimatedurationId);
-
-				if (existingestimateduration == null) return NotFound($"The Estimate Duration does not exist on the BOX System");
-
-				_repository.Delete(existingestimateduration);
-
-				if (await _repository.SaveChangesAsync()) return Ok(existingestimateduration);
-
-			}
-			catch (Exception)
-			{
-				return StatusCode(500, "Internal Server Error. Please contact support.");
-			}
-			return BadRequest("Your request is invalid.");
-		}
+        [HttpPut]
+        [Route("EditQuoteDuration/{quotedurationId}")]
+        public async Task<ActionResult<QuoteDurationViewModel>> EditQuoteDuration(int quotedurationId, QuoteDurationViewModel quoteModel)
+        {
+            try
+            {
+                var existingquoteduration = await _repository.GetQuoteDurationAsync(quotedurationId);
+                if (existingquoteduration == null) return NotFound($"The Quote Duration does not exist on the BOX System");
 
 
-	}
+                existingquoteduration.Duration = quoteModel.Duration;
+
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    return Ok(existingquoteduration);
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact BOX support.");
+            }
+            return BadRequest("Your request is invalid.");
+        }
+
+        [HttpDelete]
+        [Route("DeleteQuoteDuration/{quotedurationId}")]
+        public async Task<IActionResult> DeleteQuoteDuration(int quotedurationId)
+        {
+            try
+            {
+                var existingquoteduration = await _repository.GetQuoteDurationAsync(quotedurationId);
+
+                if (existingquoteduration == null) return NotFound($"The Quote Duration does not exist on the BOX System");
+
+                _repository.Delete(existingquoteduration);
+
+                if (await _repository.SaveChangesAsync()) return Ok(existingquoteduration);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact support.");
+            }
+            return BadRequest("Your request is invalid.");
+        }
+
+
+    }
 }
-
-

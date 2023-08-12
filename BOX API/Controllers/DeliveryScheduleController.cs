@@ -1,178 +1,139 @@
 using BOX.Models;
 using BOX.ViewModel;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QRCoder;
-using System.Drawing;
-using System.IO;
 
 
 namespace BOX.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class DeliveryScheduleController : ControllerBase
-	{
-		private readonly IRepository _repository;
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DeliveryScheduleController : ControllerBase
+    {
+        private readonly IRepository _repository;
 
-		public DeliveryScheduleController(IRepository repository)
-		{
-			_repository = repository;
-		}
+        public DeliveryScheduleController(IRepository repository)
+        {
+            _repository = repository;
+        }
 
-		//-------------------------------------------------- Get All Order Delivery Schedules --------------------------------------------------
-		[HttpGet]
-		[Route("GetAllOrderDeliverySchedules")]
-		public async Task<IActionResult> GetAllOrderDeliverySchedules()
-		{
-			try
-			{
-				var delSchedules = await _repository.GetAllCustomerOrderDeliverySchedulesAsync();
+        //-------------------------------------------------- Get All Order Delivery Schedules --------------------------------------------------
+        [HttpGet]
+        [Route("GetAllOrderDeliverySchedules")]
+        public async Task<IActionResult> GetAllOrderDeliverySchedules()
+        {
+            try
+            {
+                var delSchedules = await _repository.GetAllCustomerOrderDeliverySchedulesAsync();
 
-				List<DeliveryScheduleViewModel> DeliveryScheduleViewModels = new List<DeliveryScheduleViewModel>();
-				foreach (var schedule in delSchedules)
-				{
-					//var employee = await _repository.GetEmployeeAsync(schedule.EmployeeID); //get Employee
-
-
-					DeliveryScheduleViewModel dsVM = new DeliveryScheduleViewModel()
-					{
-						OrderDeliveryScheduleID = schedule.OrderDeliveryScheduleID,
-            UserId = schedule.UserId,
-						Date = schedule.Date
-						
-
-					};
-					DeliveryScheduleViewModels.Add(dsVM);
-				}
+                List<DeliveryScheduleViewModel> DeliveryScheduleViewModels = new List<DeliveryScheduleViewModel>();
+                foreach (var schedule in delSchedules)
+                {
+                    //var employee = await _repository.GetEmployeeAsync(schedule.EmployeeID); //get Employee
 
 
-				return Ok(DeliveryScheduleViewModels);
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-			}
-
-		}
-
-
-		//-------------------------------------------------- Get Estimate By ID ------------------------------------------------
-		[HttpGet]
-		[Route("GetCustomerOrderDeliverySchedule/{orderDeliveryScheduleId}")]
-		public async Task<IActionResult> GetCustomerOrderDeliverySchedule(int orderDeliveryScheduleId)
-		{
-			try
-			{
-				var delSchedule = await _repository.GetCustomerOrderDeliveryScheduleAsync(orderDeliveryScheduleId);
+                    DeliveryScheduleViewModel dsVM = new DeliveryScheduleViewModel()
+                    {
+                        OrderDeliveryScheduleID = schedule.OrderDeliveryScheduleID,
+                        DriverId = schedule.UserId,
+                        Date = schedule.Date.ToString()
+                    };
+                    DeliveryScheduleViewModels.Add(dsVM);
+                }
 
 
-				if (delSchedule == null)
-					return NotFound("Order Delivery Schedule not found");
+                return Ok(DeliveryScheduleViewModels);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
 
-				var DeliveryScheduleViewModel = new DeliveryScheduleViewModel
-				{
-					OrderDeliveryScheduleID = delSchedule.OrderDeliveryScheduleID,
-          UserId = delSchedule.UserId,
-					Date = delSchedule.Date
+        }
 
-				};
-
-				return Ok(DeliveryScheduleViewModel);
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-			}
-		}
-
-		//-------------------------------------------------- Create Estimate  ----------------------------------------------------
-		[HttpPost]
-		[Route("AddCustomerOrderDeliverySchedule")]
-		public async Task<IActionResult> AddCustomerOrderDeliverySchedule([FromBody] DeliveryScheduleViewModel deliveryScheduleViewModel)
-		{
-			try
-			{
-				var delSchedule = new Order_Delivery_Schedule
-
-				{
-					OrderDeliveryScheduleID = deliveryScheduleViewModel.OrderDeliveryScheduleID,
-          UserId = deliveryScheduleViewModel.UserId,
-					Date = deliveryScheduleViewModel.Date
-				};
+        [HttpGet]
+        [Route("GetCustomerOrderDeliverySchedule/{orderDeliveryScheduleId}")]
+        public async Task<IActionResult> GetCustomerOrderDeliverySchedule(int orderDeliveryScheduleId)
+        {
+            try
+            {
+                var delSchedule = await _repository.GetCustomerOrderDeliveryScheduleAsync(orderDeliveryScheduleId);
 
 
-				// Save the fixed product to the repository using the Add method
-				_repository.Add(delSchedule);
+                if (delSchedule == null)
+                    return NotFound("Order Delivery Schedule not found");
 
-				// Save changes in the repository
-				await _repository.SaveChangesAsync();
+                var DeliveryScheduleViewModel = new DeliveryScheduleViewModel
+                {
+                    OrderDeliveryScheduleID = delSchedule.OrderDeliveryScheduleID,
+                    DriverId = delSchedule.UserId,
+                    Date = delSchedule.Date.ToString()
+                };
 
-				// Return the created Estimate 
-				var createdDeliveryScheduleViewModel = new DeliveryScheduleViewModel
-				{
-					OrderDeliveryScheduleID = delSchedule.OrderDeliveryScheduleID,
-          UserId = delSchedule.UserId,
-					Date = delSchedule.Date
+                return Ok(DeliveryScheduleViewModel);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
 
-				};
+        [HttpPost]
+        [Route("AddCustomerOrderDeliverySchedule")]
+        public async Task<IActionResult> AddCustomerOrderDeliverySchedule([FromBody] DeliveryScheduleViewModel deliveryScheduleViewModel)
+        {
+            try
+            {
+                var delSchedule = new Order_Delivery_Schedule
 
-				return Ok(createdDeliveryScheduleViewModel);
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-			}
-		}
-
-		//--------------------------------------------------UPDATE ESTIMATE--------------------------------------------
-		[HttpPut]
-		[Route("UpdateCustomerOrderDeliveryScheduleAsync/{orderDeliveryScheduleId}")]
-		public async Task<IActionResult> UpdateCustomerOrderDeliverySchedule(int orderDeliveryScheduleId, [FromBody] DeliveryScheduleViewModel deliveryScheduleViewModel)
-		{
-			try
-			{
-				// Retrieve the existing estimate from the database
-				var existingDelSchedule = await _repository.GetCustomerOrderDeliveryScheduleAsync(deliveryScheduleViewModel.OrderDeliveryScheduleID);
-
-				if (existingDelSchedule == null)
-				{
-					return NotFound("Order Delivery Schedule not found");
-				}
+                {
+                    OrderDeliveryScheduleID = deliveryScheduleViewModel.OrderDeliveryScheduleID,
+                    UserId = deliveryScheduleViewModel.DriverId,
+                    //Date = deliveryScheduleViewModel.Date
+                };
 
 
+                // Save the fixed product to the repository using the Add method
+                _repository.Add(delSchedule);
 
-				// Update the other properties of the order del schedule
+                // Save changes in the repository
+                await _repository.SaveChangesAsync();
 
-				existingDelSchedule.OrderDeliveryScheduleID = deliveryScheduleViewModel.OrderDeliveryScheduleID;
-				existingDelSchedule.UserId = deliveryScheduleViewModel.UserId;
-				existingDelSchedule.Date = deliveryScheduleViewModel.Date;
+                return Ok(delSchedule);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
 
+        [HttpPut]
+        [Route("UpdateCustomerOrderDeliveryScheduleAsync/{orderDeliveryScheduleId}")]
+        public async Task<IActionResult> UpdateCustomerOrderDeliverySchedule(int orderDeliveryScheduleId, [FromBody] DeliveryScheduleViewModel deliveryScheduleViewModel)
+        {
+            try
+            {
+                // Retrieve the existing schedule from the database
+                var existingDelSchedule = await _repository.GetCustomerOrderDeliveryScheduleAsync(deliveryScheduleViewModel.OrderDeliveryScheduleID);
 
-				// Update the Estimate  in the repository
-				await _repository.UpdateCustomerOrderDeliveryScheduleAsync(existingDelSchedule);
+                if (existingDelSchedule == null)
+                {
+                    return NotFound("Order Delivery Schedule not found");
+                }
 
-				// Return the updated fixed product
-				var updatedCustomerOrderDeliveryViewModel = new DeliveryScheduleViewModel
-				{
-					
-					OrderDeliveryScheduleID = existingDelSchedule.OrderDeliveryScheduleID,
-          UserId = existingDelSchedule.UserId,
-					Date = existingDelSchedule.Date
+                // Update the properties of the order del schedule
+                existingDelSchedule.OrderDeliveryScheduleID = deliveryScheduleViewModel.OrderDeliveryScheduleID;
+                existingDelSchedule.UserId = deliveryScheduleViewModel.DriverId;
+                //existingDelSchedule.Date = deliveryScheduleViewModel.Date;
 
-				};
+                // Update the schedule in the repository
+                await _repository.UpdateCustomerOrderDeliveryScheduleAsync(existingDelSchedule);
 
-				return Ok(updatedCustomerOrderDeliveryViewModel);
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-			}
-		}
-
-
-
-
-
-	}
+                return Ok(existingDelSchedule);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+    }
 }
