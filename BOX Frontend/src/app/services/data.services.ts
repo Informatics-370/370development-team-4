@@ -181,8 +181,8 @@ export class DataService {
       .pipe(map(result => result))
   }
 
-  GetVAT(vatId: number): Observable<VAT> {
-    return this.httpClient.get<VAT>(`${this.apiUrl}VAT/GetVAT/${vatId}`)
+  GetVAT(): Observable<VAT> {
+    return this.httpClient.get<VAT>(`${this.apiUrl}VAT/GetVAT`)
       .pipe(map(result => result));
   }
 

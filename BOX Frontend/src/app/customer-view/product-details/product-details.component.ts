@@ -5,7 +5,7 @@ import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
 import { SizeVM } from '../../shared/size-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
-import { VAT } from 'src/app/shared/vat';
+//import { VAT } from 'src/app/shared/vat';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Cart } from 'src/app/shared/customer-interfaces/cart';
@@ -33,7 +33,7 @@ export class ProductDetailsComponent {
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
   sizes: SizeVM[] = []; //all sizes
   itemID: number = -1; //ID of product item user clicked on to get to this page
-  vat!: VAT;
+  //vat!: VAT;
 
   //ADD TO CART
   sizeDropdownArray: SizeDropdrownItem[] = []; //array used to populate size dropdown
@@ -158,12 +158,12 @@ export class ProductDetailsComponent {
       const getItemsPromise = lastValueFrom(this.dataService.GetItems().pipe(take(1)));
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
       const getSizesPromise = lastValueFrom(this.dataService.GetSizes().pipe(take(1)));
-      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+      //const getVATPromise = lastValueFrom(this.dataService.GetVAT().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
-      const [allVAT, allItems, allSizes, allFixedProducts] = await Promise.all([
-        getVATPromise,
+      const [allItems, allSizes, allFixedProducts] = await Promise.all([
+        //getVATPromise,
         getItemsPromise,
         getSizesPromise,
         getProductsPromise
@@ -173,7 +173,7 @@ export class ProductDetailsComponent {
       this.items = allItems;
       this.fixedProducts = allFixedProducts;
       this.sizes = allSizes;
-      this.vat = allVAT[0];
+      //this.vat = applicableVAT;
       this.customisableItems = this.items.filter(item =>
         item.description.toLocaleLowerCase() == 'single wall carton' || item.description.toLocaleLowerCase() == 'single wall box' ||
         item.description.toLocaleLowerCase() == 'double wall carton' || item.description.toLocaleLowerCase() == 'double wall box'
@@ -244,14 +244,14 @@ export class ProductDetailsComponent {
           if (sizeDropdownString.trim() === '') sizeDropdownString = 'N/A';
 
           //create object; e.g. result: {sizeString: '150x150', price: 12.99, id: 15, qtyOnHand: 243500}
-          let priceInclVAT = fixedProd.price * (1 + this.vat.percentage / 100); //let price shown incl vat
+          //let priceInclVAT = fixedProd.price * (1 + this.vat.percentage / 100); //let price shown incl vat
 
           let sizeDropdownObject: SizeDropdrownItem = {
             sizeString: sizeDropdownString,
-            price: parseFloat(priceInclVAT.toFixed(2)),
+            //price: parseFloat(priceInclVAT.toFixed(2)),
             fixedProductID: fixedProd.fixedProductID,
-            qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000
-            /* qtyOnHand: fixedProd.quantityOnHand //when fixed product quantities can be updated */
+            /* qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000 */
+            qtyOnHand: fixedProd.quantityOnHand //when fixed product quantities can be updated
           };
 
           this.sizeDropdownArray.push(sizeDropdownObject); //push to global array for size dropdown
@@ -304,7 +304,7 @@ export class ProductDetailsComponent {
         }, 8000);
       }
 
-      this.total = this.sizeDropdownArray[this.selectedSizeIndex].price * qtyInputValue; //set product total
+      //this.total = this.sizeDropdownArray[this.selectedSizeIndex].price * qtyInputValue; //set product total
 
       /* //apply discount; keep iterating through the loop until a) reach end of discount list or b) find correct discount to apply
       let i = this.discountList.length - 1;
@@ -357,7 +357,7 @@ export class ProductDetailsComponent {
       }
       else {
         //if not, create new cart item
-        fixedProdToAdd.price = this.getVATInclusive(fixedProdToAdd.price); //make fixed product price vat inclusive so cart is auto vat inclusive
+        //fixedProdToAdd.price = this.getVATInclusive(fixedProdToAdd.price); //make fixed product price vat inclusive so cart is auto vat inclusive
 
         let newCartItem: Cart = {
           fixedProduct: fixedProdToAdd,
@@ -488,10 +488,10 @@ export class ProductDetailsComponent {
     window.location.href = '/product-details/' + urlParameter;
   }
 
-  getVATInclusive(amount: number): number {
+  /* getVATInclusive(amount: number): number {
     let priceInclVAT = amount * (1 + this.vat.percentage / 100);
     return priceInclVAT;
-  }
+  } */
 
   /*---------------------CUSTOMISE BOX LOGIC----------------------*/
   //function to display image name since I decided to be fancy with a custom input button
@@ -624,6 +624,6 @@ export class ProductDetailsComponent {
 export interface SizeDropdrownItem {
   fixedProductID: number;
   sizeString: string;
-  price: number;
+  //price: number;
   qtyOnHand: number;
 }

@@ -27,7 +27,7 @@
                 <li *ngFor="let sizeListString of selectedProductVM.sizeStringArray"><em>{{sizeListString}}</em></li>
               </ul>
 
-              <p><span id="estimated-price">Unit price (estimate):<br />
+              <!-- <p><span id="estimated-price">Unit price (estimate):<br />
                   <strong class="price">{{sizeDropdownArray[selectedSizeIndex].price | currency:
                     'ZAR':'symbol-narrow'}}</strong>
                 </span>
@@ -35,7 +35,7 @@
                   *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br />
                   Total: <strong class="price"><br />{{total | currency: 'ZAR':'symbol-narrow'}}</strong>
                 </span>
-              </p>
+              </p> -->
 
               <!-- <p><span id="estimated-price" [className]="discountApplied ? 'strikethrough' : ''">Unit price
                   (estimate):<br />
