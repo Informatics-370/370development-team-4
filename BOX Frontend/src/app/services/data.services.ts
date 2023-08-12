@@ -177,27 +177,19 @@ export class DataService {
 
   //------------VAT------------
   GetAllVAT(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}VAT/GetAllVATs`)
+    return this.httpClient.get(`${this.apiUrl}VAT/GetAllVAT`)
       .pipe(map(result => result))
   }
 
   GetVAT(vatId: number): Observable<VAT> {
-    return this.httpClient.get<VAT>(`${this.apiUrl}VAT/GetVat/${vatId}`)
+    return this.httpClient.get<VAT>(`${this.apiUrl}VAT/GetVAT/${vatId}`)
       .pipe(map(result => result));
   }
 
   AddVAT(newVAT: VAT): Observable<any> {
     return this.httpClient.post<any>(
-      `${this.apiUrl}VAT/AddVat`, newVAT, this.httpOptions
+      `${this.apiUrl}VAT/AddVAT`, newVAT, this.httpOptions
     );
-  }
-
-  DeleteVAT(vatId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}VAT/DeleteVat/${vatId}`, this.httpOptions);
-  }
-
-  UpdateVAT(vatId: number, updatedVAT: VAT): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, updatedVAT, this.httpOptions);
   }
 
   //-------------------------------------------------------FIXED PRODUCT-------------------------------------------------------
