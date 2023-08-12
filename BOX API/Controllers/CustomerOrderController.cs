@@ -268,7 +268,7 @@ namespace BOX.Controllers
         public IActionResult AddCustomerOrder([FromBody] CustomerOrderViewModel customerOrderViewModel)
         {
             // Start a database transaction; because of this, nothing is fully saved until the end i.e. unless order and order lines are created successfully with no errors, the order isn't placed
-            using var transaction = _repository.BeginTransaction();
+            var transaction = _repository.BeginTransaction();
 
             try
             {

@@ -161,7 +161,7 @@ namespace BOX.Controllers
         {
             // Start a database transaction; because of this, nothing is fully saved until the end i.e. unless request and request lines are created successfully with no errors, the request isn't created
             //this prevents having a request with no request lines which was an issue when I was testing
-            using var transaction = _repository.BeginTransaction();
+            var transaction = _repository.BeginTransaction();
 
             // Create a new instance of quote request from the view model
             var quoteRequest = new Quote_Request

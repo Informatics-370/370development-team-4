@@ -246,7 +246,7 @@ namespace BOX.Controllers
         {
             // Start a database transaction; because of this, nothing is fully saved until the end i.e. unless quote and quote lines are created successfully with no errors, the quote isn't created
             //this prevents having a quote with no lines which was an issue when I was testing
-            using var transaction = _repository.BeginTransaction();
+            var transaction = _repository.BeginTransaction();
 
             // Create a new instance of Quote from the view model
             var quote = new Quote
