@@ -125,8 +125,8 @@ namespace BOX.Controllers
 					Width = customProduct.Width,
 					Length = customProduct.Length,
 					Height = customProduct.Height,
-					//Logo = Convert.ToBase64String(customProduct.Logo),
-					//Label = Convert.ToBase64String(customProduct.Label)
+					Sides = customProduct.Sides,
+					Label = Convert.ToBase64String(customProduct.Label)
 				};
 
 				return Ok(createdCustomProductViewModel);

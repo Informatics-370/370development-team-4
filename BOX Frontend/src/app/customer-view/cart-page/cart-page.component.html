@@ -18,25 +18,25 @@
                 <div class="col-md-5 col-sm-5 p-1">
                   <div class="card-img-top">
                     <img class="card-img product-card-img" style="width: auto;"
-                      src="data:image/png;base64,{{product.fixedProduct.productPhotoB64}}"
-                      [alt]="product.fixedProduct.description">
+                      src="data:image/png;base64,{{product.productPhotoB64}}"
+                      [alt]="product.description">
                   </div>
                 </div>
                 <div class="col-md-7 col-sm-7">
                   <div class="card-body product-card-body">
-                    <p style="font-weight: 600;">{{product.fixedProduct.description}}</p>
+                    <p style="font-weight: 600;">{{product.description}}</p>
                     <p style="font-size: 90%;">
                       Size: <em>{{product.sizeString}}</em> <br />
-                      Unit price: {{product.fixedProduct.price | currency: 'ZAR':'symbol-narrow'}} excl. VAT
+                      <!-- Unit price: {{product.fixedProduct.price | currency: 'ZAR':'symbol-narrow'}} excl. VAT -->
                     </p>
                     <div class="qty-form">
                       Quantity:
                       <input type="number" [(ngModel)]="product.quantity" (change)="updateTotalPrice()" min="1" />
                     </div>
-                    <div class="total">
+                    <!-- <div class="total">
                       Total: {{(product.fixedProduct.price * +product.quantity).toFixed(2) | currency:
                       'ZAR':'symbol-narrow'}} excl. VAT
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </div>
@@ -59,17 +59,17 @@
               Customer Discount: <span id="customerdiscount">%</span>
             </p>
             <p>
+              <button class="btn btn-info" >Request quote</button>
+            </p>
+            <!-- <p>
               Total Discount: <span>{{ calculateTotalDiscount() }}%</span>
             </p>
             <p>
               Final Estimated Total Price: {{ cartTotal | currency: 'ZAR':'symbol-narrow'}}
             </p>
             <p>
-              <button [routerLink]="['/place-order']" class="btn btn-info">Pay Now</button>
-            </p>
-            <p>
               <button class="btn btn-info" (click)="showGetInTouchWithUsModal()">Get In Touch With Us</button>
-            </p>
+            </p> -->
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@
 
 
 <!-- Get in touch with us modal -->
-<div id="contactModal" class="modal">
+<!-- <div id="contactModal" class="modal">
   <div class="modal-content modal-scroll">
     <button class="close">
       <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
@@ -192,4 +192,4 @@
       </div>
     </form>
   </div>
-</div>
+</div> -->

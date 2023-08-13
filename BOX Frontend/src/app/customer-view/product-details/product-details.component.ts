@@ -342,11 +342,30 @@ export class ProductDetailsComponent {
     this.discountApplied = true; //display discount    
   } */
 
-  addToCart() {
-    let id = this.sizeDropdownArray[this.selectedSizeIndex].fixedProductID;
-    if (this.cartService.addToCart(id, this.addToCartForm.get("qty")?.value, this.selectedProductVM.sizeStringArray[this.selectedSizeIndex])) {
-      //store updated cart in local storage
-      //localStorage.setItem("MegaPack-cart", JSON.stringify(this.cart));
+  addToCart(isFixedProduct: boolean) {
+    let id = 0;
+    let prodDescription = '';
+    let concatenatedSizeString = '';
+    let prodPhotoB64 = '';
+    let qtyToAdd = this.addToCartForm.get("qty")?.value;
+
+    if (isFixedProduct) { //if this is a fixed product
+      id = this.sizeDropdownArray[this.selectedSizeIndex].fixedProductID;
+      let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
+
+      if (fixedProdToAdd) {
+        prodDescription = fixedProdToAdd.description;
+        concatenatedSizeString = this.selectedProductVM.sizeStringArray[this.selectedSizeIndex];
+        prodPhotoB64 = fixedProdToAdd.productPhotoB64;
+      }
+    }
+    else { //it's a custom product and we must first create it and send to backend. Then retrieve it and save to cart
+
+    }
+
+    if (this.cartService.addToCart(id, prodDescription, concatenatedSizeString,
+      prodPhotoB64, isFixedProduct, qtyToAdd)) {
+
       this.cartSuccess = true;
       setTimeout(() => {
         this.cartSuccess = false;
@@ -616,7 +635,7 @@ export class ProductDetailsComponent {
       'max-width': (newWidth * 0.8 / 100).toFixed(1) + 'em', /*box width times 0.8*/
       'max-height': (newHeight * 0.8 / 100).toFixed(1) + 'em' /*box height times 0.8*/
     }
-  
+
     this.frontBackImg = { //styles for box image
       'max-width': (newLength * 0.8 / 100).toFixed(1) + 'em', /*box length times 0.8*/
       'max-height': (newHeight * 0.8 / 100).toFixed(1) + 'em' /*box height times 0.8*/

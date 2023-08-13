@@ -93,7 +93,7 @@ export class CartPageComponent {
     for (const product of this.products) {
       const quantity = +product.quantity;
       this.totalQuantity += quantity;
-      this.totalPrice += quantity * +product.fixedProduct.price; // Multiply quantity by the price and add it to the total price
+      //this.totalPrice += quantity * +product.fixedProduct.price; // Multiply quantity by the price and add it to the total price
     }
 
 
@@ -359,7 +359,7 @@ export class CartPageComponent {
       let estimateLine: EstimateLineVM = {
         estimateLineID: 0,
         estimateID: 0,
-        fixedProductID: cartItem.fixedProduct.fixedProductID,
+        fixedProductID: cartItem.productID,
         fixedProductDescription: '',
         fixedProductUnitPrice: 0,
         customProductID: 0,

@@ -125,7 +125,7 @@ export class PlaceOrderComponent {
       let ol: OrderLineVM = {
         customerOrderLineID: 0,
         customerOrderID: 0,
-        fixedProductID: cartItem.fixedProduct.fixedProductID,
+        fixedProductID: cartItem.productID,
         fixedProductDescription: '',
         fixedProductUnitPrice: 0,
         customProductID: 0,

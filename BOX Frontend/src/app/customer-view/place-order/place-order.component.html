@@ -74,10 +74,10 @@
             </thead>
             <tbody id="estimate-details-tbody">
               <tr *ngFor="let cartItem of cart">
-                <td>{{cartItem.fixedProduct.description}}</td>
-                <td>{{cartItem.fixedProduct.price | currency: 'ZAR':'symbol-narrow'}}</td>
+                <td>{{cartItem.description}}</td>
+                <!-- <td>{{cartItem.fixedProduct.price | currency: 'ZAR':'symbol-narrow'}}</td> -->
                 <td>{{cartItem.quantity}}</td>
-                <td>{{cartItem.fixedProduct.price * cartItem.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+                <!-- <td>{{cartItem.fixedProduct.price * cartItem.quantity | currency: 'ZAR':'symbol-narrow'}}</td> -->
               </tr>
             </tbody>
           </table><br />

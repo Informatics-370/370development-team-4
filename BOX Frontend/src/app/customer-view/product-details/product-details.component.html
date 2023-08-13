@@ -83,7 +83,7 @@
                       data-bs-target="#customise">Customise</button>
                   </div>
                   <div class="col-lg-6 col-md-12">
-                    <button class="btn btn-add-cart" (click)="addToCart()" [disabled]="outOfStock">Add to Cart</button>
+                    <button class="btn btn-add-cart" (click)="addToCart(true)" [disabled]="outOfStock">Add to Cart</button>
                   </div>
 
                   <div *ngIf="cartSuccess" class="success-msg">
