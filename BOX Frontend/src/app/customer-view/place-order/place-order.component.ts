@@ -40,7 +40,7 @@ export class PlaceOrderComponent {
     this.getDataFromDB();
     this.randomDiscount = Math.floor(Math.random() * 10 + 1);
     this.cart = this.cartService.getCartItems();
-    this.cartTotal = this.cartService.getCartTotal(this.randomDiscount);
+    //this.cartTotal = this.cartService.getCartTotal(this.randomDiscount);
     console.log(this.randomDiscount, this.cartTotal);
     this.checkCredit();
     this.getCreditDueDate();
@@ -64,9 +64,9 @@ export class PlaceOrderComponent {
       let vat = allVAT[0];
       let discountList = allDiscounts;
 
-      this.cartService.setGlobalVariables(discountList, vat);
+      /* this.cartService.setGlobalVariables(discountList, vat);
       this.cartTotal = this.cartService.getCartTotal(this.randomDiscount);
-      this.totalBeforeDiscount = this.cartService.getCartTotalBeforeDiscount();
+      this.totalBeforeDiscount = this.cartService.getCartTotalBeforeDiscount(); */
     } catch (error) {
       console.error('An error occurred:', error);
     }

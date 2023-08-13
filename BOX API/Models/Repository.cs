@@ -142,22 +142,21 @@ namespace BOX.Models
 
             if (allVAT != null)
             {
-                VAT vatWithMostRecentDate = allVAT[0];
+                VAT mostRecentVAT = allVAT[0];
 
                 foreach (var vat in allVAT)
                 {
-                    if (vat.Date > vatWithMostRecentDate.Date)
+                    if (vat.Date > mostRecentVAT.Date)
                     {
-                        vatWithMostRecentDate = vat;
+                        mostRecentVAT = vat;
                     }
                 }
 
-                return vatWithMostRecentDate;
+                return mostRecentVAT;
             }
             else
             {
-                VAT result = null;
-                return result;
+                return null;
             }
         }
 
@@ -279,8 +278,6 @@ namespace BOX.Models
         }
 
         //------------------------------------------------------ QUOTE ------------------------------------------------------------
-
-
         public async Task<Quote[]> GetAllQuotesAsync()
         {
             IQueryable<Quote> query = _appDbContext.Quote;
@@ -302,6 +299,40 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
+        //get quote customer is about to order from i.e. quote with most recent date and status set to 'Accepted'
+        public Quote GetCustomerMostRecentQuote(string customerId)
+        {
+            var allCustomerQuotes = _appDbContext.Quote.Where(c => c.UserId == customerId).ToArray();
+
+            if (allCustomerQuotes != null && allCustomerQuotes.Length > 0)
+            {
+                //get quote generated most recently
+                Quote mostRecentQuote = allCustomerQuotes[0];
+
+                foreach (var quote in allCustomerQuotes)
+                {
+                    if (quote.Date_Generated > mostRecentQuote.Date_Generated)
+                    {
+                        mostRecentQuote = quote;
+                    }
+                }
+
+                return mostRecentQuote;
+                //if (mostRecentQuote.QuoteStatusID == 3) // Check if the most recent quote's status is 'Accepted'
+                //{
+                //    return mostRecentQuote;
+                //}
+                //else
+                //{
+                //    return null;
+                //}
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task UpdateQuoteAsync(Quote quote)
         {
             // Update the Quote entity in the data storage
@@ -317,6 +348,13 @@ namespace BOX.Models
         {
             IQueryable<Quote_Line> query = _appDbContext.Quote_Line.Where(c => c.QuoteID == quoteId);
             return await query.ToArrayAsync();
+        }
+
+        //gets all quote lines for a specific quote synchronously
+        public Quote_Line[] GetQuoteLinesByQuote(int quoteId)
+        {
+            var query = _appDbContext.Quote_Line.Where(c => c.QuoteID == quoteId);
+            return query.ToArray();
         }
 
         ////----------------------------------------------------CUSTOMER (TEMP)-------------------------------------
@@ -577,22 +615,21 @@ namespace BOX.Models
 
             if (allFixedProductPrices != null)
             {
-                Price priceWithMostRecentDate = allFixedProductPrices[0];
+                Price mostRecentPrice = allFixedProductPrices[0];
 
                 foreach (var price in allFixedProductPrices)
                 {
-                    if (price.Date > priceWithMostRecentDate.Date)
+                    if (price.Date > mostRecentPrice.Date)
                     {
-                        priceWithMostRecentDate = price;
+                        mostRecentPrice = price;
                     }
                 }
 
-                return priceWithMostRecentDate;
+                return mostRecentPrice;
             }
             else
             {
-                Price result = null;
-                return result;
+                return null;
             }
         }
         

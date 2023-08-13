@@ -9,6 +9,7 @@ import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Cart } from 'src/app/shared/customer-interfaces/cart';
+import { CartService } from 'src/app/services/customer-services/cart.service';
 
 @Component({
   selector: 'app-product-details',
@@ -20,7 +21,7 @@ export class ProductDetailsComponent {
 
   //OUT OF STOCK
   outOfStock = false;
-  maxQuantity = 2000000;
+  maxQuantity = 0;
 
   /* //DISCOUNT
   discountApplied = false;
@@ -117,7 +118,7 @@ export class ProductDetailsComponent {
     'max-height': '4em' /*box width times 0.8*/
   }
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, private cartService: CartService,
     private formBuilder: FormBuilder, private renderer: Renderer2, private el: ElementRef) {
     this.addToCartForm = this.formBuilder.group({
       sizeID: [{ value: '1' }, Validators.required],
@@ -148,7 +149,7 @@ export class ProductDetailsComponent {
     });
 
     //Retrieve cart list from local storage; if there's nothing in cart, return empty array
-    this.cart = JSON.parse(localStorage.getItem("MegaPack-cart") || "[]");
+    this.cart = this.cartService.getCartItems();
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -343,7 +344,16 @@ export class ProductDetailsComponent {
 
   addToCart() {
     let id = this.sizeDropdownArray[this.selectedSizeIndex].fixedProductID;
-    let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
+    if (this.cartService.addToCart(id, this.addToCartForm.get("qty")?.value, this.selectedProductVM.sizeStringArray[this.selectedSizeIndex])) {
+      //store updated cart in local storage
+      //localStorage.setItem("MegaPack-cart", JSON.stringify(this.cart));
+      this.cartSuccess = true;
+      setTimeout(() => {
+        this.cartSuccess = false;
+      }, 8000);
+    }
+
+    /* let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
     if (fixedProdToAdd) {
       //check if user already has that product in their cart
       let duplicateCartItem = this.cart.find(cartItem => cartItem.fixedProduct.fixedProductID == fixedProdToAdd?.fixedProductID);
@@ -367,14 +377,7 @@ export class ProductDetailsComponent {
 
         this.cart.push(newCartItem);
       }
-
-      //store updated cart in local storage
-      localStorage.setItem("MegaPack-cart", JSON.stringify(this.cart));
-      this.cartSuccess = true;
-      setTimeout(() => {
-        this.cartSuccess = false;
-      }, 8000);
-    }
+    } */
   }
 
   toggleOutOfStock(isProductOutOfStock: boolean) {

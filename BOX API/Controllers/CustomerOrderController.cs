@@ -272,11 +272,21 @@ namespace BOX.Controllers
 
             try
             {
+                //get this customer's most recent quote because it has the correct confirmed price. I can't trust what I get from the client when it comes to money and payments
+                var mostRecentQuote = _repository.GetCustomerMostRecentQuote(customerOrderViewModel.CustomerId);
+                if (mostRecentQuote == null) return NotFound("The quote does not exist on the B.O.X System");
+
+                if (mostRecentQuote.QuoteStatusID != 3) //3 status = 'Accepted'; a quote must be accepted before you can order from it
+                    return NotFound("You have not yet accepted the quote. If you think this is an error, give a few minutes for the changes to the quote to reflect. If the issue persists, please contact B.O.X. support");
+
+                var quoteLines = _repository.GetQuoteLinesByQuote(mostRecentQuote.QuoteID);
+                if (quoteLines == null) return NotFound("The quote does not exist on the B.O.X System"); //a quote must have at least 1 line
+
                 //CREATE NEW ORDER FROM VM
                 var order = new Customer_Order
                 {
                     UserId = customerOrderViewModel.CustomerId,
-                    QuoteID = customerOrderViewModel.QuoteID,
+                    QuoteID = mostRecentQuote.QuoteID,
                     CustomerOrderStatusID = 1, //status of 'Placed'. Statuses can't be CRUDed so this can be hard coded
                     Delivery_Photo = Convert.FromBase64String(""),
                     Date = DateTime.Now,
@@ -286,26 +296,26 @@ namespace BOX.Controllers
                 _repository.Add(order);
                 _repository.SaveChanges(); // Save the order and generate ID
 
-                //get all order lines from the VM and put in order_line entity
-                foreach (var orderLineVM in customerOrderViewModel.OrderLines)
+                //get all order lines from the most recent quote NOT THE ORDER LINES VM and put in order_line entity
+                foreach (var line in quoteLines)
                 {
-                    bool fpOrdered = orderLineVM.FixedProductID != 0; //TRUE IF FIXED PROD WAS ORDERED
+                    bool fpOrdered = line.FixedProductID != 0; //TRUE IF FIXED PROD WAS ORDERED
 
                     var orderLineRecord = new Customer_Order_Line
                     {
                         CustomerOrderID = order.CustomerOrderID, //it's NB to save the order 1st so SQL generates its ID to use in the order line
                         Customer_Order = order,
-                        CustomProductID = fpOrdered ? null : orderLineVM.CustomProductID,
-                        FixedProductID = fpOrdered ? null : orderLineVM.FixedProductID,
-                        Quantity = orderLineVM.Quantity,
-                        Confirmed_Unit_Price = orderLineVM.ConfirmedUnitPrice
+                        CustomProductID = fpOrdered ? null : line.CustomProductID,
+                        FixedProductID = fpOrdered ? null : line.FixedProductID,
+                        Quantity = line.Quantity,
+                        Confirmed_Unit_Price = line.Confirmed_Unit_Price
                     };
 
                     //decrease qty on hand for fixed products
                     if (fpOrdered)
                     {
-                        var fixedProd = _repository.GetFixedProduct(orderLineVM.FixedProductID); // Synchronous call
-                        fixedProd.Quantity_On_Hand -= orderLineVM.Quantity;
+                        var fixedProd = _repository.GetFixedProduct(line.FixedProductID.Value); // Synchronous call
+                        fixedProd.Quantity_On_Hand -= line.Quantity;
                     }
 
                     _repository.Add(orderLineRecord); //save order line in DB

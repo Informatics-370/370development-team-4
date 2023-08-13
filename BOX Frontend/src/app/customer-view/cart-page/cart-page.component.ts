@@ -50,18 +50,13 @@ export class CartPageComponent {
     this.getDataFromDB();
     this.products = this.cartService.getCartItems(); //get items from cart using cart service
 
-    this.loading = false;
-
-    if (this.products.length > 0) {
-      const firstProductDescription = this.products[0].fixedProduct.description;
-      console.log('First product description:', firstProductDescription);
-    }
+    this.loading = false;    
     this.calculateTotalQuantity();
     this.generateRandomDiscount();
     this.modal = document.getElementById('contactModal');
 
-    this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
-    this.applicableDiscount = this.cartService.determineApplicableDiscount();
+    /* this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
+    this.applicableDiscount = this.cartService.determineApplicableDiscount(); */
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -82,9 +77,9 @@ export class CartPageComponent {
       let vat = allVAT[0];
       this.discountList = allDiscounts;
 
-      this.cartService.setGlobalVariables(this.discountList, vat);
+      /* this.cartService.setGlobalVariables(this.discountList, vat);
       this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
-      this.applicableDiscount = this.cartService.determineApplicableDiscount();
+      this.applicableDiscount = this.cartService.determineApplicableDiscount(); */
     } catch (error) {
       console.error('An error occurred:', error);
     }
@@ -355,7 +350,7 @@ export class CartPageComponent {
       estimateDurationID: 0,
       userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
       customerFullName: '',
-      confirmedTotal: this.cartService.getCartTotal(this.randomdiscount),
+      confirmedTotal: 0,
       estimate_Lines: []
     }
 

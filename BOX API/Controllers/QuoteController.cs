@@ -1,7 +1,6 @@
 using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Ocsp;
 
 
 namespace BOX.Controllers
@@ -189,7 +188,7 @@ namespace BOX.Controllers
                             //concatenate custom product string
                             customProdDescription += customProduct.Length + "mm x " + customProduct.Width + "mm x " + customProduct.Height + "mm";
                         }
-                        
+
                         QuoteLineViewModel qlVM = new QuoteLineViewModel
                         {
                             QuoteLineID = ql.QuoteLineID,
@@ -232,6 +231,74 @@ namespace BOX.Controllers
                 }
 
                 return Ok(customerQuoteVMs);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetCustomerMostRecentQuote/{customerId}")]
+        public async Task<IActionResult> GetCustomerMostRecentQuote(string customerId)
+        {
+            try
+            {
+                var mostRecentQuote = _repository.GetCustomerMostRecentQuote(customerId); //get this customer's most recent quote
+                if (mostRecentQuote == null) return NotFound("The quote does not exist on the B.O.X System");
+
+                //get all quote lines associated with this quote and create array from them
+                List<QuoteLineViewModel> qlList = new List<QuoteLineViewModel>();
+
+                var quoteLines = await _repository.GetQuoteLinesByQuoteAsync(mostRecentQuote.QuoteID);
+                if (quoteLines == null) return NotFound("The quote does not exist on the B.O.X System"); //a quote must have at least 1 line
+
+                //put all quote lines for this quote in a list for the quote VM
+                foreach (var ql in quoteLines)
+                {
+                    int fpID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value;
+                    Fixed_Product fixedProduct = await _repository.GetFixedProductAsync(fpID);
+                    string customProdDescription = "Custom product ";
+
+                    if (ql.CustomProductID != null) //this quote line holds a custom product
+                    {
+                        int cpID = ql.CustomProductID.Value;
+                        Custom_Product customProduct = await _repository.GetCustomProductAsync(cpID);
+
+                        //concatenate custom product string
+                        customProdDescription += customProduct.Length + "mm x " + customProduct.Width + "mm x " + customProduct.Height + "mm";
+                    }
+
+                    QuoteLineViewModel qlVM = new QuoteLineViewModel
+                    {
+                        QuoteLineID = ql.QuoteLineID,
+                        FixedProductID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value,
+                        FixedProductDescription = fixedProduct.Description,
+                        CustomProductID = ql.CustomProductID == null ? 0 : ql.CustomProductID.Value,
+                        CustomProductDescription = customProdDescription,
+                        ConfirmedUnitPrice = ql.Confirmed_Unit_Price,
+                        Quantity = ql.Quantity
+                    };
+                    qlList.Add(qlVM);
+                }
+
+                string fullName = await _repository.GetUserFullNameAsync(mostRecentQuote.UserId);
+                var status = await _repository.GetQuoteStatusAsync(mostRecentQuote.QuoteStatusID);
+
+                QuoteViewModel qrVM = new QuoteViewModel
+                {
+                    QuoteID = mostRecentQuote.QuoteID,
+                    QuoteStatusID = mostRecentQuote.QuoteStatusID,
+                    QuoteStatusDescription = status.Description,
+                    CustomerId = mostRecentQuote.UserId,
+                    CustomerFullName = fullName,
+                    QuoteDurationID = mostRecentQuote.QuoteDurationID,
+                    DateGenerated = mostRecentQuote.Date_Generated,
+                    RejectReasonID = mostRecentQuote.RejectReasonID == null ? 0 : mostRecentQuote.RejectReasonID.Value,
+                    Lines = qlList
+                };
+
+                return Ok(mostRecentQuote);
             }
             catch (Exception)
             {
