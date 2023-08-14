@@ -168,10 +168,7 @@ button:disabled {
     overflow: hidden;
 }
 
-/*100mm = 1em
-Max length that can be displayed = 15em aka 1500mm aka 150cm
-Max width that can be displayed = 15em aka 1500mm aka 150cm
-Max height that can be displayed = 15em aka 1500mm aka 150cm
+/*10mm = 1em
 */
 .front, .back {
     background: #ca9864;
@@ -256,4 +253,12 @@ Max height that can be displayed = 15em aka 1500mm aka 150cm
 
 .hide {
     display: none;
+}
+
+/*Extra info*/
+#extra-info {
+    font-size: 80%; 
+    text-align: center; 
+    font-weight: 500;
+    margin-top: 0.5rem;
 }

@@ -136,5 +136,29 @@ namespace BOX.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
 			}
 		}
-	}	
+
+
+        [HttpDelete]
+        [Route("DeleteCustomProduct/{customProductId}")]
+        public async Task<IActionResult> DeleteCustomProduct(int customProductId)
+        {
+            try
+            {
+                var existingProduct = await _repository.GetCustomProductAsync(customProductId);
+
+                if (existingProduct == null) return NotFound($"The custom product does not exist on the BOX System");
+
+                _repository.Delete(existingProduct);
+
+                if (await _repository.SaveChangesAsync()) return Ok(existingProduct);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact support.");
+            }
+            return BadRequest("Your request is invalid.");
+        }
+
+    }
 }

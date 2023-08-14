@@ -154,11 +154,10 @@
         <!--FORM-->
         <div class="col-md-6 col-sm-12">
           <form [formGroup]="customiseForm">
-            <div class="bold" style="font-size: 80%;">Please note that all decimal values will be truncated.</div>
             <div class="form-group" style="text-align: center;">
               <select style="width: 100%;" formControlName="itemID"
                 class="form-select modal-form-input modal-form-text customise-input">
-                <option *ngFor="let item of customisableItems" value={{item.itemID}}>{{item.description}}</option>
+                <option *ngFor="let item of customisableItems" value={{item.itemID}}>{{item.itemDescription}}</option>
               </select>
             </div>
 
@@ -189,7 +188,7 @@
 
             <div class="form-group" id="choose-img" class="display-photo">
               <label class="form-label btn-create btn download">
-                <input id="label" type="file" accept=".pdf,.jpeg" formControlName="label" name="label"
+                <input id="label" type="file" accept=".pdf,.jpeg,.jpg" formControlName="label" name="label"
                   style="display: none;" (change)="showImageName($event)" />
                 Upload file
               </label>
@@ -207,10 +206,15 @@
             </div>
 
             <div class="form-submit-div">
-              <button class="btn btn-add-cart modal-form-submit" >Add to cart</button>
+              <button class="btn btn-add-cart modal-form-submit" (click)="addToCart(false)">Add to cart</button>
             </div>
 
           </form>
+        </div>
+        
+        <div id="extra-info">
+          *Please note that all decimal values will be truncated.<br/>
+          *Any box with a side over 500mm must be a double wall box due to weight constraints.
         </div>
       </div>
     </div>

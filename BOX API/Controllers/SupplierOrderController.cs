@@ -40,7 +40,6 @@ namespace BOX.Controllers
                         SupplierOrderLineViewModel solvm = new SupplierOrderLineViewModel
                         {
                             Supplier_OrderLineID = ol.Supplier_Order_LineID,
-                            Supplier_OrderID = ol.SupplierOrderID,
                             Fixed_ProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
                             Raw_MaterialID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value,
                             Supplier_ReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
@@ -105,7 +104,6 @@ namespace BOX.Controllers
                     SupplierOrderLineViewModel slvm = new SupplierOrderLineViewModel()
                     {
                         Supplier_OrderLineID = ol.Supplier_Order_LineID,
-                        Supplier_OrderID = ol.SupplierOrderID,
                         Supplier_ReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
                         Fixed_ProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
                         FixedProduct_Description = fixedProduct.Description == null ? "" : fixedProduct.Description,

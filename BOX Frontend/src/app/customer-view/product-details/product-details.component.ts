@@ -10,6 +10,7 @@ import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Cart } from 'src/app/shared/customer-interfaces/cart';
 import { CartService } from 'src/app/services/customer-services/cart.service';
+import { CustomProductVM } from 'src/app/shared/custom-product-vm';
 
 @Component({
   selector: 'app-product-details',
@@ -55,7 +56,7 @@ export class ProductDetailsComponent {
   //CUSTOMISE PRODUCT
   canCustomise = false;
   customiseForm: FormGroup; //customise form
-  customisableItems: Item[] = []; //hold array of single wall carton and double wall carton
+  customisableItems: CustomisableProductItem[] = []; //hold array of single wall carton and double wall carton
   invalidFile = false;
   sides = 1; //holds number of sides user wants to print on for a custom box
   //hold styles for box preview that are calculated based on box dimensions
@@ -126,9 +127,9 @@ export class ProductDetailsComponent {
     });
 
     this.customiseForm = this.formBuilder.group({
-      height: [800, Validators.required],
-      width: [500, Validators.required],
-      length: [1000, Validators.required],
+      height: [80, Validators.required],
+      width: [50, Validators.required],
+      length: [100, Validators.required],
       itemID: [1, Validators.required],
       sides: [1, Validators.required],
       label: []
@@ -175,11 +176,30 @@ export class ProductDetailsComponent {
       this.fixedProducts = allFixedProducts;
       this.sizes = allSizes;
       //this.vat = applicableVAT;
-      this.customisableItems = this.items.filter(item =>
+
+      //create list for customise box form dropdown
+      let customisableItemsList = this.items.filter(item =>
         item.description.toLocaleLowerCase() == 'single wall carton' || item.description.toLocaleLowerCase() == 'single wall box' ||
         item.description.toLocaleLowerCase() == 'double wall carton' || item.description.toLocaleLowerCase() == 'double wall box'
       );
+
+      //filter to put single wall box first always
+      customisableItemsList.sort((currentItem, nextItem) => {
+        if (currentItem.description.toLocaleLowerCase().includes('single')) { return -1; }
+        return 0;
+      });
+
+      customisableItemsList.forEach(item => {
+        this.customisableItems.push({
+          itemID: item.itemID,
+          itemDescription: item.description,
+          formulaID: item.description.toLocaleLowerCase().includes('single') ? 0 : 1 //if item description is single wall, use formula with ID 0, otherwise 1
+        });
+      });
       console.log('customisableItems', this.customisableItems);
+      this.customiseForm.patchValue({
+        itemID: this.customisableItems[0].itemID
+      })
 
       this.displayProduct();
     } catch (error) {
@@ -342,7 +362,7 @@ export class ProductDetailsComponent {
     this.discountApplied = true; //display discount    
   } */
 
-  addToCart(isFixedProduct: boolean) {
+  async addToCart(isFixedProduct: boolean) {
     let id = 0;
     let prodDescription = '';
     let concatenatedSizeString = '';
@@ -360,7 +380,34 @@ export class ProductDetailsComponent {
       }
     }
     else { //it's a custom product and we must first create it and send to backend. Then retrieve it and save to cart
+      const formData = this.customiseForm.value; //get form data
 
+      let selectedCustomisableItem = this.customisableItems.find(item => item.itemID == formData.itemID); //determine whether they want to customise a single or double wall box
+
+      if (selectedCustomisableItem) {
+        //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input
+        const inputElement = document.getElementById('label') as HTMLInputElement;
+        const formImage = inputElement.files?.[0];
+
+        //put in VM
+        //numeric data has already been truncated in updateBoxPreview function
+        let newCustomProduct: CustomProductVM = {
+          customProductID: 0,
+          itemID: formData.itemID,
+          itemDescription: '',
+          formulaID: selectedCustomisableItem.formulaID,
+          width: formData.width,
+          height: formData.height,
+          length: formData.length,
+          sides: formData.sides,
+          label: formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
+        }
+        
+        console.log(newCustomProduct);
+
+        //const getItemsPromise = lastValueFrom(this.dataService.GetItems().pipe(take(1)));
+
+      }
     }
 
     if (this.cartService.addToCart(id, prodDescription, concatenatedSizeString,
@@ -510,10 +557,20 @@ export class ProductDetailsComponent {
     window.location.href = '/product-details/' + urlParameter;
   }
 
-  /* getVATInclusive(amount: number): number {
-    let priceInclVAT = amount * (1 + this.vat.percentage / 100);
-    return priceInclVAT;
-  } */
+  //convert image to B64
+  convertToBase64(img: File): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target?.result as string;
+        resolve(base64String.substring(base64String.indexOf(',') + 1)); // Resolve the promise with the base64 string; get rid of the data:image/... that auto appends itself to the B64 string
+      };
+      reader.onerror = (error) => {
+        reject(error); // Reject the promise if an error occurs
+      };
+      reader.readAsDataURL(img);
+    });
+  }
 
   /*---------------------CUSTOMISE BOX LOGIC----------------------*/
   //function to display image name since I decided to be fancy with a custom input button
@@ -529,6 +586,7 @@ export class ProductDetailsComponent {
       //if chosen file is pdf/jpg
       if (chosenFile.type.includes('pdf') || chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) {
         imageName.innerHTML = chosenFile.name; //display file name
+        imageName.style.display = 'inline-block';
         this.invalidFile = false;
 
         if (chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) { //if chosen file is an image
@@ -556,16 +614,25 @@ export class ProductDetailsComponent {
     changes.height = Math.round(changes.height);
     this.sides = Math.round(this.sides);
 
-    /*100mm = 1em
-    Max length, width and height that can be displayed = 14em aka 1400mm aka 140cm
-    */
+    //if any side is greater than 500mm, make it a doube wall box
+    //first get the dropdown item that's a double wall box
+    let doubleWallItemID = this.customisableItems[1].itemID;
+
+    if ((changes.length > 500 || changes.width > 500 || changes.height > 500) && this.customiseForm.get('itemID')?.value != doubleWallItemID) {
+      this.customiseForm.patchValue({
+        itemID: doubleWallItemID
+      });
+    }
+
+    //10mm = 1em
+    //Max length, width and height that can be displayed = 14em aka 1400mm aka 140cm
 
     let newLength: number = changes.length;
     let newWidth: number = changes.width;
     let newHeight: number = changes.height;
 
     // Max size that can be displayed is 14em aka 1400mm
-    const maxSize = 1400;
+    const maxSize = 140;
 
     // Check if any dimension exceeds the maximum size
     if (newLength > maxSize || newWidth > maxSize || newHeight > maxSize) {
@@ -582,63 +649,63 @@ export class ProductDetailsComponent {
     }
 
     this.front = { //styles for box front face
-      width: (newLength / 100).toFixed(1) + 'em', /*box length*/
-      height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
-      transform: 'translateZ(' + (newWidth / 200).toFixed(1) + 'em)' /* half of box width */
+      width: (newLength / 10).toFixed(1) + 'em', /*box length*/
+      height: (newHeight / 10).toFixed(1) + 'em', /*box height*/
+      transform: 'translateZ(' + (newWidth / 20).toFixed(1) + 'em)' /* half of box width */
     }
 
     this.back = { //styles for box back face
-      width: (newLength / 100).toFixed(1) + 'em', /*box length*/
-      height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
-      transform: 'translateZ(-' + (newWidth / 200).toFixed(1) + 'em)' /* half of box width */
+      width: (newLength / 10).toFixed(1) + 'em', /*box length*/
+      height: (newHeight / 10).toFixed(1) + 'em', /*box height*/
+      transform: 'translateZ(-' + (newWidth / 20).toFixed(1) + 'em)' /* half of box width */
     }
 
     this.left = { //styles for box left face
-      width: (newWidth / 100).toFixed(1) + 'em', /*box width*/
-      height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
-      transform: 'translateX(-' + (newLength / 200).toFixed(1) + 'em) rotateY(90deg)' /* half of box length */
+      width: (newWidth / 10).toFixed(1) + 'em', /*box width*/
+      height: (newHeight / 10).toFixed(1) + 'em', /*box height*/
+      transform: 'translateX(-' + (newLength / 20).toFixed(1) + 'em) rotateY(90deg)' /* half of box length */
     }
 
     this.right = { //styles for box right face
-      width: (newWidth / 100).toFixed(1) + 'em', /*box width*/
-      height: (newHeight / 100).toFixed(1) + 'em', /*box height*/
-      transform: 'translateX(' + (newLength / 200).toFixed(1) + 'em) rotateY(90deg)' /* half of box length */
+      width: (newWidth / 10).toFixed(1) + 'em', /*box width*/
+      height: (newHeight / 10).toFixed(1) + 'em', /*box height*/
+      transform: 'translateX(' + (newLength / 20).toFixed(1) + 'em) rotateY(90deg)' /* half of box length */
     }
 
     this.top = { //styles for box top face
-      width: (newLength / 100).toFixed(1) + 'em', /*box length*/
-      height: (newWidth / 100).toFixed(1) + 'em', /*box width*/
-      transform: 'translateY(-' + (newHeight / 200).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
+      width: (newLength / 10).toFixed(1) + 'em', /*box length*/
+      height: (newWidth / 10).toFixed(1) + 'em', /*box width*/
+      transform: 'translateY(-' + (newHeight / 20).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
     }
 
     this.bottom = { //styles for box bottom face
-      width: (newLength / 100).toFixed(1) + 'em', /*box length*/
-      height: (newWidth / 100).toFixed(1) + 'em', /*box width*/
+      width: (newLength / 10).toFixed(1) + 'em', /*box length*/
+      height: (newWidth / 10).toFixed(1) + 'em', /*box width*/
       transform: 'translateY(' + (newHeight / 200).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
     }
 
     this.topSpan = { //styles for box tape on top
-      width: (newLength / 1000).toFixed(1) + 'em' /*box length divided by 10*/
+      width: (newLength / 100).toFixed(1) + 'em' /*box length divided by 10*/
     }
 
     this.frontBackSpan = { //styles for box tape on front
-      height: (newHeight / 400).toFixed(1) + 'em', /*box height divided by 4*/
-      width: (newLength / 1000).toFixed(1) + 'em' /*box length divided by 10*/
+      height: (newHeight / 40).toFixed(1) + 'em', /*box height divided by 4*/
+      width: (newLength / 100).toFixed(1) + 'em' /*box length divided by 10*/
     }
 
     this.topBottomImg = { //styles for box image
-      'max-height': (newWidth * 0.8 / 100).toFixed(1) + 'em', /*box width times 0.8*/
-      'max-width': (newLength * 0.8 / 100).toFixed(1) + 'em' /*box length times 0.8*/
+      'max-height': (newWidth * 0.8 / 10).toFixed(1) + 'em', /*box width times 0.8*/
+      'max-width': (newLength * 0.8 / 10).toFixed(1) + 'em' /*box length times 0.8*/
     }
 
     this.leftRightImg = { //styles for box image
-      'max-width': (newWidth * 0.8 / 100).toFixed(1) + 'em', /*box width times 0.8*/
-      'max-height': (newHeight * 0.8 / 100).toFixed(1) + 'em' /*box height times 0.8*/
+      'max-width': (newWidth * 0.8 / 10).toFixed(1) + 'em', /*box width times 0.8*/
+      'max-height': (newHeight * 0.8 / 10).toFixed(1) + 'em' /*box height times 0.8*/
     }
 
     this.frontBackImg = { //styles for box image
-      'max-width': (newLength * 0.8 / 100).toFixed(1) + 'em', /*box length times 0.8*/
-      'max-height': (newHeight * 0.8 / 100).toFixed(1) + 'em' /*box height times 0.8*/
+      'max-width': (newLength * 0.8 / 10).toFixed(1) + 'em', /*box length times 0.8*/
+      'max-height': (newHeight * 0.8 / 10).toFixed(1) + 'em' /*box height times 0.8*/
     }
   }
 }
@@ -648,4 +715,10 @@ export interface SizeDropdrownItem {
   sizeString: string;
   //price: number;
   qtyOnHand: number;
+}
+
+interface CustomisableProductItem {
+  itemID: number;
+  itemDescription: string;
+  formulaID: number;
 }
