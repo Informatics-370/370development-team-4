@@ -65,9 +65,13 @@
     background-color: #2d9884;
 }
 
-.btn-customise { background-color: #e7a427; }
+/* .btn-customise { background-color: #e7a427; }
 
-.btn-customise:hover { background-color: #d39623; }
+.btn-customise:hover { background-color: #d39623; } */
+
+.btn-customise { background-color: #D6AD60; }
+
+.btn-customise:hover { background-color: #a78444; }
 
 button:disabled {
     opacity: 0.7;
@@ -101,13 +105,6 @@ button:disabled {
 
 #related-products-container {
     margin: 2em .25em;
-}
-
-.success-msg {
-    font-size: 90%;
-    margin: 3px 0 10px 0;
-    padding: 0;
-    color: #32AF99;
 }
 
 .not-clickable { cursor: default; }

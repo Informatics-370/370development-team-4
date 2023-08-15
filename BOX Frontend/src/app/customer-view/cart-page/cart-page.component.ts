@@ -60,10 +60,28 @@ export class CartPageComponent {
   //notify user of items that are out of stock or above quantity on hand
 
   //update quantity of an item in cart
+  updateCartItemQuantity(cartItem: Cart) {
+    if (cartItem.quantity > 0) {
+      if (this.cartService.updateProductQuantity(cartItem.productID, cartItem.isFixedProduct, cartItem.quantity)) {
+        this.totalQuantity = this.cartService.getCartQuantity();
+      }
+      /* else {
+      } */
+    }
+    else {
+      //remove from cart
+    }
+  }
 
   //remove item from cart
 
   //clear cart
+  clearCart() {
+    this.cartService.emptyCart();
+    this.products = this.cartService.getCartItems();
+    this.productCount = 0;
+    this.totalQuantity = 0;
+  }
   
   //create quote request
   createEstimate() {

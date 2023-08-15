@@ -9,6 +9,10 @@
   <div class="col-md-9 col-sm-9 p-2">
     <div class="row">
       <h3 class="p-4" style="color: black;">Shopping Cart</h3>
+      <div class="text-center" *ngIf="productCount == 0">
+        <span id="empty-cart"><fa-icon class="m-3" [icon]="['fas', 'cart-shopping']" ></fa-icon></span><br/>
+        Your cart is empty :(<br/>You can find all our products on our "Products" page.
+      </div>
 
       <div class="col-md-8 col-sm-12">
         <div id="product-cards">
@@ -23,14 +27,25 @@
                 </div>
                 <div class="col-md-7 col-sm-7">
                   <div class="card-body product-card-body">
-                    <p style="font-weight: 600;">{{product.description}}</p>
-                    <p style="font-size: 90%;">
+                    <!--Delete button-->
+                    <!-- <button title="Delete this discount" class="CRUD-icon remove-cart">
+                      <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
+                    </button> -->
+
+                    <div style="font-weight: 600;">{{product.description}}</div>
+                    <div style="color: grey; font-size: 90%;">{{product.itemDescription}}</div>
+                    <div style="margin-bottom: .5em; margin-top: 1rem;">
                       Size: <em>{{product.sizeString}}</em> <br />
                       <!-- Unit price: {{product.fixedProduct.price | currency: 'ZAR':'symbol-narrow'}} excl. VAT -->
-                    </p>
+                    </div>
                     <div class="qty-form">
                       Quantity:
-                      <input type="number" [(ngModel)]="product.quantity" min="1" />
+                      <input class="form-control modal-form-input modal-form-text quantity-input" type="number"
+                        [(ngModel)]="product.quantity" min="0" (keyup)="updateCartItemQuantity(product)" 
+                        (paste)="updateCartItemQuantity(product)"/>
+                    </div>
+                    <div class="error-msg" *ngIf="!product.hasValidQuantity">
+                      Due to inventory constraints the maximum you can order is {{product.quantityOnHand}}. We'll restock soon!
                     </div>
                     <!-- <div class="total">
                       Total: {{(product.fixedProduct.price * +product.quantity).toFixed(2) | currency:
@@ -41,16 +56,25 @@
               </div>
             </div>
           </div>
+
+          <div id="clear-cart-div" *ngIf="productCount > 0">            
+            <button class="btn modal-form-submit btn-request btn-clear" (click)="clearCart()">Clear cart</button>
+          </div>
         </div>
       </div>
 
       <!--CART SUMMARY-->
-      <div class="col-md-4 col-sm-12" style="padding-left: 0;">
+      <div class="col-md-4 col-sm-12" style="padding-left: 0;" *ngIf="productCount > 0">
         <div class="card-container">
           <div id="summary-card" class="card product-card">
             <p style="font-weight: 600;">Cart Summary</p>
             <div>Total quantity in cart: {{totalQuantity}}</div>
             <div>Total products in cart: {{productCount}}</div>
+            <div class="text-center">
+              <button class="btn modal-form-submit btn-request" title="Registered customers can request a quote and MegaPack will contact them">
+                Request quote
+              </button>
+            </div>
             <!-- <p>
               Subtotal: <span id="price"></span> (Number of items): <span id="quantity"></span>
             </p>

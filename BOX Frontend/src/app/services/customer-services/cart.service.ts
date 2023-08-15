@@ -108,7 +108,9 @@ export class CartService {
             sizeString: sizeString,
             productPhotoB64: productPhotoB64,
             isFixedProduct: isFixedProduct,
-            quantity: quantity
+            quantity: quantity,
+            quantityOnHand: 0,
+            hasValidQuantity: true
           }
 
           this.cart.push(newCartItem);
@@ -117,9 +119,6 @@ export class CartService {
 
         this.saveCart();
         return true; //successfully updated quantity or added to cart
-      }
-      else {
-        return false;
       }
     }
     else { //it's a custom product
@@ -131,7 +130,9 @@ export class CartService {
         sizeString: sizeString,
         productPhotoB64: productPhotoB64,
         isFixedProduct: isFixedProduct,
-        quantity: quantity
+        quantity: quantity,
+        quantityOnHand: 0,
+        hasValidQuantity: true
       }
 
       this.cart.push(newCartItem);
@@ -140,6 +141,52 @@ export class CartService {
       this.saveCart();
       return true; //successfully added to cart
     }
+
+    return false;
+  }
+
+  //update quantity of cart item
+  updateProductQuantity(productID: number, isFixedProduct: boolean, newQuantity: number): boolean {
+    //find product in the cart
+    let product = this.cart.find(prod => prod.productID == productID && prod.isFixedProduct == isFixedProduct);
+    if (product) {
+      //if it's a fixed product, check that the new quantity is not more than the quantity on hand
+      if (this.belowQuantityOnHand(product.productID, newQuantity)) {
+        let i = this.cart.indexOf(product);
+        this.cart[i].quantity = newQuantity;
+        this.saveCart();
+        console.log('Updated cart item: ', this.cart[i]);
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  //returns true if the quantity I want to assign to a fixed product in the cart is below the quantity on hand
+  belowQuantityOnHand(productID: number, quantityToCheck: number): boolean {
+    //I assume that you're checking a fixed product
+    let prodToCheck = this.cart.find(prod => prod.productID == productID && prod.isFixedProduct);
+
+    if (prodToCheck) {
+      let fixedProd = this.fixedProducts.find(prod => prod.fixedProductID == prodToCheck?.productID);
+
+      let i = this.cart.indexOf(prodToCheck); //get index of product so I can update its max quantity
+
+      if (fixedProd && quantityToCheck < fixedProd?.quantityOnHand) {
+        this.cart[i].hasValidQuantity = true;
+        this.cart[i].quantityOnHand =  fixedProd ? fixedProd.quantityOnHand : 0;
+        return true;
+      }
+      else {
+        this.cart[i].hasValidQuantity = false;
+        this.cart[i].quantityOnHand = fixedProd ? fixedProd.quantityOnHand : 0;
+      }
+      this.saveCart();
+    }
+
+    return false;
   }
 
   //function to get data from DB asynchronously (and simultaneously)

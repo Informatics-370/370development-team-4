@@ -443,6 +443,7 @@ export class ProductDetailsComponent {
           title: 'Successfully added to cart!',
           timer: 3000,
           timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
         }).then((result) => {
           /* Read more about handling dismissals below */
           if (result.dismiss === Swal.DismissReason.timer) {
@@ -742,6 +743,9 @@ export class ProductDetailsComponent {
   }
   
   //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------
+  get width() { return this.customiseForm.get('width'); }
+  get length() { return this.customiseForm.get('length'); }
+  get height() { return this.customiseForm.get('height'); }
   get quantity() { return this.customiseForm.get('quantity'); }
 }
 
