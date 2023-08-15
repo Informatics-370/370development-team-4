@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Cart } from 'src/app/shared/customer-interfaces/cart';
 import { CartService } from 'src/app/services/customer-services/cart.service';
 import { CustomProductVM } from 'src/app/shared/custom-product-vm';
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-product-details',
@@ -48,7 +49,6 @@ export class ProductDetailsComponent {
   //MESSAGES TO USER
   invalidQty = false; //validation error logic
   loading = true; //display loading message
-  cartSuccess = false; //display success message when product is added to cart
 
   //DISPLAY RELATED PRODUCTS
   relatedProductsVMList: ProductVM[] = []; //list of max 6 related products
@@ -58,7 +58,7 @@ export class ProductDetailsComponent {
   customiseForm: FormGroup; //customise form
   customisableItems: CustomisableProductItem[] = []; //hold array of single wall carton and double wall carton
   invalidFile = false;
-  sides = 1; //holds number of sides user wants to print on for a custom box
+  sides = 0; //holds number of sides user wants to print on for a custom box
   //hold styles for box preview that are calculated based on box dimensions
   front: any = { //styles for box front face
     width: '10em', /*box length*/
@@ -131,8 +131,9 @@ export class ProductDetailsComponent {
       width: [50, Validators.required],
       length: [100, Validators.required],
       itemID: [1, Validators.required],
-      sides: [1, Validators.required],
-      label: []
+      sides: [0, Validators.required],
+      label: [],
+      quantity: [1, Validators.required]
     });
 
     this.customiseForm.valueChanges.subscribe(changes => {
@@ -193,7 +194,7 @@ export class ProductDetailsComponent {
         this.customisableItems.push({
           itemID: item.itemID,
           itemDescription: item.description,
-          formulaID: item.description.toLocaleLowerCase().includes('single') ? 0 : 1 //if item description is single wall, use formula with ID 0, otherwise 1
+          formulaID: item.description.toLocaleLowerCase().includes('single') ? 1 : 2 //if item description is single wall, use formula with ID 0, otherwise 1
         });
       });
       console.log('customisableItems', this.customisableItems);
@@ -365,6 +366,7 @@ export class ProductDetailsComponent {
   async addToCart(isFixedProduct: boolean) {
     let id = 0;
     let prodDescription = '';
+    let prodItemDescription = '';
     let concatenatedSizeString = '';
     let prodPhotoB64 = '';
     let qtyToAdd = this.addToCartForm.get("qty")?.value;
@@ -375,6 +377,7 @@ export class ProductDetailsComponent {
 
       if (fixedProdToAdd) {
         prodDescription = fixedProdToAdd.description;
+        prodItemDescription = this.selectedProductVM.description;
         concatenatedSizeString = this.selectedProductVM.sizeStringArray[this.selectedSizeIndex];
         prodPhotoB64 = fixedProdToAdd.productPhotoB64;
       }
@@ -405,18 +408,47 @@ export class ProductDetailsComponent {
         
         console.log(newCustomProduct);
 
-        //const getItemsPromise = lastValueFrom(this.dataService.GetItems().pipe(take(1)));
+        try {
+          const addCustomProductPromise = lastValueFrom(this.dataService.AddCustomProduct(newCustomProduct).pipe(take(1)));
 
+          const [result] = await Promise.all([
+            addCustomProductPromise
+          ]);
+
+          console.log('result', result);
+
+          //put result in variables to add to cart
+          id = result.customProductID;
+          prodDescription = 'Custom ' + result.itemDescription.toLocaleLowerCase();
+          prodItemDescription = result.itemDescription;
+          concatenatedSizeString = result.length + 'mm x ' + result.width + 'mm x ' + result.height + 'mm';
+          prodPhotoB64 = result.label;
+          if (result.sides > 0) {
+            concatenatedSizeString += ' with printing on ' + result.sides + ' side(s)'
+          }
+          isFixedProduct = false;
+          qtyToAdd = this.quantity?.value;
+
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
 
-    if (this.cartService.addToCart(id, prodDescription, concatenatedSizeString,
+    if (this.cartService.addToCart(id, prodDescription, prodItemDescription, concatenatedSizeString,
       prodPhotoB64, isFixedProduct, qtyToAdd)) {
 
-      this.cartSuccess = true;
-      setTimeout(() => {
-        this.cartSuccess = false;
-      }, 8000);
+        Swal.fire({
+          icon: 'success',
+          title: 'Successfully added to cart!',
+          timer: 3000,
+          timerProgressBar: true,
+        }).then((result) => {
+          /* Read more about handling dismissals below */
+          if (result.dismiss === Swal.DismissReason.timer) {
+            console.log('I was closed by the timer')
+          }
+        })
     }
 
     /* let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
@@ -625,13 +657,13 @@ export class ProductDetailsComponent {
     }
 
     //10mm = 1em
-    //Max length, width and height that can be displayed = 14em aka 1400mm aka 140cm
+    //Max length, width and height that can be displayed = 14em aka 140mm aka 14cm
 
     let newLength: number = changes.length;
     let newWidth: number = changes.width;
     let newHeight: number = changes.height;
 
-    // Max size that can be displayed is 14em aka 1400mm
+    // Max size that can be displayed is 14em aka 140mm
     const maxSize = 140;
 
     // Check if any dimension exceeds the maximum size
@@ -708,6 +740,9 @@ export class ProductDetailsComponent {
       'max-height': (newHeight * 0.8 / 10).toFixed(1) + 'em' /*box height times 0.8*/
     }
   }
+  
+  //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------
+  get quantity() { return this.customiseForm.get('quantity'); }
 }
 
 export interface SizeDropdrownItem {

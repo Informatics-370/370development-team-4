@@ -116,12 +116,15 @@ namespace BOX.Controllers
 				// Save changes in the repository
 				await _repository.SaveChangesAsync();
 
-				// Return the created fixed product
-				var createdCustomProductViewModel = new CustomProductViewModel
+                // Return the created fixed product
+                var productItem = await _repository.GetItemAsync(customProduct.ItemID);
+
+                var createdCustomProductViewModel = new CustomProductViewModel
 				{
 					CustomProductID = customProduct.CustomProductID,
 					FormulaID = customProduct.FormulaID,
 					ItemID = customProduct.ItemID,
+					ItemDescription = productItem.Description,
 					Width = customProduct.Width,
 					Length = customProduct.Length,
 					Height = customProduct.Height,

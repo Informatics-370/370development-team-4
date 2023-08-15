@@ -85,10 +85,6 @@
                   <div class="col-lg-6 col-md-12">
                     <button class="btn btn-add-cart" (click)="addToCart(true)" [disabled]="outOfStock">Add to Cart</button>
                   </div>
-
-                  <div *ngIf="cartSuccess" class="success-msg">
-                    Successfully added to cart!
-                  </div>
                 </form>
               </div>
             </div>
@@ -186,6 +182,13 @@
             <div>Printing:</div>
             <hr class="customise-hr hr-blurry" />
 
+            <div class="form-group">
+              <label for="sides" class="form-label modal-form-label bold">No of sides to print on:</label>
+              <input type="number" formControlName="sides" [(ngModel)]="sides"
+                class="form-control modal-form-input modal-form-text customise-input" name="sides" required
+                min="0" max="6" step="1" style="width: 50%;">
+            </div>
+
             <div class="form-group" id="choose-img" class="display-photo">
               <label class="form-label btn-create btn download">
                 <input id="label" type="file" accept=".pdf,.jpeg,.jpg" formControlName="label" name="label"
@@ -196,13 +199,19 @@
                 <span class="bold">No file selected</span> (pdf or jpg)
               </span>
               <span class="imageName" *ngIf="invalidFile">Invalid file. Please choose a jpg or pdf file</span>
-              <div>We're sorry but we can't provide previews of pdf files</div>
+              <div>We're sorry but we can't provide previews of pdf files.</div>
             </div>
+
+            <hr class="customise-hr hr-blurry" />
+
             <div class="form-group">
-              <label for="sides" class="form-label modal-form-label bold">No of sides to print on:</label>
-              <input type="number" formControlName="sides" [(ngModel)]="sides"
-                class="form-control modal-form-input modal-form-text customise-input" name="sides" required
-                min="0" max="6" step="1" style="width: 50%;">
+              <label for="quantity" class="form-label modal-form-label bold">Quantity of boxes:</label>
+              <input type="number" formControlName="quantity" class="form-control modal-form-input modal-form-text customise-input" 
+              name="quantity" required min="1" step="1" style="width: 50%;">
+              
+              <div *ngIf="(quantity?.dirty || quantity?.touched) && quantity?.errors?.['required'] || quantity?.errors?.['min']" class="error-msg">
+                Please enter an amount above 0.
+            </div>
             </div>
 
             <div class="form-submit-div">

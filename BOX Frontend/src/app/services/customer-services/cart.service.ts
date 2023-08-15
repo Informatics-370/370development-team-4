@@ -82,41 +82,63 @@ export class CartService {
     return qty;
   }
 
-  addToCart(productID: number, description: string, sizeString: string, 
-      productPhotoB64: string, isFixedProduct: boolean, quantity: number): boolean {
-    let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == productID); //get fixed product to put in cart
-    
-    if (fixedProdToAdd) {
-      //check if user already has that product in their cart
-      let duplicateCartItem = this.cart.find(cartItem => cartItem.productID == fixedProdToAdd?.fixedProductID);
+  addToCart(productID: number, description: string, productItemDescription: string, sizeString: string,
+    productPhotoB64: string, isFixedProduct: boolean, quantity: number): boolean {
 
-      if (duplicateCartItem) { //if the user already has that item in cart, just update quantity
-        let index = this.cart.indexOf(duplicateCartItem);
-        
-        //if the product already exists in the cart, just increase the quantity; don't worry about adjusting discount cos they can't see it on this page; they'll see it in their cart
-        this.cart[index].quantity += quantity;
-      }
-      else {
-        //if not, create new cart item
-        let newCartItem: Cart = {
-          //fixedProduct: fixedProdToAdd,
-          productID: productID,
-          description: description,
-          sizeString: sizeString,
-          productPhotoB64: productPhotoB64,
-          isFixedProduct: isFixedProduct,
-          quantity: quantity
+    if (isFixedProduct) { //if it's a fixed product
+      let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == productID); //get fixed product to put in cart
+
+      if (fixedProdToAdd) {
+        //check if user already has that product in their cart
+        let duplicateCartItem = this.cart.find(cartItem => cartItem.productID == fixedProdToAdd?.fixedProductID);
+
+        if (duplicateCartItem) { //if the user already has that item in cart, just update quantity
+          let index = this.cart.indexOf(duplicateCartItem);
+
+          //if the product already exists in the cart, just increase the quantity; don't worry about adjusting discount cos they can't see it on this page; they'll see it in their cart
+          this.cart[index].quantity += quantity;
+        }
+        else {
+          //if not, create new cart item
+          let newCartItem: Cart = {
+            //fixedProduct: fixedProdToAdd,
+            productID: productID,
+            description: description,
+            itemDescription: productItemDescription,
+            sizeString: sizeString,
+            productPhotoB64: productPhotoB64,
+            isFixedProduct: isFixedProduct,
+            quantity: quantity
+          }
+
+          this.cart.push(newCartItem);
+          console.log('Updated cart: ', this.cart);
         }
 
-        this.cart.push(newCartItem);
-        console.log('Updated cart: ', this.cart);
+        this.saveCart();
+        return true; //successfully updated quantity or added to cart
+      }
+      else {
+        return false;
+      }
+    }
+    else { //it's a custom product
+      //create new cart item
+      let newCartItem: Cart = {
+        productID: productID,
+        description: description,
+        itemDescription: productItemDescription,
+        sizeString: sizeString,
+        productPhotoB64: productPhotoB64,
+        isFixedProduct: isFixedProduct,
+        quantity: quantity
       }
 
+      this.cart.push(newCartItem);
+      console.log('Updated cart: ', this.cart);
+
       this.saveCart();
-      return true; //successfully updated quantity or added to cart
-    }
-    else {
-      return false;
+      return true; //successfully added to cart
     }
   }
 

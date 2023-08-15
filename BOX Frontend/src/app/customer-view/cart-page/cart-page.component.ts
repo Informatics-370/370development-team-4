@@ -2,15 +2,13 @@ import { Component } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
-import { FixedProductVM } from '../../shared/fixed-product-vm';
+//import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Cart } from '../../shared/customer-interfaces/cart';
-import { Discount } from '../../shared/discount';
 import { HttpClient } from '@angular/common/http';
 //This is causing the code to break----import { MatSnackBar } from '@angular/material/snack-bar';
 import { EstimateVM } from '../../shared/estimate-vm';
 import { EstimateLineVM } from '../../shared/estimate-line-vm';
 import { CartService } from '../../services/customer-services/cart.service';
-import { VAT } from '../../shared/vat';
 
 @Component({
   selector: 'app-cart-page',
@@ -25,17 +23,16 @@ import { VAT } from '../../shared/vat';
 export class CartPageComponent {
   loading = true;
   products: Cart[] = [];
-  discountList: Discount[] = []; //hold all bulk discounts
   totalQuantity: number = 0;
+  productCount = 0;
+  /* discountList: Discount[] = []; //hold all bulk discounts
   applicableDiscount = 0; //bulk discount
   randomdiscount = 0; //customer discount
   totalPrice = 0;
   modal: any = document.getElementById('contactModal');
   firstName: string = '';
   lastName: string = '';
-  cartTotal = 0;
-  customerId = 1; // Hardcoded Customer ID, replace with your desired value
-  estimateId = 3; // You may choose to hardcode this or generate it as needed
+  cartTotal = 0; */
 
   constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService) { }
 
@@ -47,27 +44,80 @@ export class CartPageComponent {
   //}
 
   ngOnInit(): void {
-    this.getDataFromDB();
+    //this.getDataFromDB();
     this.products = this.cartService.getCartItems(); //get items from cart using cart service
-
+    this.totalQuantity = this.cartService.getCartQuantity();
+    this.productCount = this.cartService.getCartProductCount();
     this.loading = false;    
-    this.calculateTotalQuantity();
+    /* this.calculateTotalQuantity();
     this.generateRandomDiscount();
     this.modal = document.getElementById('contactModal');
 
-    /* this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
+    this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
     this.applicableDiscount = this.cartService.determineApplicableDiscount(); */
   }
 
+  //notify user of items that are out of stock or above quantity on hand
+
+  //update quantity of an item in cart
+
+  //remove item from cart
+
+  //clear cart
+  
+  //create quote request
+  createEstimate() {
+    //create estimate
+    let newEstimate: EstimateVM = {
+      estimateID: 0,
+      estimateStatusID: 0,
+      estimateStatusDescription: '',
+      estimateDurationID: 0,
+      userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
+      customerFullName: '',
+      confirmedTotal: 0,
+      estimate_Lines: []
+    }
+
+    //create estimate lines from cart
+    this.products.forEach(cartItem => {
+      let estimateLine: EstimateLineVM = {
+        estimateLineID: 0,
+        estimateID: 0,
+        fixedProductID: cartItem.productID,
+        fixedProductDescription: '',
+        fixedProductUnitPrice: 0,
+        customProductID: 0,
+        customProductDescription: '',
+        customProductUnitPrice: 0,
+        quantity: cartItem.quantity
+      }
+
+      newEstimate.estimate_Lines.push(estimateLine);
+    });
+    console.log('Estimate before posting: ', newEstimate);
+
+    try {
+      //post to backend
+      this.dataService.AddEstimate(newEstimate).subscribe((result) => {
+        console.log('New estimate: ', result)
+        this.cartService.emptyCart(); //clear cart
+        this.router.navigate(['/quotes']); //redirect to estimate page
+      });
+    } catch (error) {
+      console.error('Error submitting estimate: ', error);
+    }
+  }
+
   //function to get data from DB asynchronously (and simultaneously)
-  async getDataFromDB() {
+  /* async getDataFromDB() {
     try {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
       const getDiscountPromise = lastValueFrom(this.dataService.GetDiscounts().pipe(take(1)));
 
-      /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
-      That's what the Promise.all method is supposed to be doing.*/
+      //The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
+      //That's what the Promise.all method is supposed to be doing.
       const [allVAT, allDiscounts] = await Promise.all([
         getVATPromise,
         getDiscountPromise
@@ -77,16 +127,16 @@ export class CartPageComponent {
       let vat = allVAT[0];
       this.discountList = allDiscounts;
 
-      /* this.cartService.setGlobalVariables(this.discountList, vat);
+      this.cartService.setGlobalVariables(this.discountList, vat);
       this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
-      this.applicableDiscount = this.cartService.determineApplicableDiscount(); */
+      this.applicableDiscount = this.cartService.determineApplicableDiscount();
     } catch (error) {
       console.error('An error occurred:', error);
     }
-  }
+  } */
 
   //This calculates the number of items that exist in the cart so that we can calculate the total price
-  calculateTotalQuantity() {
+  /* calculateTotalQuantity() {
     this.totalQuantity = 0;
     this.totalPrice = 0;
 
@@ -173,14 +223,8 @@ export class CartPageComponent {
 
 
 
-  }
+  } */
 
-
-
-
-
-
-  //
   // calculateTotalPrice() {
   //   let totalPrice = 0;
 
@@ -195,23 +239,10 @@ export class CartPageComponent {
   //   }
   // }
 
-
-
   /*---------------------------------Section 2--------------------------------- */
   //In this section I will work on the user being able to update the quantity of goods in their cart, this should allow a change in the price of what is in the cart.
 
-
-
-
-
-
-
-
-
-
-
-
-  /*------------------------------Section 3------------------------------*/
+  /* //------------------------------Section 3------------------------------
   //This section deals with the Get-in contact with us Modal, It can be further subdivided into 2 main sections
 
   //In the following lines, I will be dealing with some of the smaller details of functionality, e.g closing a modal when the X button is clicked and also when the user clicks outside the modal
@@ -243,8 +274,6 @@ export class CartPageComponent {
     }
   }
 
-
-
   //Section 3.1:
   //This deals with the actual frontend representation of the modal with user input fields for negotiation of the price charged.
 
@@ -253,23 +282,11 @@ export class CartPageComponent {
     return this.firstName + ' ' + this.lastName;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
   //Section 3.2 :
   //This deals with sending an email to the Employee responsible for the customer once the submit button is pressed. As of 13 July 2023, for now it will be sent to the admin. employee-customer assignment will be finalised at a later stage
 
-  /*CREATE ESTIMATE */
-  /* submitEstimateLine() {
+  //CREATE ESTIMATE
+  submitEstimateLine() {
       // Prepare the data for creating a new Estimate Line.
       const estimateLineData = {
         customerID: this.customerId,
@@ -295,9 +312,6 @@ export class CartPageComponent {
   
         }
       );
-  
-   
-  
   
    // Add the code to send the email here
    const toEmail = 'recipient@example.com'; // Replace with the email address of the recipient
@@ -340,47 +354,4 @@ export class CartPageComponent {
   
       this.router.navigate(['/estimate']);
     } */
-
-  createEstimate() {
-    //create estimate
-    let newEstimate: EstimateVM = {
-      estimateID: 0,
-      estimateStatusID: 0,
-      estimateStatusDescription: '',
-      estimateDurationID: 0,
-      userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
-      customerFullName: '',
-      confirmedTotal: 0,
-      estimate_Lines: []
-    }
-
-    //create estimate lines from cart
-    this.products.forEach(cartItem => {
-      let estimateLine: EstimateLineVM = {
-        estimateLineID: 0,
-        estimateID: 0,
-        fixedProductID: cartItem.productID,
-        fixedProductDescription: '',
-        fixedProductUnitPrice: 0,
-        customProductID: 0,
-        customProductDescription: '',
-        customProductUnitPrice: 0,
-        quantity: cartItem.quantity
-      }
-
-      newEstimate.estimate_Lines.push(estimateLine);
-    });
-    console.log('Estimate before posting: ', newEstimate);
-
-    try {
-      //post to backend
-      this.dataService.AddEstimate(newEstimate).subscribe((result) => {
-        console.log('New estimate: ', result)
-        this.cartService.emptyCart(); //clear cart
-        this.router.navigate(['/quotes']); //redirect to estimate page
-      });
-    } catch (error) {
-      console.error('Error submitting estimate: ', error);
-    }
-  }
 }

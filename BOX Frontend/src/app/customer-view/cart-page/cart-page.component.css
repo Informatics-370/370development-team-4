@@ -1,4 +1,4 @@
-#contactModal .modal-content h2 {
+/* #contactModal .modal-content h2 {
   text-align: center;
   margin-top: 0;
   font-weight: normal;
@@ -11,9 +11,7 @@
   right: 10px;
   padding: 10px;
   border: none;
-  /* Add this line to remove the border */
   background-color: transparent;
-  /* Add this line to make the background transparent */
 }
 
 #contactModal .modal-content .close:hover,
@@ -63,6 +61,11 @@
   overflow-y: scroll;
 }
 
+.total { 
+  padding-top: 0.75em; 
+  font-weight: 600;
+} */
+
 .card-container {
   padding: 10px 0;
   max-width: 100% !important;
@@ -76,10 +79,7 @@
 
 .product-card-body { text-align: left; }
 
-.total { 
-  padding-top: 0.75em; 
-  font-weight: 600;
-}
+.product-card-img { max-height: 150px; }
 
 #summary-card {
   text-align: left;
