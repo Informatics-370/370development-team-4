@@ -262,14 +262,6 @@ namespace BOX.Models
         }
 
         //------------------------------------------------------ QUOTE STATUS ------------------------------------------------------------
-
-
-        public async Task<Quote_Status[]> GetAllQuoteStatusesAsync()
-        {
-            IQueryable<Quote_Status> query = _appDbContext.Quote_Status;
-            return await query.ToArrayAsync();
-        }
-
         public async Task<Quote_Status> GetQuoteStatusAsync(int quoteStatusId)
         {
             //Query to select quote duration where the ID passing through the API matches the ID in the Database
@@ -634,7 +626,7 @@ namespace BOX.Models
         }
         
         //------------------------------------------------------- QUOTE REQUEST -----------------------------------------------------------------
-        public async Task<Quote_Request[]> GetAllQuoteRequestsAsync()
+        public async Task<Quote_Request[]> GetAllQuoteRequests()
         {
             IQueryable<Quote_Request> query = _appDbContext.Quote_Request;
             return await query.ToArrayAsync();
@@ -660,7 +652,14 @@ namespace BOX.Models
             IQueryable<Quote_Request_Line> query = _appDbContext.Quote_Request_Line.Where(c => c.QuoteRequestID == quoteRequestId);
             return await query.ToArrayAsync();
         }
-        
+
+        //------------------------------------------------------ QUOTE REQUEST STATUS ------------------------------------------------------------
+        public async Task<Quote_Request_Status> GetQuoteRequestStatusAsync(int quoteRequestStatusId)
+        {
+            IQueryable<Quote_Request_Status> query = _appDbContext.Quote_Request_Status.Where(c => c.QuoteRequestStatusID == quoteRequestStatusId);
+            return await query.FirstOrDefaultAsync();
+        }
+
         //----------------------------------------------- USERS -----------------------------------------------        
         public async Task<User> GetUserAsync(string userId)
         {

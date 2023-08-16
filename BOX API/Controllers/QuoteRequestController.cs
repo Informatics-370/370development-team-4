@@ -18,13 +18,14 @@ namespace BOX.Controllers
             _repository = repository;
         }
 
+        //gets all quote requests that have not been turned into quotes i.e. where the status is 'Requested'
         [HttpGet]
         [Route("GetAllQuoteRequests")]
         public async Task<IActionResult> GetAllQuoteRequests()
         {
             try
             {
-                var requests = await _repository.GetAllQuoteRequestsAsync();
+                var requests = await _repository.GetAllQuoteRequests();
 
                 List<QuoteViewModel> qrViewModels = new List<QuoteViewModel>(); //create array of VMs
                 foreach (var request in requests)
@@ -100,7 +101,7 @@ namespace BOX.Controllers
                         Price priceRecord = await _repository.GetPriceByFixedProductAsync(fpID);
                         price = priceRecord.Amount;
                     }
-                    else //this orderline holds a custom product
+                    else //this line holds a custom product
                     {
                         int cpID = qrl.CustomProductID.Value;
                         customProduct = await _repository.GetCustomProductAsync(cpID);
@@ -167,7 +168,8 @@ namespace BOX.Controllers
             var quoteRequest = new Quote_Request
             {
                 UserId = quoteRequestViewModel.CustomerId,
-                Date = DateTime.Now
+                Date = DateTime.Now,
+                QuoteRequestStatusID = 1 //status 1 = Requested
             };
 
             try

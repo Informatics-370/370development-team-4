@@ -18,16 +18,13 @@ import { CustomProductVM } from 'src/app/shared/custom-product-vm';
   styleUrls: ['./cart-page.component.css']
 })
 
-/*  Kuziwa: Dealing with Estimates- There shall be three main parts to the cart's functionality regarding estimates:*/
-
-//In this section I will be retrieving from Local storage and dynamically displaying what is stored in local storage in cards to the customer. 
-
 export class CartPageComponent {
   loading = true;
   products: Cart[] = []; //holds all items in cart
   totalQuantity: number = 0;
   productCount = 0;
   cannotRequest = false; //disables or enables request quote button
+  cannotRequestReason = ''; //reason the customer is being prevented from requesting a quote
   /* discountList: Discount[] = []; //hold all bulk discounts
   applicableDiscount = 0; //bulk discount
   randomdiscount = 0; //customer discount
@@ -45,13 +42,15 @@ export class CartPageComponent {
     this.cartService.getProducts().subscribe(() => {
       //only called after products have been retrieved.
       this.products = this.cartService.getCartItems(); //get items from cart using cart service
-      this.checkCartStock();
+      this.checkCartStock(); //this notifies user if any product they initially wanted has now gone out of stock or if the qty on hand has reduced so much that they can't buy the original quanitity they wanted
       this.totalQuantity = this.cartService.getCartQuantity();
       this.productCount = this.cartService.getCartProductCount();
       this.loading = false;
     });
     //this.modal = document.getElementById('contactModal');
   }
+
+  //check if user has an active quote request
 
   //notify user of items that are out of stock or above quantity on hand when the cart page loads
   checkCartStock() {
@@ -114,8 +113,8 @@ export class CartPageComponent {
   }
   
   //create quote request
-  createEstimate() {
-    //create estimate
+  requestQuote() {
+    //create quote
     let newEstimate: EstimateVM = {
       estimateID: 0,
       estimateStatusID: 0,
@@ -156,6 +155,48 @@ export class CartPageComponent {
       console.error('Error submitting estimate: ', error);
     }
   }
+  /* createEstimate() {
+    //create estimate
+    let newEstimate: EstimateVM = {
+      estimateID: 0,
+      estimateStatusID: 0,
+      estimateStatusDescription: '',
+      estimateDurationID: 0,
+      userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
+      customerFullName: '',
+      confirmedTotal: 0,
+      estimate_Lines: []
+    }
+
+    //create estimate lines from cart
+    this.products.forEach(cartItem => {
+      let estimateLine: EstimateLineVM = {
+        estimateLineID: 0,
+        estimateID: 0,
+        fixedProductID: cartItem.productID,
+        fixedProductDescription: '',
+        fixedProductUnitPrice: 0,
+        customProductID: 0,
+        customProductDescription: '',
+        customProductUnitPrice: 0,
+        quantity: cartItem.quantity
+      }
+
+      newEstimate.estimate_Lines.push(estimateLine);
+    });
+    console.log('Estimate before posting: ', newEstimate);
+
+    try {
+      //post to backend
+      this.dataService.AddEstimate(newEstimate).subscribe((result) => {
+        console.log('New estimate: ', result)
+        this.cartService.emptyCart(); //clear cart
+        this.router.navigate(['/quotes']); //redirect to estimate page
+      });
+    } catch (error) {
+      console.error('Error submitting estimate: ', error);
+    }
+  } */
 
   //function to get data from DB asynchronously (and simultaneously)
   /* async getDataFromDB() {

@@ -29,6 +29,13 @@ INSERT INTO [dbo].[Quote_Status]
            ('Expired')
 GO
 
+INSERT INTO [dbo].[Quote_Request_Status]
+           ([Description])
+     VALUES
+           ('Requested'),
+           ('Completed')
+GO
+
 INSERT INTO [dbo].[VAT]
            ([Percentage]
            ,[Date])

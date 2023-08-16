@@ -57,6 +57,7 @@ namespace BOX.Models
         public DbSet<Product_Item> Product_Item { get; set; }
         public DbSet<Quote_Request> Quote_Request { get; set; }
         public DbSet<Quote_Request_Line> Quote_Request_Line { get; set; }
+        public DbSet<Quote_Request_Status> Quote_Request_Status { get; set; }
         public DbSet<QR_Code> QR_Code { get; set; }
         public DbSet<Raw_Material> Raw_Material { get; set; }
         public DbSet<Reject_Reason> Reject_Reason { get; set; }
