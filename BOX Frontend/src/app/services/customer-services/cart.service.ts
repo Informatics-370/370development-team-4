@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Cart } from '../../shared/customer-interfaces/cart';
 import { DataService } from '../data.services';
+import { Observable, forkJoin } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { CustomProductVM } from 'src/app/shared/custom-product-vm';
 /* import { Discount } from '../../shared/discount';
@@ -21,36 +23,57 @@ export class CartService {
 
   constructor(private dataService: DataService) {
     this.loadCartItems();
-    this.getProducts();
   }
 
   //get fixed and custom products from DB
-  getProducts() {
-    this.dataService.GetAllFixedProducts().subscribe((result: any[]) => {
-      let allFixedProducts: any[] = result;
-      this.fixedProducts = []; //empty array
-      allFixedProducts.forEach((prod) => {
-        this.fixedProducts.push(prod);
-      });
-
-      console.log('All fixed products from cart service: ', this.fixedProducts);
-    });
-
-    this.dataService.GetAllCustomProducts().subscribe((result: any[]) => {
-      let allCustomProducts: any[] = result;
-      this.customProducts = []; //empty array
-      allCustomProducts.forEach((prod) => {
-        this.customProducts.push(prod);
-      });
-
-      console.log('All custom products from cart service: ', this.customProducts);
-    });
+  //returns an observable of type void; doesn't emit any actual values when subscribed to but will be used for other things like updating fixedProducts and customProducts arrays.
+  getProducts(): Observable<void> {
+    //forkjoin combines multiple observables into 1 that emits an array of values once all the observables complete
+    return forkJoin([
+      this.dataService.GetAllFixedProducts(),
+      this.dataService.GetAllCustomProducts()
+    ]).pipe(
+      //tap receives an array containing the fixed and custom products
+      tap(([allFixed, allCustom]) => {
+        this.fixedProducts = allFixed;
+        this.customProducts = allCustom;
+  
+        console.log('All fixed products from cart service: ', this.fixedProducts);
+        console.log('All custom products from cart service: ', this.customProducts);
+      }),
+      //map each value emitted to a constant value- void 0 (aka undefined). Since getProducts doesn't return any values, this ensures that the resulting observable emits nothing but still completes successfully.
+      map(() => void 0)
+    );
   }
+  
+  /* async getProducts() {
+    try {
+      //turn Observables that retrieve data from DB into promises
+      const getFixedProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+      const getCustomProductsPromise = lastValueFrom(this.dataService.GetAllCustomProducts().pipe(take(1)));
+
+      //The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
+      //That's what the Promise.all method is supposed to be doing.
+      const [allFixed, allCustom] = await Promise.all([
+        getFixedProductsPromise,
+        getCustomProductsPromise
+      ]);
+
+      //put results from DB in global arrays
+      this.fixedProducts = allFixed;
+      console.log('All fixed products from cart service: ', this.fixedProducts);
+      this.customProducts = allCustom;
+      console.log('All custom products from cart service: ', this.customProducts);
+    } 
+    catch (error) {
+      console.error('An error occurred:', error);
+    }
+  } */
 
   loadCartItems() {
     //Retrieve cart list from local storage; if there's nothing in cart, return empty array
     this.cart = JSON.parse(localStorage.getItem("MegaPack-cart") || "[]");
-    console.log('cart', this.cart);
+    console.log('cart from load cart items function', this.cart);
   }
 
   saveCart() {
@@ -145,6 +168,12 @@ export class CartService {
     return false;
   }
 
+  removeFromCart(cartItem: Cart) {
+    let index = this.cart.indexOf(cartItem);
+    this.cart.splice(index, 1);
+    this.saveCart();
+  }
+
   //update quantity of cart item
   updateProductQuantity(productID: number, isFixedProduct: boolean, newQuantity: number): boolean {
     //find product in the cart
@@ -156,9 +185,9 @@ export class CartService {
         this.cart[i].quantity = newQuantity;
         this.saveCart();
         console.log('Updated cart item: ', this.cart[i]);
-      }
 
-      return true;
+        return true;
+      }
     }
 
     return false;
@@ -167,23 +196,27 @@ export class CartService {
   //returns true if the quantity I want to assign to a fixed product in the cart is below the quantity on hand
   belowQuantityOnHand(productID: number, quantityToCheck: number): boolean {
     //I assume that you're checking a fixed product
-    let prodToCheck = this.cart.find(prod => prod.productID == productID && prod.isFixedProduct);
+    let prodToCheck = this.cart.find(prod => prod.productID == productID && prod.isFixedProduct == true);
 
     if (prodToCheck) {
       let fixedProd = this.fixedProducts.find(prod => prod.fixedProductID == prodToCheck?.productID);
+      console.log('fixedProd', fixedProd);
 
       let i = this.cart.indexOf(prodToCheck); //get index of product so I can update its max quantity
 
-      if (fixedProd && quantityToCheck < fixedProd?.quantityOnHand) {
-        this.cart[i].hasValidQuantity = true;
-        this.cart[i].quantityOnHand =  fixedProd ? fixedProd.quantityOnHand : 0;
-        return true;
+      if (fixedProd) {
+        if (quantityToCheck <= fixedProd?.quantityOnHand) {
+          this.cart[i].hasValidQuantity = true;
+          this.cart[i].quantityOnHand =  fixedProd.quantityOnHand;
+          this.saveCart();
+          return true;
+        }
+        else {
+          this.cart[i].hasValidQuantity = false;
+          this.cart[i].quantityOnHand = fixedProd.quantityOnHand;
+          this.saveCart();
+        }
       }
-      else {
-        this.cart[i].hasValidQuantity = false;
-        this.cart[i].quantityOnHand = fixedProd ? fixedProd.quantityOnHand : 0;
-      }
-      this.saveCart();
     }
 
     return false;
@@ -211,7 +244,6 @@ export class CartService {
 
   //please pass discount parameters as whole numbers e.g. 25 for 25%
   getCartTotal(customerDiscountWholeNumber: number): number {
-    console.log(this.discountList);
     let cartTotal = 0;
     this.determineApplicableDiscount();
     let bulkDiscountWholeNumber = this.applicableDiscount ? this.applicableDiscount.percentage : 0;

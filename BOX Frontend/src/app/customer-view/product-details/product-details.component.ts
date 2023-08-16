@@ -150,8 +150,12 @@ export class ProductDetailsComponent {
       if (id) this.itemID = parseInt(id[0]);
     });
 
-    //Retrieve cart list from local storage; if there's nothing in cart, return empty array
-    this.cart = this.cartService.getCartItems();
+    /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
+    OR THE CART SERVICE WILL BREAK!!!*/
+    this.cartService.getProducts().subscribe(() => {
+      //Retrieve cart list from local storage only after products have been retrieved.
+      this.cart = this.cartService.getCartItems();
+    });
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -438,18 +442,15 @@ export class ProductDetailsComponent {
     if (this.cartService.addToCart(id, prodDescription, prodItemDescription, concatenatedSizeString,
       prodPhotoB64, isFixedProduct, qtyToAdd)) {
 
-        Swal.fire({
-          icon: 'success',
-          title: 'Successfully added to cart!',
-          timer: 3000,
-          timerProgressBar: true,
-          confirmButtonColor: '#32AF99'
-        }).then((result) => {
-          /* Read more about handling dismissals below */
-          if (result.dismiss === Swal.DismissReason.timer) {
-            console.log('I was closed by the timer')
-          }
-        })
+      Swal.fire({
+        icon: 'success',
+        title: 'Successfully added to cart!',
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        console.log(result);
+      });
     }
 
     /* let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart

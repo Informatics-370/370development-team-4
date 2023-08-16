@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { EstimateVM } from '../../shared/estimate-vm';
 import { EstimateLineVM } from '../../shared/estimate-line-vm';
 import { CartService } from '../../services/customer-services/cart.service';
+import { CustomProductVM } from 'src/app/shared/custom-product-vm';
 
 @Component({
   selector: 'app-cart-page',
@@ -22,9 +23,10 @@ import { CartService } from '../../services/customer-services/cart.service';
 
 export class CartPageComponent {
   loading = true;
-  products: Cart[] = [];
+  products: Cart[] = []; //holds all items in cart
   totalQuantity: number = 0;
   productCount = 0;
+  cannotRequest = false; //disables or enables request quote button
   /* discountList: Discount[] = []; //hold all bulk discounts
   applicableDiscount = 0; //bulk discount
   randomdiscount = 0; //customer discount
@@ -36,44 +38,60 @@ export class CartPageComponent {
 
   constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService) { }
 
-  //showNotification(message: string): void {
-  //  this.snackBar.open(message, 'Dismiss', {
-  //    duration: 5000, // Duration in milliseconds
-  //    verticalPosition: 'top', // Display the notification at the top of the screen
-  //  });
-  //}
-
   ngOnInit(): void {
-    //this.getDataFromDB();
-    this.products = this.cartService.getCartItems(); //get items from cart using cart service
-    this.totalQuantity = this.cartService.getCartQuantity();
-    this.productCount = this.cartService.getCartProductCount();
-    this.loading = false;    
-    /* this.calculateTotalQuantity();
-    this.generateRandomDiscount();
-    this.modal = document.getElementById('contactModal');
-
-    this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
-    this.applicableDiscount = this.cartService.determineApplicableDiscount(); */
+    /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
+    OR THE CART SERVICE WILL BREAK!!!*/
+    this.cartService.getProducts().subscribe(() => {
+      //only called after products have been retrieved.
+      this.products = this.cartService.getCartItems(); //get items from cart using cart service
+      this.checkCartStock();
+      this.totalQuantity = this.cartService.getCartQuantity();
+      this.productCount = this.cartService.getCartProductCount();
+      this.loading = false;
+    });
+    //this.modal = document.getElementById('contactModal');
   }
 
-  //notify user of items that are out of stock or above quantity on hand
+  //notify user of items that are out of stock or above quantity on hand when the cart page loads
+  checkCartStock() {
+    this.products.forEach(cartItem => {
+      //only check fixed products
+      if (cartItem.isFixedProduct) {
+        //cart service below qty on hand function returns true if the cart item has a qty below qty on hand
+        //so if it returns false, don't allow them to request quotee
+        if (!this.cartService.belowQuantityOnHand(cartItem.productID, cartItem.quantity)) {
+          this.cannotRequest = true;
+        }
+      }
+    });
+  }
 
   //update quantity of an item in cart
   updateCartItemQuantity(cartItem: Cart) {
-    if (cartItem.quantity > 0) {
+    if (cartItem.quantity > 0) { //if quantity is above 0, update quantity
+      //cart service update quantity method updates the qty and returns true if the new quantity is below or equal to 
+      //qty on hand (for fixed products)
       if (this.cartService.updateProductQuantity(cartItem.productID, cartItem.isFixedProduct, cartItem.quantity)) {
         this.totalQuantity = this.cartService.getCartQuantity();
+        this.cannotRequest = false;
       }
-      /* else {
-      } */
+      else { //this means they want to order more than qty on hand
+        this.cannotRequest = true;
+      }
     }
     else {
       //remove from cart
+      this.removeFromCart(cartItem);
     }
   }
 
   //remove item from cart
+  removeFromCart(cartItem: Cart) {
+    this.cartService.removeFromCart(cartItem);
+    this.products = this.cartService.getCartItems();
+    this.productCount = this.cartService.getCartProductCount();
+    this.totalQuantity = this.cartService.getCartQuantity();
+  }
 
   //clear cart
   clearCart() {
@@ -81,6 +99,17 @@ export class CartPageComponent {
     this.products = this.cartService.getCartItems();
     this.productCount = 0;
     this.totalQuantity = 0;
+  }
+
+  //format whole numbers to have spaces e.g. turn 12345678 to 12 345 678
+  getFormattedNumber(num: number): string {
+    let arr = Array.from(num.toString());
+
+    for (let i = arr.length; i >= 0; i -= 3) {
+      arr.splice(i, 0, ' ');      
+    }
+
+    return arr.join('');
   }
   
   //create quote request
