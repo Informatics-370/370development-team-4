@@ -19,6 +19,10 @@
 
       <div class="col-md-8 col-sm-12">
         <div id="product-cards">
+          <div id="clear-cart-div" *ngIf="productCount > 0">            
+            <button class="btn modal-form-submit btn-request btn-clear" (click)="clearCart()">Clear cart</button>
+          </div>
+
           <div *ngFor="let product of products" class="card-container">
             <div class="card product-card">
               <!--Delete button-->
@@ -49,7 +53,7 @@
                       <input class="form-control modal-form-input modal-form-text quantity-input" type="number"
                         [(ngModel)]="product.quantity" min="0" (change)="updateCartItemQuantity(product)" />
                     </div>
-                    <div class="error-msg" *ngIf="!product.hasValidQuantity">
+                    <div class="error-msg" *ngIf="!product.hasValidQuantity && product.quantityOnHand != 0">
                       Due to inventory constraints the maximum you can order is {{product.quantityOnHand}}. We'll restock soon!
                     </div>
                     <!-- <div class="total">
@@ -60,10 +64,6 @@
                 </div>
               </div>
             </div>
-          </div>
-
-          <div id="clear-cart-div" *ngIf="productCount > 0">            
-            <button class="btn modal-form-submit btn-request btn-clear" (click)="clearCart()">Clear cart</button>
           </div>
         </div>
       </div>

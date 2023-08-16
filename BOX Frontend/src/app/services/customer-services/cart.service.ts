@@ -90,6 +90,7 @@ export class CartService {
     this.saveCart();
   }
 
+  //NUMBER OF PRODUCTS IN CART i.e. if I want 10 of product A, 3 of product B and 1 of product C, return 3 products NOT 14
   getCartProductCount(): number {
     return this.cart.length;
   }
@@ -179,12 +180,22 @@ export class CartService {
     //find product in the cart
     let product = this.cart.find(prod => prod.productID == productID && prod.isFixedProduct == isFixedProduct);
     if (product) {
-      //if it's a fixed product, check that the new quantity is not more than the quantity on hand
-      if (this.belowQuantityOnHand(product.productID, newQuantity)) {
+      if (isFixedProduct) {
+        //if it's a fixed product, check that the new quantity is not more than the quantity on hand
+        if (this.belowQuantityOnHand(product.productID, newQuantity)) {
+          let i = this.cart.indexOf(product);
+          this.cart[i].quantity = newQuantity;
+          this.saveCart();
+          console.log('Updated fixed cart item: ', this.cart[i]);
+
+          return true;
+        }
+      }
+      else { //custom product
         let i = this.cart.indexOf(product);
         this.cart[i].quantity = newQuantity;
         this.saveCart();
-        console.log('Updated cart item: ', this.cart[i]);
+        console.log('Updated custom cart item: ', this.cart[i]);
 
         return true;
       }
@@ -194,8 +205,8 @@ export class CartService {
   }
 
   //returns true if the quantity I want to assign to a fixed product in the cart is below the quantity on hand
+  //this function ASSUMES you're checking a fixed product
   belowQuantityOnHand(productID: number, quantityToCheck: number): boolean {
-    //I assume that you're checking a fixed product
     let prodToCheck = this.cart.find(prod => prod.productID == productID && prod.isFixedProduct == true);
 
     if (prodToCheck) {

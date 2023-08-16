@@ -22,6 +22,7 @@ import { SupplierOrderVM } from '../shared/supplierOrder-vm';
 import { Discount } from '../shared/discount';
 import { Users } from '../shared/user';
 import { OrderVM } from '../shared/order-vm';
+import { QuoteVM } from '../shared/quote-vm';
 
 imports: [
   HttpClientModule
@@ -466,6 +467,23 @@ export class DataService {
   AddCustomProduct(customProductViewModel: CustomProductVM): Observable<any> {
     return this.httpClient.post<any>(
       `${this.apiUrl}CustomProduct/CreateCustomProduct`, customProductViewModel, this.httpOptions
+    );
+  }
+
+  //-------------------------------------------------------QUOTE REQUESTS-------------------------------------------------------
+  GetAllQuoteRequests(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}QuoteRequest/GetAllQuoteRequests`)
+      .pipe(map(result => result))
+  }
+
+  GetQuoteRequest(quoteRequestId: number): Observable<QuoteVM> {
+    return this.httpClient.get<QuoteVM>(`${this.apiUrl}QuoteRequest/GetQuoteRequest/${quoteRequestId}`)
+      .pipe(map(result => result));
+  }
+
+  AddQuoteRequest(quoteRequestViewModel: QuoteVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}QuoteRequest/AddQuoteRequest`, quoteRequestViewModel, this.httpOptions
     );
   }
 

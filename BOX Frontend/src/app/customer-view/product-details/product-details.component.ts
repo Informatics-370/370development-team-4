@@ -423,7 +423,7 @@ export class ProductDetailsComponent {
 
           //put result in variables to add to cart
           id = result.customProductID;
-          prodDescription = 'Custom ' + result.itemDescription.toLocaleLowerCase();
+          prodDescription = 'Custom ' + result.itemDescription;
           prodItemDescription = result.itemDescription;
           concatenatedSizeString = result.length + 'mm x ' + result.width + 'mm x ' + result.height + 'mm';
           prodPhotoB64 = result.label;
