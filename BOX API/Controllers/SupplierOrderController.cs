@@ -50,11 +50,13 @@ namespace BOX.Controllers
 
 					}
 
+					Supplier supplier = await _repository.GetSupplierAsync(orderLines[0].SupplierID);
+
 					SupplierOrderViewModel eVM = new SupplierOrderViewModel()
 					{
 						SupplierOrderID = order.SupplierOrderID,
 						SupplierID = orderLines[0].SupplierID,
-
+						SupplierName = supplier.Name,
 						Date = order.Date,
 						SupplierOrders = supplierOrderLineList
 					};
@@ -100,18 +102,21 @@ namespace BOX.Controllers
 						Supplier_OrderID = ol.Supplier_OrderID,
 						Supplier_ReturnID = ol.Supplier_ReturnID,
 						Fixed_ProductID = ol.Fixed_ProductID,
-						Raw_Material_Description = ol.Raw_Material_Description,
-						FixedProduct_Description = ol.FixedProduct_Description,
+						RawMaterialDescription = ol.RawMaterialDescription,
+                        FixedProductDescription = ol.FixedProductDescription,
 						Quantity = ol.Quantity
 
 					};
 					orderLineList.Add(slvm);
 				}
 
+				Supplier supplier = await _repository.GetSupplierAsync(orderLines[0].SupplierID);
+
 				var SupplierOrderViewModel = new SupplierOrderViewModel
 				{
 					SupplierOrderID = order.SupplierOrderID,
 					SupplierID = orderLines[0].SupplierID,
+					SupplierName = supplier.Name,
 					Date = order.Date,
 					SupplierOrders = orderLineList
 				};
@@ -154,8 +159,8 @@ namespace BOX.Controllers
 						Supplier_OrderID = ol.Supplier_OrderID,
 						Fixed_ProductID = ol.Fixed_ProductID,
 						Raw_MaterialID=ol.Raw_MaterialID,
-						FixedProduct_Description = ol.FixedProduct_Description,
-						Raw_Material_Description =ol.Raw_Material_Description,
+						FixedProductDescription = ol.FixedProductDescription,
+                        RawMaterialDescription = ol.RawMaterialDescription,
 						Quantity = ol.Quantity
 					};
 					allSupplierOrderLines.Add(slVM);
@@ -224,12 +229,12 @@ namespace BOX.Controllers
 					{
 						Supplier_Order_LineID = i + 1, //e.g. 1, then 2, 3, etc.
 						SupplierID = supplierOrderViewModel.SupplierID,
-						RawMaterialID=orderLineVM.Raw_MaterialID,
+						RawMaterialID= orderLineVM.Raw_MaterialID == 0 ? null : orderLineVM.Raw_MaterialID,
 						SupplierOrderID = order.SupplierOrderID, //it's NB to save the estimate 1st so SQL generates its ID to use in the estimate line concatenated ID
 						Supplier_Order = order,
-						SupplierReturnID=orderLineVM.Supplier_ReturnID,
-						FixedProductID = orderLineVM.Fixed_ProductID,
-						Quantity = orderLineVM.Quantity
+						SupplierReturnID= 1,
+						FixedProductID = orderLineVM.Fixed_ProductID == 0 ? null : orderLineVM.Fixed_ProductID,
+                        Quantity = orderLineVM.Quantity
 					};
 
 					_repository.Add(orderLineRecord); //save estimate line in DB
