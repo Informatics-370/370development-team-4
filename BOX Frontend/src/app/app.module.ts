@@ -45,6 +45,7 @@ import { PlaceOrderComponent } from './customer-view/place-order/place-order.com
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 import { CustomProdComponent } from './custom-prod/custom-prod.component';
+import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
 
 
 @NgModule({
@@ -89,7 +90,8 @@ import { CustomProdComponent } from './custom-prod/custom-prod.component';
         OrderHistoryComponent,
         CustomerOrdersComponent,
         RegistrationSuccessPopupComponent,
-        CustomProdComponent
+        CustomProdComponent,
+        MyQuotesComponent
         
   ],
   imports: [

@@ -28,29 +28,30 @@ import { SupplierReturnComponent } from './supplier-return/supplier-return.compo
 import { DiscountComponent } from './discount/discount.component';
 import { StockTakeComponent } from './stock-take/stock-take.component';
 import { StockTakeTrailComponent } from './stock-take-trail/stock-take-trail.component';
-import{UsersViewComponent}from'./users-view/users-view.component';
+import { UsersViewComponent } from './users-view/users-view.component';
 import { RoleAuthGuard } from './role-auth.guard';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 import { CustomProdComponent } from './custom-prod/custom-prod.component';
+import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
 
 
 const routes: Routes = [
   { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
-  { path: "dashboard", component: DashboardComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
+  { path: "dashboard", component: DashboardComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
   { path: "register", component: RegisterComponent },
   { path: "register/:redirectTo", component: RegisterComponent },
-  { path: "product-item", component: ProductItemTestComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
+  { path: "product-item", component: ProductItemTestComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
   { path: "help", component: ViewHelpInventoryComponent },
-  { path: "product-category", component: ProductCategoryComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: "return-reason", component: RefundReasonComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: "write-off-reason", component: WriteOffReasonComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: 'size-units', component: SizeUnitsComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: 'vat', component: VatComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: "supplier", component: SupplierComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: "fixed-product", component: FixedProductComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: 'raw-material', component: RawMaterialComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
+  { path: "product-category", component: ProductCategoryComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: "return-reason", component: RefundReasonComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: "write-off-reason", component: WriteOffReasonComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: 'size-units', component: SizeUnitsComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: 'vat', component: VatComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: "supplier", component: SupplierComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: "fixed-product", component: FixedProductComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: 'raw-material', component: RawMaterialComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
   { path: 'products', component: ProductsComponent },
   { path: 'products/:category', component: ProductsComponent },
   { path: 'product-details/:id', component: ProductDetailsComponent },
@@ -58,29 +59,30 @@ const routes: Routes = [
   { path: 'cart', component: CartPageComponent },
   { path: 'quotes', component: EstimatePageComponent },
   { path: 'estimates', component: EstimateLineComponent },
-  { path: 'products/:category', component: ProductsComponent  },
+  { path: 'products/:category', component: ProductsComponent },
   { path: 'product-details/:id', component: ProductDetailsComponent },
-  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
-  { path: 'cart', component: CartPageComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Customer']} },
-  { path: 'estimate', component: EstimatePageComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Customer']} },
-  { path: 'estimates', component: EstimateLineComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}},
+  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: 'cart', component: CartPageComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Customer'] } },
+  { path: 'estimate', component: EstimatePageComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Customer'] } },
+  { path: 'estimates', component: EstimateLineComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
   { path: 'login', component: LoginComponent },
   { path: 'login/:redirectTo', component: LoginComponent },
   { path: 'customer-homepage', component: CustomerHomepageComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
-  { path: 'supplier-order',component:SupplierOrderComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
-  { path: 'supplier-return',component:SupplierReturnComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
+  { path: 'supplier-order', component: SupplierOrderComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: 'supplier-return', component: SupplierReturnComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
   { path: 'roles', component: RolesComponent },
-  { path: 'discount', component: DiscountComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']}  },
-  { path: 'stock-take', component: StockTakeComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
-  { path: 'stock-take-trail', component: StockTakeTrailComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
-  {path: 'users',component: UsersViewComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin']} },
+  { path: 'discount', component: DiscountComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: 'stock-take', component: StockTakeComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: 'stock-take-trail', component: StockTakeTrailComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
+  { path: 'users', component: UsersViewComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
   { path: 'place-order', component: PlaceOrderComponent },
   { path: 'order-history', component: OrderHistoryComponent },
   { path: 'order-history/:success', component: OrderHistoryComponent },
   { path: 'customer-orders', component: CustomerOrdersComponent },
-  { path: 'custom-product', component: CustomProdComponent }
+  { path: 'custom-product', component: CustomProdComponent },
+  { path: 'my-quotes', component: MyQuotesComponent }
 ];
 
 @NgModule({

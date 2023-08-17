@@ -310,14 +310,6 @@ namespace BOX.Models
                 }
 
                 return mostRecentQuote;
-                //if (mostRecentQuote.QuoteStatusID == 3) // Check if the most recent quote's status is 'Accepted'
-                //{
-                //    return mostRecentQuote;
-                //}
-                //else
-                //{
-                //    return null;
-                //}
             }
             else
             {

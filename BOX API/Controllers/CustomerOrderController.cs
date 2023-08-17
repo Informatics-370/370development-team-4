@@ -276,7 +276,7 @@ namespace BOX.Controllers
                 var mostRecentQuote = _repository.GetCustomerMostRecentQuote(customerOrderViewModel.CustomerId);
                 if (mostRecentQuote == null) return NotFound("The quote does not exist on the B.O.X System");
 
-                if (mostRecentQuote.QuoteStatusID != 3) //3 status = 'Accepted'; a quote must be accepted before you can order from it
+                if (mostRecentQuote.QuoteStatusID != 2) //2 status = 'Accepted'; a quote must be accepted before you can order from it
                     return NotFound("You have not yet accepted the quote. If you think this is an error, give a few minutes for the changes to the quote to reflect. If the issue persists, please contact B.O.X. support");
 
                 var quoteLines = _repository.GetQuoteLinesByQuote(mostRecentQuote.QuoteID);

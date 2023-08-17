@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
-//import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Cart } from '../../shared/customer-interfaces/cart';
 import { HttpClient } from '@angular/common/http';
 import { QuoteVM } from '../../shared/quote-vm';
 import { QuoteLineVM } from '../../shared/quote-line-vm';
-import { EstimateVM } from '../../shared/estimate-vm';
-import { EstimateLineVM } from '../../shared/estimate-line-vm';
 import { CartService } from '../../services/customer-services/cart.service';
 import { Customer } from '../../shared/customer';
 import Swal from 'sweetalert2';
@@ -72,9 +69,9 @@ export class CartPageComponent {
           }
         });
   
-        //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired); atm, it's 2, 3 or 6
+        //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired)
         this.dataService.GetCustomerMostRecentQuote(customerID).subscribe((result) => {
-          if (result.quoteStatusID == 2 || result.quoteStatusID == 3 || result.quoteStatusID == 6) {
+          if (result.quoteStatusID == 2 || result.quoteStatusID == 5) {
             this.cannotRequest = true;
             this.cannotRequestReason = 'Already requested';          
           }
@@ -116,8 +113,7 @@ export class CartPageComponent {
   //update quantity of an item in cart
   updateCartItemQuantity(cartItem: Cart) {
     if (cartItem.quantity > 0) { //if quantity is above 0, update quantity
-      //cart service update quantity method updates the qty and returns true if the new quantity is below or equal to 
-      //qty on hand (for fixed products)
+      //cart service update quantity method updates the qty and returns true if the new quantity is below or equal to qty on hand (for fixed products)
       if (this.cartService.updateProductQuantity(cartItem.productID, cartItem.isFixedProduct, cartItem.quantity)) {
         this.totalQuantity = this.cartService.getCartQuantity();
         this.cannotRequest = false;
@@ -167,7 +163,7 @@ export class CartPageComponent {
         rejectReasonID: 0,
         rejectReasonDescription: '',
         priceMatchFileB64: '',
-        customerId: 'f7be1256-b70c-45dd-b875-2e61ab95df65',
+        customerId: '26865a70-5d8b-4443-be84-82cb360fba00',
         customerFullName: '',
         lines: []
       }
@@ -209,7 +205,7 @@ export class CartPageComponent {
             console.log(result);
           });
 
-          //this.router.navigate(['/my-quotes']); //redirect to quotes page
+          this.router.navigate(['/my-quotes']); //redirect to quotes page
         });
       } catch (error) {
         console.error('Error submitting quote: ', error);
