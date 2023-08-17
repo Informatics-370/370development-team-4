@@ -626,9 +626,10 @@ namespace BOX.Models
         }
         
         //------------------------------------------------------- QUOTE REQUEST -----------------------------------------------------------------
-        public async Task<Quote_Request[]> GetAllQuoteRequests()
+        public async Task<Quote_Request[]> GetAllActiveQuoteRequests()
         {
-            IQueryable<Quote_Request> query = _appDbContext.Quote_Request;
+            //status 1 = requested; quote has been requested but no one has attended to it
+            IQueryable<Quote_Request> query = _appDbContext.Quote_Request.Where(c => c.QuoteRequestStatusID == 1);
             return await query.ToArrayAsync();
         }
 
@@ -639,9 +640,10 @@ namespace BOX.Models
         }
 
         //a customer can only have 1 quote request at a time
-        public async Task<Quote_Request> GetQuoteRequestByCustomerAsync(string customerId)
+        public async Task<Quote_Request> CheckForActiveQuoteRequestAsync(string customerId)
         {
-            IQueryable<Quote_Request> query = _appDbContext.Quote_Request.Where(c => c.UserId == customerId);
+            //status 1 = requested; quote has been requested but no one has attended to it
+            IQueryable<Quote_Request> query = _appDbContext.Quote_Request.Where(c => c.UserId == customerId && c.QuoteRequestStatusID == 1);
             return await query.FirstOrDefaultAsync();
         }
 
@@ -651,13 +653,6 @@ namespace BOX.Models
         {
             IQueryable<Quote_Request_Line> query = _appDbContext.Quote_Request_Line.Where(c => c.QuoteRequestID == quoteRequestId);
             return await query.ToArrayAsync();
-        }
-
-        //------------------------------------------------------ QUOTE REQUEST STATUS ------------------------------------------------------------
-        public async Task<Quote_Request_Status> GetQuoteRequestStatusAsync(int quoteRequestStatusId)
-        {
-            IQueryable<Quote_Request_Status> query = _appDbContext.Quote_Request_Status.Where(c => c.QuoteRequestStatusID == quoteRequestStatusId);
-            return await query.FirstOrDefaultAsync();
         }
 
         //----------------------------------------------- USERS -----------------------------------------------        

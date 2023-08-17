@@ -22,7 +22,6 @@ INSERT INTO [dbo].[Quote_Status]
            ([Description])
      VALUES
            ('Generated'),
-           ('Cancelled'),
            ('Accepted'),
            ('Rejected'),
            ('Rejected and will renegotiate'),

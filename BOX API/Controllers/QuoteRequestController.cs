@@ -20,33 +20,33 @@ namespace BOX.Controllers
 
         //gets all quote requests that have not been turned into quotes i.e. where the status is 'Requested'
         [HttpGet]
-        [Route("GetAllQuoteRequests")]
-        public async Task<IActionResult> GetAllQuoteRequests()
+        [Route("GetAllActiveQuoteRequests")]
+        public async Task<IActionResult> GetAllActiveQuoteRequests()
         {
             try
             {
-                var requests = await _repository.GetAllQuoteRequests();
+                var requests = await _repository.GetAllActiveQuoteRequests();
 
                 List<QuoteViewModel> qrViewModels = new List<QuoteViewModel>(); //create array of VMs
                 foreach (var request in requests)
                 {
-                    //DON'T NEED REQUEST LINES WHEN GETTING ALL REQUESTS
-                    ////get all request lines associated with this request and create array from them
-                    //List<QuoteLineViewModel> qrLineList = new List<QuoteLineViewModel>();
-                    //var requestLines = await _repository.GetQuoteRequestLinesByQuoteRequestAsync(request.QuoteRequestID);
+                    //DON'T NEED REQUEST LINES WHEN GETTING ALL ACTIVE REQUESTS
+                    /*//get all request lines associated with this request and create array from them
+                    List<QuoteLineViewModel> qrLineList = new List<QuoteLineViewModel>();
+                    var requestLines = await _repository.GetQuoteRequestLinesByQuoteRequestAsync(request.QuoteRequestID);
 
-                    ////put all quote request lines for this specific quote request in a list for the quote request VM
-                    //foreach (var qrLine in requestLines)
-                    //{
-                    //    QuoteLineViewModel qrlVM = new QuoteLineViewModel
-                    //    {
-                    //        QuoteRequestLineID = qrLine.QuoteRequestLineID,
-                    //        FixedProductID = qrLine.FixedProductID == null ? 0 : qrLine.FixedProductID.Value,
-                    //        CustomProductID = qrLine.CustomProductID == null ? 0 : qrLine.CustomProductID.Value,
-                    //        Quantity = qrLine.Quantity
-                    //    };
-                    //    qrLineList.Add(qrlVM);
-                    //}
+                    //put all quote request lines for this specific quote request in a list for the quote request VM
+                    foreach (var qrLine in requestLines)
+                    {
+                        QuoteLineViewModel qrlVM = new QuoteLineViewModel
+                        {
+                            QuoteRequestLineID = qrLine.QuoteRequestLineID,
+                            FixedProductID = qrLine.FixedProductID == null ? 0 : qrLine.FixedProductID.Value,
+                            CustomProductID = qrLine.CustomProductID == null ? 0 : qrLine.CustomProductID.Value,
+                            Quantity = qrLine.Quantity
+                        };
+                        qrLineList.Add(qrlVM);
+                    }*/
 
                     string fullName = await _repository.GetUserFullNameAsync(request.UserId);
 
@@ -149,6 +149,24 @@ namespace BOX.Controllers
                 };
 
                 return Ok(qrVM);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
+        [HttpGet]
+        [Route("CheckForActiveQuoteRequest/{customerId}")]
+        public async Task<IActionResult> CheckForActiveQuoteRequest(string customerId)
+        {
+            try
+            {
+                var activeQR = await _repository.CheckForActiveQuoteRequestAsync(customerId);
+
+                bool hasActiveQR = activeQR != null; //true if customer has active QR; false otherwise
+
+                return Ok(hasActiveQR);
             }
             catch (Exception)
             {

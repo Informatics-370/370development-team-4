@@ -154,15 +154,12 @@ namespace BOX.Models
         Task<Price> GetPriceByFixedProductAsync(int fixedProductId);
 
         //-------------------------------------------------------- QUOTE REQUEST -----------------------------------------------------------------
-        Task<Quote_Request[]> GetAllQuoteRequests();
+        Task<Quote_Request[]> GetAllActiveQuoteRequests();
         Task<Quote_Request> GetQuoteRequestAsync(int quoteRequestId);
-        Task<Quote_Request> GetQuoteRequestByCustomerAsync(string customerId);
+        Task<Quote_Request> CheckForActiveQuoteRequestAsync(string customerId);
 
         //-----------------------------------------------QUOTE REQUEST LINE---------------------------------------------
         Task<Quote_Request_Line[]> GetQuoteRequestLinesByQuoteRequestAsync(int quoteRequestId);
-
-        //------------------------------------------------------ QUOTE REQUEST STATUS ------------------------------------------------------------
-        Task<Quote_Request_Status> GetQuoteRequestStatusAsync(int quoteRequestStatusId);
 
         //----------------------------------------------- USERS -----------------------------------------------
         Task<User> GetUserAsync(string userId);

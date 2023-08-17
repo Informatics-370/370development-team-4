@@ -362,35 +362,35 @@ namespace BOX.Controllers
             }
         }
 
-        [HttpDelete]
-        [Route("DeleteQuote/{quoteId}")]
-        public async Task<IActionResult> DeleteQuote(int quoteId)
-        {
-            try
-            {
-                var existingQuote = await _repository.GetQuoteAsync(quoteId); //get quote
-                if (existingQuote == null) return NotFound($"The quote does not exist on the B.O.X System");
+        //[HttpDelete]
+        //[Route("DeleteQuote/{quoteId}")]
+        //public async Task<IActionResult> DeleteQuote(int quoteId)
+        //{
+        //    try
+        //    {
+        //        var existingQuote = await _repository.GetQuoteAsync(quoteId); //get quote
+        //        if (existingQuote == null) return NotFound($"The quote does not exist on the B.O.X System");
 
-                var existingQuoteLines = await _repository.GetQuoteLinesByQuoteAsync(quoteId); //get this quote's lines
-                if (existingQuoteLines == null) return NotFound($"The quote does not exist on the B.O.X System");
+        //        var existingQuoteLines = await _repository.GetQuoteLinesByQuoteAsync(quoteId); //get this quote's lines
+        //        if (existingQuoteLines == null) return NotFound($"The quote does not exist on the B.O.X System");
 
-                //delete quotes lines
-                foreach (var line in existingQuoteLines)
-                {
-                    _repository.Delete(line);
-                }
+        //        //delete quotes lines
+        //        foreach (var line in existingQuoteLines)
+        //        {
+        //            _repository.Delete(line);
+        //        }
 
-                _repository.Delete(existingQuote); //delete quote
+        //        _repository.Delete(existingQuote); //delete quote
 
-                if (await _repository.SaveChangesAsync()) return Ok(existingQuote);
+        //        if (await _repository.SaveChangesAsync()) return Ok(existingQuote);
 
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
-            }
-            return BadRequest("Your request is invalid.");
-        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
+        //    }
+        //    return BadRequest("Your request is invalid.");
+        //}
 
         [HttpPut]
         [Route("UpdateQuoteStatus/{quoteId}/{statusId}")]

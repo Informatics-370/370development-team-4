@@ -7,8 +7,6 @@ namespace BOX.ViewModel
     {
         //quote request-specific info
         public int QuoteRequestID { get; set; }
-        public int QuoteRequestStatusID { get; set; }
-        public string QuoteRequestStatusDescription { get; set; }
         public DateTime DateRequested { get; set; } //date the quote was requested
 
         //quote-specific info

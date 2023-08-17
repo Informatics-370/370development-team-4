@@ -36,6 +36,7 @@ export class CartPageComponent {
 
   constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService) { }
 
+  //---------------------------- LOAD CART PAGE ----------------------------
   ngOnInit(): void {
     /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
     OR THE CART SERVICE WILL BREAK!!!*/
@@ -45,12 +46,38 @@ export class CartPageComponent {
       this.checkCartStock(); //this notifies user if any product they initially wanted has now gone out of stock or if the qty on hand has reduced so much that they can't buy the original quanitity they wanted
       this.totalQuantity = this.cartService.getCartQuantity();
       this.productCount = this.cartService.getCartProductCount();
+      //this.checkIfAllowedToRequest();
       this.loading = false;
     });
     //this.modal = document.getElementById('contactModal');
   }
 
-  //check if user has an active quote request
+  //check if user has an active quote request or active quote
+  checkIfAllowedToRequest() {
+    //get customer ID
+    let customerID = '';
+
+    try {
+      //if they have an active qr (a quote request that hasn't been attended to), don't let them request a new quote
+      this.dataService.CheckForActiveQuoteRequest(customerID).subscribe((result) => {
+        if (result) {
+          this.cannotRequest = true;
+          this.cannotRequestReason = 'Already requested';
+        }
+      });
+
+      //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired); atm, it's 2, 3 or 6
+      this.dataService.GetCustomerMostRecentQuote(customerID).subscribe((result) => {
+        if (result.quoteStatusID == 2 || result.quoteStatusID == 3 || result.quoteStatusID == 6) {
+          this.cannotRequest = true;
+          this.cannotRequestReason = 'Already requested';          
+        }
+      });
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   //notify user of items that are out of stock or above quantity on hand when the cart page loads
   checkCartStock() {
@@ -61,11 +88,24 @@ export class CartPageComponent {
         //so if it returns false, don't allow them to request quotee
         if (!this.cartService.belowQuantityOnHand(cartItem.productID, cartItem.quantity)) {
           this.cannotRequest = true;
+          this.cannotRequestReason = 'Invalid quantity';
         }
       }
     });
   }
 
+  //format whole numbers to have spaces e.g. turn 12345678 to 12 345 678
+  getFormattedNumber(num: number): string {
+    let arr = Array.from(num.toString());
+
+    for (let i = arr.length; i >= 0; i -= 3) {
+      arr.splice(i, 0, ' ');      
+    }
+
+    return arr.join('');
+  }
+
+  //---------------------------- MANIPULATE CART ----------------------------
   //update quantity of an item in cart
   updateCartItemQuantity(cartItem: Cart) {
     if (cartItem.quantity > 0) { //if quantity is above 0, update quantity
@@ -77,6 +117,7 @@ export class CartPageComponent {
       }
       else { //this means they want to order more than qty on hand
         this.cannotRequest = true;
+        this.cannotRequestReason = 'Invalid quantity';
       }
     }
     else {
@@ -99,61 +140,12 @@ export class CartPageComponent {
     this.products = this.cartService.getCartItems();
     this.productCount = 0;
     this.totalQuantity = 0;
-  }
+  }  
 
-  //format whole numbers to have spaces e.g. turn 12345678 to 12 345 678
-  getFormattedNumber(num: number): string {
-    let arr = Array.from(num.toString());
-
-    for (let i = arr.length; i >= 0; i -= 3) {
-      arr.splice(i, 0, ' ');      
-    }
-
-    return arr.join('');
-  }
-  
+  //---------------------------- REQUEST QUOTE ----------------------------
   //create quote request
   requestQuote() {
-    //create quote
-    let newEstimate: EstimateVM = {
-      estimateID: 0,
-      estimateStatusID: 0,
-      estimateStatusDescription: '',
-      estimateDurationID: 0,
-      userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
-      customerFullName: '',
-      confirmedTotal: 0,
-      estimate_Lines: []
-    }
-
-    //create estimate lines from cart
-    this.products.forEach(cartItem => {
-      let estimateLine: EstimateLineVM = {
-        estimateLineID: 0,
-        estimateID: 0,
-        fixedProductID: cartItem.productID,
-        fixedProductDescription: '',
-        fixedProductUnitPrice: 0,
-        customProductID: 0,
-        customProductDescription: '',
-        customProductUnitPrice: 0,
-        quantity: cartItem.quantity
-      }
-
-      newEstimate.estimate_Lines.push(estimateLine);
-    });
-    console.log('Estimate before posting: ', newEstimate);
-
-    try {
-      //post to backend
-      this.dataService.AddEstimate(newEstimate).subscribe((result) => {
-        console.log('New estimate: ', result)
-        this.cartService.emptyCart(); //clear cart
-        this.router.navigate(['/quotes']); //redirect to estimate page
-      });
-    } catch (error) {
-      console.error('Error submitting estimate: ', error);
-    }
+    //redirect user to login first  
   }
   /* createEstimate() {
     //create estimate
@@ -312,21 +304,21 @@ export class CartPageComponent {
 
 
 
+  }
+
+  calculateTotalPrice() {
+    let totalPrice = 0;
+
+    for (const product of this.products) {
+    totalPrice += +product.fixedProduct.price; // Convert quantity from string to number and add it to the total
+    console.log("Number of products in cart:",totalQuantity)
+    }
+    //This gets the id of the span to show the quantity in the cart
+    const quantityElement = document.getElementById('quantity');
+    if (quantityElement) {
+      quantityElement.innerText = totalQuantity.toString();
+    }
   } */
-
-  // calculateTotalPrice() {
-  //   let totalPrice = 0;
-
-  //   for (const product of this.products) {
-  //     totalPrice += +product.fixedProduct.price; // Convert quantity from string to number and add it to the total
-  //   console.log("Number of products in cart:",totalQuantity)
-  //   }
-  //   //This gets the id of the span to show the quantity in the cart
-  //   const quantityElement = document.getElementById('quantity');
-  //   if (quantityElement) {
-  //     quantityElement.innerText = totalQuantity.toString();
-  //   }
-  // }
 
   /*---------------------------------Section 2--------------------------------- */
   //In this section I will work on the user being able to update the quantity of goods in their cart, this should allow a change in the price of what is in the cart.
