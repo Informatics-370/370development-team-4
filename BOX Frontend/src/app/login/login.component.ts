@@ -23,7 +23,6 @@ export class LoginComponent {
   }
 
   // ========================================= Login =============================================
-
   submitForm() {
     const emailInput = document.getElementById('email') as HTMLInputElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
@@ -40,7 +39,7 @@ export class LoginComponent {
           (twoFactorResponse: any) => {
             console.log('Two-Factor Response:', twoFactorResponse); // Log the entire response
             if (twoFactorResponse.twoFactorEnabled === true) {
-              this.router.navigate(['/two-factor-auth', { email: loginData.emailaddress }]);
+              this.router.navigate(['/two-factor-auth']);
             } else {
               console.log('Login successful:', response);
               localStorage.setItem("access_token", response.token);
@@ -55,57 +54,30 @@ export class LoginComponent {
       (error: any) => {
         // Login failed
         console.error('Login failed:', error);
+        // Handle the error, such as displaying an error message to the user
       }
     );        
-  }
+}
+
 
   private handleSuccessfulLogin(response: any) {
-    const token = response.token;
-    const userRole = this.getUserRoleFromToken(token);
-    const userId = response.userId;
+    const token = localStorage.getItem('access_token')!;
+    const userRole = this.authService.getUserRole(token);
+    console.log(userRole)
+    const userId = this.authService.getUserIdFromToken(token);
+    console.log(userId)
+    const email = this.authService.getEmailFromToken(token);
+    console.log(email)
 
-    if (userId !== null) {
-      // Save the user ID to localStorage
-      localStorage.setItem('user_id', userId);
-    } else {
-      console.error('User ID not available in the JWT token');
-    }
-  
-
-    if (userRole == 'Admin' || 'Employee') {
-      // Redirect to the dashboard for admin
+    if (userRole === 'Admin' || userRole === 'Employee') {
+      // Redirect to the dashboard for admin or employee
       this.router.navigate(['/dashboard']);
     } else if (userRole === 'Customer') {
       // Redirect to the customer homepage for customers
       this.router.navigate(['/customer-homepage']);
     } else {
-      // If the user role is unknown or not specified, you can handle it accordingly.
+      console.error('Unknown user role:', userRole);
     }
-  }
-
-  private getUserRoleFromToken(token: string): string | null {
-    try {
-      const jwtData = token.split('.')[1];
-      const decodedJwtJsonData = window.atob(jwtData);
-      const decodedJwtData = JSON.parse(decodedJwtJsonData);
-      return decodedJwtData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-    } catch (error) {
-      console.error('Error decoding JWT token:', error);
-      return null;
-    }
-  }
-
-  private getUserIdFromToken(token: string): string | null {
-    try {
-      const jwtData = token.split('.')[1];
-      const decodedJwtJsonData = window.atob(jwtData);
-      const decodedJwtData = JSON.parse(decodedJwtJsonData);
-      return decodedJwtData['http://schemas.microsoft.com/ws/2008/06/identity/claims/userid']; // Replace 'userid' with the actual claim name for user ID
-    } catch (error) {
-      console.error('Error decoding JWT token:', error);
-      return null;
-    }
-  }
-  
+} 
 
 }

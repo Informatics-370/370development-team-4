@@ -83,8 +83,7 @@ const routes: Routes = [
   { path: 'order-history', component: OrderHistoryComponent },
   { path: 'order-history/:success', component: OrderHistoryComponent },
   { path: 'customer-orders', component: CustomerOrdersComponent },
-  { path: 'custom-product', component: CustomProdComponent }
-  { path: 'customer-orders', component: CustomerOrdersComponent },
+  { path: 'custom-product', component: CustomProdComponent },
   { path: 'confirm-email', component: ConfirmEmailComponent},
   { path: 'two-factor-auth', component: TwoFactorAuthComponent},
   { path: 'employees', component: EmployeesComponent},

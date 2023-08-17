@@ -70,7 +70,7 @@ namespace BOX.Controllers
                     user_LastName = uvm.lastName,
                     user_Address = uvm.address,
                     title = uvm.title,
-                    TwoFactorEnabled = true
+                    TwoFactorEnabled = false
                 };
 
                 // Instantiate (create) a new Customer

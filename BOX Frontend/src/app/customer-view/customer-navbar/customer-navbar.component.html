@@ -17,6 +17,9 @@
             <a class="nav-link active" aria-current="page" [routerLink]="['/cart']">Cart</a>
           </div>
         </li>
+        <li class="nav-item" (click)="testSwal()">
+          alert test buttn
+        </li>
       </ul>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item" *ngIf="isLoggedIn(); else loginLink">
@@ -27,6 +30,11 @@
             <a class="nav-link active" aria-current="page" [routerLink]="['/login']">Login</a>
           </li>
         </ng-template>
+      </ul>
+      <ul class="navbar-nav ml-auto" *ngIf="isLoggedIn();">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" [routerLink]="['/profile-page']">Profile</a>
+        </li>
       </ul>
     </div>
   </div>

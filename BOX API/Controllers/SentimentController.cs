@@ -1,7 +1,9 @@
-﻿using BOX.Services;
+﻿using BOX.Models;
+using BOX.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
+using Microsoft.Extensions.ML;
 
 namespace BOX.Controllers
 {
@@ -65,6 +67,7 @@ namespace BOX.Controllers
             }
             return message;
         }
+
     }
 
     public class SentimentRequest
