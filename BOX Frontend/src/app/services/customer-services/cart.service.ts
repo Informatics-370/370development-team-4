@@ -211,7 +211,6 @@ export class CartService {
 
     if (prodToCheck) {
       let fixedProd = this.fixedProducts.find(prod => prod.fixedProductID == prodToCheck?.productID);
-      console.log('fixedProd', fixedProd);
 
       let i = this.cart.indexOf(prodToCheck); //get index of product so I can update its max quantity
 

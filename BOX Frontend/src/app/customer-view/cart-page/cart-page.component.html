@@ -76,14 +76,15 @@
             <div>Total quantity in cart: {{ getFormattedNumber(totalQuantity) }}</div>
             <div>Total products in cart: {{ getFormattedNumber(productCount) }}</div>
             <div class="text-center">
-              <button class="btn modal-form-submit btn-request" [disabled]="cannotRequest"
+              <button class="btn modal-form-submit btn-request" [disabled]="cannotRequest" (click)="requestQuote()"
                 title="Registered customers can request a quote and MegaPack will contact them">
                 Request quote
               </button>
             </div>
-            <div *ngIf="cannotRequest" style="font-size: 85%; color: red;">
-              <span *ngIf="cannotRequestReason == 'Invalid quantity'">You can't request a quote for a product that is out of stock or 
-                when the quantity of a product in your cart is greater than the quantity in stock.</span>
+            <div *ngIf="cannotRequest" class="error-msg" style="font-size: 85%;">
+              <span *ngIf="cannotRequestReason == 'Invalid quantity'">
+                A product in your cart is invalid. Please reduce the quantity or remove it from your cart.
+              </span>
               <span *ngIf="cannotRequestReason == 'Already requested'">
                 Please finalise your previous quote request before requesting a new quote. You can view your quotes and quote requests on your 'My Quotes' page.
                 </span>

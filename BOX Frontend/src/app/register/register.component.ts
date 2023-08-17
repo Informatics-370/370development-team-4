@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -12,11 +12,19 @@ export class RegisterComponent implements OnInit {
   passwordVisible = false;
   confirmPasswordVisible = false;
   passwordsMatch = true;
+  redirectURL = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.handleCheckboxChange();
+    this.handleCheckboxChange();    
+    //Retrieve the redirect URL from url
+    this.activatedRoute.paramMap.subscribe(params => {
+      //URL will come as 'redirect-' + url e.g. 'redirect-cart'
+      let url = params.get('redirectTo')?.split('-');
+      console.log(url ? url[1] : 'no redirect');
+      if (url) this.redirectURL = url[1];
+    });
   }
 
   // ========================================= Password Validation =============================================
@@ -232,7 +240,11 @@ export class RegisterComponent implements OnInit {
         // Registration successful
         console.log('Registration successful');
         this.showRegistrationSuccessPopup();
-        this.router.navigate(['/login']);
+
+        if (this.redirectURL != '') {
+          this.router.navigate(['/login', 'redirect-' + this.redirectURL]);
+        }
+        else this.router.navigate(['/login']);
       },
       (error) => {
         // Registration failed

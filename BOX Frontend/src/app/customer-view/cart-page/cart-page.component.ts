@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
-import { take, lastValueFrom } from 'rxjs';
 //import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Cart } from '../../shared/customer-interfaces/cart';
 import { HttpClient } from '@angular/common/http';
-import { QuoteVM } from 'src/app/shared/quote-vm';
-import { QuoteLineVM } from 'src/app/shared/quote-line-vm';
+import { QuoteVM } from '../../shared/quote-vm';
+import { QuoteLineVM } from '../../shared/quote-line-vm';
 import { EstimateVM } from '../../shared/estimate-vm';
 import { EstimateLineVM } from '../../shared/estimate-line-vm';
 import { CartService } from '../../services/customer-services/cart.service';
-import { CustomProductVM } from 'src/app/shared/custom-product-vm';
+import { Customer } from '../../shared/customer';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-cart-page',
@@ -25,6 +25,7 @@ export class CartPageComponent {
   productCount = 0;
   cannotRequest = false; //disables or enables request quote button
   cannotRequestReason = ''; //reason the customer is being prevented from requesting a quote
+  customer!: Customer;
   /* discountList: Discount[] = []; //hold all bulk discounts
   applicableDiscount = 0; //bulk discount
   randomdiscount = 0; //customer discount
@@ -38,6 +39,8 @@ export class CartPageComponent {
 
   //---------------------------- LOAD CART PAGE ----------------------------
   ngOnInit(): void {
+    //get customer info
+
     /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
     OR THE CART SERVICE WILL BREAK!!!*/
     this.cartService.getProducts().subscribe(() => {
@@ -46,7 +49,7 @@ export class CartPageComponent {
       this.checkCartStock(); //this notifies user if any product they initially wanted has now gone out of stock or if the qty on hand has reduced so much that they can't buy the original quanitity they wanted
       this.totalQuantity = this.cartService.getCartQuantity();
       this.productCount = this.cartService.getCartProductCount();
-      //this.checkIfAllowedToRequest();
+      this.checkIfAllowedToRequest();
       this.loading = false;
     });
     //this.modal = document.getElementById('contactModal');
@@ -54,28 +57,32 @@ export class CartPageComponent {
 
   //check if user has an active quote request or active quote
   checkIfAllowedToRequest() {
-    //get customer ID
-    let customerID = '';
-
-    try {
-      //if they have an active qr (a quote request that hasn't been attended to), don't let them request a new quote
-      this.dataService.CheckForActiveQuoteRequest(customerID).subscribe((result) => {
-        if (result) {
-          this.cannotRequest = true;
-          this.cannotRequestReason = 'Already requested';
-        }
-      });
-
-      //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired); atm, it's 2, 3 or 6
-      this.dataService.GetCustomerMostRecentQuote(customerID).subscribe((result) => {
-        if (result.quoteStatusID == 2 || result.quoteStatusID == 3 || result.quoteStatusID == 6) {
-          this.cannotRequest = true;
-          this.cannotRequestReason = 'Already requested';          
-        }
-      });
-
-    } catch (error) {
-      console.error(error);
+    if (this.customer != null) {
+    //if (this.customer == null) {
+      //get customer ID
+      let customerID = '';
+      console.log('customerID', customerID);
+  
+      try {
+        //if they have an active qr (a quote request that hasn't been attended to), don't let them request a new quote
+        this.dataService.CheckForActiveQuoteRequest(customerID).subscribe((result) => {
+          if (result) {
+            this.cannotRequest = true;
+            this.cannotRequestReason = 'Already requested';
+          }
+        });
+  
+        //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired); atm, it's 2, 3 or 6
+        this.dataService.GetCustomerMostRecentQuote(customerID).subscribe((result) => {
+          if (result.quoteStatusID == 2 || result.quoteStatusID == 3 || result.quoteStatusID == 6) {
+            this.cannotRequest = true;
+            this.cannotRequestReason = 'Already requested';          
+          }
+        });
+  
+      } catch (error) {
+        console.error(error);
+      }      
     }
   }
 
@@ -129,66 +136,93 @@ export class CartPageComponent {
   //remove item from cart
   removeFromCart(cartItem: Cart) {
     this.cartService.removeFromCart(cartItem);
-    this.products = this.cartService.getCartItems();
-    this.productCount = this.cartService.getCartProductCount();
-    this.totalQuantity = this.cartService.getCartQuantity();
+    this.refreshCart();
   }
 
   //clear cart
   clearCart() {
     this.cartService.emptyCart();
-    this.products = this.cartService.getCartItems();
-    this.productCount = 0;
-    this.totalQuantity = 0;
+    this.refreshCart();
   }  
 
   //---------------------------- REQUEST QUOTE ----------------------------
   //create quote request
   requestQuote() {
-    //redirect user to login first  
-  }
-  /* createEstimate() {
-    //create estimate
-    let newEstimate: EstimateVM = {
-      estimateID: 0,
-      estimateStatusID: 0,
-      estimateStatusDescription: '',
-      estimateDurationID: 0,
-      userId: 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8',
-      customerFullName: '',
-      confirmedTotal: 0,
-      estimate_Lines: []
+    //redirect user to login if they're not logged in yet
+    if (this.customer != null) {
+    //if (this.customer == null) {
+      //url is expecting redirectTo variable as 'redirect-' + 'url to redirect to' i.e 'redirect-cart'
+      this.router.navigate(['login', 'redirect-cart']);
     }
-
-    //create estimate lines from cart
-    this.products.forEach(cartItem => {
-      let estimateLine: EstimateLineVM = {
-        estimateLineID: 0,
-        estimateID: 0,
-        fixedProductID: cartItem.productID,
-        fixedProductDescription: '',
-        fixedProductUnitPrice: 0,
-        customProductID: 0,
-        customProductDescription: '',
-        customProductUnitPrice: 0,
-        quantity: cartItem.quantity
+    else {
+      //create quote request
+      let newQR: QuoteVM = {
+        quoteRequestID: 0,
+        dateRequested: new Date(Date.now()),
+        quoteID: 0,
+        dateGenerated: new Date(Date.now()),
+        quoteStatusID: 0,
+        quoteStatusDescription: '',
+        quoteDurationID: 0,
+        rejectReasonID: 0,
+        rejectReasonDescription: '',
+        priceMatchFileB64: '',
+        customerId: 'f7be1256-b70c-45dd-b875-2e61ab95df65',
+        customerFullName: '',
+        lines: []
       }
 
-      newEstimate.estimate_Lines.push(estimateLine);
-    });
-    console.log('Estimate before posting: ', newEstimate);
+      //create QR lines
+      this.products.forEach(cartItem => {
+        let qrLine: QuoteLineVM = {
+          quoteRequestLineID: 0,
+          suggestedUnitPrice: 0,
+          quoteLineID: 0,
+          confirmedUnitPrice: 0,
+          fixedProductID: cartItem.isFixedProduct ? cartItem.productID : 0,
+          fixedProductDescription: '',
+          customProductID: !cartItem.isFixedProduct ? cartItem.productID : 0,
+          customProductDescription: '',
+          quantity: cartItem.quantity
+        }
 
-    try {
-      //post to backend
-      this.dataService.AddEstimate(newEstimate).subscribe((result) => {
-        console.log('New estimate: ', result)
-        this.cartService.emptyCart(); //clear cart
-        this.router.navigate(['/quotes']); //redirect to estimate page
+        newQR.lines.push(qrLine); //put quote request line in QR
       });
-    } catch (error) {
-      console.error('Error submitting estimate: ', error);
+
+      console.log('new quote request before posting', newQR);
+
+      //post to backend
+      try {
+        this.dataService.AddQuoteRequest(newQR).subscribe((result) => {
+          console.log('New QR: ', result);
+          this.cartService.emptyCart(); //clear cart
+          this.refreshCart();
+
+          //notify user
+          Swal.fire({
+            icon: 'success',
+            title: "You've successfully requested a quote! An employee from MegaPack will contact you soon.",
+            timer: 2000,
+            timerProgressBar: true,
+            confirmButtonColor: '#32AF99'
+          }).then((result) => {
+            console.log(result);
+          });
+
+          //this.router.navigate(['/my-quotes']); //redirect to quotes page
+        });
+      } catch (error) {
+        console.error('Error submitting quote: ', error);
+      }
     }
-  } */
+  }
+  
+  //-------------------------- REFRESH PAGE VARIABLES WHENEVER THERE IS A CHANGE TO THE CART --------------------------
+  refreshCart() {
+    this.totalQuantity = this.cartService.getCartQuantity();
+    this.productCount = this.cartService.getCartProductCount();
+    this.products = this.cartService.getCartItems();
+  }
 
   //function to get data from DB asynchronously (and simultaneously)
   /* async getDataFromDB() {

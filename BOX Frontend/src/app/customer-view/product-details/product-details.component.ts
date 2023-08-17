@@ -5,13 +5,13 @@ import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
 import { SizeVM } from '../../shared/size-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
-//import { VAT } from 'src/app/shared/vat';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Cart } from 'src/app/shared/customer-interfaces/cart';
-import { CartService } from 'src/app/services/customer-services/cart.service';
-import { CustomProductVM } from 'src/app/shared/custom-product-vm';
-import Swal from 'sweetalert2'
+import { Cart } from '../../shared/customer-interfaces/cart';
+import { CartService } from '../..//services/customer-services/cart.service';
+import { CustomProductVM } from '../../shared/custom-product-vm';
+import Swal from 'sweetalert2';
+declare var $: any; 
 
 @Component({
   selector: 'app-product-details',
@@ -442,15 +442,18 @@ export class ProductDetailsComponent {
     if (this.cartService.addToCart(id, prodDescription, prodItemDescription, concatenatedSizeString,
       prodPhotoB64, isFixedProduct, qtyToAdd)) {
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Successfully added to cart!',
-        timer: 3000,
-        timerProgressBar: true,
-        confirmButtonColor: '#32AF99'
-      }).then((result) => {
-        console.log(result);
-      });
+        //close customise modal
+        $('#customise').modal('hide');
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Successfully added to cart!',
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
+        }).then((result) => {
+          console.log(result);
+        });
     }
 
     /* let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
