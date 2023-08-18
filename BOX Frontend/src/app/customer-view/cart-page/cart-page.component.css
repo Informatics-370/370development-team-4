@@ -1,11 +1,6 @@
 @import "../../dashboard/dashboard.component.css";
 @import "../../product-category/product-category.component.css";
 
-#empty-cart {
-  font-size: 20vh;
-  color: #e7a427;
-}
-
 .card-container {
   padding: 10px 0;
   max-width: 100% !important;

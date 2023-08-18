@@ -77,7 +77,7 @@ export class EstimatePageComponent implements OnInit {
   async getCustomerEstimatesPromise() {
     this.loading = true;
     try {
-      this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.user.Id).pipe(take(1)));
+      //this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.user.Id).pipe(take(1)));
 
       this.displayCustomerEstimates(); //Execute only after data has been retrieved from the DB otherwise error
 
@@ -144,11 +144,11 @@ export class EstimatePageComponent implements OnInit {
   acceptEstimate(estimateId: number) {
     try {
       //statusID 4 = 'Accepted'
-      this.dataService.UpdateEstimateStatus(estimateId, 4).subscribe((result) => {
+      /* this.dataService.UpdateEstimateStatus(estimateId, 4).subscribe((result) => {
         console.log("Result", result);
         this.getCustomerEstimatesPromise(); //refresh list; will be removed once buy now works
         //Navigate to buy now page
-      });
+      }); */
     } catch (error) {
       console.error('Error updating status: ', error);
     }
@@ -157,11 +157,11 @@ export class EstimatePageComponent implements OnInit {
   rejectEstimate(estimateId: number) {
     try {
       //statusID 5 = 'Rejected'
-      this.dataService.UpdateEstimateStatus(estimateId, 5).subscribe((result) => {
+      /* this.dataService.UpdateEstimateStatus(estimateId, 5).subscribe((result) => {
         console.log("Result", result);
         this.deleteEstimate(estimateId); //delete estimate
         this.getCustomerEstimatesPromise(); //refresh list
-      });
+      }); */
     } catch (error) {
       console.error('Error updating status: ', error);
     }
@@ -170,11 +170,11 @@ export class EstimatePageComponent implements OnInit {
   cancelEstimate(estimateId: number) {
     try {
       //statusID 3 = 'Cancelled'
-      this.dataService.UpdateEstimateStatus(estimateId, 3).subscribe((result) => {
+      /* this.dataService.UpdateEstimateStatus(estimateId, 3).subscribe((result) => {
         console.log("Result", result);
         this.deleteEstimate(estimateId); //delete estimate
         this.getCustomerEstimatesPromise(); //refresh list
-      });
+      }); */
     } catch (error) {
       console.error('Error updating status: ', error);
     }

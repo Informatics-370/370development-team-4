@@ -300,8 +300,8 @@ export class DataService {
       .pipe(map(result => result));
   }
 
-  GetEstimatesByCustomer(customerId: string): Observable<any> {
-    return this.httpClient.get<any>(`${this.apiUrl}Estimate/GetEstimateByCustomer/${customerId}`).pipe(map(result => result));
+  GetQuotesByCustomer(customerId: string): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}Quote/GetQuoteByCustomer/${customerId}`).pipe(map(result => result));
   }
 
   GetCustomerMostRecentQuote(customerId: string): Observable<any> {
@@ -317,9 +317,9 @@ export class DataService {
   UpdateEstimate(estimateId: number, estimateViewModel: EstimateVM): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimate/${estimateId}`, estimateViewModel, this.httpOptions);
   }
-
-  UpdateEstimateStatus(estimateId: number, statusId: number): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimateStatus/${estimateId}/${statusId}`, this.httpOptions);
+  
+  UpdateQuoteStatus(quoteId: number, statusId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Quote/UpdateQuoteStatus/${quoteId}/${statusId}`, this.httpOptions);
   }
 
   DeleteEstimate(estimateId: number): Observable<any> {
@@ -485,8 +485,8 @@ export class DataService {
       .pipe(map(result => result));
   }
 
-  CheckForActiveQuoteRequest(customerId: string): Observable<boolean> {
-    return this.httpClient.get<boolean>(`${this.apiUrl}QuoteRequest/CheckForActiveQuoteRequest/${customerId}`)
+  CheckForActiveQuoteRequest(customerId: string): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}QuoteRequest/CheckForActiveQuoteRequest/${customerId}`)
       .pipe(map(result => result));
   }
 

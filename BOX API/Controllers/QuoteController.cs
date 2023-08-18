@@ -22,6 +22,8 @@ namespace BOX.Controllers
         {
             try
             {
+                //check for any quotes that should have expired and expire them
+
                 var quotes = await _repository.GetAllQuotesAsync();
 
                 List<QuoteViewModel> qouteViewModels = new List<QuoteViewModel>(); //create array of VMs
@@ -80,6 +82,8 @@ namespace BOX.Controllers
         {
             try
             {
+                //check for any quotes that should have expired and expire them
+
                 var quote = await _repository.GetQuoteAsync(quoteId);
                 if (quote == null) return NotFound("The quote does not exist on the B.O.X System");
 
@@ -123,6 +127,7 @@ namespace BOX.Controllers
 
                 string fullName = await _repository.GetUserFullNameAsync(quote.UserId);
                 var status = await _repository.GetQuoteStatusAsync(quote.QuoteStatusID);
+                var duration = await _repository.GetQuoteDurationAsync(quote.QuoteDurationID);
                 var rejectReason = new Reject_Reason();
 
                 if (quote.RejectReasonID != null)
@@ -141,6 +146,7 @@ namespace BOX.Controllers
                     CustomerId = quote.UserId,
                     CustomerFullName = fullName,
                     QuoteDurationID = quote.QuoteDurationID,
+                    QuoteDuration = duration.Duration,
                     DateGenerated = quote.Date_Generated,
                     RejectReasonID = rejectReason.RejectReasonID,
                     RejectReasonDescription = rejectReason.Description,
@@ -162,6 +168,8 @@ namespace BOX.Controllers
         {
             try
             {
+                //check for any quotes that should have expired and expire them
+
                 List<QuoteViewModel> customerQuoteVMs = new List<QuoteViewModel>(); //create list to return
                 var quotes = await _repository.GetQuotesByCustomerAsync(customerId); //get all quotes for this customer
 
@@ -204,6 +212,7 @@ namespace BOX.Controllers
 
                     string fullName = await _repository.GetUserFullNameAsync(quote.UserId);
                     var status = await _repository.GetQuoteStatusAsync(quote.QuoteStatusID);
+                    var duration = await _repository.GetQuoteDurationAsync(quote.QuoteDurationID);
                     var rejectReason = new Reject_Reason();
 
                     if (quote.RejectReasonID != null)
@@ -215,12 +224,14 @@ namespace BOX.Controllers
 
                     QuoteViewModel qrVM = new QuoteViewModel
                     {
+                        QuoteRequestID = quote.QuoteRequestID,
                         QuoteID = quote.QuoteID,
                         QuoteStatusID = quote.QuoteStatusID,
                         QuoteStatusDescription = status.Description,
                         CustomerId = quote.UserId,
                         CustomerFullName = fullName,
                         QuoteDurationID = quote.QuoteDurationID,
+                        QuoteDuration = duration.Duration,
                         DateGenerated = quote.Date_Generated,
                         RejectReasonID = rejectReason.RejectReasonID,
                         RejectReasonDescription = rejectReason.Description,
@@ -244,6 +255,8 @@ namespace BOX.Controllers
         {
             try
             {
+                //check if quote should have expired and expire it
+
                 var mostRecentQuote = _repository.GetCustomerMostRecentQuote(customerId); //get this customer's most recent quote
                 if (mostRecentQuote == null) return NotFound("The quote does not exist on the B.O.X System");
 

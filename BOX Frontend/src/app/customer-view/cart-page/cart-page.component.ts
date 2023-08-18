@@ -19,7 +19,7 @@ export class CartPageComponent {
   loading = true;
   products: Cart[] = []; //holds all items in cart
   totalQuantity: number = 0;
-  productCount = 0;
+  productCount = -1;
   cannotRequest = false; //disables or enables request quote button
   cannotRequestReason = ''; //reason the customer is being prevented from requesting a quote
   customer!: Customer;
@@ -54,28 +54,32 @@ export class CartPageComponent {
 
   //check if user has an active quote request or active quote
   checkIfAllowedToRequest() {
-    if (this.customer != null) {
-    //if (this.customer == null) {
+    //if (this.customer != null) {
+    if (this.customer == null) {
       //get customer ID
-      let customerID = '';
+      let customerID = '26865a70-5d8b-4443-be84-82cb360fba00';
       console.log('customerID', customerID);
   
       try {
         //if they have an active qr (a quote request that hasn't been attended to), don't let them request a new quote
         this.dataService.CheckForActiveQuoteRequest(customerID).subscribe((result) => {
-          if (result) {
+          console.log('active quote request', result);
+          if (result != null) {
             this.cannotRequest = true;
             this.cannotRequestReason = 'Already requested';
           }
         });
   
-        //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired)
-        this.dataService.GetCustomerMostRecentQuote(customerID).subscribe((result) => {
-          if (result.quoteStatusID == 2 || result.quoteStatusID == 5) {
-            this.cannotRequest = true;
-            this.cannotRequestReason = 'Already requested';          
-          }
-        });
+        //if they already can't request due to already having an active QR, there's no point in checking for an quote
+        if (this.cannotRequest == true) {
+          //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired)
+          this.dataService.GetCustomerMostRecentQuote(customerID).subscribe((result) => {
+            if (result.quoteStatusID == 2 || result.quoteStatusID == 5) {
+              this.cannotRequest = true;
+              this.cannotRequestReason = 'Already requested';          
+            }
+          });
+        }
   
       } catch (error) {
         console.error(error);
@@ -160,6 +164,7 @@ export class CartPageComponent {
         quoteStatusID: 0,
         quoteStatusDescription: '',
         quoteDurationID: 0,
+        quoteDuration: 0,
         rejectReasonID: 0,
         rejectReasonDescription: '',
         priceMatchFileB64: '',

@@ -15,6 +15,7 @@ export interface QuoteVM {
   priceMatchFileB64: string;
   dateGenerated: Date; //date the quote was generated
   quoteDurationID: number;
+  quoteDuration: number;
 
   //generic info
   customerId: string;

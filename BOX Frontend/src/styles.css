@@ -91,3 +91,8 @@
   text-align: center;
   font-size: 1.2em;
 }
+
+.empty-msg {
+  font-size: 20vh;
+  color: #e7a427;
+}

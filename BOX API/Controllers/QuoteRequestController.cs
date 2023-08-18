@@ -163,10 +163,80 @@ namespace BOX.Controllers
             try
             {
                 var activeQR = await _repository.CheckForActiveQuoteRequestAsync(customerId);
+                if (activeQR == null) return Ok(activeQR); //return null
+                else
+                {
+                    var requestLines = await _repository.GetQuoteRequestLinesByQuoteRequestAsync(activeQR.QuoteRequestID); //get all lines associated with this request
+                    if (requestLines == null) return NotFound("The quote request does not exist on the B.O.X System"); //an request must have at least 1 line
 
-                bool hasActiveQR = activeQR != null; //true if customer has active QR; false otherwise
+                    //create list from request lines
+                    List<QuoteLineViewModel> qrLineList = new List<QuoteLineViewModel>();
 
-                return Ok(hasActiveQR);
+                    //put all lines for this specific request in the list
+                    foreach (var qrl in requestLines)
+                    {
+                        Fixed_Product fixedProduct = new Fixed_Product();
+                        Custom_Product customProduct = new Custom_Product();
+                        string customProdDescription = "Custom product ";
+                        decimal price = 0;
+
+                        if (qrl.FixedProductID != null) //this line holds a fixed product
+                        {
+                            int fpID = qrl.FixedProductID.Value;
+                            fixedProduct = await _repository.GetFixedProductAsync(fpID);
+                            //get price
+                            Price priceRecord = await _repository.GetPriceByFixedProductAsync(fpID);
+                            price = priceRecord.Amount;
+                        }
+                        else //this line holds a custom product
+                        {
+                            int cpID = qrl.CustomProductID.Value;
+                            customProduct = await _repository.GetCustomProductAsync(cpID);
+                            //get price
+                            Cost_Price_Formula_Variables cpfv = await _repository.GetFormulaVariablesAsync(customProduct.FormulaID);
+                            if (customProduct.FormulaID == 1) //single wall box
+                            {
+                                price = (2 * (customProduct.Length + customProduct.Width) + 40 * (customProduct.Width + customProduct.Height) + 10 * cpfv.Box_Factor * cpfv.Rate_Per_Ton) / 1000;
+                            }
+                            else //double wall
+                            {
+                                price = (2 * (customProduct.Length + customProduct.Width) + 50 * (customProduct.Width + customProduct.Height) + 14 * cpfv.Box_Factor * cpfv.Rate_Per_Ton) / 1000;
+                            }
+
+                            //add factory cost and markup
+                            price += price * cpfv.Factory_Cost / 100;
+                            price += price * cpfv.Mark_Up / 100;
+
+                            //concatenate custom product string
+                            customProdDescription += customProduct.Length + "mm x " + customProduct.Width + "mm x " + customProduct.Height + "mm";
+                        }
+
+                        QuoteLineViewModel qrlVM = new QuoteLineViewModel
+                        {
+                            QuoteRequestLineID = qrl.QuoteRequestLineID,
+                            FixedProductID = qrl.FixedProductID == null ? 0 : qrl.FixedProductID.Value,
+                            FixedProductDescription = fixedProduct.Description,
+                            CustomProductID = qrl.CustomProductID == null ? 0 : qrl.CustomProductID.Value,
+                            CustomProductDescription = customProdDescription,
+                            SuggestedUnitPrice = price,
+                            Quantity = qrl.Quantity
+                        };
+                        qrLineList.Add(qrlVM);
+                    }
+
+                    string fullName = await _repository.GetUserFullNameAsync(activeQR.UserId);
+
+                    QuoteViewModel qrVM = new QuoteViewModel
+                    {
+                        QuoteRequestID = activeQR.QuoteRequestID,
+                        CustomerId = activeQR.UserId,
+                        CustomerFullName = fullName,
+                        DateRequested = activeQR.Date,
+                        Lines = qrLineList
+                    };
+
+                    return Ok(qrVM); //return VM
+                }
             }
             catch (Exception)
             {

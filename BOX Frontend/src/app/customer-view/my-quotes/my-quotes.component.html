@@ -1,1 +1,137 @@
-<p>my-quotes works!</p>
+<div class="app-customer-navbar" style="max-width: 100%;"></div>
+
+<div class="row page-row">
+  <div class="col-md-3 col-sm-12 all-categories-menu">
+    <app-categories-menu></app-categories-menu>
+  </div>
+
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 col-sm-9 p-2">
+    <h3 class="p-3" style="color: black;">My Quotes</h3>
+    <!--Search bar-->
+    <div id="searchbar">
+      <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+        placeholder="Search quote number, status"  />
+      <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+    </div>
+
+    <hr class="hr hr-blurry m-3" />
+    <!--Messages to user-->
+    <div class="m-3 text-center"> 
+      <span *ngIf="loading">Getting your quotes..</span>
+      <span *ngIf="quoteCount == 0 && quoteRequest == null">
+        <span class="empty-msg"><fa-icon class="m-3" [icon]="['fas', 'file-invoice']" ></fa-icon></span><br/>
+        No quotes or requests for quote found.
+      </span>
+    </div>
+    
+    <div class="row quotes-container p-1">
+      <!--QUOTE REQUEST CARD-->
+      <div class="col-md-6 col-sm-12 faux-card-container" *ngIf="quoteRequest != null">
+        <div class="faux-card">
+          <!--Header-->
+          <div class="quote-header mb-4">
+            <div class="flex-space-between" style="align-items: end;">
+              <span class="title light-bold">Qoute Request #{{quoteRequest.quoteRequestID}}</span>
+              Status:
+            </div>
+            <div class="flex-space-between" style="align-items: start;">
+              <span class="date">{{ quoteRequest.dateRequested | date:'d MMM yyyy HH:mm' }}</span>
+              <span class="light-bold" style="line-height: 0.9em;">Requested</span>
+            </div>
+          </div>
+          <!--Body-->
+          <div class="quote-details">
+            <div class="quote-line row"  *ngFor="let qrLine of quoteRequest.lines">
+              <div class="product-img-container col-4">
+                <img class="product-img" src="data:image/png;base64,{{qrLine.productFileB64}}" alt="" />
+              </div>
+              <div class="col-8">
+                <span class="light-bold">{{qrLine.productDescription}}</span><br />
+
+                <div class="quote-line-footer flex-space-between">
+                  Qty: {{qrLine.quantity}}
+                </div>                
+              </div>
+            </div>
+          </div>
+
+          <!--Footer-->
+          <hr class="footer-divider pb-2">
+        </div>
+      </div>
+
+      <!--QUOTE CARDS-->
+      <div class="col-md-6 col-sm-12 faux-card-container" *ngFor="let quote of filteredQuotes">
+        <div class="faux-card">
+          <!--Header-->
+          <div class="quote-header mb-4">
+            <div class="flex-space-between" style="align-items: end;">
+              <span class="title light-bold">Qoute #{{quote.quoteID}}</span>
+              Status:
+            </div>
+            <div class="flex-space-between" style="align-items: start;">
+              <span class="date">{{ quote.dateGenerated | date:'d MMM yyyy HH:mm' }}</span>
+              <span class="light-bold" style="line-height: 0.9em;">{{quote.quoteStatusDescription}}</span>
+            </div>
+          </div>
+          <!--Body-->
+          <div class="quote-details">
+            <div class="quote-line row"  *ngFor="let quoteLine of quote.lines">
+              <div class="product-img-container col-4">
+                <img class="product-img" src="data:image/png;base64,{{quoteLine.productFileB64}}" alt="" />
+              </div>
+              <div class="col-8">
+                <span class="light-bold">{{quoteLine.productDescription}}</span><br />
+
+                <div class="quote-line-footer flex-space-between">
+                  Qty: {{quoteLine.quantity}}
+                  <span class="price">
+                    {{quoteLine.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}
+                  </span>
+                </div>
+                Total: {{quoteLine.confirmedUnitPrice * quoteLine.quantity | currency: 'ZAR':'symbol-narrow'}}
+              </div>
+            </div>
+          </div>
+
+          <!--Footer-->
+          <hr class="footer-divider pb-2">
+          <div class="totals">
+            <table>
+              <tr>
+                <td>Subtotal:</td>
+                <td>{{quote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+              </tr>
+              <tr>
+                <td>VAT:</td>
+                <td>+{{quote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+              </tr>
+              <tr class="total-divider">
+                <td colspan="2"></td>
+              </tr>
+              <tr class="light-bold">
+                <td>Total:</td>
+                <td>{{quote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+              </tr>
+            </table>
+            <div *ngIf="quote.quoteStatusID == 1"><!--status 1 = Generated-->
+              <div class="buttons flex-space-between">
+                <button class="btn btn-reject" >Reject Quote</button>
+                <button title="Buy now" class="btn btn-accept" >Accept Quote</button>
+              </div>
+              <div style="text-align: center;">This quote expires on <span class="light-bold">{{ quote.dateExpiring | date:'ccc, d MMM yyyy' }}</span>.</div>
+            </div>
+            <div *ngIf="quote.quoteStatusID == 5" class="text-center light-bold"><!--status 5 = Expired-->
+              This quote has expired.
+            </div>
+            <!-- <div class="buttons" style="margin: auto;"  *ngIf="quote.statusDescription == 'Pending review'">
+              <button title="I don't want to negotiate price anymore" class="btn btn-reject" (click)="cancelQuote(quote.ID)">Cancel</button>
+            </div> -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

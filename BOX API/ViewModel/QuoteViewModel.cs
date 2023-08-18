@@ -18,6 +18,7 @@ namespace BOX.ViewModel
         public string PriceMatchFileB64 { get; set; }
         public DateTime DateGenerated { get; set; } //date the quote was generated
         public int QuoteDurationID { get; set; }
+        public int QuoteDuration { get; set; }
 
         //generic info
         public string CustomerId { get; set; }

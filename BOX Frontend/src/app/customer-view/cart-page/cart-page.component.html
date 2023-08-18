@@ -12,8 +12,8 @@
       <div class="loading" *ngIf="loading">
         Loading your cart..
       </div>
-      <div class="text-center" *ngIf="productCount == 0 && !loading">
-        <span id="empty-cart"><fa-icon class="m-3" [icon]="['fas', 'cart-shopping']" ></fa-icon></span><br/>
+      <div class="text-center" *ngIf="productCount == 0">
+        <span class="empty-msg"><fa-icon class="m-3" [icon]="['fas', 'cart-shopping']" ></fa-icon></span><br/>
         Your cart is empty :(<br/>You can find all our products on our "Products" page.
       </div>
 
