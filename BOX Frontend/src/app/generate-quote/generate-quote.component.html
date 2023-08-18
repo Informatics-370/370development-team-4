@@ -1,6 +1,13 @@
-<!--BODY-->
-<div class="modal-body" *ngIf="selectedQuote != null">
-  <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
+<!-- GENERATE QUOTE MODAL BODY-->
+<div class="modal-body">
+  <div *ngIf="loading">
+    Retrieving the quote request..
+  </div>
+  <div *ngIf="error">
+    There was an error retrieving data. Try refreshing. If the problem persists, contact B.O.X support.
+  </div>
+  <div *ngIf="selectedQuote != null && !loading">
+    <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
   <div style="font-size: 0.95em; color: grey;">
     Requested: {{selectedQuote.dateRequested | date:'d MMM yyyy HH:mm' }}<br />
     Generated: {{ now | date:'d MMM yyyy HH:mm'}}<br/><br />
@@ -58,7 +65,7 @@
 
   <table id="total-table" class="text-right">
     <tr>
-      <td style="width: 80%;">Subtotal:</td>
+      <td style="width: 87%;">Subtotal:</td>
       <td>{{selectedQuote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
     </tr>    
     <tr>
@@ -70,8 +77,9 @@
       <td>{{selectedQuote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
     </tr>
   </table>
-  <div class="form-submit-div">
+  <div class="form-submit-div" style="width: 100%;">
     <button class="btn btn-create modal-form-submit" data-bs-toggle="modal" data-bs-target="#confirmEdit">Generate Quote</button>
+  </div>
   </div>
 </div>
 

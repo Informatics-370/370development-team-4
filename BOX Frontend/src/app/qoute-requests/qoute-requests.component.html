@@ -51,7 +51,7 @@
 </div>
 
 <!--GENERATE QUOTE MODAL-->
-<div class="modal fade" id="generateQuote" tabindex="-1" *ngIf="selectedQRID > 0">
+<div class="modal fade" id="generateQuote" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content" >
 
@@ -63,7 +63,7 @@
         </button>
       </div>
 
-      <app-generate-quote [quoteRequestID]="selectedQRID"></app-generate-quote>
+      <app-generate-quote [quoteRequestID]="selectedQRID" *ngIf="selectedQRID > 0"></app-generate-quote>
 
     </div>
   </div>

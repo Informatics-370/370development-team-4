@@ -4,8 +4,7 @@
 #quote-details-table { margin: 0; }
 
 #total-table {
-  width: 50%;
-  float: right;
+  width: 100%;
 }
 
 #total-table tr td {

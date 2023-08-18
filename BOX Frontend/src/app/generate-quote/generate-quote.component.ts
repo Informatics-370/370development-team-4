@@ -23,7 +23,7 @@ export class GenerateQuoteComponent {
   vat!: VAT;
 
   //messages to user
-  loading = false; //is true when data is successfully retrieved from backend
+  loading = true; //is true when data is successfully retrieved from backend
   error: boolean = false;
 
   //forms logic
@@ -93,7 +93,8 @@ export class GenerateQuoteComponent {
           quoteLines.push(qrline);
         });
 
-        this.selectedQuote = new QuoteVMClass(this.selectedQR, quoteLines, this.vat, false);      
+        this.selectedQuote = new QuoteVMClass(this.selectedQR, quoteLines, this.vat, false);
+        this.loading = false;
       } catch (error) {
         console.error('Error retrieving quote request with ID of ' + this.quoteRequestID, error);
       }
