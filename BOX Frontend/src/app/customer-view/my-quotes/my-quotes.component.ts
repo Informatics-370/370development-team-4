@@ -6,7 +6,7 @@ import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { CustomProductVM } from '../../shared/custom-product-vm';
 import { QuoteVM } from '../../shared/quote-vm';
 import { QuoteLineVM } from '../../shared/quote-line-vm';
-import { QuoteClass } from '../../shared/quote-vm-class';
+import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { take, lastValueFrom } from 'rxjs';
 
 @Component({
@@ -17,9 +17,9 @@ import { take, lastValueFrom } from 'rxjs';
 export class MyQuotesComponent {
   customerQuotes: QuoteVM[] = []; //hold quotes from backend
   quoteRequestFromBackend!: QuoteVM; //hold quote request if the user has any
-  quoteRequest!: QuoteClass; //hold quote request in format to display to user
-  allCustomerQuotes: QuoteClass[] = []; //hold all quotes
-  filteredQuotes: QuoteClass[] = []; //quotes to show user
+  quoteRequest!: QuoteVMClass; //hold quote request in format to display to user
+  allCustomerQuotes: QuoteVMClass[] = []; //hold all quotes
+  filteredQuotes: QuoteVMClass[] = []; //quotes to show user
   quoteCount = -1;
   loading = true;
   allVATs: VAT[] = [];
@@ -117,7 +117,7 @@ export class MyQuotesComponent {
       });
 
       let applicableVAT = this.getApplicableVAT(this.quoteRequestFromBackend.dateRequested); //get vat applicable to that date
-      this.quoteRequest = new QuoteClass(this.quoteRequestFromBackend, quoteLines, applicableVAT, false);
+      this.quoteRequest = new QuoteVMClass(this.quoteRequestFromBackend, quoteLines, applicableVAT, false);
     }
 
     //display quotes
@@ -153,7 +153,7 @@ export class MyQuotesComponent {
       });
 
       let applicableVAT = this.getApplicableVAT(quote.dateGenerated); //get vat applicable to that date
-      let quoteClass: QuoteClass = new QuoteClass(quote, quoteLines, applicableVAT);
+      let quoteClass: QuoteVMClass = new QuoteVMClass(quote, quoteLines, applicableVAT);
       this.filteredQuotes.push(quoteClass);
     });
 

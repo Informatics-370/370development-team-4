@@ -2,7 +2,7 @@ import { QuoteVM } from "./quote-vm";
 import { VAT } from "./vat";
 
 //extend classic quote VM functionality; this is the only page where I will use this class
-export class QuoteClass implements QuoteVM {
+export class QuoteVMClass implements QuoteVM {
   //quote request-specific info
   quoteRequestID: number;
   dateRequested: Date; //date the quote was requested
@@ -31,7 +31,19 @@ export class QuoteClass implements QuoteVM {
     productFileB64: '' //stores product image / pdf (for custom products) as base64 string
     confirmedUnitPrice: 0,
     quantity: 0
-  }*/
+  }
+  
+  ALTERNATIVELY, line can look like this when I generate a quote i.e. work on admin-side:
+  line = {
+    lineID: 0,
+    isFixedProduct: true,
+    productID: 0,
+    productDescription: '',
+    suggestedUnitPrice: 0,
+    confirmedUnitPrice: 0,
+    quantity: 0
+  }  
+  */
   applicableVAT: VAT;
   totalBeforeVAT = 0;
   totalVAT = 0;
@@ -54,7 +66,7 @@ export class QuoteClass implements QuoteVM {
     this.customerFullName = quote.customerFullName;
     this.totalBeforeVAT = this.getTotalBeforeVAT();
     this.totalVAT = this.getVATAmount();
-    console.log(this.dateRequested, this.dateGenerated, this.quoteDuration)
+    
     if (isQuote) {
       this.dateExpiring = new Date(this.dateGenerated.getDate() + this.quoteDuration);
     }

@@ -1,0 +1,44 @@
+@import "../dashboard/dashboard.component.css";
+@import "../product-category/product-category.component.css";
+
+#quote-details-table { margin: 0; }
+
+#total-table {
+  width: 50%;
+  float: right;
+}
+
+#total-table tr td {
+  padding-right: 5px;
+  line-height: 1.2em;
+}
+
+.quote-form-submit, .quote-form-submit:hover, .quote-form-submit:active {
+  margin: 0;
+  background-color: #00d2af;
+  color: white;
+}
+
+.quote-form-submit:hover { background-color: #00b99a; }
+
+.form-heading { 
+  border-bottom: none;
+  font-size: 1.15em;
+  font-weight: 500;
+  padding-bottom: 0;
+  padding-top: 2px;
+}
+
+.table-input {
+  max-width: 100px;
+  padding: 2px 5px;
+  display: inline;
+  margin: 0;
+  margin-left: 0.2em;
+}
+
+.quote-form-select { max-width: 100%;}
+
+.text-right {
+  text-align: right;
+}

@@ -1,0 +1,104 @@
+<!--BODY-->
+<div class="modal-body" *ngIf="selectedQuote != null">
+  <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
+  <div style="font-size: 0.95em; color: grey;">
+    Requested: {{selectedQuote.dateRequested | date:'d MMM yyyy HH:mm' }}<br />
+    Generated: {{ now | date:'d MMM yyyy HH:mm'}}<br/><br />
+  </div>
+
+  <table id="quote-details-table" class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Product</th>
+        <th scope="col">Qty</th>
+        <th scope="col">Suggested Price</th>
+        <th scope="col">Confirmed Price</th>
+        <th scope="col">Total</th>
+      </tr>
+    </thead>
+    <tbody id="quote-details-tbody">
+      <tr *ngFor="let line of selectedQuote.lines">
+        <td>{{ line.productDescription }}</td>
+        <td>{{ line.quantity }}</td>
+        <td>{{ line.suggestedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+        <td>R<input [(ngModel)]="line.confirmedUnitPrice" type="number" class="form-control modal-form-input modal-form-text table-input" placeholder="0.00" name="negotiatedTotal"
+          required min="1" step="0.01"></td>
+        <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+      </tr>
+    </tbody>
+    <!-- <tfoot>
+      <tr>
+        <td colspan="4" class="form-heading">Add new product to quote</td>
+      </tr>
+      <tr [formGroup]="addQuoteLineForm">
+        <td>
+          <select id="productID" [(ngModel)]="selectedProductID" formControlName="productID" name="productID"
+            class="form-select modal-form-input modal-form-text table-input quote-form-select"
+            (change)="changedProduct()">
+            <option disabled value="NA">Select products</option>
+            <option *ngFor="let fp of filteredFixedProducts" value={{fp.fixedProductID}}>{{fp.description}}</option>
+          </select>
+        </td>
+        <td>
+          <label for="quantity" class="form-label modal-form-label">Quantity:</label>
+        </td>
+        <td>
+          <input id="quantity" type="number" formControlName="quantity"
+            class="form-control modal-form-input modal-form-text table-input" placeholder="1" name="quantity" required
+            min="1" step="1" max="{{selectedProduct ? 2000000 : 1}}">
+        </td>
+        <td>
+          <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()">
+            <fa-icon [icon]="['fas', 'plus']"></fa-icon> Add Product
+          </button>
+        </td>
+      </tr>
+    </tfoot> -->
+  </table><br />
+
+  <table id="total-table" class="text-right">
+    <tr>
+      <td style="width: 80%;">Subtotal:</td>
+      <td>{{selectedQuote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+    </tr>    
+    <tr>
+      <td>Discount:</td>
+      <td>-{{selectedQuote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+    </tr>
+    <tr>
+      <td><strong>Total:</strong></td>
+      <td>{{selectedQuote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+    </tr>
+  </table>
+  <div class="form-submit-div">
+    <button class="btn btn-create modal-form-submit" data-bs-toggle="modal" data-bs-target="#confirmEdit">Generate Quote</button>
+  </div>
+</div>
+
+<!--CONFIRM MODAL-->
+<div class="modal fade" id="confirmEdit" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" *ngIf="selectedQuote != null">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">Confirm</h4>
+        <button class="close-modal" ><fa-icon
+            [icon]="['fas', 'window-close']"></fa-icon></button>
+      </div>
+
+      <!--BODY-->
+      <div class="modal-body">
+        <p class="modal-form-input">Are you sure you want to generate this quote for {{selectedQuote.customerFullName}}? 
+          They will be notified via email immediately.
+        </p>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer justify-content-evenly">
+        <button  class="btn btn-create red-btn modal-form-submit"> No </button>
+        <button class="btn btn-create modal-form-submit" >Yes</button>
+      </div>
+    </div>
+  </div>
+</div>

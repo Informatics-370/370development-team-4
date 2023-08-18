@@ -39,7 +39,8 @@
           <td>{{ qr.customerFullName }}</td>
           <td> <!-- {{getTimeSince(qr.dateRequested)}} on  -->{{ qr.dateRequested | date:'d MMM yyyy HH:mm' }}</td>
           <td class="text-center">
-            <button title="Generate quote for {{qr.customerFullName}}" class="btn btn-create btn-generate">
+            <button title="Generate quote for {{qr.customerFullName}}" class="btn btn-create btn-generate"
+              (click)="openGenerateQuoteModal(qr.quoteRequestID)" >
               Generate quote
             </button>
           </td>
@@ -49,3 +50,21 @@
   </div>
 </div>
 
+<!--GENERATE QUOTE MODAL-->
+<div class="modal fade" id="generateQuote" tabindex="-1" *ngIf="selectedQRID > 0">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content" >
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">Generate quote</h4>
+        <button class="close-modal" data-bs-dismiss="modal">
+          <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+        </button>
+      </div>
+
+      <app-generate-quote [quoteRequestID]="selectedQRID"></app-generate-quote>
+
+    </div>
+  </div>
+</div>

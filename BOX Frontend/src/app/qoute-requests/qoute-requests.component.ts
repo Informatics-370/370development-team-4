@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
 import { DataService } from '../services/data.services';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { take, lastValueFrom } from 'rxjs';
 import { QuoteVM } from '../shared/quote-vm';
 import { QuoteLineVM } from '../shared/quote-line-vm';
-import { QuoteClass } from '../shared/quote-vm-class';
-import { FixedProductVM } from '../shared/fixed-product-vm';
-import { VAT } from '../shared/vat';
+import { QuoteVMClass } from '../shared/quote-vm-class';
 declare var $: any;
 
 @Component({
@@ -17,39 +14,34 @@ declare var $: any;
 export class QouteRequestsComponent {
   quoteRequests: QuoteVM[] = []; //hold all quote requests
   filteredQuoteRequests: QuoteVM[] = []; //quoteRequests to show user
-  selectedQuoteRequest!: QuoteClass; //specific quote request to show user and generate quote from
-  fixedProducts: FixedProductVM[] = [];
-  filteredFixedProducts: FixedProductVM[] = [];
-  allVATs: VAT[] = [];
+  selectedQuoteRequest!: QuoteVMClass; //specific quote request to show user and generate quote from
   searchTerm: string = '';
   //display messages to user
   quoteRequestCount = -1;
   loading = true;
   error: boolean = false;
-  //forms logic
-  addQuoteRequestLineForm: FormGroup;
-  selectedProductID = 'NA';
-  selectedProduct: FixedProductVM | undefined;
+  selectedQRID = 0;
 
-  constructor(private dataService: DataService, private formBuilder: FormBuilder) {
-    this.addQuoteRequestLineForm = this.formBuilder.group({
+  constructor(private dataService: DataService) {
+    /* this.addQuoteRequestLineForm = this.formBuilder.group({
       productID: [Validators.required],
       quantity: [1.00, Validators.required]
-    });
+    }); */
   }
 
   ngOnInit() {
-    this.getDataFromDB();
+    this.getQuoteRequestsPromise();
+    //this.getDataFromDB();
   }
 
-  async getDataFromDB() {
+  /* async getDataFromDB() {
     try {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
 
-      /*The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
-      That's what the Promise.all method is supposed to be doing.*/
+      //The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
+      //That's what the Promise.all method is supposed to be doing.
       const [allVAT, allProducts] = await Promise.all([
         getVATPromise,
         getProductsPromise
@@ -68,7 +60,7 @@ export class QouteRequestsComponent {
       this.error = true;
       console.error('Error retrieving data', error);
     }
-  }
+  } */
 
   //get quoteRequests separately so I can update only quoteRequests list when quoteRequest is updated to save time
   async getQuoteRequestsPromise(): Promise<any> {
@@ -87,6 +79,9 @@ export class QouteRequestsComponent {
       console.log('All quote requests array: ', this.filteredQuoteRequests);
       this.loading = false;
     } catch (error) {
+      this.loading = false;
+      this.quoteRequestCount = -1;
+      this.error = true;
       console.error('An error occurred while retrieving quote requests: ', error);
     }
   }
@@ -107,6 +102,11 @@ export class QouteRequestsComponent {
     this.quoteRequestCount = this.filteredQuoteRequests.length; //update quoteRequests count
 
     console.log('Search results:', this.filteredQuoteRequests);
+  }
+
+  openGenerateQuoteModal(id: number) {
+    this.selectedQRID = id;
+    $('#generateQuote').modal('show');
   }
 
   //Angular has some kind of issue with the date.getTime() function

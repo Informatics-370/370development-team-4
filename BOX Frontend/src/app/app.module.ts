@@ -47,6 +47,7 @@ import { CustomerOrdersComponent } from './customer-orders/customer-orders.compo
 import { CustomProdComponent } from './custom-prod/custom-prod.component';
 import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
 import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
+import { GenerateQuoteComponent } from './generate-quote/generate-quote.component';
 
 
 @NgModule({
@@ -93,7 +94,8 @@ import { QouteRequestsComponent } from './qoute-requests/qoute-requests.componen
         RegistrationSuccessPopupComponent,
         CustomProdComponent,
         MyQuotesComponent,
-        QouteRequestsComponent
+        QouteRequestsComponent,
+        GenerateQuoteComponent
         
   ],
   imports: [
