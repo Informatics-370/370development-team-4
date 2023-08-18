@@ -17,7 +17,6 @@ export class GenerateQuoteComponent {
   @Output() resultEvent = new EventEmitter<boolean>(); //used to send boolean back to parent component. true = quote successfully created; false = fail
   selectedQR!: QuoteVM;
   selectedQuote!: QuoteVMClass;
-  now: Date = new Date(Date.now());
   fixedProducts: FixedProductVM[] = [];
   filteredFixedProducts: FixedProductVM[] = [];
   vat!: VAT;
@@ -34,7 +33,8 @@ export class GenerateQuoteComponent {
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.addQuoteLineForm = this.formBuilder.group({
       productID: [Validators.required],
-      quantity: [1.00, Validators.required]
+      quantity: [1, Validators.required],      
+      price: [1, Validators.required]
     });
   }
 
@@ -94,10 +94,75 @@ export class GenerateQuoteComponent {
         });
 
         this.selectedQuote = new QuoteVMClass(this.selectedQR, quoteLines, this.vat, false);
+
+        this.filterProductDropdown(this.selectedQuote); //remove products already on the quote from the products dropdown
+        
         this.loading = false;
       } catch (error) {
         console.error('Error retrieving quote request with ID of ' + this.quoteRequestID, error);
       }
     }
   }
+
+  //filter products shown in dropdown to not include products currently in quote; atm, this only accounts for fixed products
+  filterProductDropdown(currentQuote: QuoteVMClass) {
+    /* reset array. Just saying filteredFP = fP doesn't work because (according to ChatGPT):
+    The issue you are facing is likely due to the fact that arrays in JavaScript are reference types. When you do 
+    this.filteredFixedProducts = this.fixedProducts, you are not creating a new copy of the fixedProducts array; instead, you are 
+    creating a new reference to the same array. As a result, any changes made to this.filteredFixedProducts will also affect 
+    this.fixedProducts.
+    To fix this behavior and avoid modifying the original fixedProducts array when filtering, you need to create a copy of the 
+    fixedProducts array. There are several ways to do this in JavaScript/TypeScript. One common way is to use the 
+    spread operator ... to create a shallow copy of the array:
+    this.filteredFixedProducts = [...this.fixedProducts]; */
+
+    //for each quote line
+    currentQuote.lines.forEach(line => {
+      //only remove if it's a fixed product
+      if (line.isFixedProduct) {
+        //find fixed product with matching ID
+        let toDelete = this.filteredFixedProducts.find(prod => line.productID == prod.fixedProductID);
+
+        //if product is found, delete it
+        if (toDelete) this.filteredFixedProducts.splice(this.filteredFixedProducts.indexOf(toDelete), 1);
+      }
+    });
+  }
+
+  //changing product using dropdown should change the max value of the qty input field to be whatever is the product's qty on hand
+  //this method handles that
+  changedProduct() {
+    this.selectedProduct = this.fixedProducts.find(fp => fp.fixedProductID == parseInt(this.selectedProductID));
+  }
+
+  addQuoteLine() {
+    const formData = this.addQuoteLineForm.value; //get form data
+
+    if (this.addQuoteLineForm.valid && this.selectedProductID != 'NA' && formData.quantity > 0) {
+      //REMOVE FIXED PRODUCT FROM DROPDOWN
+      let toDelete = this.filteredFixedProducts.find(prod => this.selectedProduct?.fixedProductID == prod.fixedProductID); //find fixed product with matching ID
+      if (toDelete) this.filteredFixedProducts.splice(this.filteredFixedProducts.indexOf(toDelete), 1); //if product is found, delete it
+
+      //add quote line to global selectedQuote so I can easily add to backend; NT you can't add custom product quote this way
+      let newQuoteLine: any = {
+        lineID: 0,
+        isFixedProduct: true,
+        productID: this.selectedProduct ? this.selectedProduct.fixedProductID : 0,
+        productDescription: this.selectedProduct ? this.selectedProduct.description : '',
+        suggestedUnitPrice: this.selectedProduct ? this.selectedProduct.price : 0,
+        confirmedUnitPrice: formData.price,
+        quantity: formData.quantity
+      };
+
+      this.selectedQuote.addNewQuoteLine(newQuoteLine);
+      console.log('Quote after adding', this.selectedQuote);
+
+      //reset form
+      this.selectedProductID = 'NA'; //reset product dropdown
+      this.addQuoteLineForm.get('quantity')?.setValue(1);
+      this.addQuoteLineForm.get('price')?.setValue(1);
+    }
+  }
+
+
 }

@@ -10,7 +10,6 @@
     <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
   <div style="font-size: 0.95em; color: grey;">
     Requested: {{selectedQuote.dateRequested | date:'d MMM yyyy HH:mm' }}<br />
-    Generated: {{ now | date:'d MMM yyyy HH:mm'}}<br/><br />
   </div>
 
   <table id="quote-details-table" class="table table-hover">
@@ -29,38 +28,40 @@
         <td>{{ line.quantity }}</td>
         <td>{{ line.suggestedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
         <td>R<input [(ngModel)]="line.confirmedUnitPrice" type="number" class="form-control modal-form-input modal-form-text table-input" placeholder="0.00" name="negotiatedTotal"
-          required min="1" step="0.01" (change)="selectedQuote.changedConfirmedUnitPrice()"></td>
+          required min="1" step="0.01" (keyup)="selectedQuote.refreshTotals()"></td>
         <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
       </tr>
     </tbody>
-    <!-- <tfoot>
+    <tfoot>
       <tr>
         <td colspan="4" class="form-heading">Add new product to quote</td>
       </tr>
       <tr [formGroup]="addQuoteLineForm">
         <td>
           <select id="productID" [(ngModel)]="selectedProductID" formControlName="productID" name="productID"
-            class="form-select modal-form-input modal-form-text table-input quote-form-select"
-            (change)="changedProduct()">
-            <option disabled value="NA">Select products</option>
+            class="form-select modal-form-input modal-form-text table-input quote-form-select" (change)="changedProduct()" >
+            <option disabled value="NA">Select product</option>
             <option *ngFor="let fp of filteredFixedProducts" value={{fp.fixedProductID}}>{{fp.description}}</option>
           </select>
         </td>
         <td>
-          <label for="quantity" class="form-label modal-form-label">Quantity:</label>
-        </td>
-        <td>
           <input id="quantity" type="number" formControlName="quantity"
-            class="form-control modal-form-input modal-form-text table-input" placeholder="1" name="quantity" required
-            min="1" step="1" max="{{selectedProduct ? 2000000 : 1}}">
+            class="form-control modal-form-input modal-form-text table-input" placeholder="1" required
+            min="0" step="1" max="{{selectedProduct ? selectedProduct.quantityOnHand : 1}}">
         </td>
         <td>
-          <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()">
-            <fa-icon [icon]="['fas', 'plus']"></fa-icon> Add Product
-          </button>
+          {{ selectedProduct ? selectedProduct.price : 0 | currency: 'ZAR':'symbol-narrow' }}
+        </td>
+        <td>
+          R <input id="confirmed-price" type="number" formControlName="price"
+            class="form-control modal-form-input modal-form-text table-input" placeholder="1" required
+            min="1" step="1">
+        </td>
+        <td>
+          <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()">Add</button>
         </td>
       </tr>
-    </tfoot> -->
+    </tfoot>
   </table><br />
 
   <table id="total-table" class="text-right">

@@ -3,6 +3,8 @@
 
 #quote-details-table { margin: 0; }
 
+#quote-details-table>:not(caption)>*>* { padding: 0.25em; }
+
 #total-table {
   width: 100%;
 }
@@ -14,6 +16,7 @@
 
 .quote-form-submit, .quote-form-submit:hover, .quote-form-submit:active {
   margin: 0;
+  padding: 5px;
   background-color: #00d2af;
   color: white;
 }

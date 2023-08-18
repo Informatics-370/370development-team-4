@@ -90,10 +90,27 @@ export class QuoteVMClass implements QuoteVM {
   }
 
   //called when you change value of confirmed unit price
-  changedConfirmedUnitPrice() {
+  refreshTotals() {
     //refresh data
-    console.log(this);
     this.totalBeforeVAT = this.getTotalBeforeVAT();
     this.totalVAT = this.getVATAmount();
+  }
+  
+  //add new line to quote
+  addNewQuoteLine(newLine: any[]) {
+    //add quote line
+    this.lines.push(newLine);
+
+    //update total before vat and vat amount
+    this.refreshTotals();
+  }
+
+  removeQuoteLine(quoteLineID: number) {
+    //remove quote line
+    let toDelete = this.lines.find(l => l.lineID == quoteLineID);
+    if (toDelete) this.lines.splice(this.lines.indexOf(toDelete), 1);
+
+    //update total before vat and vat amount
+    this.refreshTotals();
   }
 }
