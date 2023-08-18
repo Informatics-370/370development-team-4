@@ -1,108 +1,70 @@
+<!-- Menu Bar -->
 <div class="row">
-    <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
-        <div class="container">
-            <div class="text-center pt-3">
-                <h2>Menu</h2>
+    <div class="col-md-3">
+        <div class="app-menu"></div>
+    </div>
+    <!-- Dashboard -->
+<div class="col-md-9">
+    <div class="text-center pt-3 pb-3">
+        <h3 style="color: #000000;">Hello,  Ismail Starke</h3>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;" [routerLink]="'/raw-material'">
+                    <div class="card-body text-center">
+                        <fa-icon class="fa-icon-large" [icon]="['fas', 'recycle']"></fa-icon>
+                        <h5 class="card-title text-center" style="color: #FFF;">Raw Material</h5>
+                    </div>
+                </div>
             </div>
-            <pre></pre>
-            <pre></pre>
-            <pre></pre>
-            
-            <div class="text-center">
-                <button class="btn btn-info active text-start">
-                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
-                    Dashboard
-                </button><pre></pre>
-                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
-                    Product Category
-                </button><pre></pre>
-                <button [routerLink]="['/product-item']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
-                    Product Item
-                </button><pre></pre>
-                <button class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'tape']"></fa-icon>
-                    Size
-                </button><pre></pre>
-                <button class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'box']"></fa-icon>
-                    Product
-                </button><pre></pre>
-                <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Refund reason
-                </button><pre></pre>
-                <button [routerLink]="['/write-off-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Write-off reason
-                </button><pre></pre>
+            <div class="col-md-4">
+                <div class="card" data-clickable="true" style="width: 18rem; background-color: #47AF31;" [routerLink]="'/supplier'">
+                    <div class="card-body text-center">
+                        <fa-icon class="fa-icon-large" [icon]="['fas', 'truck']"></fa-icon>
+                        <h5 class="card-title text-center" style="color: #FFF;">View Supplier List</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;" [routerLink]="'/size-units'">
+                    <div class="card-body text-center">
+                        <fa-icon class="fa-icon-large" [icon]="['fas', 'maximize']"></fa-icon>
+                        <h5 class="card-title text-center" style="color: #FFF;">Size Units</h5>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Dashboard -->
-    <div class="col-md-9">
-        <div class="text-center pt-3 pb-3">
-            <h3 style="color: #000000;">Hello,  Ismail Starke</h3>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;">
-                        <div class="card-body text-center">
-                            <fa-icon class="fa-icon-large" [icon]="['fas', 'cart-flatbed']"></fa-icon>
-                            <h5 class="card-title text-center" style="color: #FFF;">View Customer Orders</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #47AF31;">
-                        <div class="card-body text-center">
-                            <fa-icon class="fa-icon-large" [icon]="['fas', 'truck']"></fa-icon>
-                            <h5 class="card-title text-center" style="color: #FFF;">View Supplier Orders</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;">
-                        <div class="card-body text-center">
-                            <fa-icon class="fa-icon-large" [icon]="['fas', 'file-invoice']"></fa-icon>
-                            <h5 class="card-title text-center" style="color: #FFF;">Perform Stock Take</h5>
-                        </div>
+    <!-- Second Row -->
+    <div class="container pt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;">
+                    <div class="card-body text-center">
+                        <fa-icon class="fa-icon-large" [icon]="['fas', 'chart-pie']"></fa-icon>
+                        <h5 class="card-title text-center" style="color: #FFF;">View Reports</h5>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Second Row -->
-        <div class="container pt-5">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;">
-                        <div class="card-body text-center">
-                            <fa-icon class="fa-icon-large" [icon]="['fas', 'chart-pie']"></fa-icon>
-                            <h5 class="card-title text-center" style="color: #FFF;">View Reports</h5>
-                        </div>
+            <div class="col-md-4">
+                <div class="card" data-clickable="true" style="width: 18rem; background-color: #9931AF;" [routerLink]="'/cost-price-formula-variables'">
+                    <div class="card-body text-center">
+                        <fa-icon class="fa-icon-large" [icon]="['fas', 'square-root-variable']"></fa-icon>
+                        <h5 class="card-title text-center" style="color: #FFF;">Cost Price Formula</h5>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #9931AF;">
-                        <div class="card-body text-center">
-                            <fa-icon class="fa-icon-large" [icon]="['fas', 'square-root-variable']"></fa-icon>
-                            <h5 class="card-title text-center" style="color: #FFF;">Cost Price Formula</h5>
-                        </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;" [routerLink]="'/discount'">
+                    <div class="card-body text-center">
+                        <fa-icon class="fa-icon-large" [icon]="['fas', 'tags']"></fa-icon>
+                        <h5 class="card-title text-center text-white" style="color: #000000;">Discounts</h5>
                     </div>
                 </div>
-                <!-- <div class="col-md-4">
-                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;">
-                        <div class="card-body text-center">
-                            <fa-icon [icon]="['fas', 'boxes-stacked']"></fa-icon>
-                            <h5 class="card-title text-center" style="color: #000000;">Perform Stock Take</h5>
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </div>
 </div>
+</div>    

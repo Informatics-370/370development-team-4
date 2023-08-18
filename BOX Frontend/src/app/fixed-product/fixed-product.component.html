@@ -1,0 +1,325 @@
+<div class="row">
+    <!--Menu bar-->
+    <div class="col-md-3">
+        <div class="app-menu"></div>
+    </div>
+    <!--PAGE CONTENT-->
+    <div class="col-md-9 page-content">
+        <h3 class="p-3" style="color: black;">View Products</h3>
+        <!--Search bar-->
+        <div id="searchbar">
+            <input (keyup)="searchProducts($event)" type="text" id="search" name="searchTerm"
+                class="modal-form-input modal-form-text" placeholder="Search by size, price, etc." />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+        </div>
+
+        <hr class="hr hr-blurry m-3" />
+        <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addFixedProduct">Create New Product</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 165px;" scope="col"></th>
+                    <!--Should be product photo, description and product item/price because the user knows where to go to manage
+                        the category and item. But they came here to modify products so they should see product specific info-->
+                    <th scope="col">Product Category</th>
+                    <th scope="col">Product Item</th>
+                    <th scope="col">Product Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--Error message if there's no categories in the DB-->
+                <tr *ngIf="productCount==0">
+                    <td colspan="4">No fixed products found. Please add a new product to the system.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="4">Please wait while we load all products...</td>
+                </tr>
+                <!--Products from API-->
+                <tr *ngFor="let prod of filteredTableProducts">
+                    <td style="text-align: center;">
+                        <button title="View product details" class="CRUD-icon" (click)="openViewProduct(prod)">
+                            <fa-icon [icon]="['fas', 'circle-info']"></fa-icon>
+                        </button>
+                        <button title="Delete this product" class="CRUD-icon" (click)="openDeleteModal(prod)">
+                            <fa-icon class="m-3" [icon]="['fas', 'trash']"></fa-icon>
+                        </button>
+                        <button title="Update this product" class="CRUD-icon" (click)="openUpdateModal(prod)">
+                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                        </button>
+                    </td>
+                    <td>
+                        {{prod.categoryDescription}}
+                    </td>
+                    <td>
+                        {{prod.itemDescription}}
+                    </td>
+                    <td>
+                        {{prod.sizeString}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!--CRUD MODALS-->
+<!--VIEW PRODUCT DETAILS MODAL-->
+<div class="modal fade" id="viewFixedProduct" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" *ngIf="selectedProduct != null">
+
+            <!--HEADER-->
+            <div class="modal-header">
+                <h4 id="modal-title" class="modal-title">{{selectedProduct.description}}</h4>
+                <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+            </div>
+
+            <!--BODY-->
+            <div class="modal-body">
+                <div class="display-photo">
+                    <img id="view-product-photo" class="view-photo" src="data:image/png;base64,{{selectedProduct.productPhoto}}" alt="No product image" />
+                </div>
+                <span class="bold">Product Item: </span>{{selectedProduct.itemDescription}}<br />
+                <span class="bold">Size: </span>{{selectedProduct.sizeString}}<br />
+                <span class="bold">Price (per unit): </span>{{selectedProduct.price | currency: 'ZAR':'symbol-narrow'}}<br />
+                <span class="bold">Quantity on hand: </span>{{selectedProduct.quantityOnHand}}<br />
+                <div class="display-photo">
+                    <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{selectedProduct.qRCodeB64}}" alt={{selectedProduct.description}} /><br />
+                    <button class="btn btn-create download" (click)="downloadQRCodeAsImage()">
+                        <fa-icon style="margin-right: 0.5rem;" [icon]="['fas', 'download']"></fa-icon>Download QR code
+                    </button>
+                </div>
+                <div style="text-align: center;">
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer justify-content-evenly">
+                <button class="btn btn-create modal-form-submit" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--ADD PRODUCT MODAL-->
+<div class="modal fade" id="addFixedProduct" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <!--HEADER-->
+            <div class="modal-header">
+                <h4 class="modal-title">Create New Product</h4>
+                <button class="close-modal" data-bs-dismiss="modal">
+                    <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+                </button>
+            </div>
+
+            <!--BODY-->
+            <div class="modal-body">
+                <form [formGroup]="addProductForm">
+                    <div class="form-group">
+                        <label for="description" class="form-label modal-form-label bold">Product Description:</label>
+                        <input id="description" type="text" formControlName="description"
+                            class="form-control modal-form-input modal-form-text" placeholder="Product name"
+                            name="description" required>
+                        <!--Validation-->
+                        <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']"
+                            class="error-msg">
+                            This field is required.
+                        </div>
+                        <div *ngIf="duplicateFound && submitClicked" class="error-msg">
+                            A fixed product with this description already exists.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="add-categoryID" class="form-label modal-form-label bold">Product Category:</label>
+                        <select id="add-categoryID" [(ngModel)]="selectedCatValue" (change)="changedCategory('add')"
+                            formControlName="categoryID" name="category"
+                            class="form-select modal-form-input modal-form-text">
+                            <option disabled value="NA">Choose a category</option>
+                            <option *ngFor="let cat of categories" value={{cat.categoryID}}>{{cat.categoryDescription}}
+                            </option>
+                        </select>
+                        <!--Display validation error message-->
+                        <div *ngIf="(categoryID?.dirty || categoryID?.touched || submitClicked) && categoryID?.value == 'NA'"
+                            class="error-msg">
+                            Please select a category
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="add-itemID" class="form-label modal-form-label bold">Product Item:</label>
+                        <select id="add-itemID" [(ngModel)]="selectedItemValue" (change)="changedItem($event, 'add')"
+                            formControlName="itemID" name="item" class="form-select modal-form-input modal-form-text">
+                            <option disabled value="NA">Choose product item</option>
+                            <option *ngFor="let item of categoryItems" value={{item.itemID}}>{{item.description}}
+                            </option>
+                        </select>
+                        <div *ngIf="(itemID?.dirty || itemID?.touched || submitClicked) && itemID?.value == 'NA'" class="error-msg">
+                            Please select a product item
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        Please specify the dimensions of the product<br />
+                        <label for="add-sizeID" class="form-label modal-form-label bold">Size:</label>
+                        <select id="add-sizeID" [(ngModel)]="selectedSizeValue" formControlName="sizeID"
+                            (change)="changedSize($event, 'add')" name="size" class="form-select modal-form-input modal-form-text">
+                            <option disabled value="NA">Choose size</option>
+                            <option *ngFor="let catSize of categorySizes" value={{catSize.sizeID}}>
+                                {{catSize.sizeString}}</option>
+                        </select>
+                        <div *ngIf="(sizeID?.dirty || sizeID?.touched || submitClicked) && sizeID?.value == 'NA'" class="error-msg">
+                            Please select the size of the product
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price" class="form-label modal-form-label bold">Price:</label>
+                        <input id="price" type="number" formControlName="price" class="form-control modal-form-input modal-form-text" 
+                            placeholder="0.00" name="price" required min="0" step="0.01">
+                        <div *ngIf="(price?.dirty || price?.touched || submitClicked) && price?.errors?.['required'] || price?.errors?.['min']" class="error-msg">
+                            Please enter an amount above 0.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="choose-img" class="display-photo">
+                        <div style="font-size: 90%;">
+                            <img id="display-img" src="" alt="No image found. Please select a product image." class="view-photo" />
+                            <div id="imageName"></div>
+                        </div>
+                        <label class="form-label btn btn-create download">
+                            <input id="productPhoto" type="file" accept="image/*" formControlName="productPhoto" name="productPhoto"
+                                style="display: none;" (change)="showImageName($event, 'add')" />
+                            Upload product image
+                        </label>
+                    </div>
+
+                    <div class="form-submit-div">
+                        <button class="btn btn-create modal-form-submit" (click)="addFixedProduct()">Add New Product</button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--DELETE PRODUCT MODAL-->
+<div class="modal fade" id="deleteFixedProduct" tabindex="-1" #deleteModal>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" *ngIf="selectedProduct != null">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Delete Product</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <p class="modal-form-input bold">Are you sure you want to delete {{selectedProduct.description}}?</p>
+        </div>        
+
+        <!-- Modal footer -->
+        <div class="modal-footer justify-content-evenly">
+            <button  data-bs-dismiss="modal" class="btn btn-create red-btn modal-form-submit">No</button>
+            <button class="btn btn-create modal-form-submit" (click)="deleteFixedProduct()" >Yes</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!--UPDATE PRODUCT MODAL-->
+<div class="modal fade" id="updateFixedProduct" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+
+        <!--HEADER-->
+        <div class="modal-header">
+          <h4 class="modal-title">Edit Product</h4>
+          <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+        </div>
+
+        <!--BODY-->
+        <div class="modal-body">
+          <form [formGroup]="updateProductForm">
+            <div class="form-group">
+                <label for="uDescription" class="form-label modal-form-label bold">Product Description:</label>
+                <input id="uDescription" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="uDescription" required>
+                <!--Validation message-->
+                    <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
+                    This field is required.
+                </div>
+                <div *ngIf="duplicateFoundUpdate && submitClicked" class="error-msg">
+                    A fixed product with this description already exists.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="uCategoryID" class="form-label modal-form-label bold">Product Category:</label>
+                <select id="uCategoryID" [(ngModel)]="selectedCatValueUpdate" (change)="changedCategory('update')"
+                    formControlName="uCategoryID" name="uCategoryID" class="form-select modal-form-input modal-form-text">
+                    <option *ngFor="let cat of categories" value={{cat.categoryID}}>{{cat.categoryDescription}}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="update-itemID" class="form-label modal-form-label bold">Product Item:</label>
+                <select id="update-itemID" [(ngModel)]="selectedItemValueUpdate" (change)="changedItem($event, 'update')"
+                    formControlName="uItemID" name="uItemID" class="form-select modal-form-input modal-form-text">
+                    <option disabled value="NA">Choose product item</option>
+                    <option *ngFor="let item of categoryItems" value={{item.itemID}}>{{item.description}}</option>
+                </select>
+                <div *ngIf="(uItemID?.dirty || uItemID?.touched || submitClicked) && uItemID?.value == 'NA'" class="error-msg">
+                    Please select a product item
+                </div>
+            </div>
+
+            <div class="form-group">
+                Please specify the dimensions of the product<br />
+                <label for="update-sizeID" class="form-label modal-form-label bold">Size:</label>
+                <select id="update-sizeID" formControlName="uSizeID" [(ngModel)]="selectedSizeValueUpdate" (change)="changedSize($event, 'update')" 
+                    name="uSizeID" class="form-select modal-form-input modal-form-text">
+                    <option disabled value="NA">Choose size</option>
+                    <option *ngFor="let catSize of categorySizes" value={{catSize.sizeID}}>{{catSize.sizeString}}</option>
+                </select>
+                <div *ngIf="(uSizeID?.dirty || uSizeID?.touched || submitClicked) && uSizeID?.value == 'NA'" class="error-msg">
+                    Please select the size of the product
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="uPrice" class="form-label modal-form-label bold">Price:</label>
+                <input id="uPrice" type="number" formControlName="uPrice" class="form-control modal-form-input modal-form-text" 
+                    placeholder="0.00" name="uPrice" required min="0" step="0.01">
+                <div *ngIf="(uPrice?.dirty || uPrice?.touched || submitClicked) && uPrice?.errors?.['required'] || uPrice?.errors?.['min']" class="error-msg">
+                    Please enter an amount above 0.
+                </div>
+            </div>
+                    
+            <div class="form-group" class="display-photo">
+                <div style="font-size: 90%;">
+                    <img id="display-img-update" src="" alt="" class="view-photo" />
+                    <div id="imageNameUpdate"></div>
+                </div>
+                <label class="form-label btn btn-create download">
+                    <input id="uProductPhoto" type="file" accept="image/*" formControlName="uProductPhoto" name="uProductPhoto"
+                        style="display: none;" (change)="showImageName($event, 'update')" />
+                    Upload product image
+                </label>
+            </div>
+
+            <div class="form-submit-div">
+                <button class="btn btn-create modal-form-submit" (click)="updateFixedProduct()" >Save Changes</button>
+            </div>
+          </form>
+        </div>
+        
+      </div>
+    </div>
+</div>

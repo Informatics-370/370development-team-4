@@ -1,0 +1,105 @@
+.all-categories-menu {
+  height: max-content;
+}
+
+/* app-categories-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+} */
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 30px 30px ;
+  text-decoration: none;
+}
+
+li a:hover {
+  background-color: #111;
+  text-decoration: underline;
+
+}
+ ul.navbar li.cart {
+    float: left;
+  }
+  
+  ul.navbar li.cart a {
+    padding: 5px 10px;
+  }
+  
+  ul.navbar li.cart a i {
+    font-size: 20px;
+    color: white;
+  }
+
+  .cart {
+    position: relative;
+  }
+  
+  .cart a {
+    display: inline-block;
+    position: relative;
+    padding: 10px;
+  }
+  
+  .cart i {
+    font-size: 20px;
+  }
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: #333;
+    border-radius: 50%;
+    color: white;
+  }
+  
+  .cart-icon fa-icon {
+    font-size: 20px;
+  }
+  .cart-icon:hover{
+    text-decoration: underline;
+  }
+  .cart:hover{
+    text-decoration: underline;
+    background-color: #111;
+  }
+  .cart a :hover{
+    text-decoration: underline;
+    background-color: #111;
+  }
+ 
+
+/*SORT DRROPDOWN*/
+#sort-dropdown {
+  float: right;
+  position: relative;
+  padding: 0 20px;
+}
+
+.modal-form-text, .modal-form-text:hover, .modal-form-text:focus {
+  border: none;
+  border-bottom: 1px solid #41A0B5;
+  border-radius: 0;
+  box-shadow: none;
+  float: right;
+}
+
+.form-select { width: auto; }
+
+.modal-form-input { margin-bottom: 20px; }

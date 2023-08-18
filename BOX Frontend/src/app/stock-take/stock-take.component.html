@@ -1,0 +1,46 @@
+<div class="row">
+    <div class="col-2">
+      <div class="app-menu"></div>
+    </div>
+    <div class="col-10">
+      <div class="container mt-4">
+        <h2 class="display-6">Inventory Levels</h2>
+        <button class="btn btn-primary" [disabled]="isWriteOffClicked" (click)="toggleWriteOff()">Write Off</button>
+        <button class="btn btn-primary ms-2" [routerLink]="['/stock-take-trail']">Check Trail</button>
+        <div>
+          <table class="table table-striped mt-4" [class.disabled]="!showWriteOffSection">
+            <tbody>
+              <tr *ngFor="let item of inventory">
+                <td>
+                  <input type="checkbox" [(ngModel)]="item.saveItem" [disabled]="!showWriteOffSection">
+                </td>
+                <td class="fw-bold">{{ item.rawMaterialDescription || item.fixedProductDescription }}</td>
+                <td>
+                  <input
+                    type="number"
+                    [(ngModel)]="item.quantity"
+                    [disabled]="!showWriteOffSection || !item.saveItem"
+                    class="form-control"
+                  >
+                </td>
+                <td>
+                  <select
+                    [(ngModel)]="item.WriteOffReasonID"
+                    [disabled]="!showWriteOffSection || !item.saveItem"
+                    class="form-control"
+                  >
+                    <option *ngFor="let reason of writeOffReasons" [value]="reason.writeOffReasonID">
+                      {{ reason.description }}
+                    </option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-success" [disabled]="!showWriteOffSection || isCancelClicked" (click)="saveChanges()">Save Changes</button>
+          <button class="btn btn-danger ms-2" *ngIf="showWriteOffSection && !isCancelClicked" (click)="cancelWriteOff()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

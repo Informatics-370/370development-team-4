@@ -1,40 +1,41 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace BOX.Models
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+        }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 			//This sets the composite key for the Estimate Line Entity and does the same for the remaining Associative entities
 			modelBuilder.Entity<Estimate_Line>()
-	 .HasKey(e => new { e.CustomerID, e.EstimateID });
+				 .HasKey(e => new { e.UserId, e.EstimateID,e.EstimateLineID });
 
-			modelBuilder.Entity<Customer_Order_Line>()
-	 .HasKey(e => new { e.CustomerOrderID, e.FixedProductID, e.CustomProductID });
+						modelBuilder.Entity<Customer_Order_Line>()
+				 .HasKey(e => new { e.UserId, e.CustomerOrderID , e.Customer_Order_LineID});
 
-			modelBuilder.Entity<Supplier_OrderLine>()
-	 .HasKey(e => new { e.SupplierOrderID, e.FixedProductID, e.RawMaterialID });
+						modelBuilder.Entity<Supplier_OrderLine>()
+				 .HasKey(e => new { e.SupplierOrderID, e.SupplierID, e.Supplier_Order_LineID });
 
-			modelBuilder.Entity<User_Role_Permission>()
-	 .HasKey(e => new { e.RoleId, e.UserPermissionID });
+						modelBuilder.Entity<User_Role_Permission>()
+				 .HasKey(e => new { e.RoleId, e.UserPermissionID });
 
-			modelBuilder.Entity<Category_Size_Variables>()
- .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
+						modelBuilder.Entity<Category_Size_Variables>()
+			 .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
+			
+        }
 
-		
-		}
-
-		public DbSet<Admin> Admin { get; set; }
-		public DbSet<Audit_Trail> Audit_Trail { get; set; }
+        public DbSet<Audit_Trail> Audit_Trail { get; set; }
 		public DbSet<Cost_Price_Formula_Variables> cost_Price_Formula_Variables { get; set; }
 		public DbSet<Credit_Application> Credit_Application { get; set; }
 		public DbSet<Credit_Application_Status> Credit_Application_Status{ get; set; }
 		public DbSet<Custom_Product> Custom_Product { get; set; }
-		public DbSet<Customer> Customer { get; set; }
 		public DbSet<Customer_Order_Status> Customer_Order_Status { get; set; }
 		public DbSet<Customer_Refund> Customer_Refund { get; set; }
 
@@ -43,7 +44,6 @@ namespace BOX.Models
 		public DbSet<Customer_Review> Customer_Review { get; set; }
 
 		public DbSet<Discount> Discount { get; set; }
-		public DbSet<Employee> Employee { get; set; }
 
 		public DbSet<Estimate> Estimate { get; set; }
 		public DbSet<Estimate_Duration> Estimate_Duration { get; set; }
@@ -51,6 +51,8 @@ namespace BOX.Models
 		public DbSet<Estimate_Line> Estimate_Line { get; set; }
 
 		public DbSet<Estimate_Status> Estimate_Status { get; set; }
+
+		public DbSet<Fixed_Product> Fixed_Product { get; set; }
 
 		public DbSet<Order_Delivery_Schedule> Order_Delivery_Schedule { get; set; }
 
@@ -82,18 +84,5 @@ namespace BOX.Models
 		public DbSet<Size_Variables> Size_Variables { get; set; }
 		public DbSet<Category_Size_Variables> Category_Size_Variables { get; set; }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-	}
+    }
 }

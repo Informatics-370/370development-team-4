@@ -1,54 +1,14 @@
 <div class="row">
     <!--SIDE NAVBAR-->
-    <div class="col-md-3" style="background-color: #3F2F34; height: 100vh;">
-        <div class="container">
-            <div class="text-center pt-3">
-                <h2>Menu</h2>
-            </div>
-            <pre></pre>
-            <pre></pre>
-            <pre></pre>
-            
-            <div class="text-center">
-                <button [routerLink]="['/dashboard']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'home']"></fa-icon>
-                    Dashboard
-                </button><pre></pre>
-                <button [routerLink]="['/product-category']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'boxes']"></fa-icon>
-                    Product Category
-                </button><pre></pre>
-                <button [routerLink]="['/product-item']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'jug-detergent']"></fa-icon>
-                    Product Item
-                </button><pre></pre>
-                <button class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'tape']"></fa-icon>
-                    Size
-                </button><pre></pre>
-                <button class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'box']"></fa-icon>
-                    Product
-                </button><pre></pre>
-                <button [routerLink]="['/refund-reason']" class="btn btn-info text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Refund reason
-                </button><pre></pre>
-                <button class="btn btn-info active text-start">
-                    <fa-icon [icon]="['fas', 'file-text']"></fa-icon>
-                    Write-off reason
-                </button><pre></pre>
-            </div>
-        </div>
-    </div>
+    <div class="col-md-2"><div class="app-menu"></div></div>
     <!--Right Side-->
-    <div class="col-md-9">
+    <div class="col-md-10">
         <h3 class="p-3" style="color: black;">Write-Off Reasons</h3>
         <!--Search bar-->
-        <form id="searchbar" (ngSubmit)="searchReasons($event)">
-            <input [(ngModel)]="searchTerm" type="search" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Damaged by water" />
-            <button id="search-btn" type="submit" class="" ><fa-icon id="search-icon" class="m-3" [icon]="['fas', 'search']" ></fa-icon></button>        
-        </form>
+        <div id="searchbar" >
+            <input (keyup)="searchReasons($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Damaged by water" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
 
         <hr class="hr hr-blurry m-3" />
         <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#addReason">Create Write-Off Reason</button>
@@ -60,17 +20,21 @@
                 </tr>
             </thead>
             <tbody>                
-                <!--Error message if there's no items in the DB-->
+                <!--Error message if there's no write-off reasons in the DB-->
                 <tr *ngIf="reasonCount==0">
                     <td colspan="2">No stock write-off reasons found. Please add a new reason to the system.</td>
                 </tr>
-                <!--Item data from API-->
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all write-off reasons...</td>
+                </tr>
+                <!--Reasons data from API-->
                 <tr *ngFor="let reason of filteredReasons">
                     <td>
-                        <button class="CRUD-icon" >
+                        <button title="Delete this stock write-off reason" class="CRUD-icon" >
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" (click)="openDeleteModal(reason.writeOffReasonID)"></fa-icon>
                         </button>
-                        <button class="CRUD-icon" (click)="openUpdateModal(reason.writeOffReasonID)" >
+                        <button title="Update this stock write-off reason" class="CRUD-icon" (click)="openUpdateModal(reason.writeOffReasonID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
@@ -102,9 +66,13 @@
                 <label for="description" class="form-label modal-form-label bold">Write-Off Reason:</label>
                 <input id="add-description" type="text" formControlName="description" class="form-control modal-form-input modal-form-text" placeholder="e.g. Damaged goods" name="description" required>
             </div>
+            <!--Display validation error message-->
+            <div *ngIf="(description?.dirty || description?.touched || submitClicked) && description?.errors?.['required']" class="error-msg">
+                This field is required.
+            </div>
 
             <div class="form-submit-div">
-                <button data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="addReason()">Add New Write-Off Reason</button>
+                <button class="btn btn-create modal-form-submit" (click)="addReason()">Add New Write-Off Reason</button>
             </div>
             
           </form>
@@ -146,7 +114,7 @@
 
         <!--HEADER-->
         <div class="modal-header">
-          <h4 class="modal-title">Edit Write-Off Reason</h4>
+          <h4 class="modal-title">Update Write-Off Reason</h4>
           <button class="close-modal" (click)="closeUpdateModal()"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
         </div>
 
@@ -154,8 +122,12 @@
         <div class="modal-body">
           <form [formGroup]="updateReasonForm">
             <div class="form-group">
-                <label for="description" class="form-label modal-form-label bold">Write-OffReason:</label>
+                <label for="description" class="form-label modal-form-label bold">Write-Off Reason:</label>
                 <input id="update-description" type="text" formControlName="uDescription" class="form-control modal-form-input modal-form-text" name="description" required>
+            </div>
+            <!--Display validation error message-->
+            <div *ngIf="(uDescription?.dirty || uDescription?.touched || submitClicked) && uDescription?.errors?.['required']" class="error-msg">
+                This field is required.
             </div>
 
             <div class="form-submit-div">

@@ -1,0 +1,107 @@
+<div class="app-customer-navbar" style="max-width: 100%;">
+</div>
+
+<div class="row page-row">
+  <div class="col-md-3 col-sm-12 all-categories-menu">
+    <app-categories-menu></app-categories-menu>
+  </div>
+
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 col-sm-9 page-content">
+    <h3 class="p-3" style="color: black;">View Quotes</h3>
+    <!--Search bar-->
+    <div id="searchbar">
+      <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+        placeholder="Search quote number, status" (keyup)="searchEstimates($event)" />
+      <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+    </div>
+
+    <hr class="hr hr-blurry m-3" />
+    <!--Messages to user-->
+    <div class="m-3"> 
+      <span *ngIf="loading">Getting your quotes..</span>
+      <span *ngIf="estimateCount == 0">No quotes found.</span>
+    </div>
+    
+    <div class="row estimates-container p-1">
+
+      <!--ESTIMATE CARD-->
+      <div class="col-md-6 col-sm-12 faux-card-container" *ngFor="let estimate of filteredEstimates">
+        <div class="faux-card">
+          <!--Header-->
+          <div class="estimate-header mb-4">
+            <div class="flex-space-between" style="align-items: end;">
+              <span class="title light-bold">Qoute #{{estimate.ID}}</span>
+              Status:
+            </div>
+            <div class="flex-space-between" style="align-items: start;">
+              <span class="date">23 Jul 2023, 8:01 PM</span>
+              <span class="light-bold" style="line-height: 0.9em;">{{estimate.statusDescription}}</span>
+            </div>
+          </div>
+          <!--Body-->
+          <div class="estimate-details">
+            <div class="estimate-line row"  *ngFor="let estimateLine of estimate.estimate_Lines">
+              <div class="product-img-container col-4">
+                <img class="product-img" src="data:image/png;base64,{{estimateLine.productImage}}" alt="" />
+              </div>
+              <div class="col-8">
+                <span class="light-bold">{{estimateLine.productDescription}}</span><br />
+
+                <div class="estimate-line-footer flex-space-between">
+                  Qty: {{estimateLine.quantity}}
+                  <span class="price">
+                    {{estimateLine.unitPrice | currency: 'ZAR':'symbol-narrow'}}
+                  </span>
+                </div>
+                Total: {{estimateLine.unitPrice * estimateLine.quantity | currency: 'ZAR':'symbol-narrow'}}
+              </div>
+            </div>
+          </div>
+
+          <!--Footer-->
+          <hr class="footer-divider pb-2">
+          <div class="totals">
+            <table>
+              <tr>
+                <td>Subtotal:</td>
+                <td>{{estimate.getTotalBeforeDiscount() | currency: 'ZAR':'symbol-narrow'}}</td>
+              </tr>
+              <tr>
+                <td>Discount:</td>
+                <td>-{{estimate.totalDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
+              </tr>
+              <tr class="light-bold">
+                <td>Total:</td>
+                <td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
+              </tr>
+              <tr class="total-divider">
+                <td colspan="2"></td>
+              </tr>
+              <tr class="negotiated light-bold" *ngIf="estimate.statusDescription == 'Reviewed'">
+                <td>Negotiated discount:</td>
+                <td>-{{estimate.getNegotiatedDiscount() | currency: 'ZAR':'symbol-narrow'}}</td>
+              </tr>
+              <tr class="light-bold" *ngIf="estimate.statusDescription == 'Reviewed'">
+                <td>Confirmed total:</td>
+                <td>{{estimate.confirmedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
+              </tr>
+            </table>
+            <div *ngIf="estimate.statusDescription == 'Reviewed'">
+              <div class="buttons flex-space-between">
+                <button class="btn btn-reject" (click)="rejectEstimate(estimate.ID)">Reject Quote</button>
+                <button title="Buy now" class="btn btn-accept" (click)="acceptEstimate(estimate.ID)">Accept Quote</button>
+              </div>
+              <div style="text-align: center;">This quote expires on <span class="light-bold">23 Aug 2023</span>.</div>
+            </div>
+            <div class="buttons" style="margin: auto;"  *ngIf="estimate.statusDescription == 'Pending review'">
+              <button title="I don't want to negotiate price anymore" class="btn btn-reject" (click)="cancelEstimate(estimate.ID)">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

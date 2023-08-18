@@ -1,4 +1,5 @@
 export interface CategoryVM {
+    categoryID: number;
     categoryDescription: string;
     width: boolean;
     height: boolean;
