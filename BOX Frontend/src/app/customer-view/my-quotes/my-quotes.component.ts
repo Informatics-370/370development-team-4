@@ -6,6 +6,7 @@ import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { CustomProductVM } from '../../shared/custom-product-vm';
 import { QuoteVM } from '../../shared/quote-vm';
 import { QuoteLineVM } from '../../shared/quote-line-vm';
+import { QuoteClass } from '../../shared/quote-vm-class';
 import { take, lastValueFrom } from 'rxjs';
 
 @Component({
@@ -170,101 +171,22 @@ export class MyQuotesComponent {
 
     return this.allVATs[this.allVATs.length - 1]; // Fallback to the latest VAT if no applicable VAT is found
   }
-}
 
-//extend classic quote VM functionality; this is the only page where I will use this class
-class QuoteClass implements QuoteVM {
-  //quote request-specific info
-  quoteRequestID: number;
-  dateRequested: Date; //date the quote was requested
+  //--------------------------------------------- SEARCH QUOTE ---------------------------------------------
+  searchQuotes(event: Event) {
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.filteredQuotes = []; //clear array
+    for (let i = 0; i < this.allCustomerQuotes.length; i++) {
+      //concatenate all the searchable quote info in one variable
+      let toSearch: string = String(this.allCustomerQuotes[i].quoteID + this.allCustomerQuotes[i].quoteStatusDescription).toLowerCase();
 
-  //quote-specific info
-  quoteID: number;
-  quoteStatusID: number;
-  quoteStatusDescription: string;
-  rejectReasonID: number;
-  rejectReasonDescription: string;
-  priceMatchFileB64: string;
-  dateGenerated: Date; //date the quote was generated
-  quoteDurationID: number;
-  quoteDuration: number;
-  dateExpiring: Date = new Date(Date.now()); //date quote is expiring as string
-
-  //generic info
-  customerId: string;
-  customerFullName: string;
-  lines: any[];
-  /*line = {
-    lineID: 0,
-    isFixedProduct: true,
-    productID: 0,
-    productDescription: '',
-    productFileB64: '' //stores product image / pdf (for custom products) as base64 string
-    confirmedUnitPrice: 0,
-    quantity: 0
-  }*/
-  applicableVAT: VAT;
-  totalBeforeVAT = 0;
-  totalVAT = 0;
-
-  constructor(quote: QuoteVM, lines: any[], applicableVAT: VAT, isQuote: boolean = true) {
-    this.quoteDurationID = quote.quoteDurationID;
-    this.quoteDuration = quote.quoteDuration;
-    this.dateRequested = quote.dateRequested;
-    this.lines = lines;
-    this.applicableVAT = applicableVAT;
-    this.quoteRequestID = quote.quoteRequestID;
-    this.quoteID = quote.quoteID;
-    this.quoteStatusID = quote.quoteStatusID;
-    this.quoteStatusDescription = quote.quoteStatusDescription;
-    this.rejectReasonID = quote.rejectReasonID;
-    this.rejectReasonDescription = quote.rejectReasonDescription;
-    this.priceMatchFileB64 = quote.priceMatchFileB64;
-    this.dateGenerated = quote.dateGenerated;
-    this.customerId = quote.customerId;
-    this.customerFullName = quote.customerFullName;
-    this.totalBeforeVAT = this.getTotalBeforeVAT();
-    this.totalVAT = this.getVATAmount();
-    console.log(this.dateRequested, this.dateGenerated, this.quoteDuration)
-    if (isQuote) {
-      this.dateExpiring = new Date(this.dateGenerated.getDate() + this.quoteDuration);
+      if (toSearch.includes(this.searchTerm.toLowerCase())) {
+        this.filteredQuotes.push(this.allCustomerQuotes[i]);
+      }
     }
+
+    this.quoteCount = this.filteredQuotes.length; //update quote count
+    console.log('Search results:', this.filteredQuotes);
   }
 
-  getTotalBeforeVAT(): number {
-    let total = 0;
-    this.lines.forEach(line => {
-      total += line.confirmedUnitPrice * line.quantity;
-    });
-
-    return total;
-  }
-
-  getVATAmount(): number {
-    return this.totalBeforeVAT * this.applicableVAT.percentage / 100;
-  }
-
-  getTotalAfterVAT(): number {
-    return this.totalBeforeVAT + this.totalVAT;
-  }
-
-  //since toDateString, toLocaleDateString, etc. throws an error, this will do it manually
-  getFormattedDate(date: Date): string {
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-    //put date in format dd MMM yyyy hh:mm
-    const yyyy = date.getFullYear();
-    let mm = months[date.getMonth()]; // month is zero-based
-    let dd = date.getDate().toString();
-    let hh = date.getHours().toString();
-    let min = date.getMinutes().toString();
-    
-    if (parseInt(dd) < 10) dd = '0' + dd;
-    if (parseInt(hh) < 10) hh = '0' + hh;
-    if (parseInt(min) < 10) min = '0' + min;
-    
-    let dateInCorrectFormat = dd + ' ' + mm + ' ' + yyyy + ' ' + hh + ':' + min;
-    console.log('dateInCorrectFormat', dateInCorrectFormat); // 2023-07-31 18:23
-    return dateInCorrectFormat;
-  }
 }

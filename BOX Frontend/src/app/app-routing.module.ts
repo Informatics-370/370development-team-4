@@ -15,7 +15,6 @@ import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
-import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 import { LoginComponent } from './login/login.component';
 import { CustomerHomepageComponent } from './customer-view/customer-homepage/customer-homepage.component';
@@ -35,6 +34,7 @@ import { OrderHistoryComponent } from './customer-view/order-history/order-histo
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 import { CustomProdComponent } from './custom-prod/custom-prod.component';
 import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
+import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
 
 
 const routes: Routes = [
@@ -55,15 +55,8 @@ const routes: Routes = [
   { path: 'products', component: ProductsComponent },
   { path: 'products/:category', component: ProductsComponent },
   { path: 'product-details/:id', component: ProductDetailsComponent },
-  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent },
   { path: 'cart', component: CartPageComponent },
-  { path: 'quotes', component: EstimatePageComponent },
-  { path: 'estimates', component: EstimateLineComponent },
-  { path: 'products/:category', component: ProductsComponent },
-  { path: 'product-details/:id', component: ProductDetailsComponent },
   { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
-  { path: 'cart', component: CartPageComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Customer'] } },
-  { path: 'estimate', component: EstimatePageComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Customer'] } },
   { path: 'estimates', component: EstimateLineComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin'] } },
   { path: 'login', component: LoginComponent },
   { path: 'login/:redirectTo', component: LoginComponent },
@@ -82,7 +75,8 @@ const routes: Routes = [
   { path: 'order-history/:success', component: OrderHistoryComponent },
   { path: 'customer-orders', component: CustomerOrdersComponent },
   { path: 'custom-product', component: CustomProdComponent },
-  { path: 'my-quotes', component: MyQuotesComponent }
+  { path: 'my-quotes', component: MyQuotesComponent },
+  { path: 'quote-requests', component: QouteRequestsComponent }
 ];
 
 @NgModule({

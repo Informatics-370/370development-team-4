@@ -1,0 +1,11 @@
+@import "../dashboard/dashboard.component.css";
+@import "../product-category/product-category.component.css";
+
+.btn-generate {
+  padding: 1px 12px;
+  margin: 0;
+}
+
+.text-right {
+  text-align: right;
+}
