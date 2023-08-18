@@ -57,7 +57,7 @@
             class="form-control modal-form-input modal-form-text table-input" placeholder="1" required
             min="1" step="1">
         </td>
-        <td>
+        <td class="text-center">
           <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()">Add</button>
         </td>
       </tr>
@@ -79,35 +79,7 @@
     </tr>
   </table>
   <div class="form-submit-div" style="width: 100%;">
-    <button class="btn btn-create modal-form-submit" data-bs-toggle="modal" data-bs-target="#confirmEdit">Generate Quote</button>
+    <button class="btn btn-create modal-form-submit" >Generate Quote</button>
   </div>
-  </div>
-</div>
-
-<!--CONFIRM MODAL-->
-<div class="modal fade" id="confirmEdit" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" *ngIf="selectedQuote != null">
-
-      <!--HEADER-->
-      <div class="modal-header">
-        <h4 class="modal-title">Confirm</h4>
-        <button class="close-modal" ><fa-icon
-            [icon]="['fas', 'window-close']"></fa-icon></button>
-      </div>
-
-      <!--BODY-->
-      <div class="modal-body">
-        <p class="modal-form-input">Are you sure you want to generate this quote for {{selectedQuote.customerFullName}}? 
-          They will be notified via email immediately.
-        </p>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer justify-content-evenly">
-        <button  class="btn btn-create red-btn modal-form-submit"> No </button>
-        <button class="btn btn-create modal-form-submit" >Yes</button>
-      </div>
-    </div>
   </div>
 </div>

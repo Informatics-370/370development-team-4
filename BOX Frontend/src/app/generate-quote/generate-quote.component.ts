@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -6,15 +6,17 @@ import { QuoteVM } from '../shared/quote-vm';
 import { QuoteVMClass } from '../shared/quote-vm-class';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
+declare var $: any;
 
 @Component({
   selector: 'app-generate-quote',
   templateUrl: './generate-quote.component.html',
   styleUrls: ['./generate-quote.component.css']
 })
-export class GenerateQuoteComponent {
+export class GenerateQuoteComponent implements OnChanges {
   @Input() quoteRequestID: number = 0; //Accept quote request ID from parent component
   @Output() resultEvent = new EventEmitter<boolean>(); //used to send boolean back to parent component. true = quote successfully created; false = fail
+  
   selectedQR!: QuoteVM;
   selectedQuote!: QuoteVMClass;
   fixedProducts: FixedProductVM[] = [];
@@ -39,7 +41,25 @@ export class GenerateQuoteComponent {
   }
 
   ngOnInit() {
+    $('#generateQuote').modal('show');
     this.getDataFromDB();
+  }
+
+  //listen for changes to the quoteRequestID
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['quoteRequestID']) {
+      // The quoteRequestID input property has changed; Perform actions based on the change
+      console.log('quoteRequestID changed');
+
+      //however, when the modal opens for the first time, the ngOnChanges considers this a change too. That will cause getQuoteRequest to fire twice. We don't want that
+      const previousQuoteRequestID = changes['quoteRequestID'].previousValue;
+      if (previousQuoteRequestID != 0) { //if it's 0, this modal is opening for the first time
+        console.log('previousQuoteRequestID', previousQuoteRequestID);
+        this.error = false;
+        this.loading = true;
+        await this.getQuoteRequest();
+      }
+    }      
   }
   
   async getDataFromDB() {

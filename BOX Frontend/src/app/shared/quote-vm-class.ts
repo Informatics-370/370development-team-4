@@ -104,13 +104,4 @@ export class QuoteVMClass implements QuoteVM {
     //update total before vat and vat amount
     this.refreshTotals();
   }
-
-  removeQuoteLine(quoteLineID: number) {
-    //remove quote line
-    let toDelete = this.lines.find(l => l.lineID == quoteLineID);
-    if (toDelete) this.lines.splice(this.lines.indexOf(toDelete), 1);
-
-    //update total before vat and vat amount
-    this.refreshTotals();
-  }
 }

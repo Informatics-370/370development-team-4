@@ -57,7 +57,7 @@ export class CartPageComponent {
     //if (this.customer != null) {
     if (this.customer == null) {
       //get customer ID
-      let customerID = '26865a70-5d8b-4443-be84-82cb360fba00';
+      let customerID = '276cc291-c357-441b-a317-291e739b2c25';
       console.log('customerID', customerID);
   
       try {
@@ -168,7 +168,7 @@ export class CartPageComponent {
         rejectReasonID: 0,
         rejectReasonDescription: '',
         priceMatchFileB64: '',
-        customerId: '26865a70-5d8b-4443-be84-82cb360fba00',
+        customerId: '276cc291-c357-441b-a317-291e739b2c25',
         customerFullName: '',
         lines: []
       }
