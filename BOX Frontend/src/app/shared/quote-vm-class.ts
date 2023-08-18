@@ -88,4 +88,12 @@ export class QuoteVMClass implements QuoteVM {
   getTotalAfterVAT(): number {
     return this.totalBeforeVAT + this.totalVAT;
   }
+
+  //called when you change value of confirmed unit price
+  changedConfirmedUnitPrice() {
+    //refresh data
+    console.log(this);
+    this.totalBeforeVAT = this.getTotalBeforeVAT();
+    this.totalVAT = this.getVATAmount();
+  }
 }

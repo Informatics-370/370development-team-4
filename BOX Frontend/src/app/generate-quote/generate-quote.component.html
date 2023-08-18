@@ -29,7 +29,7 @@
         <td>{{ line.quantity }}</td>
         <td>{{ line.suggestedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
         <td>R<input [(ngModel)]="line.confirmedUnitPrice" type="number" class="form-control modal-form-input modal-form-text table-input" placeholder="0.00" name="negotiatedTotal"
-          required min="1" step="0.01"></td>
+          required min="1" step="0.01" (change)="selectedQuote.changedConfirmedUnitPrice()"></td>
         <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
       </tr>
     </tbody>
@@ -69,11 +69,11 @@
       <td>{{selectedQuote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
     </tr>    
     <tr>
-      <td>Discount:</td>
-      <td>-{{selectedQuote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+      <td>VAT:</td>
+      <td>+{{selectedQuote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
     </tr>
-    <tr>
-      <td><strong>Total:</strong></td>
+    <tr style="font-weight: bold;">
+      <td>Total:</td>
       <td>{{selectedQuote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
     </tr>
   </table>
