@@ -197,11 +197,11 @@ namespace BOX.Controllers
                             customProdDescription += customProduct.Length + "mm x " + customProduct.Width + "mm x " + customProduct.Height + "mm";
                         }
 
-                        QuoteLineViewModel qlVM = new QuoteLineViewModel
+                        QuoteLineViewModel qlVM = new QuoteLineViewModel()
                         {
                             QuoteLineID = ql.QuoteLineID,
                             FixedProductID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value,
-                            FixedProductDescription = fixedProduct.Description,
+                            FixedProductDescription = fixedProduct != null ? fixedProduct.Description : "",
                             CustomProductID = ql.CustomProductID == null ? 0 : ql.CustomProductID.Value,
                             CustomProductDescription = customProdDescription,
                             ConfirmedUnitPrice = ql.Confirmed_Unit_Price,

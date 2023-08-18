@@ -47,7 +47,7 @@ export class MyQuotesComponent {
       const getFixedProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
       const getCustomProductsPromise = lastValueFrom(this.dataService.GetAllCustomProducts().pipe(take(1)));
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
-      const getActiveQuoteRequestPromise = lastValueFrom(this.dataService.CheckForActiveQuoteRequest('276cc291-c357-441b-a317-291e739b2c25').pipe(take(1)));
+      const getActiveQuoteRequestPromise = lastValueFrom(this.dataService.CheckForActiveQuoteRequest('26865a70-5d8b-4443-be84-82cb360fba00').pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
@@ -77,7 +77,7 @@ export class MyQuotesComponent {
   async getCustomerQuotesPromise() {
     this.loading = true;
     try {
-      this.customerQuotes = await lastValueFrom(this.dataService.GetQuotesByCustomer('276cc291-c357-441b-a317-291e739b2c25').pipe(take(1)));
+      this.customerQuotes = await lastValueFrom(this.dataService.GetQuotesByCustomer('26865a70-5d8b-4443-be84-82cb360fba00').pipe(take(1)));
       console.log('customerQuotes', this.customerQuotes);
       this.displayCustomerQuotes(); //Execute only after data has been retrieved from the DB otherwise error
     } catch (error) {

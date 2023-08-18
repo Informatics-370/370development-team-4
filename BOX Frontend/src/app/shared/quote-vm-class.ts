@@ -51,7 +51,7 @@ export class QuoteVMClass implements QuoteVM {
   constructor(quote: QuoteVM, lines: any[], applicableVAT: VAT, isQuote: boolean = true) {
     this.quoteDurationID = quote.quoteDurationID;
     this.quoteDuration = quote.quoteDuration;
-    this.dateRequested = quote.dateRequested;
+    this.dateRequested = new Date(quote.dateRequested);
     this.lines = lines;
     this.applicableVAT = applicableVAT;
     this.quoteRequestID = quote.quoteRequestID;
@@ -61,14 +61,15 @@ export class QuoteVMClass implements QuoteVM {
     this.rejectReasonID = quote.rejectReasonID;
     this.rejectReasonDescription = quote.rejectReasonDescription;
     this.priceMatchFileB64 = quote.priceMatchFileB64;
-    this.dateGenerated = quote.dateGenerated;
+    this.dateGenerated = new Date(quote.dateGenerated); //dates from the backend come as string so I must convert it to Date object
     this.customerId = quote.customerId;
     this.customerFullName = quote.customerFullName;
     this.totalBeforeVAT = this.getTotalBeforeVAT();
     this.totalVAT = this.getVATAmount();
     
     if (isQuote) {
-      this.dateExpiring = new Date(this.dateGenerated.getDate() + this.quoteDuration);
+      this.dateExpiring = new Date(this.dateGenerated);
+      this.dateExpiring.setDate(this.dateGenerated.getDate() + this.quoteDuration);
     }
   }
 
