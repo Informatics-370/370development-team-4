@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
 import { QuoteVM } from '../shared/quote-vm';
-import { QuoteLineVM } from '../shared/quote-line-vm';
 import { QuoteVMClass } from '../shared/quote-vm-class';
+import Swal from 'sweetalert2'
 declare var $: any;
 
 @Component({
@@ -34,44 +34,11 @@ export class QouteRequestsComponent {
     //this.getDataFromDB();
   }
 
-  /* async getDataFromDB() {
-    try {
-      //turn Observables that retrieve data from DB into promises
-      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
-      const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
-
-      //The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
-      //That's what the Promise.all method is supposed to be doing.
-      const [allVAT, allProducts] = await Promise.all([
-        getVATPromise,
-        getProductsPromise
-      ]);
-
-      //put results from DB in global arrays
-      this.allVATs = allVAT;
-      this.filteredFixedProducts = allProducts;
-      this.fixedProducts = this.filteredFixedProducts; //store all products someplace before I filter below
-      console.log('All products: ', this.fixedProducts, 'and filtered products: ', this.filteredFixedProducts);
-
-      await this.getQuoteRequestsPromise();
-    } catch (error) {
-      this.quoteRequestCount = -1;
-      this.loading = false;
-      this.error = true;
-      console.error('Error retrieving data', error);
-    }
-  } */
-
+  
   //get quoteRequests separately so I can update only quoteRequests list when quoteRequest is updated to save time
   async getQuoteRequestsPromise(): Promise<any> {
     try {
       this.filteredQuoteRequests = await lastValueFrom(this.dataService.GetAllActiveQuoteRequests().pipe(take(1)));
-
-      //order quote requests by date; later dates have later IDs
-      console.log('About to sort by date');
-      this.filteredQuoteRequests.sort((currentQR, nextQR) => {
-        return nextQR.quoteRequestID - currentQR.quoteRequestID;
-      });
 
       this.quoteRequests = this.filteredQuoteRequests; //store all the quote requests someplace before I search below
       this.quoteRequestCount = this.filteredQuoteRequests.length; //update the number of quote requests
@@ -108,6 +75,68 @@ export class QouteRequestsComponent {
     this.selectedQRID = id;
     $('#generateQuote').modal('show');
   }
+
+  closedGenerateQuoteModal(result: boolean) {
+    if (result) { //if quote was generated successfully
+      //notify user
+      Swal.fire({
+        icon: 'success',
+        title: "Quote created successfully.",
+        html: 'The customer has been notified via email.',
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        console.log(result);
+      });
+
+      //refresh quote request list
+      this.error = false;
+      this.quoteRequestCount = -1;
+      this.loading = true;
+      this.getQuoteRequestsPromise();
+    }
+    else {      
+      //notify user
+      Swal.fire({
+        icon: 'error',
+        title: "An error occurred while trying to create the quote.",
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#E33131'
+      }).then((result) => {
+        console.log(result);
+      });
+    }
+  }
+
+  /* async getDataFromDB() {
+    try {
+      //turn Observables that retrieve data from DB into promises
+      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+      const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+
+      //The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
+      //That's what the Promise.all method is supposed to be doing.
+      const [allVAT, allProducts] = await Promise.all([
+        getVATPromise,
+        getProductsPromise
+      ]);
+
+      //put results from DB in global arrays
+      this.allVATs = allVAT;
+      this.filteredFixedProducts = allProducts;
+      this.fixedProducts = this.filteredFixedProducts; //store all products someplace before I filter below
+      console.log('All products: ', this.fixedProducts, 'and filtered products: ', this.filteredFixedProducts);
+
+      await this.getQuoteRequestsPromise();
+    } catch (error) {
+      this.quoteRequestCount = -1;
+      this.loading = false;
+      this.error = true;
+      console.error('Error retrieving data', error);
+    }
+  } */
 
   //Angular has some kind of issue with the date.getTime() function
   /* getTimeSince(date: Date): string {

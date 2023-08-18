@@ -63,7 +63,7 @@
         </button>
       </div>
 
-      <app-generate-quote [quoteRequestID]="selectedQRID" *ngIf="selectedQRID > 0"></app-generate-quote>
+      <app-generate-quote [quoteRequestID]="selectedQRID" (resultEvent)="closedGenerateQuoteModal($event)" *ngIf="selectedQRID > 0"></app-generate-quote>
     </div>
   </div>
 </div>

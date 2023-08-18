@@ -308,9 +308,9 @@ export class DataService {
     return this.httpClient.get<any>(`${this.apiUrl}Quote/GetCustomerMostRecentQuote/${customerId}`).pipe(map(result => result));
   }
 
-  AddEstimate(estimateViewModel: EstimateVM): Observable<any> {
+  AddQuote(quoteViewModel: QuoteVM): Observable<any> {
     return this.httpClient.post<any>(
-      `${this.apiUrl}Estimate/AddEstimate`, estimateViewModel, this.httpOptions
+      `${this.apiUrl}Quote/AddQuote`, quoteViewModel, this.httpOptions
     );
   }
 

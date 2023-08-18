@@ -3,9 +3,11 @@ import { DataService } from '../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { QuoteVM } from '../shared/quote-vm';
+import { QuoteLineVM } from '../shared/quote-line-vm';
 import { QuoteVMClass } from '../shared/quote-vm-class';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
+import { Customer } from '../shared/customer';
 declare var $: any;
 
 @Component({
@@ -22,6 +24,7 @@ export class GenerateQuoteComponent implements OnChanges {
   fixedProducts: FixedProductVM[] = [];
   filteredFixedProducts: FixedProductVM[] = [];
   vat!: VAT;
+  customer!: Customer;
 
   //messages to user
   loading = true; //is true when data is successfully retrieved from backend
@@ -59,7 +62,7 @@ export class GenerateQuoteComponent implements OnChanges {
         this.loading = true;
         await this.getQuoteRequest();
       }
-    }      
+    }
   }
   
   async getDataFromDB() {
@@ -124,6 +127,7 @@ export class GenerateQuoteComponent implements OnChanges {
     }
   }
 
+  //----------------------ADD PRODUCT TO QUOTE LOGIC---------------------
   //filter products shown in dropdown to not include products currently in quote; atm, this only accounts for fixed products
   filterProductDropdown(currentQuote: QuoteVMClass) {
     /* reset array. Just saying filteredFP = fP doesn't work because (according to ChatGPT):
@@ -153,6 +157,8 @@ export class GenerateQuoteComponent implements OnChanges {
   //this method handles that
   changedProduct() {
     this.selectedProduct = this.fixedProducts.find(fp => fp.fixedProductID == parseInt(this.selectedProductID));
+
+    //display out of stock message for products that are out of stock
   }
 
   addQuoteLine() {
@@ -183,6 +189,61 @@ export class GenerateQuoteComponent implements OnChanges {
       this.addQuoteLineForm.get('price')?.setValue(1);
     }
   }
+  
+  //-------------------CREATE QUOTE LOGIC-------------------
+  generateQuote() {
+    //check that no confirmed unit price is 0
 
+    try {
+      //put quote data in VM
+      let newQuote: QuoteVM = {
+        quoteRequestID: this.selectedQuote.quoteRequestID,
+        dateRequested: this.selectedQuote.dateRequested,
+        quoteID: 0,
+        dateGenerated: this.selectedQuote.dateRequested,
+        quoteStatusID: 0,
+        quoteStatusDescription: '',
+        quoteDurationID: 0,
+        quoteDuration: 0,
+        rejectReasonID: 0,
+        rejectReasonDescription: '',
+        priceMatchFileB64: '',
+        customerId: '26865a70-5d8b-4443-be84-82cb360fba00',
+        customerFullName: '',
+        lines: []
+      };
 
+      //put quote line data in VM
+      this.selectedQuote.lines.forEach(line => {
+        let newQuoteLine: QuoteLineVM = {
+          quoteRequestLineID: 0,
+          quoteLineID: 0,
+          confirmedUnitPrice: line.confirmedUnitPrice,
+          suggestedUnitPrice: 0,
+          fixedProductID: line.isFixedProduct ? line.productID : 0,
+          fixedProductDescription: '',
+          customProductID: !line.isFixedProduct ? line.productID : 0,
+          customProductDescription: '',
+          quantity: line.quantity
+        };
+
+        newQuote.lines.push(newQuoteLine);
+      });
+
+      console.log('New quote: ', newQuote);
+
+      this.dataService.AddQuote(newQuote).subscribe(
+        (result: any) => {
+          console.log('Successfully updated quote! ', result);
+          //send result back
+          this.resultEvent.emit(true); // Emit the boolean parameter
+        }
+      );
+    }
+    catch (error) {
+      console.error('Error creating quote', error);
+      //send result back
+      this.resultEvent.emit(false);
+    }
+  }
 }

@@ -362,6 +362,10 @@ namespace BOX.Controllers
                     _repository.Add(quoteLineRecord); //save quote line in DB
                 }
 
+                //change quote request status to 2: Completed
+                var qr = await _repository.GetQuoteRequestAsync(quote.QuoteRequestID);
+                qr.QuoteRequestStatusID = 2;
+
                 // Save changes in the repository
                 await _repository.SaveChangesAsync();
                 transaction.Commit(); //commit transaction i.e. save fully
