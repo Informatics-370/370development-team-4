@@ -189,4 +189,32 @@ export class MyQuotesComponent {
     console.log('Search results:', this.filteredQuotes);
   }
 
+  //--------------------------------------------- ACCEPT/REJECT ---------------------------------------------- 
+  //ACCEPT QUOTE aka BUY NOW
+  acceptQuote(quoteId: number) {
+    try {
+      //statusID 2 = 'Accepted'
+      this.dataService.UpdateQuoteStatus(quoteId, 2).subscribe((result) => {
+        console.log("Result", result);
+        //Navigate to PLACE ORDER page
+      });
+    } catch (error) {
+      console.error('Error updating status: ', error);
+    }
+  }
+
+  rejectQuote(quoteId: number) {
+    try {
+      //statusID 5 = 'Rejected'
+      /* this.dataService.UpdateQuoteStatus(quoteId, 5).subscribe((result) => {
+        console.log("Result", result);
+        this.deleteQuote(quoteId); //delete quote
+        this.getCustomerQuotesPromise(); //refresh list
+      }); */
+    } catch (error) {
+      console.error('Error updating status: ', error);
+    }
+  }
+
+
 }

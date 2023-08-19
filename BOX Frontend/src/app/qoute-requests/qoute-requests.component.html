@@ -19,7 +19,7 @@
         <tr>
           <th scope="col">Request ID</th>
           <th scope="col">Customer</th>
-          <th scope="col">Date Requested</th>
+          <th scope="col">Requested</th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -37,7 +37,7 @@
         <tr *ngFor="let qr of filteredQuoteRequests">
           <td>QR{{qr.quoteRequestID}}</td>
           <td>{{ qr.customerFullName }}</td>
-          <td> <!-- {{getTimeSince(qr.dateRequested)}} on  -->{{ qr.dateRequested | date:'d MMM yyyy HH:mm' }}</td>
+          <td> {{getTimeSince(qr.dateRequested)}}</td>
           <td class="text-center">
             <button title="Generate quote for {{qr.customerFullName}}" class="btn btn-create btn-generate"
               (click)="openGenerateQuoteModal(qr.quoteRequestID)" >

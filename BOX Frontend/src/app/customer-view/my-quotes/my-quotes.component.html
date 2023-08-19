@@ -44,7 +44,7 @@
           <div class="quote-details">
             <div class="quote-line row"  *ngFor="let qrLine of quoteRequest.lines">
               <div class="product-img-container col-4">
-                <img class="product-img" src="data:image/png;base64,{{qrLine.productFileB64}}" alt="" />
+                <img class="product-img" src="data:image/png;base64,{{qrLine.productFileB64}}" alt="No preview available" />
               </div>
               <div class="col-8">
                 <span class="light-bold">{{qrLine.productDescription}}</span><br />
@@ -118,7 +118,7 @@
             <div *ngIf="quote.quoteStatusID == 1"><!--status 1 = Generated-->
               <div class="buttons flex-space-between">
                 <button class="btn btn-reject" >Reject Quote</button>
-                <button title="Buy now" class="btn btn-accept" >Accept Quote</button>
+                <button title="Buy now" class="btn btn-accept" (click)="acceptQuote(quote.quoteID)">Accept Quote</button>
               </div>
               <div style="text-align: center;">This quote expires on <span class="light-bold">{{ quote.dateExpiring | date:'ccc, d MMM yyyy' }}</span>.</div>
             </div>
