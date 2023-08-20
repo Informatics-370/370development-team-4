@@ -46,6 +46,12 @@ import { PlaceOrderComponent } from './customer-view/place-order/place-order.com
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 import { CustomProdComponent } from './custom-prod/custom-prod.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
+import { FooterComponent } from './footer/footer.component';
+import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
+import { EmployeesComponent } from './employees/employees.component';
+import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
 
 
 @NgModule({
@@ -91,7 +97,13 @@ import { CustomProdComponent } from './custom-prod/custom-prod.component';
         OrderHistoryComponent,
         CustomerOrdersComponent,
         RegistrationSuccessPopupComponent,
-        CustomProdComponent
+        CustomProdComponent,
+        ConfirmEmailComponent,
+        FooterComponent,
+        TwoFactorAuthComponent,
+        EmployeesComponent,
+        ProfilePageComponent,
+        AssignEmployeeComponent
         
   ],
   imports: [

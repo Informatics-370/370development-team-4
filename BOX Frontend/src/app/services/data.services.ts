@@ -434,17 +434,17 @@ export class DataService {
   }
 
 
-  DeleteUser(emailOrPhoneNumber: string): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
-  }
+   DeleteUser(emailOrPhoneNumber: string): Observable<any> {
+     return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
+   }
 
   UpdateUser(email: string, updatedUser: Users): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}User/UpdateUser/${email}`, updatedUser, this.httpOptions);
   }
 
-
-  GetUser(emailOrPhoneNumber: string): Observable<Users> {
-    return this.httpClient.get<Users>(`${this.apiUrl}User/GetUserByEmailOrPhoneNumber/${emailOrPhoneNumber}`)
+   
+  GetUser(email: string): Observable<Users> {
+    return this.httpClient.get<Users>(`${this.apiUrl}User/GetUserByEmail/${email}`)
       .pipe(map(result => result));
   }
 
@@ -490,6 +490,26 @@ export class DataService {
   GetCustomProduct(customProductId: number): Observable<CustomProductVM> {
     return this.httpClient.get<CustomProductVM>(`${this.apiUrl}CustomProduct/GetCustomProduct/${customProductId}`)
       .pipe(map(result => result));
+  }
+
+  //---------------------------------------- Confirm Email ----------------------------------------
+  confirmEmail(token: string, email: string): Observable<any> {
+    const encodedToken = encodeURIComponent(token);
+    const encodedEmail = encodeURIComponent(email);
+    const url = `${this.apiUrl}Authentication/ConfirmEmail?token=${encodedToken}&email=${encodedEmail}`;
+    console.log(url);
+    return this.httpClient.get(url);
+  }
+  
+  //---------------------------------------- Employees ----------------------------------------
+  GetEmployees(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Employee/GetAllEmployees`)
+      .pipe(map(result => result))
+  }
+
+  //---------------------------------------- Customers ----------------------------------------
+  GetCustomers(): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${this.apiUrl}User/GetAllCustomers`);
   }
 
 }
