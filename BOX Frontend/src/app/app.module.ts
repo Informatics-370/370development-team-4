@@ -51,6 +51,7 @@ import { FooterComponent } from './footer/footer.component';
 import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
 import { EmployeesComponent } from './employees/employees.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
 
 
 @NgModule({
@@ -101,7 +102,8 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
         FooterComponent,
         TwoFactorAuthComponent,
         EmployeesComponent,
-        ProfilePageComponent
+        ProfilePageComponent,
+        AssignEmployeeComponent
         
   ],
   imports: [

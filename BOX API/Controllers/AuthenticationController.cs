@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,13 +27,15 @@ namespace BOX.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailService _emailService;
+        private readonly AppDbContext _dbContext;
 
-        public AuthenticationController(UserManager<User> userManager, 
-            IUserClaimsPrincipalFactory<User> claimsPrincipalFactory, 
-            IConfiguration configuration, IRepository repository, 
+        public AuthenticationController(UserManager<User> userManager,
+            IUserClaimsPrincipalFactory<User> claimsPrincipalFactory,
+            IConfiguration configuration, IRepository repository,
             RoleManager<IdentityRole> roleManager,
             SignInManager<User> signInManager,
-            IEmailService emailService)
+            IEmailService emailService,
+            AppDbContext dbContext)
         {
             _userManager = userManager;
             _claimsPrincipalFactory = claimsPrincipalFactory;
@@ -41,6 +44,7 @@ namespace BOX.Controllers
             _roleManager = roleManager;
             _signInManager = signInManager;
             _emailService = emailService;
+            _dbContext = dbContext;
         }
 
         //***************************** Customer **********************************
@@ -78,6 +82,7 @@ namespace BOX.Controllers
                 {
                     CustomerId = Guid.NewGuid().ToString(),
                     UserId = user.Id,
+                    EmployeeId = "",
                     isBusiness = uvm.isBusiness,
                     vatNo = uvm.vatNo,
                     creditLimit = 0, // default of 0
@@ -474,7 +479,67 @@ namespace BOX.Controllers
             return password.ToString();
         }
 
-        //
+        [HttpPut]
+        [Route("AssignEmployee/{userId}")]
+        public async Task<IActionResult> UpdateUser(string userId, [FromBody] AssignEmpDTO assignEmp)
+        {
+            var customer = await _dbContext.Customer
+                .Include(c => c.User) // Include the User details of the customer
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (customer == null)
+            {
+                return NotFound(); // User not found
+            }
+
+            var employee = await _dbContext.Employee
+                .Include(e => e.User) // Include the User details of the employee
+                .FirstOrDefaultAsync(e => e.EmployeeId == assignEmp.EmployeeId);
+
+            if (employee == null)
+            {
+                return NotFound(); // Employee not found
+            }
+
+            // Update the user's properties with the values from the updatedUser DTO
+            customer.EmployeeId = assignEmp.EmployeeId;
+
+            // Send email to customer
+            var customerMessage = new Message(new string[] { customer.User.Email }, 
+                "Meet Your Sales Consultant", 
+                $"Dear {customer.User.user_FirstName} {customer.User.user_LastName}," +
+                $"\n\nThank you for choosing to shop with Mega Pack. The employee assigned to you is: " +
+                $"\nName: {employee.User.user_FirstName} " +
+                $"\nSurname: {employee.User.user_LastName}. " +
+                $"\nPhone Number: {employee.User.PhoneNumber} " +
+                $"\n\nWhenever you request a quote, our sales consultant will be in contact " +
+                $"with you to discuss the quotation and to engage in any sort of negotiations " +
+                $"if you are not happy with the price. Once you have both agreed on a price, " +
+                $"the consultant will issue you a quote which you can find under the quotes " +
+                $"section of your profile. In this section, you may accept or reject the quote. " +
+                $"\n\n Enjoy your day \nThe Mega Pack Team");
+            _emailService.SendEmail(customerMessage);
+
+            var employeeMessage = new Message(new string[] { employee.User.Email },
+                "Welcome Your New Client",
+                $"Dear {employee.User.user_FirstName} {employee.User.user_LastName}," +
+                $"\n\nWe are pleased to inform you that you have been assigned a new client at Mega Pack." +
+                $"\n\nClient Details:" +
+                $"\nName: {customer.User.user_FirstName} {customer.User.user_LastName}" +
+                $"\nEmail: {customer.User.Email}" +
+                $"\nPhone Number: {customer.User.PhoneNumber}" +
+                $"\n\nAs their dedicated sales consultant, your role is to provide exceptional service and assist them with their inquiries and purchases. Your expertise and dedication are vital in ensuring our customers' satisfaction." +
+                $"\n\nShould you require any assistance or have any questions, please feel free to reach out to our team." +
+                $"\n\nThank you for your commitment to delivering outstanding service. We wish you success in your endeavors with this new client." +
+                $"\n\nBest regards,\nMega Pack Sales Team");
+            _emailService.SendEmail(employeeMessage);
+
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent(); // Update successful, return 204 No Content response
+        }
+
+
     }
 
 }

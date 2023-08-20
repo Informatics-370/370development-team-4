@@ -183,6 +183,7 @@ export class EmployeesComponent implements OnInit{
             const [updatedFirstName, updatedLastName, updatedEmailAddress, updatedPhoneNumber, updatedAddress, updatedTitle] = result.value;
       
             const updatedUser: Users = {
+              id: '',
               firstName: updatedFirstName,
               lastName: updatedLastName,
               email: updatedEmailAddress,

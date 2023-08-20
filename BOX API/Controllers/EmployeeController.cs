@@ -6,6 +6,9 @@ using System.Linq;
 using BOX.Models;
 using BOX.Services;
 using BOX.ViewModel;
+using Org.BouncyCastle.Bcpg;
+using System.Text;
+using System.Web;
 
 namespace BOX.Controllers
 {
@@ -42,24 +45,29 @@ namespace BOX.Controllers
 
         [HttpGet]
         [Route("GetAllEmployees")]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllEmployees()
+        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetAllEmployees()
         {
             var employees = await _dbContext.Users
                 .Join(_dbContext.UserRoles, u => u.Id, ur => ur.UserId, (u, ur) => new { User = u, UserRole = ur })
                 .Join(_dbContext.Roles, ur => ur.UserRole.RoleId, r => r.Id, (ur, r) => new { User = ur.User, Role = r })
                 .Where(x => x.Role.Name == "Employee")
-                .Select(u => new UserDTO
+                .Join(_dbContext.Employee, u => u.User.Id, e => e.UserId, (u, e) => new { User = u.User, Employee = e })
+                .Select(u => new EmployeeDTO
                 {
+                    EmployeeId = u.Employee.EmployeeId,
                     FirstName = u.User.user_FirstName,
                     LastName = u.User.user_LastName,
                     Email = u.User.Email,
                     Address = u.User.user_Address,
                     Title = u.User.title,
-                    PhoneNumber = u.User.PhoneNumber
+                    PhoneNumber = u.User.PhoneNumber,
+                    UserId = u.User.Id
                 })
                 .ToListAsync();
 
             return employees;
         }
+
+
     }
 }

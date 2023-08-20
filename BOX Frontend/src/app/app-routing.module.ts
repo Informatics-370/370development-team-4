@@ -39,6 +39,7 @@ import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
 import { EmployeesComponent } from './employees/employees.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'register', pathMatch: 'full' },
@@ -85,9 +86,10 @@ const routes: Routes = [
   { path: 'customer-orders', component: CustomerOrdersComponent },
   { path: 'custom-product', component: CustomProdComponent },
   { path: 'confirm-email', component: ConfirmEmailComponent},
-  { path: 'two-factor-auth', component: TwoFactorAuthComponent},
-  { path: 'employees', component: EmployeesComponent},
-  { path: 'profile-page', component: ProfilePageComponent}
+  { path: 'two-factor-auth', component: TwoFactorAuthComponent },
+  { path: 'employees', component: EmployeesComponent },
+  { path: 'profile-page', component: ProfilePageComponent },
+  { path: 'assign-employee', component: AssignEmployeeComponent }
 ];
 
 @NgModule({

@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 })
 export class ProfilePageComponent implements OnInit {
   user: Users = {
+    id: '',
     firstName: '',
     lastName: '',
     email: '',
@@ -39,7 +40,10 @@ export class ProfilePageComponent implements OnInit {
   
 
   updateProfile(): void {
+    const token = localStorage.getItem('access_token')!;
+    const userId = this.authService.getUserIdFromToken(token)!;
     console.log(this.user)
+    this.user.id = userId
     this.dataService.UpdateUser(this.user.email, this.user).subscribe(
       () => {
         console.log('Profile updated successfully');

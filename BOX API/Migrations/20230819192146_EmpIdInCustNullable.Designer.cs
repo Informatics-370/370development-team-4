@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230802104628_ReAddCustomer")]
-    partial class ReAddCustomer
+    [Migration("20230819192146_EmpIdInCustNullable")]
+    partial class EmpIdInCustNullable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -201,6 +201,10 @@ namespace BOX.Migrations
                     b.Property<string>("CustomerId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -222,6 +226,8 @@ namespace BOX.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.HasKey("CustomerId");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("UserId");
 
@@ -395,6 +401,22 @@ namespace BOX.Migrations
                     b.HasKey("DiscountID");
 
                     b.ToTable("Discount");
+                });
+
+            modelBuilder.Entity("BOX.Models.Employee", b =>
+                {
+                    b.Property<string>("EmployeeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("EmployeeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Employee");
                 });
 
             modelBuilder.Entity("BOX.Models.Estimate", b =>
@@ -1276,11 +1298,19 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Customer", b =>
                 {
+                    b.HasOne("BOX.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Employee");
 
                     b.Navigation("User");
                 });
@@ -1348,6 +1378,17 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer_Refund_Reason");
+                });
+
+            modelBuilder.Entity("BOX.Models.Employee", b =>
+                {
+                    b.HasOne("BOX.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BOX.Models.Estimate", b =>

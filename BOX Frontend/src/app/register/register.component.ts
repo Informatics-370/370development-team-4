@@ -320,6 +320,7 @@ submitForm() {
   const user = {
     emailaddress: (document.getElementById('email') as HTMLInputElement).value,
     password: (document.getElementById('confirmPassword') as HTMLInputElement).value,
+    employeeId: "",
     phoneNumber: (document.getElementById('cellNo') as HTMLInputElement).value,
     firstName: (document.getElementById('firstName') as HTMLInputElement).value,
     lastName: this.isBusiness ? '' : (document.getElementById('lastName') as HTMLInputElement).value,

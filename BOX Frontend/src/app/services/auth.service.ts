@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DataService } from './data.services';
+import { AssignEmpDTO } from '../shared/assign-emp-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -88,5 +89,10 @@ export class AuthService {
       console.error('Error decoding JWT token:', error);
       return null;
     }
+  }
+
+  assignEmployeeToCustomer(userId: string, assignEmpDTO: AssignEmpDTO): Observable<any> {
+    const url = `${this.authUrl}AssignEmployee/${userId}`;
+    return this.http.put(url, assignEmpDTO);
   }
 }

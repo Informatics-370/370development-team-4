@@ -96,6 +96,7 @@ namespace BOX.Controllers
             }
 
             // Update the user's properties with the values from the updatedUser DTO
+            user.Id = user.Id;
             user.user_FirstName = updatedUser.FirstName;
             user.user_LastName = updatedUser.LastName;
             user.Email = updatedUser.Email;
@@ -126,6 +127,76 @@ namespace BOX.Controllers
             return NoContent(); // Deletion successful, return 204 No Content response
         }
 
+        [HttpGet]
+        [Route("GetAllCustomers")]
+        public async Task<ActionResult<IEnumerable<GetCustomerDTO>>> GetAllCustomers()
+        {
+            var customers = await _dbContext.Customer
+                .Include(c => c.User) // Include the User navigation property
+                .Include(c => c.Employee) // Include the Employee navigation property
+                .Select(c => new GetCustomerDTO
+                {
+                    CustomerId = c.CustomerId,
+                    UserId = c.UserId,
+                    EmployeeId = c.EmployeeId,
+                    IsBusiness = c.isBusiness,
+                    VatNo = c.vatNo,
+                    CreditLimit = c.creditLimit,
+                    CreditBalance = c.creditBalance,
+                    Discount = c.discount,
+                    User = new UserDTO // Include user information
+                    {
+                        FirstName = c.User.user_FirstName,
+                        LastName = c.User.user_LastName,
+                        Address = c.User.user_Address,
+                        Title = c.User.title,
+                        Email = c.User.Email,
+                        PhoneNumber = c.User.PhoneNumber
+                    },
+                    Employee = new EmployeeDTO // Include employee information from User table
+                    {
+                        UserId = c.UserId,
+                        EmployeeId = c.EmployeeId,
+                        FirstName = c.Employee.User.user_FirstName,
+                        LastName = c.Employee.User.user_LastName,
+                        Address = c.Employee.User.user_Address,
+                        Title = c.Employee.User.title,
+                        Email = c.User.Email, 
+                        PhoneNumber = c.User.PhoneNumber
+                    }
+                })
+                .ToListAsync();
+
+            return customers;
+        }
+
+
+        [HttpGet]
+        [Route("GetCustomerByCustomerId/{customerId}")]
+        public async Task<ActionResult<CustomerDTO>> GetCustomerByCustomerId(string customerId)
+        {
+            var customer = await _dbContext.Customer
+                .Where(c => c.CustomerId == customerId)
+                .Select(c => new CustomerDTO
+                {
+                    CustomerId = c.CustomerId,
+                    UserId = c.UserId,
+                    EmployeeId = c.EmployeeId,
+                    IsBusiness = c.isBusiness,
+                    VatNo = c.vatNo,
+                    CreditLimit = c.creditLimit,
+                    CreditBalance = c.creditBalance,
+                    Discount = c.discount
+                })
+                .FirstOrDefaultAsync();
+
+            if (customer == null)
+            {
+                return NotFound(); // Customer not found
+            }
+
+            return customer;
+        }
 
 
 

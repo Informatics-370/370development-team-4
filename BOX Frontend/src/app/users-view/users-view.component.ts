@@ -161,6 +161,7 @@ updateUser() {
     //get form data
     const formValues = this.updateUserForm.value;
     let updatedUser: Users = {
+      id: userId,
       firstName: formValues.uFirstName,
       lastName: formValues.uLastName,
       email: formValues.uEmail,
