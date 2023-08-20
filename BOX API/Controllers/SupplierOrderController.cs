@@ -39,10 +39,10 @@ namespace BOX.Controllers
 
                         SupplierOrderLineViewModel solvm = new SupplierOrderLineViewModel
                         {
-                            Supplier_OrderLineID = ol.Supplier_Order_LineID,
-                            Fixed_ProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
-                            Raw_MaterialID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value,
-                            Supplier_ReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
+                            SupplierOrderLineID = ol.Supplier_Order_LineID,
+                            FixedProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
+                            RawMaterialID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value,
+                            SupplierReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
                             Quantity = ol.Quantity
                         };
                         supplierOrderLineList.Add(solvm);
@@ -106,11 +106,11 @@ namespace BOX.Controllers
 
                     SupplierOrderLineViewModel slvm = new SupplierOrderLineViewModel()
                     {
-                        Supplier_OrderLineID = ol.Supplier_Order_LineID,
-                        Supplier_ReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
-                        Fixed_ProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
+                        SupplierOrderLineID = ol.Supplier_Order_LineID,
+                        SupplierReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
+                        FixedProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
                         FixedProductDescription = fixedProduct.Description == null ? "" : fixedProduct.Description,
-                        Raw_MaterialID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value,
+                        RawMaterialID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value,
                         RawMaterialDescription = rawMat.Description == null ? "" : rawMat.Description,
                         Quantity = ol.Quantity
                     };
@@ -160,22 +160,22 @@ namespace BOX.Controllers
 
                     Supplier_OrderLine orderLineRecord = new Supplier_OrderLine
                     {
-                        RawMaterialID = orderLineVM.Raw_MaterialID == 0 ? null : orderLineVM.Raw_MaterialID,
+                        RawMaterialID = orderLineVM.RawMaterialID == 0 ? null : orderLineVM.RawMaterialID,
                         SupplierOrderID = order.SupplierOrderID, //it's NB to save the order 1st so SQL generates its ID
                         Supplier_Order = order,
-                        FixedProductID = orderLineVM.Fixed_ProductID == 0 ? null : orderLineVM.Fixed_ProductID,
+                        FixedProductID = orderLineVM.FixedProductID == 0 ? null : orderLineVM.FixedProductID,
                         Quantity = orderLineVM.Quantity
                     };
 
                     //update fixed product / raw material quantity on hand
-                    if (orderLineVM.Fixed_ProductID > 0)
+                    if (orderLineVM.FixedProductID > 0)
                     {
-                        var fp = await _repository.GetFixedProductAsync(orderLineVM.Fixed_ProductID);
+                        var fp = await _repository.GetFixedProductAsync(orderLineVM.FixedProductID);
                         fp.Quantity_On_Hand += orderLineVM.Quantity;
                     }
                     else
                     {
-                        var rm = await _repository.GetRawMaterialAsync(orderLineVM.Raw_MaterialID);
+                        var rm = await _repository.GetRawMaterialAsync(orderLineVM.RawMaterialID);
                         rm.Quantity_On_Hand += orderLineVM.Quantity;
                     }
 

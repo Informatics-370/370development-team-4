@@ -39,9 +39,10 @@ export class CartPageComponent {
 
   //---------------------------- LOAD CART PAGE ----------------------------
   ngOnInit(): void {
-    //get customer info    
+    //get customer info
     const token = localStorage.getItem('access_token')!;
     this.customerID = this.authService.getUserIdFromToken(token);
+    console.log(this.customerID);
 
     /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
     OR THE CART SERVICE WILL BREAK!!!*/
@@ -149,7 +150,7 @@ export class CartPageComponent {
   //create quote request
   requestQuote() {
     //redirect user to login if they're not logged in yet
-    if (this.customerID != null && this.customerID != '') {
+    if (this.customerID == null || this.customerID == '') {
       //url is expecting redirectTo variable as 'redirect-' + 'url to redirect to' i.e 'redirect-cart'
       this.router.navigate(['login', 'redirect-cart']);
     }
@@ -201,7 +202,8 @@ export class CartPageComponent {
           //notify user
           Swal.fire({
             icon: 'success',
-            title: "You've successfully requested a quote! An employee from MegaPack will contact you soon.",
+            title: "Requested",
+            html: "You've successfully requested a quote! An employee from MegaPack will contact you soon.",
             timer: 3000,
             timerProgressBar: true,
             confirmButtonColor: '#32AF99'

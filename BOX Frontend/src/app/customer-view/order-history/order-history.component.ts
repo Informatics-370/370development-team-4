@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
+import { AuthService } from '../../services/auth.service';
 import { OrderVM } from '../../shared/order-vm';
 import { OrderVMClass } from '../../shared/order-vm-class';
 import { VAT } from '../../shared/vat';
@@ -37,11 +38,12 @@ export class OrderHistoryComponent {
   6 Completed
   */
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private authService: AuthService) { }
   
   ngOnInit(): void {
-    //get customer ID   
-    let id = localStorage.getItem('user_id');
+    //get customer ID
+    const token = localStorage.getItem('access_token')!;
+    let id = this.authService.getUserIdFromToken(token);
     if (id) this.customerID = id;
 
     this.getDataFromDB();

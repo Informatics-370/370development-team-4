@@ -189,16 +189,12 @@ export class SupplierOrderComponent {
   
   
   
-      if (this.selectedFixedProductID != 'NA')
-  
+      if (this.selectedFixedProductID != 'NA')  
         selectedFixedProduct = this.fixedProducts.find(prod => prod.fixedProductID == parseInt(this.selectedFixedProductID));
   
-      else
-  
+      else  
         selectedRawMaterial = this.rawMaterials.find(mat => mat.rawMaterialID == parseInt(this.selectedRawMaterialID));
       
-
-      //add estimate line to global selectedEstimate so I can easily add to backend; NT you can't add custom product ot estimate this way
       let newsupplierorderline: SupplierOrderLineVM = {
         fixedProductID: selectedFixedProduct ? selectedFixedProduct.fixedProductID : 0 ,
         rawMaterialID: selectedRawMaterial ? selectedRawMaterial.rawMaterialID : 0,

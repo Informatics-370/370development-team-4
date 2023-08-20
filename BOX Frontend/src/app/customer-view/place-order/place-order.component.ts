@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
+import { AuthService } from '../../services/auth.service';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Route, Router, ActivatedRoute } from '@angular/router';
@@ -38,7 +39,8 @@ export class PlaceOrderComponent {
   //forms logic
   placeOrderForm: FormGroup;
 
-  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder, private activatedRoute: ActivatedRoute) {
+  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder, 
+    private activatedRoute: ActivatedRoute, private authService: AuthService) {
     this.placeOrderForm = this.formBuilder.group({
       deliveryType: ['Pick up', Validators.required],
       shippingAddress: ['123 Fake Road, Pretoria North', Validators.required],
@@ -54,8 +56,9 @@ export class PlaceOrderComponent {
       if (id) this.quoteID = this.decodeQuoteID(id);
     });
 
-    //get customer ID   
-    let id = localStorage.getItem('user_id');
+    //get customer ID
+    const token = localStorage.getItem('access_token')!;
+    let id = this.authService.getUserIdFromToken(token);
     if (id) this.customerID = id;
 
     this.getDataFromDB();

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
+import { AuthService } from '../../services/auth.service';
 import { Customer } from '../../shared/customer';
 import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
@@ -27,7 +28,7 @@ export class MyQuotesComponent {
   customProducts: CustomProductVM[] = [];
   searchTerm: string = '';
   customer!: Customer;
-  customerID = '';
+  customerID: string | null = '';
   /*Status list: no need to retrieve this from the backend because it's static:
   1 Generated
   2 Accepted
@@ -35,43 +36,45 @@ export class MyQuotesComponent {
   4 Rejected and will renegotiate
   5 Expired */
 
-  constructor(private dataService: DataService, private router: Router) { }
+  constructor(private dataService: DataService, private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
     //get customer data
-    let id = localStorage.getItem('user_id');
-    if (id) this.customerID = id;
+    const token = localStorage.getItem('access_token')!;
+    this.customerID = this.authService.getUserIdFromToken(token);
+    console.log(this.customerID);
     this.getDataFromDB();
   }
 
   //function to get data from DB asynchronously (and simultaneously)
   async getDataFromDB() {
     try {
-      //turn Observables that retrieve data from DB into promises
-      const getFixedProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
-      const getCustomProductsPromise = lastValueFrom(this.dataService.GetAllCustomProducts().pipe(take(1)));
-      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
-      const getActiveQuoteRequestPromise = lastValueFrom(this.dataService.CheckForActiveQuoteRequest(this.customerID).pipe(take(1)));
-
-      /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
-      That's what the Promise.all method is supposed to be doing.*/
-      const [allFixedProducts, allCustomProducts, allVAT, activeQR] = await Promise.all([
-        getFixedProductsPromise,
-        getCustomProductsPromise,
-        getVATPromise,
-        getActiveQuoteRequestPromise
-      ]);
-
-      //put results from DB in global arrays
-      this.fixedProducts = allFixedProducts;
-      console.log('All fixed products', this.fixedProducts);
-      this.customProducts = allCustomProducts;
-      console.log('All custom products', this.customProducts);
-      this.allVATs = allVAT;
-      console.log('All VAT', this.allVATs);
-      if (activeQR != null) this.quoteRequestFromBackend = activeQR;
-
-      await this.getCustomerQuotesPromise();
+      if (this.customerID) {//turn Observables that retrieve data from DB into promises
+        const getFixedProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+        const getCustomProductsPromise = lastValueFrom(this.dataService.GetAllCustomProducts().pipe(take(1)));
+        const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+        const getActiveQuoteRequestPromise = lastValueFrom(this.dataService.CheckForActiveQuoteRequest(this.customerID).pipe(take(1)));
+  
+        /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
+        That's what the Promise.all method is supposed to be doing.*/
+        const [allFixedProducts, allCustomProducts, allVAT, activeQR] = await Promise.all([
+          getFixedProductsPromise,
+          getCustomProductsPromise,
+          getVATPromise,
+          getActiveQuoteRequestPromise
+        ]);
+  
+        //put results from DB in global arrays
+        this.fixedProducts = allFixedProducts;
+        console.log('All fixed products', this.fixedProducts);
+        this.customProducts = allCustomProducts;
+        console.log('All custom products', this.customProducts);
+        this.allVATs = allVAT;
+        console.log('All VAT', this.allVATs);
+        if (activeQR != null) this.quoteRequestFromBackend = activeQR;
+  
+        await this.getCustomerQuotesPromise();
+      }      
     } catch (error) {
       console.error('An error occurred:', error);
     }
@@ -81,9 +84,11 @@ export class MyQuotesComponent {
   async getCustomerQuotesPromise() {
     this.loading = true;
     try {
-      this.customerQuotes = await lastValueFrom(this.dataService.GetQuotesByCustomer(this.customerID).pipe(take(1)));
-      console.log('customerQuotes', this.customerQuotes);
-      this.displayCustomerQuotes(); //Execute only after data has been retrieved from the DB otherwise error
+      if (this.customerID) {
+        this.customerQuotes = await lastValueFrom(this.dataService.GetQuotesByCustomer(this.customerID).pipe(take(1)));
+        console.log('customerQuotes', this.customerQuotes);
+        this.displayCustomerQuotes(); //Execute only after data has been retrieved from the DB otherwise error
+      }
     } catch (error) {
       console.error('An error occurred while retrieving quotes: ', error);
     }
