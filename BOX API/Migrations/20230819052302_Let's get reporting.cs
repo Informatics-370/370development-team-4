@@ -4,7 +4,7 @@
 
 namespace BOX.Migrations
 {
-    public partial class initial : Migration
+    public partial class Letsgetreporting : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

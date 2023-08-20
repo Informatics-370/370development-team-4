@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,61 +17,7 @@ namespace BOX.Controllers
 		}
 
 		//-------------------------------------------------- Get All Supplier Orders --------------------------------------------------
-		[HttpGet]
-		[Route("GetAllSupplierOrders")]
-		public async Task<IActionResult> GetAllSupplierOrders()
-		{
-			try
-			{
-				var supOrders = await _repository.GetAllSupplierOrdersAsync();
-
-				List<SupplierOrderViewModel> supplierOrderViewModels = new List<SupplierOrderViewModel>(); //create array of VMs
-				foreach (var order in supOrders)
-				{
-
-					//get all customer order lines associated with this order and create array from them
-					List<SupplierOrderLineViewModel> supplierOrderLineList = new List<SupplierOrderLineViewModel>();
-					var orderLines = await _repository.GetSupplierOrderLinesByOrderAsync(order.SupplierOrderID);
-
-					//put all customer order lines for this specific customer order in a list for the customer order VM
-					foreach (var ol in orderLines)
-					{
-
-						SupplierOrderLineViewModel solvm = new SupplierOrderLineViewModel
-						{
-							Supplier_OrderLineID = ol.Supplier_Order_LineID,
-							Supplier_OrderID = ol.SupplierOrderID,
-							Fixed_ProductID = ol.FixedProductID,
-							Raw_MaterialID = ol.RawMaterialID,
-							Supplier_ReturnID = ol.SupplierReturnID,
-							Quantity = ol.Quantity
-						};
-						supplierOrderLineList.Add(solvm);
-
-					}
-
-					Supplier supplier = await _repository.GetSupplierAsync(orderLines[0].SupplierID);
-
-					SupplierOrderViewModel eVM = new SupplierOrderViewModel()
-					{
-						SupplierOrderID = order.SupplierOrderID,
-						SupplierID = orderLines[0].SupplierID,
-						SupplierName = supplier.Name,
-						Date = order.Date,
-						SupplierOrders = supplierOrderLineList
-					};
-					supplierOrderViewModels.Add(eVM);
-				}
-
-
-				return Ok(supplierOrderViewModels);
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-			}
-
-		}
+ 
 
 
 		//-------------------------------------------------- Get Supplier Order By ID ------------------------------------------------
