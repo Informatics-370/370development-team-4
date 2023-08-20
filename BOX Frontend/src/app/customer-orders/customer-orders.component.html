@@ -96,9 +96,9 @@
           <tbody id="estimate-details-tbody">
             <tr *ngFor="let orderLine of selectedOrder.customerOrders">
               <td>{{orderLine.fixedProductDescription}}</td>
-              <td>{{orderLine.fixedProductUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{orderLine.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
               <td>{{orderLine.quantity}}</td>
-              <td>{{orderLine.fixedProductUnitPrice * orderLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{orderLine.confirmedUnitPrice * orderLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
             </tr>
           </tbody>
         </table><br />

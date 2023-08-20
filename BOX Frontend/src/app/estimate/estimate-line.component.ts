@@ -120,8 +120,8 @@ export class EstimateLineComponent {
   //-------------------UPDATE ESTIMATE DETAILS TABLE LOGIC-------------------
   async openUpdateEstimateModal(id: number) {
     //get estimate to show details of
-    let theEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));
-    this.selectedEstimate = new VATInclusiveEstimate(theEstimate, this.vat.percentage);
+    //let theEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));
+    //this.selectedEstimate = new VATInclusiveEstimate(theEstimate, this.vat.percentage);
     console.log('Estimate before adding', this.selectedEstimate);
 
     //set global negotiated total value

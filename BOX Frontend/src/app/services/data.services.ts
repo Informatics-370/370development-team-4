@@ -295,8 +295,8 @@ export class DataService {
       .pipe(map(result => result))
   }
 
-  GetEstimate(estimateId: number): Observable<EstimateVM> {
-    return this.httpClient.get<EstimateVM>(`${this.apiUrl}Estimate/GetEstimate/${estimateId}`)
+  GetQuote(quoteId: number): Observable<QuoteVM> {
+    return this.httpClient.get<QuoteVM>(`${this.apiUrl}Quote/GetQuote/${quoteId}`)
       .pipe(map(result => result));
   }
 
@@ -444,7 +444,7 @@ export class DataService {
   }
 
   GetOrdersByCustomer(customerId: string): Observable<any> {
-    return this.httpClient.get<any>(`${this.apiUrl}CustomerOrder/GetOrderByCustomer/${customerId}`).pipe(map(result => result));
+    return this.httpClient.get<any>(`${this.apiUrl}CustomerOrder/GetOrdersByCustomer/${customerId}`).pipe(map(result => result));
   }
 
   AddCustomerOrder(customerOrderViewModel: OrderVM): Observable<any> {

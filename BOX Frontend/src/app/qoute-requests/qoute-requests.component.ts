@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
 import { QuoteVM } from '../shared/quote-vm';
-import { QuoteVMClass } from '../shared/quote-vm-class';
 import Swal from 'sweetalert2'
 declare var $: any;
 
@@ -13,8 +12,7 @@ declare var $: any;
 })
 export class QouteRequestsComponent {
   quoteRequests: QuoteVM[] = []; //hold all quote requests
-  filteredQuoteRequests: QuoteVM[] = []; //quoteRequests to show user
-  selectedQuoteRequest!: QuoteVMClass; //specific quote request to show user and generate quote from
+  filteredQuoteRequests: QuoteVM[] = []; //quote requests to show user
   searchTerm: string = '';
   //display messages to user
   quoteRequestCount = -1;
@@ -22,16 +20,10 @@ export class QouteRequestsComponent {
   error: boolean = false;
   selectedQRID = 0;
 
-  constructor(private dataService: DataService) {
-    /* this.addQuoteRequestLineForm = this.formBuilder.group({
-      productID: [Validators.required],
-      quantity: [1.00, Validators.required]
-    }); */
-  }
+  constructor(private dataService: DataService) { }
 
   ngOnInit() {
     this.getQuoteRequestsPromise();
-    //this.getDataFromDB();
   }
   
   //get quoteRequests separately so I can update only quoteRequests list when quoteRequest is updated to save time
@@ -58,7 +50,6 @@ export class QouteRequestsComponent {
     }
   }
 
-  //Angular has some kind of issue with the date.getTime() function
   getTimeSince(date: Date): string {
     const now = new Date();
     const timeDifference = now.getTime() - date.getTime();
@@ -150,32 +141,4 @@ export class QouteRequestsComponent {
       });
     }
   }
-
-  /* async getDataFromDB() {
-    try {
-      //turn Observables that retrieve data from DB into promises
-      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
-      const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
-
-      //The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
-      //That's what the Promise.all method is supposed to be doing.
-      const [allVAT, allProducts] = await Promise.all([
-        getVATPromise,
-        getProductsPromise
-      ]);
-
-      //put results from DB in global arrays
-      this.allVATs = allVAT;
-      this.filteredFixedProducts = allProducts;
-      this.fixedProducts = this.filteredFixedProducts; //store all products someplace before I filter below
-      console.log('All products: ', this.fixedProducts, 'and filtered products: ', this.filteredFixedProducts);
-
-      await this.getQuoteRequestsPromise();
-    } catch (error) {
-      this.quoteRequestCount = -1;
-      this.loading = false;
-      this.error = true;
-      console.error('Error retrieving data', error);
-    }
-  } */
 }

@@ -5,7 +5,7 @@ import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { CustomProductVM } from '../../shared/custom-product-vm';
 import { QuoteVM } from '../../shared/quote-vm';
-import { QuoteLineVM } from '../../shared/quote-line-vm';
+import { Route, Router } from '@angular/router';
 import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { take, lastValueFrom } from 'rxjs';
 
@@ -27,6 +27,7 @@ export class MyQuotesComponent {
   customProducts: CustomProductVM[] = [];
   searchTerm: string = '';
   customer!: Customer;
+  customerID = '';
   /*Status list: no need to retrieve this from the backend because it's static:
   1 Generated
   2 Accepted
@@ -34,9 +35,12 @@ export class MyQuotesComponent {
   4 Rejected and will renegotiate
   5 Expired */
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private router: Router) { }
 
   ngOnInit(): void {
+    //get customer data
+    let id = localStorage.getItem('user_id');
+    if (id) this.customerID = id;
     this.getDataFromDB();
   }
 
@@ -47,7 +51,7 @@ export class MyQuotesComponent {
       const getFixedProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
       const getCustomProductsPromise = lastValueFrom(this.dataService.GetAllCustomProducts().pipe(take(1)));
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
-      const getActiveQuoteRequestPromise = lastValueFrom(this.dataService.CheckForActiveQuoteRequest('26865a70-5d8b-4443-be84-82cb360fba00').pipe(take(1)));
+      const getActiveQuoteRequestPromise = lastValueFrom(this.dataService.CheckForActiveQuoteRequest(this.customerID).pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
@@ -77,7 +81,7 @@ export class MyQuotesComponent {
   async getCustomerQuotesPromise() {
     this.loading = true;
     try {
-      this.customerQuotes = await lastValueFrom(this.dataService.GetQuotesByCustomer('26865a70-5d8b-4443-be84-82cb360fba00').pipe(take(1)));
+      this.customerQuotes = await lastValueFrom(this.dataService.GetQuotesByCustomer(this.customerID).pipe(take(1)));
       console.log('customerQuotes', this.customerQuotes);
       this.displayCustomerQuotes(); //Execute only after data has been retrieved from the DB otherwise error
     } catch (error) {
@@ -196,11 +200,25 @@ export class MyQuotesComponent {
       //statusID 2 = 'Accepted'
       this.dataService.UpdateQuoteStatus(quoteId, 2).subscribe((result) => {
         console.log("Result", result);
-        //Navigate to PLACE ORDER page
+        //email customer their invoice
+
+        //Navigate to PLACE ORDER page and send quote ID encoded in URL:
+        let gibberish = this.encodeQuoteID(quoteId);
+        this.router.navigate(['place-order', gibberish]);
       });
     } catch (error) {
       console.error('Error updating status: ', error);
     }
+  }
+
+  //create invoice PDF
+
+  //I want to send quote ID in url to order page but don't want to send the ID as is
+  encodeQuoteID(quoteID: number): string {
+    let now = new Date(Date.now());
+    var gibberish = btoa('customer-' + quoteID + '-places-order-on-' + now.toLocaleDateString());
+
+    return gibberish;
   }
 
   rejectQuote(quoteId: number) {

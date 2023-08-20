@@ -17,44 +17,44 @@
 
     <hr class="hr hr-blurry m-3" />
     <!--Messages to user-->
-    <div class="m-3" style="text-align: center;"> 
-      <span style="color: #e7a427; font-size: 1.1em;" *ngIf="success">Your order was placed successfully!</span><br/>
+    <div class="m-3" style="text-align: center;">
+      <span *ngIf="error">Error retrieving your orders...</span>
       <span *ngIf="loading">Getting your past orders...</span>
       <span *ngIf="orderCount == 0">No orders found.</span>
     </div>
     
-    <div class="row estimates-container p-1">
+    <div class="row quotes-container p-1">
 
       <!--ORDER CARD-->
       <div class="col-md-6 col-sm-12 faux-card-container" *ngFor="let order of filteredOrders">
         <div class="faux-card">
           <!--Header-->
-          <div class="estimate-header mb-4">
+          <div class="quote-header mb-4">
             <div class="flex-space-between" style="align-items: end;">
-              <span class="title light-bold">Order #{{order.ID}}</span>
+              <span class="title light-bold">Order #{{order.customerOrderID}}</span>
               Status:
             </div>
             <div class="flex-space-between" style="align-items: start;">
-              <span class="date">{{order.date}}</span>
-              <span class="light-bold" style="line-height: 0.9em;">{{order.statusDescription}}</span>
+              <span class="date">{{order.date | date:'ccc, d MMM yyyy'}}</span>
+              <span class="light-bold" style="line-height: 0.9em;">{{order.orderStatusDescription}}</span>
             </div>
           </div>
           <!--Body-->
-          <div class="estimate-details">
-            <div class="estimate-line row"  *ngFor="let orderLine of order.orderLines">
+          <div class="quote-details">
+            <div class="quote-line row"  *ngFor="let orderLine of order.orderLines">
               <div class="product-img-container col-4">
-                <img class="product-img" src="data:image/png;base64,{{orderLine.productImage}}" alt="" />
+                <img class="product-img" src="data:image/png;base64,{{orderLine.productFileB64}}" alt="" />
               </div>
               <div class="col-8">
                 <span class="light-bold">{{orderLine.productDescription}}</span><br />
 
-                <div class="estimate-line-footer flex-space-between">
+                <div class="quote-line-footer flex-space-between">
                   Qty: {{orderLine.quantity}}
                   <span class="price">
-                    {{orderLine.unitPrice | currency: 'ZAR':'symbol-narrow'}}
+                    {{orderLine.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}
                   </span>
                 </div>
-                Total: {{orderLine.unitPrice * orderLine.quantity | currency: 'ZAR':'symbol-narrow'}}
+                Total: {{orderLine.confirmedUnitPrice * orderLine.quantity | currency: 'ZAR':'symbol-narrow'}}
               </div>
             </div>
           </div>
@@ -65,30 +65,23 @@
             <table>
               <tr>
                 <td>Subtotal:</td>
-                <td>{{order.total - order.totalDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
+                <td>{{order.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
               <tr>
-                <td>Discount:</td>
-                <td>-{{order.totalDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
-              </tr>
-              <tr class="light-bold">
-                <td>Total:</td>
-                <td>{{order.total | currency: 'ZAR':'symbol-narrow'}}</td>
+                <td>VAT:</td>
+                <td>+{{order.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
               <tr class="total-divider">
                 <td colspan="2"></td>
               </tr>
-              <tr class="negotiated light-bold" *ngIf="order.negotiatedDiscount > 0">
-                <td>Negotiated discount:</td>
-                <td>-{{order.negotiatedDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
-              </tr>
-              <tr class="light-bold" *ngIf="order.negotiatedDiscount > 0">
-                <td>Confirmed total:</td>
-                <td>{{order.total | currency: 'ZAR':'symbol-narrow'}}</td>
+              <tr class="light-bold">
+                <td>Total:</td>
+                <td>{{order.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
               </tr>
             </table>
-            <div class="buttons" style="margin: auto;" *ngIf="order.statusID == 1 || order.statusID == 2">
-              <button class="btn btn-reject" (click)="cancelOrder(order.ID)">Cancel order</button>
+            <!-- status 1 = placed and 2 = in progress-->
+            <div class="buttons" style="margin: auto;" *ngIf="order.orderStatusID == 1 || order.orderStatusID == 2">
+              <button class="btn btn-reject" (click)="cancelOrder(order.customerOrderID)">Cancel order</button>
             </div>
           </div>
         </div>

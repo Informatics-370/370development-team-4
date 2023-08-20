@@ -208,7 +208,7 @@ export class GenerateQuoteComponent implements OnChanges {
         rejectReasonID: 0,
         rejectReasonDescription: '',
         priceMatchFileB64: '',
-        customerId: '26865a70-5d8b-4443-be84-82cb360fba00',
+        customerId: this.selectedQuote.customerId,
         customerFullName: '',
         lines: []
       };

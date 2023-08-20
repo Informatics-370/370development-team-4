@@ -23,6 +23,7 @@ export class CartPageComponent {
   cannotRequest = false; //disables or enables request quote button
   cannotRequestReason = ''; //reason the customer is being prevented from requesting a quote
   customer!: Customer;
+  customerID = '';
   /* discountList: Discount[] = []; //hold all bulk discounts
   applicableDiscount = 0; //bulk discount
   randomdiscount = 0; //customer discount
@@ -37,6 +38,8 @@ export class CartPageComponent {
   //---------------------------- LOAD CART PAGE ----------------------------
   ngOnInit(): void {
     //get customer info
+    let id = localStorage.getItem('user_id');
+    if (id) this.customerID = id;
 
     /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
     OR THE CART SERVICE WILL BREAK!!!*/
@@ -54,15 +57,10 @@ export class CartPageComponent {
 
   //check if user has an active quote request or active quote
   checkIfAllowedToRequest() {
-    //if (this.customer != null) {
-    if (this.customer == null) {
-      //get customer ID
-      let customerID = '26865a70-5d8b-4443-be84-82cb360fba00';
-      console.log('customerID', customerID);
-  
+    if (this.customerID != null && this.customerID != '') {  
       try {
         //if they have an active qr (a quote request that hasn't been attended to), don't let them request a new quote
-        this.dataService.CheckForActiveQuoteRequest(customerID).subscribe((result) => {
+        this.dataService.CheckForActiveQuoteRequest(this.customerID).subscribe((result) => {
           console.log('active quote request', result);
           if (result != null) {
             this.cannotRequest = true;
@@ -73,7 +71,7 @@ export class CartPageComponent {
         //if they already can't request due to already having an active QR, there's no point in checking for an quote
         if (this.cannotRequest == true) {
           //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired)
-          this.dataService.GetCustomerMostRecentQuote(customerID).subscribe((result) => {
+          this.dataService.GetCustomerMostRecentQuote(this.customerID).subscribe((result) => {
             if (result.quoteStatusID == 2 || result.quoteStatusID == 5) {
               this.cannotRequest = true;
               this.cannotRequestReason = 'Already requested';          
@@ -149,8 +147,7 @@ export class CartPageComponent {
   //create quote request
   requestQuote() {
     //redirect user to login if they're not logged in yet
-    if (this.customer != null) {
-    //if (this.customer == null) {
+    if (this.customerID != null && this.customerID != '') {
       //url is expecting redirectTo variable as 'redirect-' + 'url to redirect to' i.e 'redirect-cart'
       this.router.navigate(['login', 'redirect-cart']);
     }
@@ -168,7 +165,7 @@ export class CartPageComponent {
         rejectReasonID: 0,
         rejectReasonDescription: '',
         priceMatchFileB64: '',
-        customerId: '26865a70-5d8b-4443-be84-82cb360fba00',
+        customerId: this.customerID,
         customerFullName: '',
         lines: []
       }

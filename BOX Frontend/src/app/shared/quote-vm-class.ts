@@ -42,7 +42,7 @@ export class QuoteVMClass implements QuoteVM {
     suggestedUnitPrice: 0,
     confirmedUnitPrice: 0,
     quantity: 0
-  }  
+  }
   */
   applicableVAT: VAT;
   totalBeforeVAT = 0;

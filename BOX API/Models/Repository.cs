@@ -506,6 +506,12 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
+        public Customer_Order GetOrdersByCustomer(string customerId, int quoteId)
+        {
+            var query = _appDbContext.Customer_Order.Where(c => c.UserId == customerId && c.QuoteID == quoteId);
+            return query.FirstOrDefault();
+        }
+
         public async Task<Customer_Order[]> GetCustomerOrdersByDeliverySchedule(int orderDeliveryScheduleId)
         {
             IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.OrderDeliveryScheduleID == orderDeliveryScheduleId);

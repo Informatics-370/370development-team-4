@@ -144,11 +144,11 @@ export class CustomerOrdersComponent {
   }
 }
 
-class VATInclusiveOrder implements OrderVM {
+class VATInclusiveOrder {
   customerOrderID: number;
   userId: string;
   orderDeliveryScheduleID: number;
-  date: string;
+  date: Date;
   deliveryPhoto: string;
   customerFullName: string;
   orderStatusID: number;
@@ -161,16 +161,16 @@ class VATInclusiveOrder implements OrderVM {
   checked!: boolean; //keep track of process order checkbox value
 
   constructor(order: OrderVM, vatPercentage: number) {
-    this.customerOrders = order.customerOrders;
-    this.orderTotalExcludingVAT = order.orderTotalExcludingVAT ? order.orderTotalExcludingVAT : this.getOrderTotalExcludingVAT();
+    this.customerOrders = order.orderLines;
+    this.orderTotalExcludingVAT = 0;
     this.vatPercentage = vatPercentage;
     this.customerOrderID = order.customerOrderID;
     this.orderStatusID = order.orderStatusID;
     this.orderStatusDescription = order.orderStatusDescription;
-    this.orderDeliveryScheduleID = order.orderDeliveryScheduleID;
+    this.orderDeliveryScheduleID = order.deliveryScheduleID;
     this.date = order.date;
     this.deliveryPhoto = order.deliveryPhoto;
-    this.userId = order.userId;
+    this.userId = order.customerId
     this.customerFullName = order.customerFullName;
     this.total = this.orderTotalExcludingVAT * (1 + vatPercentage/100);
     this.totalVAT = this.getTotalVAT();
@@ -183,7 +183,7 @@ class VATInclusiveOrder implements OrderVM {
   getOrderTotalExcludingVAT(): number {
     let totalBeforeVAT = 0;
     this.customerOrders.forEach(ordLine => {
-      totalBeforeVAT += ordLine.fixedProductUnitPrice * ordLine.quantity;
+      totalBeforeVAT += ordLine.confirmedUnitPrice * ordLine.quantity;
     });
 
     return totalBeforeVAT;
