@@ -48,10 +48,13 @@ namespace BOX.Controllers
                         supplierOrderLineList.Add(solvm);
                     }
 
+                    Supplier supplier = await _repository.GetSupplierAsync(order.SupplierID);
+
                     SupplierOrderViewModel eVM = new SupplierOrderViewModel()
                     {
                         SupplierOrderID = order.SupplierOrderID,
                         SupplierID = order.SupplierID,
+                        SupplierName = supplier.Name,
                         Date = order.Date.ToString(),
                         SupplierOrders = supplierOrderLineList
                     };
@@ -106,9 +109,9 @@ namespace BOX.Controllers
                         Supplier_OrderLineID = ol.Supplier_Order_LineID,
                         Supplier_ReturnID = ol.SupplierReturnID == null ? 0 : ol.SupplierReturnID.Value,
                         Fixed_ProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
-                        FixedProduct_Description = fixedProduct.Description == null ? "" : fixedProduct.Description,
+                        FixedProductDescription = fixedProduct.Description == null ? "" : fixedProduct.Description,
                         Raw_MaterialID = ol.RawMaterialID == null ? 0 : ol.RawMaterialID.Value,
-                        Raw_Material_Description = rawMat.Description == null ? "" : rawMat.Description,
+                        RawMaterialDescription = rawMat.Description == null ? "" : rawMat.Description,
                         Quantity = ol.Quantity
                     };
 

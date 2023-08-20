@@ -21,11 +21,13 @@ namespace BOX.Models
 
         }
 
+        public DbSet<Admin> Admin { get; set; }
         public DbSet<Audit_Trail> Audit_Trail { get; set; }
         public DbSet<Cost_Price_Formula_Variables> cost_Price_Formula_Variables { get; set; }
         public DbSet<Credit_Application> Credit_Application { get; set; }
         public DbSet<Credit_Application_Status> Credit_Application_Status { get; set; }
         public DbSet<Custom_Product> Custom_Product { get; set; }
+        public DbSet<Customer> Customer { get; set; }
         public DbSet<Customer_Order_Status> Customer_Order_Status { get; set; }
         public DbSet<Customer_Return> Customer_Return { get; set; }
 
@@ -34,7 +36,7 @@ namespace BOX.Models
         public DbSet<Customer_Review> Customer_Review { get; set; }
 
         public DbSet<Bulk_Discount> Bulk_Discount { get; set; }
-
+        public DbSet<Employee> Employee { get; set; }
         public DbSet<Quote> Quote { get; set; }
         public DbSet<Quote_Duration> Quote_Duration { get; set; }
 

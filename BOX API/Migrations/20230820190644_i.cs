@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BOX.Migrations
 {
-    public partial class newInitial : Migration
+    public partial class i : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -111,21 +111,6 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customer_Review",
-                columns: table => new
-                {
-                    CustomerReviewID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Product_Rating = table.Column<int>(type: "int", nullable: false),
-                    Comments = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Recommendation = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Customer_Review", x => x.CustomerReviewID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Payment_Type",
                 columns: table => new
                 {
@@ -188,6 +173,19 @@ namespace BOX.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Quote_Duration", x => x.QuoteDurationID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Quote_Request_Status",
+                columns: table => new
+                {
+                    QuoteRequestStatusID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quote_Request_Status", x => x.QuoteRequestStatusID);
                 });
 
             migrationBuilder.CreateTable(
@@ -573,7 +571,7 @@ namespace BOX.Migrations
                         column: x => x.ItemID,
                         principalTable: "Product_Item",
                         principalColumn: "ItemID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -610,6 +608,24 @@ namespace BOX.Migrations
                         principalTable: "Size_Units",
                         principalColumn: "SizeID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Admin",
+                columns: table => new
+                {
+                    AdminId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Admin", x => x.AdminId);
+                    table.ForeignKey(
+                        name: "FK_Admin_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -715,7 +731,7 @@ namespace BOX.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Credit_Application_Credit_Application_Status_CreditApplicationStatusID",
                         column: x => x.CreditApplicationStatusID,
@@ -725,13 +741,54 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Customer",
+                columns: table => new
+                {
+                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    isBusiness = table.Column<bool>(type: "bit", nullable: false),
+                    vatNo = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    creditLimit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    creditBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    discount = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer", x => x.CustomerId);
+                    table.ForeignKey(
+                        name: "FK_Customer_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employee",
+                columns: table => new
+                {
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employee", x => x.EmployeeId);
+                    table.ForeignKey(
+                        name: "FK_Employee_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Order_Delivery_Schedule",
                 columns: table => new
                 {
                     OrderDeliveryScheduleID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -751,6 +808,7 @@ namespace BOX.Migrations
                     QuoteRequestID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    QuoteRequestStatusID = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -762,6 +820,12 @@ namespace BOX.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Quote_Request_Quote_Request_Status_QuoteRequestStatusID",
+                        column: x => x.QuoteRequestStatusID,
+                        principalTable: "Quote_Request_Status",
+                        principalColumn: "QuoteRequestStatusID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -771,7 +835,7 @@ namespace BOX.Migrations
                     StockTakeID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -841,40 +905,6 @@ namespace BOX.Migrations
                         column: x => x.SupplierReturnID,
                         principalTable: "Supplier_Return",
                         principalColumn: "SupplierReturnID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Customer_Order",
-                columns: table => new
-                {
-                    CustomerOrderID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerOrderStatusID = table.Column<int>(type: "int", nullable: false),
-                    OrderDeliveryScheduleID = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Delivery_Photo = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Customer_Order", x => x.CustomerOrderID);
-                    table.ForeignKey(
-                        name: "FK_Customer_Order_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Customer_Order_Customer_Order_Status_CustomerOrderStatusID",
-                        column: x => x.CustomerOrderStatusID,
-                        principalTable: "Customer_Order_Status",
-                        principalColumn: "CustomerOrderStatusID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Customer_Order_Order_Delivery_Schedule_OrderDeliveryScheduleID",
-                        column: x => x.OrderDeliveryScheduleID,
-                        principalTable: "Order_Delivery_Schedule",
-                        principalColumn: "OrderDeliveryScheduleID");
                 });
 
             migrationBuilder.CreateTable(
@@ -998,6 +1028,81 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Customer_Order",
+                columns: table => new
+                {
+                    CustomerOrderID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuoteID = table.Column<int>(type: "int", nullable: false),
+                    CustomerOrderStatusID = table.Column<int>(type: "int", nullable: false),
+                    OrderDeliveryScheduleID = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Delivery_Photo = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    Delivery_Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer_Order", x => x.CustomerOrderID);
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Customer_Order_Status_CustomerOrderStatusID",
+                        column: x => x.CustomerOrderStatusID,
+                        principalTable: "Customer_Order_Status",
+                        principalColumn: "CustomerOrderStatusID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Order_Delivery_Schedule_OrderDeliveryScheduleID",
+                        column: x => x.OrderDeliveryScheduleID,
+                        principalTable: "Order_Delivery_Schedule",
+                        principalColumn: "OrderDeliveryScheduleID");
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Quote_QuoteID",
+                        column: x => x.QuoteID,
+                        principalTable: "Quote",
+                        principalColumn: "QuoteID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Quote_Line",
+                columns: table => new
+                {
+                    QuoteID = table.Column<int>(type: "int", nullable: false),
+                    FixedProductID = table.Column<int>(type: "int", nullable: true),
+                    QuoteLineID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomProductID = table.Column<int>(type: "int", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Confirmed_Unit_Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quote_Line", x => x.QuoteLineID);
+                    table.ForeignKey(
+                        name: "FK_Quote_Line_Custom_Product_CustomProductID",
+                        column: x => x.CustomProductID,
+                        principalTable: "Custom_Product",
+                        principalColumn: "CustomProductID");
+                    table.ForeignKey(
+                        name: "FK_Quote_Line_Fixed_Product_FixedProductID",
+                        column: x => x.FixedProductID,
+                        principalTable: "Fixed_Product",
+                        principalColumn: "FixedProductID");
+                    table.ForeignKey(
+                        name: "FK_Quote_Line_Quote_QuoteID",
+                        column: x => x.QuoteID,
+                        principalTable: "Quote",
+                        principalColumn: "QuoteID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Customer_Order_Line",
                 columns: table => new
                 {
@@ -1037,6 +1142,28 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Customer_Review",
+                columns: table => new
+                {
+                    CustomerReviewID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerOrderID = table.Column<int>(type: "int", nullable: false),
+                    Product_Rating = table.Column<int>(type: "int", nullable: false),
+                    Comments = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Recommendation = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer_Review", x => x.CustomerReviewID);
+                    table.ForeignKey(
+                        name: "FK_Customer_Review_Customer_Order_CustomerOrderID",
+                        column: x => x.CustomerOrderID,
+                        principalTable: "Customer_Order",
+                        principalColumn: "CustomerOrderID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Payment",
                 columns: table => new
                 {
@@ -1064,38 +1191,10 @@ namespace BOX.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Quote_Line",
-                columns: table => new
-                {
-                    QuoteID = table.Column<int>(type: "int", nullable: false),
-                    FixedProductID = table.Column<int>(type: "int", nullable: true),
-                    QuoteLineID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomProductID = table.Column<int>(type: "int", nullable: true),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Confirmed_Unit_Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Quote_Line", x => x.QuoteLineID);
-                    table.ForeignKey(
-                        name: "FK_Quote_Line_Custom_Product_CustomProductID",
-                        column: x => x.CustomProductID,
-                        principalTable: "Custom_Product",
-                        principalColumn: "CustomProductID");
-                    table.ForeignKey(
-                        name: "FK_Quote_Line_Fixed_Product_FixedProductID",
-                        column: x => x.FixedProductID,
-                        principalTable: "Fixed_Product",
-                        principalColumn: "FixedProductID");
-                    table.ForeignKey(
-                        name: "FK_Quote_Line_Quote_QuoteID",
-                        column: x => x.QuoteID,
-                        principalTable: "Quote",
-                        principalColumn: "QuoteID",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_Admin_UserId",
+                table: "Admin",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -1167,6 +1266,11 @@ namespace BOX.Migrations
                 column: "ItemID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customer_UserId",
+                table: "Customer",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Customer_Order_CustomerOrderStatusID",
                 table: "Customer_Order",
                 column: "CustomerOrderStatusID");
@@ -1175,6 +1279,11 @@ namespace BOX.Migrations
                 name: "IX_Customer_Order_OrderDeliveryScheduleID",
                 table: "Customer_Order",
                 column: "OrderDeliveryScheduleID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customer_Order_QuoteID",
+                table: "Customer_Order",
+                column: "QuoteID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_Order_UserId",
@@ -1205,6 +1314,16 @@ namespace BOX.Migrations
                 name: "IX_Customer_Return_CustomerReturnReasonID",
                 table: "Customer_Return",
                 column: "CustomerReturnReasonID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customer_Review_CustomerOrderID",
+                table: "Customer_Review",
+                column: "CustomerOrderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employee_UserId",
+                table: "Employee",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fixed_Product_ItemID",
@@ -1285,6 +1404,11 @@ namespace BOX.Migrations
                 name: "IX_Quote_Line_QuoteID",
                 table: "Quote_Line",
                 column: "QuoteID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quote_Request_QuoteRequestStatusID",
+                table: "Quote_Request",
+                column: "QuoteRequestStatusID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Quote_Request_UserId",
@@ -1380,6 +1504,9 @@ namespace BOX.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Admin");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -1407,10 +1534,16 @@ namespace BOX.Migrations
                 name: "Credit_Application");
 
             migrationBuilder.DropTable(
+                name: "Customer");
+
+            migrationBuilder.DropTable(
                 name: "Customer_Order_Line");
 
             migrationBuilder.DropTable(
                 name: "Customer_Review");
+
+            migrationBuilder.DropTable(
+                name: "Employee");
 
             migrationBuilder.DropTable(
                 name: "Payment");
@@ -1455,9 +1588,6 @@ namespace BOX.Migrations
                 name: "Payment_Type");
 
             migrationBuilder.DropTable(
-                name: "Quote");
-
-            migrationBuilder.DropTable(
                 name: "Custom_Product");
 
             migrationBuilder.DropTable(
@@ -1494,16 +1624,7 @@ namespace BOX.Migrations
                 name: "Order_Delivery_Schedule");
 
             migrationBuilder.DropTable(
-                name: "Quote_Duration");
-
-            migrationBuilder.DropTable(
-                name: "Quote_Request");
-
-            migrationBuilder.DropTable(
-                name: "Quote_Status");
-
-            migrationBuilder.DropTable(
-                name: "Reject_Reason");
+                name: "Quote");
 
             migrationBuilder.DropTable(
                 name: "cost_Price_Formula_Variables");
@@ -1521,13 +1642,28 @@ namespace BOX.Migrations
                 name: "QR_Code");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Quote_Duration");
 
             migrationBuilder.DropTable(
-                name: "Price_Match_File");
+                name: "Quote_Request");
+
+            migrationBuilder.DropTable(
+                name: "Quote_Status");
+
+            migrationBuilder.DropTable(
+                name: "Reject_Reason");
 
             migrationBuilder.DropTable(
                 name: "Product_Category");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Quote_Request_Status");
+
+            migrationBuilder.DropTable(
+                name: "Price_Match_File");
 
             migrationBuilder.DropTable(
                 name: "Title");

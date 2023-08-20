@@ -215,10 +215,10 @@ export class EstimateLineComponent {
             customProductUnitPrice: 0,
             quantity: line.quantity
           };
-  
+
           updatedEstLines.push(updatedEstimateLine);
         });
-  
+
         //put estimate data in VM
         let updatedEstimate: EstimateVM = {
           estimateID: this.selectedEstimate.estimateID,
@@ -230,9 +230,9 @@ export class EstimateLineComponent {
           confirmedTotal: this.negotiatedTotal / (1 + this.vat.percentage / 100),
           estimate_Lines: updatedEstLines
         };
-  
+
         console.log('Updated estimate: ', updatedEstimate);
-  
+
         this.dataService.UpdateEstimate(this.selectedEstimate.estimateID, updatedEstimate).subscribe(
           (result: any) => {
             console.log('Successfully updated estimate! ', result);

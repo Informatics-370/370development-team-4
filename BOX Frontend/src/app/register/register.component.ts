@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-register',
@@ -12,11 +13,15 @@ export class RegisterComponent implements OnInit {
   passwordVisible = false;
   confirmPasswordVisible = false;
   passwordsMatch = true;
+  isBusiness: boolean = false;
   redirectURL = '';
 
-  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {}
+  @ViewChild('addressInput', { static: true }) addressInput!: ElementRef<HTMLInputElement>;
 
-  ngOnInit() {
+  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {}
+  
+    ngOnInit() {
+        this.initAutocomplete();
     this.handleCheckboxChange();    
     //Retrieve the redirect URL from url
     this.activatedRoute.paramMap.subscribe(params => {
@@ -24,6 +29,35 @@ export class RegisterComponent implements OnInit {
       let url = params.get('redirectTo')?.split('-');
       console.log(url ? url[1] : 'no redirect');
       if (url) this.redirectURL = url[1];
+    });
+
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
+
+    passwordInput.addEventListener('input', () => {
+        this.checkPasswords();
+    });
+
+    confirmPasswordInput.addEventListener('input', () => {
+        this.checkPasswords();
+    });
+  }
+
+  initAutocomplete() {
+    const inputElement = this.addressInput.nativeElement;
+
+    const autocompleteOptions = {
+      componentRestrictions: { country: 'ZA' } // Restrict to South Africa
+    };
+
+    const autocomplete = new google.maps.places.Autocomplete(inputElement, autocompleteOptions);
+    autocomplete.setFields(['formatted_address']);
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place && place.formatted_address) {
+        console.log('Selected address:', place.formatted_address);
+      }
     });
   }
 
@@ -38,223 +72,301 @@ export class RegisterComponent implements OnInit {
 
   // ========================================= All Fields Validation =====================================
   // Validate all required fields are entered
-  validateRequiredFields(): boolean {
-    const fields = ['firstName', 'lastName', 'email', 'cellNo', 'password', 'confirmPassword', 'addressOne', 'postalAddress'];
-    let isValid = true;
+  // validateRequiredFields(): boolean {
+  //   const fields = ['firstName', 'lastName', 'email', 'cellNo', 'password', 'confirmPassword', 'addressInput'];
+  //   let isValid = true;
 
-    fields.forEach((field) => {
-      const fieldValue = (document.getElementById(field) as HTMLInputElement).value;
-      if (fieldValue.trim() === '') {
-        isValid = false;
-        this.displayErrorMessage(`Please fill in the ${field} field.`);
-      }
-    });
+  //   fields.forEach((field) => {
+  //     const fieldValue = (document.getElementById(field) as HTMLInputElement).value;
+  //     if (fieldValue.trim() === '') {
+  //       isValid = false;
+  //       this.displayErrorMessage(`Please fill in the ${field} field.`);
+  //     }
+  //   });
 
-    return isValid;
-  }
+  //   return isValid;
+  // }
 
   // ========================================= Contact No Validation =====================================
   // Validate contact number accepts only digits
-  validateContactNumber(): boolean {
-    const contactNumber = (document.getElementById('cellNo') as HTMLInputElement).value;
-    const regex = /^\d+$/; // Only digits
+    validateContactNumber(): boolean {
+      const contactNumber = (document.getElementById('cellNo') as HTMLInputElement).value;
+      const regex = /^\d+$/; // Only digits
 
-    if (!regex.test(contactNumber)) {
-      this.displayErrorMessage('Contact number should contain only digits.');
-      return false;
+      if (!regex.test(contactNumber)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Contact Number',
+          text: 'Contact number should contain only digits.'
+        });
+        return false;
+      }
+
+      return true;
     }
-
-    return true;
-  }
 
   // Validate VAT number accepts only digits if the user is a business
   validateVATNumber(): boolean {
     const isBusinessCheckbox = document.getElementById('isBusiness') as HTMLInputElement;
     const isBusiness = isBusinessCheckbox.checked;
-
+  
     if (isBusiness) {
       const vatNumber = (document.getElementById('vatNo') as HTMLInputElement).value;
       const regex = /^\d+$/; // Only digits
-
-      if (!regex.test(vatNumber)) {
-        this.displayErrorMessage('VAT number should contain only digits.');
+  
+      if (vatNumber.trim() !== '' && !regex.test(vatNumber)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid VAT Number',
+          text: 'VAT number should contain only digits.'
+        });
         return false;
       }
     }
-
+  
     return true;
   }
+  
+  
+  
 
   // Validate title field
   validateTitle(): boolean {
     const isBusinessCheckbox = document.getElementById('isBusiness') as HTMLInputElement;
     const isBusiness = isBusinessCheckbox.checked;
-
-    if (isBusiness) {
-      return true; // No need to validate title if the user is a business
-    } else {
+  
+    if (!isBusiness) {
       const titleInput = document.getElementById('title') as HTMLInputElement;
       const title = titleInput.value;
       const validTitles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Prof']; // Add more valid titles if needed
-
+  
       if (!validTitles.includes(title)) {
-        this.displayErrorMessage('Please select a valid title.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Title',
+          text: 'Please select a valid title.'
+        });
         return false;
       }
     }
-
+  
     return true;
   }
+  
 
 
+  checkPasswords() {
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
 
-  validatePasswords() {
-    const passwordInput = document.getElementById('password') as HTMLInputElement; // gets the password input
-    const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement; // gets the confirm password input
+    // Check if passwords match
+    this.passwordsMatch = password === confirmPassword;
+  }
 
-    if (passwordInput.value !== confirmPasswordInput.value) {
-      // check if passwords do not match
-      this.passwordsMatch = false; // passwords do not match
+  validatePassword() {
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      this.passwordsMatch = false;
+      return;
     } else {
-      this.passwordsMatch = true; // passwords match
+      this.passwordsMatch = true;
     }
-  }
 
-  // Display an error message
-  displayErrorMessage(message: string) {
-    const errorContainer = document.getElementById('errorContainer');
-    const errorMessage = document.createElement('div');
-    errorMessage.classList.add('text-danger');
-    errorMessage.textContent = message;
+    // Check password criteria: length, uppercase, lowercase, digit
+    const lengthValid = password.length >= 8;
+    const uppercaseValid = /[A-Z]/.test(password);
+    const lowercaseValid = /[a-z]/.test(password);
+    const digitValid = /\d/.test(password);
 
-    if (errorContainer) {
-      errorContainer.appendChild(errorMessage);
-    }
-  }
-
-  // Clear all error messages
-  clearErrorMessages() {
-    const errorContainer = document.getElementById('errorContainer');
-    if (errorContainer) {
-      errorContainer.innerHTML = '';
+    if (lengthValid && uppercaseValid && lowercaseValid && digitValid) {
+      
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Password Invalid',
+        text: 'Password should have at least 8 characters, including an uppercase letter, a lowercase letter, and a digit.'
+      });
     }
   }
 
   // Handle checkbox change event
   handleCheckboxChange() {
     const isBusinessCheckbox = document.getElementById('isBusiness') as HTMLInputElement;
-    const titleInput = document.getElementById('title') as HTMLInputElement;
-    const vatNoInput = document.getElementById('vatNo') as HTMLInputElement;
 
-    if (isBusinessCheckbox.checked) {
-      titleInput.value = '';
-      titleInput.disabled = true;
-      vatNoInput.disabled = false;
-    } else {
-      titleInput.disabled = false;
-      vatNoInput.disabled = true;
+    this.isBusiness = isBusinessCheckbox.checked;
+    console.log(this.isBusiness)
+}
+
+submitForm() {
+
+  // Array to hold error messages
+  const errorMessages: string[] = [];
+
+  //Validate
+  if (this.isBusiness) {
+    const firstName = (document.getElementById('firstName') as HTMLInputElement).value.trim();
+    if (firstName === '') {
+      errorMessages.push('Please fill in the First Name field.');
     }
-
-    // Clear title error message if the user is a business
-    if (isBusinessCheckbox.checked) {
-      this.clearTitleErrorMessage();
+  
+    const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+    if (email === '') {
+      errorMessages.push('Please fill in the Email field.');
+    }
+  
+    const cellNo = (document.getElementById('cellNo') as HTMLInputElement).value.trim();
+    if (cellNo === '') {
+      errorMessages.push('Please fill in the Contact Number field.');
+    }
+  
+    const password = (document.getElementById('password') as HTMLInputElement).value.trim();
+    if (password === '') {
+      errorMessages.push('Please fill in the Password field.');
+    }
+  
+    const confirmPassword = (document.getElementById('confirmPassword') as HTMLInputElement).value.trim();
+    if (confirmPassword === '') {
+      errorMessages.push('Please fill in the Confirm Password field.');
+    }
+  
+    const address = (document.getElementById('addressInput') as HTMLInputElement).value.trim();
+    if (address === '') {
+      errorMessages.push('Please fill in the Address field.');
+    }
+  
+    const vatNo = (document.getElementById('vatNo') as HTMLInputElement).value.trim();
+    if (vatNo === '') {
+      errorMessages.push('Please fill in the VAT Number field.');
+    }
+  } else {
+    const title = (document.getElementById('title') as HTMLInputElement).value.trim();
+    if (title === '') {
+      errorMessages.push('Please select a Title.');
+    }
+  
+    const firstName = (document.getElementById('firstName') as HTMLInputElement).value.trim();
+    if (firstName === '') {
+      errorMessages.push('Please fill in the First Name field.');
+    }
+  
+    const lastName = (document.getElementById('lastName') as HTMLInputElement).value.trim();
+    if (lastName === '') {
+      errorMessages.push('Please fill in the Last Name field.');
+    }
+  
+    const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+    if (email === '') {
+      errorMessages.push('Please fill in the Email field.');
+    }
+  
+    const cellNo = (document.getElementById('cellNo') as HTMLInputElement).value.trim();
+    if (cellNo === '') {
+      errorMessages.push('Please fill in the Contact Number field.');
+    }
+  
+    const password = (document.getElementById('password') as HTMLInputElement).value.trim();
+    if (password === '') {
+      errorMessages.push('Please fill in the Password field.');
+    }
+  
+    const confirmPassword = (document.getElementById('confirmPassword') as HTMLInputElement).value.trim();
+    if (confirmPassword === '') {
+      errorMessages.push('Please fill in the Confirm Password field.');
+    }
+  
+    const address = (document.getElementById('addressInput') as HTMLInputElement).value.trim();
+    if (address === '') {
+      errorMessages.push('Please fill in the Address field.');
     }
   }
 
-  // Clear title error message
-  clearTitleErrorMessage() {
-    const errorContainer = document.getElementById('errorContainer');
-    if (errorContainer) {
-      const titleError = errorContainer.querySelector('.title-error');
-      if (titleError) {
-        errorContainer.removeChild(titleError);
-      }
-    }
+
+  // Validate passwords
+  this.validatePassword();
+  if (!this.passwordsMatch) {
+    errorMessages.push('Passwords do not match.');
   }
 
-  submitForm() {
-    // Clear previous error messages
-    this.clearErrorMessages();
+  // Validate contact number accepts only digits
+  if (!this.validateContactNumber()) {
+    errorMessages.push('Contact number should only contain digits.');
+  }
 
-    // Validate passwords
-    this.validatePasswords();
+  // Validate VAT number accepts only digits
+  if (!this.validateVATNumber()) {
+    errorMessages.push('VAT number should contain only digits.');
+  }
 
-    // Check if the passwords match
-    if (!this.passwordsMatch) {
-      return; // Stop form submission if passwords do not match
-    }
+  // Validate title field
+  if (!this.validateTitle()) {
+    errorMessages.push('Please select a valid title.');
+  }
 
-    // Validate all fields are entered
-    if (!this.validateRequiredFields()) {
-      this.displayErrorMessage('Please fill in all required fields.');
-      return;
-    }
+  // Check if the user is a business
+  const isBusinessCheckbox = document.getElementById('isBusiness') as HTMLInputElement;
+  const isBusiness = isBusinessCheckbox.checked;
 
-    // Validate contact number accepts only digits
-    if (!this.validateContactNumber()) {
-      this.displayErrorMessage('Contact number should only contain digits.');
-      return;
-    }
+  if (errorMessages.length > 0) {
+    // Display SweetAlert with error messages
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Errors',
+      html: errorMessages.map(msg => `<p>${msg}</p>`).join('')
+    });
 
-    // Validate VAT number accepts only digits
-    if (!this.validateVATNumber()) {
-      this.displayErrorMessage('VAT number should contain only digits.');
-      return;
-    }
+    return; // Stop form submission if there are validation errors
+  }
 
-    // Validate title field
-    if (!this.validateTitle()) {
-      this.displayErrorMessage('Please select a valid title.');
-      return;
-    }
+  // User object to be sent to the API
+  const user = {
+    emailaddress: (document.getElementById('email') as HTMLInputElement).value,
+    password: (document.getElementById('confirmPassword') as HTMLInputElement).value,
+    //employeeId: "",
+    phoneNumber: (document.getElementById('cellNo') as HTMLInputElement).value,
+    firstName: (document.getElementById('firstName') as HTMLInputElement).value,
+    lastName: this.isBusiness ? '' : (document.getElementById('lastName') as HTMLInputElement).value,
+    address: (document.getElementById('addressInput') as HTMLInputElement).value,
+    title: this.isBusiness ? '' : (document.getElementById('title') as HTMLInputElement).value,
+    isBusiness: isBusiness,
+    vatNo: !this.isBusiness ? '' : (document.getElementById('vatNo') as HTMLInputElement).value,
+  };
 
-    // Check if the user is a business
-    const isBusinessCheckbox = document.getElementById('isBusiness') as HTMLInputElement;
-    const isBusiness = isBusinessCheckbox.checked;
-
-    // Clear and disable the title field if the user is a business
-    const titleInput = document.getElementById('title') as HTMLSelectElement;
-    if (isBusiness) {
-      titleInput.value = '';
-      titleInput.disabled = true;
-    } else {
-      titleInput.disabled = false;
-    }
-
-    // User object to be sent to the API
-    const user = {
-      emailaddress: (document.getElementById('email') as HTMLInputElement).value,
-      password: (document.getElementById('confirmPassword') as HTMLInputElement).value,
-      phoneNumber: (document.getElementById('cellNo') as HTMLInputElement).value,
-      firstName: (document.getElementById('firstName') as HTMLInputElement).value,
-      lastName: (document.getElementById('lastName') as HTMLInputElement).value,
-      address: (document.getElementById('addressOne') as HTMLInputElement).value,
-      title: (document.getElementById('title') as HTMLInputElement).value
-    };
-
-    console.log(user);
+  console.log(user);
 
     // Call the AuthService to register the user
-    this.authService.registerUser(user).subscribe(
-      () => {
-        // Registration successful
-        console.log('Registration successful');
-        this.showRegistrationSuccessPopup();
-
-        if (this.redirectURL != '') {
-          this.router.navigate(['/login', 'redirect-' + this.redirectURL]);
+  this.authService.registerUser(user).subscribe(
+    () => {
+      // Registration successful
+      Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful',
+        text: 'You have successfully registered.',
+        timer: 2000 // Automatically close after 2 seconds
+      }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.timer) {
+            if (this.redirectURL != '') {
+                this.router.navigate(['/login', 'redirect-' + this.redirectURL]);
+            }
+            else this.router.navigate(['/login']);
         }
-        else this.router.navigate(['/login']);
-      },
-      (error) => {
-        // Registration failed
-        console.error('Registration failed', error);
-      }
-    );
-  }
-
-  showRegistrationSuccessPopup() {
-    const popupElement = document.createElement('app-registration-success-popup');
-    document.body.appendChild(popupElement);
-  }
+      });
+    },
+    (error) => {
+      console.error('Error in registration', error);
+      // Registration failed
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: 'An error occurred during registration. Please try again later.'
+      });
+    }
+  );
+}
 }

@@ -6,8 +6,8 @@ namespace BOX.ViewModel
 		public int Fixed_ProductID { get; set; }
 		public int Raw_MaterialID { get; set; }
 		public int Supplier_ReturnID { get; set; }
-		public string FixedProduct_Description { get; set; }	
-		public string Raw_Material_Description { get; set; }
+		public string FixedProductDescription { get; set; }	
+		public string RawMaterialDescription { get; set; }
 		public int Quantity { get; set; }
 
 	}

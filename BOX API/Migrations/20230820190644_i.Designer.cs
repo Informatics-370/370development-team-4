@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230811054354_new Initial")]
-    partial class newInitial
+    [Migration("20230820190644_i")]
+    partial class i
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,22 @@ namespace BOX.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("BOX.Models.Admin", b =>
+                {
+                    b.Property<string>("AdminId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AdminId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Admin");
+                });
 
             modelBuilder.Entity("BOX.Models.Audit_Trail", b =>
                 {
@@ -207,6 +223,38 @@ namespace BOX.Migrations
                     b.ToTable("Custom_Product");
                 });
 
+            modelBuilder.Entity("BOX.Models.Customer", b =>
+                {
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal?>("creditBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("creditLimit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("isBusiness")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("vatNo")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("CustomerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Customer");
+                });
+
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>
                 {
                     b.Property<int>("CustomerOrderID")
@@ -218,15 +266,21 @@ namespace BOX.Migrations
                     b.Property<int>("CustomerOrderStatusID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Delivery_Photo")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("Delivery_Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("OrderDeliveryScheduleID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuoteID")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -238,6 +292,8 @@ namespace BOX.Migrations
                     b.HasIndex("CustomerOrderStatusID");
 
                     b.HasIndex("OrderDeliveryScheduleID");
+
+                    b.HasIndex("QuoteID");
 
                     b.HasIndex("UserId");
 
@@ -356,6 +412,9 @@ namespace BOX.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int>("CustomerOrderID")
+                        .HasColumnType("int");
+
                     b.Property<int>("Product_Rating")
                         .HasColumnType("int");
 
@@ -364,7 +423,25 @@ namespace BOX.Migrations
 
                     b.HasKey("CustomerReviewID");
 
+                    b.HasIndex("CustomerOrderID");
+
                     b.ToTable("Customer_Review");
+                });
+
+            modelBuilder.Entity("BOX.Models.Employee", b =>
+                {
+                    b.Property<string>("EmployeeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("EmployeeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Employee");
                 });
 
             modelBuilder.Entity("BOX.Models.Fixed_Product", b =>
@@ -415,9 +492,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDeliveryScheduleID"), 1L, 1);
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -681,11 +757,16 @@ namespace BOX.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("QuoteRequestStatusID")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("QuoteRequestID");
+
+                    b.HasIndex("QuoteRequestStatusID");
 
                     b.HasIndex("UserId");
 
@@ -721,6 +802,24 @@ namespace BOX.Migrations
                     b.HasIndex("QuoteRequestID");
 
                     b.ToTable("Quote_Request_Line");
+                });
+
+            modelBuilder.Entity("BOX.Models.Quote_Request_Status", b =>
+                {
+                    b.Property<int>("QuoteRequestStatusID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuoteRequestStatusID"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("QuoteRequestStatusID");
+
+                    b.ToTable("Quote_Request_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Quote_Status", b =>
@@ -876,9 +975,8 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StockTakeID"), 1L, 1);
 
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -1343,6 +1441,17 @@ namespace BOX.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BOX.Models.Admin", b =>
+                {
+                    b.HasOne("BOX.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BOX.Models.Category_Size_Variables", b =>
                 {
                     b.HasOne("BOX.Models.Product_Category", "Product_Category")
@@ -1400,6 +1509,17 @@ namespace BOX.Migrations
                     b.Navigation("Product_Item");
                 });
 
+            modelBuilder.Entity("BOX.Models.Customer", b =>
+                {
+                    b.HasOne("BOX.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BOX.Models.Customer_Order", b =>
                 {
                     b.HasOne("BOX.Models.Customer_Order_Status", "Customer_Order_Status")
@@ -1412,6 +1532,12 @@ namespace BOX.Migrations
                         .WithMany()
                         .HasForeignKey("OrderDeliveryScheduleID");
 
+                    b.HasOne("BOX.Models.Quote", "Quote")
+                        .WithMany()
+                        .HasForeignKey("QuoteID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1421,6 +1547,8 @@ namespace BOX.Migrations
                     b.Navigation("Customer_Order_Status");
 
                     b.Navigation("Order_Delivery_Schedule");
+
+                    b.Navigation("Quote");
 
                     b.Navigation("User");
                 });
@@ -1463,6 +1591,28 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer_Return_Reason");
+                });
+
+            modelBuilder.Entity("BOX.Models.Customer_Review", b =>
+                {
+                    b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
+                        .WithMany()
+                        .HasForeignKey("CustomerOrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer_Order");
+                });
+
+            modelBuilder.Entity("BOX.Models.Employee", b =>
+                {
+                    b.HasOne("BOX.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BOX.Models.Fixed_Product", b =>
@@ -1610,11 +1760,19 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Quote_Request", b =>
                 {
+                    b.HasOne("BOX.Models.Quote_Request_Status", "Quote_Request_Status")
+                        .WithMany()
+                        .HasForeignKey("QuoteRequestStatusID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Quote_Request_Status");
 
                     b.Navigation("User");
                 });

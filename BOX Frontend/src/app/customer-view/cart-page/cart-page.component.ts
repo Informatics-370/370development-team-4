@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
+import { CartService } from '../../services/customer-services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { Cart } from '../../shared/customer-interfaces/cart';
 import { HttpClient } from '@angular/common/http';
 import { QuoteVM } from '../../shared/quote-vm';
 import { QuoteLineVM } from '../../shared/quote-line-vm';
-import { CartService } from '../../services/customer-services/cart.service';
 import { Customer } from '../../shared/customer';
 import Swal from 'sweetalert2';
 
@@ -23,7 +24,7 @@ export class CartPageComponent {
   cannotRequest = false; //disables or enables request quote button
   cannotRequestReason = ''; //reason the customer is being prevented from requesting a quote
   customer!: Customer;
-  customerID = '';
+  customerID: string | null = '';
   /* discountList: Discount[] = []; //hold all bulk discounts
   applicableDiscount = 0; //bulk discount
   randomdiscount = 0; //customer discount
@@ -33,13 +34,14 @@ export class CartPageComponent {
   lastName: string = '';
   cartTotal = 0; */
 
-  constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService) { }
+  constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService,
+    private authService: AuthService) { }
 
   //---------------------------- LOAD CART PAGE ----------------------------
   ngOnInit(): void {
-    //get customer info
-    let id = localStorage.getItem('user_id');
-    if (id) this.customerID = id;
+    //get customer info    
+    const token = localStorage.getItem('access_token')!;
+    this.customerID = this.authService.getUserIdFromToken(token);
 
     /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
     OR THE CART SERVICE WILL BREAK!!!*/
@@ -165,7 +167,7 @@ export class CartPageComponent {
         rejectReasonID: 0,
         rejectReasonDescription: '',
         priceMatchFileB64: '',
-        customerId: this.customerID,
+        customerId: this.customerID ? this.customerID : '',
         customerFullName: '',
         lines: []
       }
