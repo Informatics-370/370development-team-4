@@ -65,6 +65,7 @@
 
             <!--BODY-->
             <div class="modal-body">
+                <span class="bold">Quantity on hand: </span>{{specificrawmaterial.quantityOnHand}}<br />
                 <div class="display-photo">
                     <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{specificrawmaterial.qrCodeBytesB64}}" alt={{specificrawmaterial.description}} /><br />
                     <button class="btn btn-create download" (click)="downloadQRCodeAsImage()">

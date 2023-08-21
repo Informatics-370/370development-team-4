@@ -1,2 +1,7 @@
 @import "../dashboard/dashboard.component.css";
 @import "../product-category/product-category.component.css";
+
+.view-photo {
+    max-height: 100px;
+    width: auto;
+}

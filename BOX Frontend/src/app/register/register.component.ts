@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,14 +14,22 @@ export class RegisterComponent implements OnInit {
   confirmPasswordVisible = false;
   passwordsMatch = true;
   isBusiness: boolean = false;
+  redirectURL = '';
 
   @ViewChild('addressInput', { static: true }) addressInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {}
   
-  ngOnInit() {
-    this.initAutocomplete();
-    this.handleCheckboxChange();
+    ngOnInit() {
+        this.initAutocomplete();
+    this.handleCheckboxChange();    
+    //Retrieve the redirect URL from url
+    this.activatedRoute.paramMap.subscribe(params => {
+      //URL will come as 'redirect-' + url e.g. 'redirect-cart'
+      let url = params.get('redirectTo')?.split('-');
+      console.log(url ? url[1] : 'no redirect');
+      if (url) this.redirectURL = url[1];
+    });
 
     const passwordInput = document.getElementById('password') as HTMLInputElement;
     const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
@@ -320,7 +328,7 @@ submitForm() {
   const user = {
     emailaddress: (document.getElementById('email') as HTMLInputElement).value,
     password: (document.getElementById('confirmPassword') as HTMLInputElement).value,
-    employeeId: "",
+    //employeeId: "",
     phoneNumber: (document.getElementById('cellNo') as HTMLInputElement).value,
     firstName: (document.getElementById('firstName') as HTMLInputElement).value,
     lastName: this.isBusiness ? '' : (document.getElementById('lastName') as HTMLInputElement).value,
@@ -332,7 +340,7 @@ submitForm() {
 
   console.log(user);
 
-  // Call the AuthService to register the user
+    // Call the AuthService to register the user
   this.authService.registerUser(user).subscribe(
     () => {
       // Registration successful
@@ -343,11 +351,15 @@ submitForm() {
         timer: 2000 // Automatically close after 2 seconds
       }).then((result) => {
         if (result.dismiss === Swal.DismissReason.timer) {
-          this.router.navigate(['/login']);
+            if (this.redirectURL != '') {
+                this.router.navigate(['/login', 'redirect-' + this.redirectURL]);
+            }
+            else this.router.navigate(['/login']);
         }
       });
     },
     (error) => {
+      console.error('Error in registration', error);
       // Registration failed
       Swal.fire({
         icon: 'error',

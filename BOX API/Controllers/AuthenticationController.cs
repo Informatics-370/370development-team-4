@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
+using ZXing;
 
 namespace BOX.Controllers
 {
@@ -63,64 +64,71 @@ namespace BOX.Controllers
             // If the user is not found
             if (user == null)
             {
-                // Instantiate (create) a new User
-                user = new User
+                try
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    UserName = uvm.emailaddress,
-                    Email = uvm.emailaddress,
-                    PhoneNumber = uvm.phoneNumber,
-                    user_FirstName = uvm.firstName,
-                    user_LastName = uvm.lastName,
-                    user_Address = uvm.address,
-                    title = uvm.title,
-                    TwoFactorEnabled = false
-                };
-
-                // Instantiate (create) a new Customer
-                var customer = new Customer
-                {
-                    CustomerId = Guid.NewGuid().ToString(),
-                    UserId = user.Id,
-                    EmployeeId = "",
-                    isBusiness = uvm.isBusiness,
-                    vatNo = uvm.vatNo,
-                    creditLimit = 0, // default of 0
-                    creditBalance = 0, // default of 0
-                    discount = 0 // default of 0
-                };
-
-                var result = await _userManager.CreateAsync(user, uvm.password);
-
-                if (result.Succeeded)
-                {
-                    // Check if role exists, create it if necessary
-                    var roleExists = await _roleManager.RoleExistsAsync(role);
-                    if (!roleExists)
+                    // Instantiate (create) a new User
+                    user = new User
                     {
-                        await _roleManager.CreateAsync(new IdentityRole(role));
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = uvm.emailaddress,
+                        Email = uvm.emailaddress,
+                        PhoneNumber = uvm.phoneNumber,
+                        user_FirstName = uvm.firstName,
+                        user_LastName = uvm.lastName,
+                        user_Address = uvm.address,
+                        TitleID = 1,
+                        TwoFactorEnabled = false
+                    };
+
+                    // Instantiate (create) a new Customer
+                    var customer = new Customer
+                    {
+                        CustomerId = Guid.NewGuid().ToString(),
+                        UserId = user.Id,
+                        //EmployeeId = "",
+                        isBusiness = uvm.isBusiness,
+                        vatNo = uvm.vatNo,
+                        creditLimit = 0, // default of 0
+                        creditBalance = 0, // default of 0
+                        discount = 0 // default of 0
+                    };
+
+                    var result = await _userManager.CreateAsync(user, uvm.password);
+
+                    if (result.Succeeded)
+                    {
+                        // Check if role exists, create it if necessary
+                        var roleExists = await _roleManager.RoleExistsAsync(role);
+                        if (!roleExists)
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole(role));
+                        }
+
+                        // Create the customer
+                        _repository.Add(customer);
+                        await _repository.SaveChangesAsync();
+
+                        // Assign the user to a customer role
+                        await _userManager.AddToRoleAsync(user, role);
+
+                        // Add Token to Verify Email
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var protocol = "http://localhost:4200/confirm-email";
+                        var confirmEmailLink = protocol + "?token=" + HttpUtility.UrlEncode(token) + "&email=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(uvm.emailaddress));
+                        var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", "Dear user,\n\n Thank you for registering with MegaPack. Click the link below to verify your email: \n" + confirmEmailLink);
+                        _emailService.SendEmail(message);
+
+                        // Return success
+                        return Ok();
                     }
-
-                    // Create the customer
-                    _repository.Add(customer);
-                    await _repository.SaveChangesAsync();
-
-                    // Assign the user to a customer role
-                    await _userManager.AddToRoleAsync(user, role);
-
-                    // Add Token to Verify Email
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var protocol = "http://localhost:4200/confirm-email";
-                    var confirmEmailLink = protocol + "?token=" + HttpUtility.UrlEncode(token) + "&email=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(uvm.emailaddress));
-                    var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", "Dear user,\n\n Thank you for registering with MegaPack. Click the link below to verify your email: \n" + confirmEmailLink );
-                    _emailService.SendEmail(message);
-
-                    // Return success
-                    return Ok();
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact support." + result.ToString());
+                    }
                 }
-                else
-                { 
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact support.");
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact support." + ex.Message + " inner exception " + ex.InnerException);
                 }
             }
             else
@@ -402,7 +410,7 @@ namespace BOX.Controllers
                     user_FirstName = uvm.firstName,
                     user_LastName = uvm.lastName,
                     user_Address = uvm.address,
-                    title = uvm.title,
+                    TitleID = 1,
                     TwoFactorEnabled = false
                 };
 
@@ -502,7 +510,7 @@ namespace BOX.Controllers
             }
 
             // Update the user's properties with the values from the updatedUser DTO
-            customer.EmployeeId = assignEmp.EmployeeId;
+            //customer.EmployeeId = assignEmp.EmployeeId;
 
             // Send email to customer
             var customerMessage = new Message(new string[] { customer.User.Email }, 

@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.Storage;
+
 namespace BOX.Models
 {
     public interface IRepository
@@ -5,6 +7,10 @@ namespace BOX.Models
         void Add<T>(T entity) where T : class;
         void Delete<T>(T entity) where T : class;
         Task<bool> SaveChangesAsync();
+
+        //FOR SYNCHRONOUS UCs
+        bool SaveChanges(); //saves changes synchronously
+        IDbContextTransaction BeginTransaction();
 
         // For our basic CRUDS these are the standard functions we will be creating for the Models we scaffold.
         // Please do not forget to add these.
@@ -31,24 +37,24 @@ namespace BOX.Models
         Task<Write_Off_Reason> GetWriteOffReasonAsync(int writeOffReasonId);
 
 
-        //--------------------------------------------------------- REFUND REASON -------------------------------------------------------------
-        Task<Customer_Refund_Reason[]> GetAllCustomerRefundfReasonsAsync();
-        Task<Customer_Refund_Reason> GetCustomerRefundReasonAsync(int sizeId);
+        //--------------------------------------------------------- RETURN REASON -------------------------------------------------------------
+        Task<Customer_Return_Reason[]> GetAllCustomerReturnReasonsAsync();
+        Task<Customer_Return_Reason> GetCustomerReturnReasonAsync(int sizeId);
 
 
         //------------------------------------------------------------- VAT -------------------------------------------------------------------
         Task<VAT[]> GetAllVatAsync();
-        Task<VAT> GetVatAsync(int vatId);
+        Task<VAT> GetVatAsync();
 
 
         //-------------------------------------------------------- RAW MATERIAL ---------------------------------------------------------------
         Task<Raw_Material[]> GetAllRawMaterialsAsync();
-        Task<Raw_Material> GetRawMaterialAsync(int? rawmaterialId);
+        Task<Raw_Material> GetRawMaterialAsync(int rawmaterialId);
 
 
-        //------------------------------------------------------ ESTIMATE DURATION ------------------------------------------------------------
-        Task<Estimate_Duration[]> GetAllEstimateDurationsAsync();
-        Task<Estimate_Duration> GetEstimateDurationAsync(int estimatedurationId);
+        //------------------------------------------------------ QUOTE DURATION ------------------------------------------------------------
+        Task<Quote_Duration[]> GetAllQuoteDurationsAsync();
+        Task<Quote_Duration> GetQuoteDurationAsync(int quotedurationId);
         //-----------------------QR CODE-----------------------
         Task<QR_Code> GetQRCodeAsync(int codeId);
 
@@ -59,7 +65,8 @@ namespace BOX.Models
 
         //-------------------------------------------------------- FIXED PRODUCT -----------------------------------------------------------------
         Task<Fixed_Product[]> GetAllFixedProductsAsync();
-        Task<Fixed_Product> GetFixedProductAsync(int? fixedProductId);
+        Task<Fixed_Product> GetFixedProductAsync(int fixedProductId);
+        Fixed_Product GetFixedProduct(int fixedProductId);
         Task UpdateFixedProductAsync(Fixed_Product fixedProduct);
 
 
@@ -67,34 +74,33 @@ namespace BOX.Models
         Task<Cost_Price_Formula_Variables[]> GetAllFormulaVariablesAsync();
         Task<Cost_Price_Formula_Variables> GetFormulaVariablesAsync(int formulaVariablesID);
 
-        //------------------------------------------------------ ESTIMATE STATUS ------------------------------------------------------------
-        Task<Estimate_Status[]> GetAllEstimateStatusesAsync();
-        Task<Estimate_Status> GetEstimateStatusAsync(int estimateStatusId);
+        //------------------------------------------------------ QUOTE STATUS ------------------------------------------------------------
+        Task<Quote_Status> GetQuoteStatusAsync(int quoteStatusId);
 
-        //---------------------------------------------ESTIMATE--------------------------------------------------------------------
-        Task<Estimate[]> GetAllEstimatesAsync();
-        Task<Estimate> GetEstimateAsync(int estimateId);
-        Task UpdateEstimateAsync(Estimate estimate);
+        //---------------------------------------------QUOTE--------------------------------------------------------------------
+        Task<Quote[]> GetAllQuotesAsync();
+        Task<Quote> GetQuoteAsync(int quoteId);
+        Task<Quote[]> GetQuotesByCustomerAsync(string customerId);
+        Quote GetCustomerMostRecentQuote(string customerId); //get quote customer is using to place an order synchronously because it's used in create order function
+        Task UpdateQuoteAsync(Quote quote);
 
-        //-----------------------------------------------ESTIMATE LINE---------------------------------------------
-        Task<Estimate_Line[]> GetAllEstimateLinesAsync();
-        Task<Estimate_Line> GetEstimateLineAsync(int estimateId, string customerId,int estimateLineId);
-        Task<Estimate_Line[]> GetEstimateLinesByEstimateAsync(int estimateId);
-        Task<Estimate_Line[]> GetEstimateLinesByCustomerAsync(string customerId);
+        //-----------------------------------------------QUOTE LINE---------------------------------------------
+        Task<Quote_Line[]> GetQuoteLinesByQuoteAsync(int quoteId);
+        Quote_Line[] GetQuoteLinesByQuote(int quoteId);
 
         //------------------------------------------------CUSTOMER--------------------------------------------------
         //Task<Customer> GetCustomerAsync(int customerId);
 
- 
-
-		//------------------------------------------------EMPLOYEE------------------------------------------------------
-		//Task<Employee> GetEmployeeAsync(int employeeId);
 
 
-		//-------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
-		Task<Custom_Product[]> GetAllCustomProductsAsync();
-		Task<Custom_Product> GetCustomProductAsync(int? customProductId);
-		Task UpdateCustomProductAsync(Custom_Product customProduct);
+        //------------------------------------------------EMPLOYEE------------------------------------------------------
+        //Task<Employee> GetEmployeeAsync(int employeeId);
+
+
+        //-------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
+        Task<Custom_Product[]> GetAllCustomProductsAsync();
+        Task<Custom_Product> GetCustomProductAsync(int customProductId);
+        Task UpdateCustomProductAsync(Custom_Product customProduct);
 
 
         //------------------------------------------------------ CUSTOMER ORDER STATUS ------------------------------------------------------------
@@ -107,23 +113,19 @@ namespace BOX.Models
         Task<Order_Delivery_Schedule> GetCustomerOrderDeliveryScheduleAsync(int orderDeliveryScheduleId);
         Task UpdateCustomerOrderDeliveryScheduleAsync(Order_Delivery_Schedule order_delivery_Schedule);
 
-
         //------------------------------------------------------------- DISCOUNT -------------------------------------------------------------------
-        Task<Discount[]> GetAllDiscountsAsync();
-        Task<Discount> GetDiscountAsync(int discountId);
+        Task<Bulk_Discount[]> GetAllDiscountsAsync();
+        Task<Bulk_Discount> GetDiscountAsync(int discountId);
 
         //-------------------------------------------------------- CUSTOMER ORDER -----------------------------------------------------------------
         Task<Customer_Order[]> GetAllCustomerOrdersAsync();
         Task<Customer_Order> GetCustomerOrderAsync(int customerOrderId);
-        Task UpdateCustomerOrderAsync(Customer_Order customerOrder);
+        Task<Customer_Order[]> GetOrdersByCustomerAsync(string customerId);
+        Customer_Order GetOrdersByCustomer(string customerId, int quoteId); //get orders for this customer synchronously
+        Task<Customer_Order[]> GetCustomerOrdersByDeliverySchedule(int orderDeliveryScheduleId);
 
-
-
-		//-----------------------------------------------Customer Order LINE---------------------------------------------
-		Task<Customer_Order_Line[]> GetAllOrderLinesAsync();
-		Task<Customer_Order_Line> GetOrderLineAsync(int customerOrderId, string customerId, int customerOrderLineId);
-		Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
-		Task<Customer_Order_Line[]> GetOrderLinesByCustomerAsync(string customerId);
+        //-----------------------------------------------Customer Order LINE---------------------------------------------
+        Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
 
         //------------------------------------------------------------- Supplier Return -------------------------------------------------------------------
         Task<Supplier_Return[]> GetAllSupplierReturnsAsync();
@@ -133,28 +135,42 @@ namespace BOX.Models
         Task<Supplier_Order[]> GetAllSupplierOrdersAsync();
         Task<Supplier_Order> GetSupplierOrderAsync(int supplierOrderId);
 
-
-
         //-----------------------------------------------SUPPLIER ORDER LINE---------------------------------------------
         Task<Supplier_OrderLine[]> GetAllSupplierOrderLinesAsync();
-        Task<Supplier_OrderLine> GetSupplierOrderLineAsync(int supplierOrderId, int supplierId, int supplierOrderLineId);
         Task<Supplier_OrderLine[]> GetSupplierOrderLinesByOrderAsync(int supOrderId);
-        Task<Supplier_OrderLine[]> GetSupplierOrderLinesBySupplierAsync(int supplierId);
 
-		//------------------------------------------------ROLE------------------------------------------------------
-		Task<Role[]> GetAllRolesAsync();
-		Task<Role> GetRoleAsync(int RoleId);
+        //------------------------------------------------ROLE------------------------------------------------------
+        Task<Role[]> GetAllRolesAsync();
+        Task<Role> GetRoleAsync(int RoleId);
 
-		//--------------------------- CREDIT APPLICATION STATUS --------------------------
-		Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
-		Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
+        //--------------------------- CREDIT APPLICATION STATUS --------------------------
+        Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
+        Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
 
         //--------------------------- STOCK TAKE ----------------------------------------
         Task<Stock_Take[]> GetAllStockTakeAsync();
         Task<Stock_Take> GetStockTakeAsync(int stockTakeId);
 
-	}
+        //------------------------------------------------------------- FIXED PRODUCT PRICE-------------------------------------------------------------------
+        Task<Price> GetPriceByFixedProductAsync(int fixedProductId);
 
-      
- }
+        //-------------------------------------------------------- QUOTE REQUEST -----------------------------------------------------------------
+        Task<Quote_Request[]> GetAllActiveQuoteRequests();
+        Task<Quote_Request> GetQuoteRequestAsync(int quoteRequestId);
+        Task<Quote_Request> CheckForActiveQuoteRequestAsync(string customerId);
 
+        //-----------------------------------------------QUOTE REQUEST LINE---------------------------------------------
+        Task<Quote_Request_Line[]> GetQuoteRequestLinesByQuoteRequestAsync(int quoteRequestId);
+
+        //----------------------------------------------- USERS -----------------------------------------------
+        Task<User> GetUserAsync(string userId);
+        Task<string>GetUserFullNameAsync(string userId);
+
+        //----------------------------------------------- REJECT REASON -----------------------------------------------
+        Task<Reject_Reason> GetRejectReasonAsync(int rejectReasonId);
+
+        //----------------------------------------------- REPORTS -----------------------------------------------
+        Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate);
+    }
+
+}

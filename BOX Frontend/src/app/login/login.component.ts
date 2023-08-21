@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,8 +10,19 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   passwordVisible = false;
   confirmPasswordVisible = false;
+  redirectURL = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {}
+
+  ngOnInit() {    
+    //Retrieve the redirect URL from url
+    this.activatedRoute.paramMap.subscribe(params => {
+      //URL will come as 'redirect-' + url e.g. 'redirect-cart'
+      let url = params.get('redirectTo')?.split('-');
+      console.log(url ? url[1] : 'no redirect');
+      if (url) this.redirectURL = url[1];
+    });
+  }
 
   // ========================================= Password Validation =============================================
   togglePasswordVisibility(field: string) {
@@ -69,7 +80,10 @@ export class LoginComponent {
     const email = this.authService.getEmailFromToken(token);
     console.log(email)
 
-    if (userRole === 'Admin' || userRole === 'Employee') {
+    if (this.redirectURL != '') {
+        this.router.navigate(['/' + this.redirectURL]);
+    }
+    else if (userRole === 'Admin' || userRole === 'Employee') {
       // Redirect to the dashboard for admin or employee
       this.router.navigate(['/dashboard']);
     } else if (userRole === 'Customer') {
