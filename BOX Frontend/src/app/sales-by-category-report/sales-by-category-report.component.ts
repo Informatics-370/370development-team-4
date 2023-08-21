@@ -37,11 +37,10 @@ export class SalesByCategoryReportComponent {
   }
 
   generateReport() {
-    if (this.datesForm.valid) {
+    //get form data
+    const formData = this.datesForm.value;
+    if (this.datesForm.valid && formData.startDate != '' && formData.endDate != '') {
       this.loading = true;
-
-      //get form data
-      const formData = this.datesForm.value;
 
       this.dataService.GetSalesByCategoryReport(formData.startDate, formData.endDate).subscribe((result) => {
         let salesPerItem = result;
