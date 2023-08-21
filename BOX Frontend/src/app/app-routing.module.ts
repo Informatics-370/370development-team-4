@@ -42,6 +42,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
 import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
 import { ReviewReportComponent } from './review-report/review-report.component';
+import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
@@ -85,9 +86,10 @@ const routes: Routes = [
   { path: 'profile-page', component: ProfilePageComponent },
   { path: 'my-quotes', component: MyQuotesComponent },
   { path: 'quote-requests', component: QouteRequestsComponent },  
-  { path: 'sales-by-category', component: SalesByCategoryReportComponent }
+  { path: 'sales-by-category', component: SalesByCategoryReportComponent },
   { path: 'assign-employee', component: AssignEmployeeComponent },
-  { path: 'review-report', component: ReviewReportComponent }
+  { path: 'review-report', component: ReviewReportComponent },
+  { path: 'write-off-report', component: WriteOffByProductCategoryComponent}
 ];
 
 @NgModule({

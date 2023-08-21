@@ -85,7 +85,7 @@ namespace BOX.Controllers
                     {
                         CustomerId = Guid.NewGuid().ToString(),
                         UserId = user.Id,
-                        //EmployeeId = "",
+                        EmployeeId = "",
                         isBusiness = uvm.isBusiness,
                         vatNo = uvm.vatNo,
                         creditLimit = 0, // default of 0
@@ -510,7 +510,7 @@ namespace BOX.Controllers
             }
 
             // Update the user's properties with the values from the updatedUser DTO
-            //customer.EmployeeId = assignEmp.EmployeeId;
+            customer.EmployeeId = assignEmp.EmployeeId;
 
             // Send email to customer
             var customerMessage = new Message(new string[] { customer.User.Email }, 

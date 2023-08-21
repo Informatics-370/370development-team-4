@@ -7,7 +7,6 @@ import { SizeVM } from '../../shared/size-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Cart } from '../../shared/customer-interfaces/cart';
 import { CartService } from '../..//services/customer-services/cart.service';
 import { CustomProductVM } from '../../shared/custom-product-vm';
 import Swal from 'sweetalert2';
@@ -748,27 +747,6 @@ export class ProductDetailsComponent {
     }
   }
 
-  addReview(reviewData: any) {
-    const apiUrl = 'http://localhost:5116/api/Review/AddCustomerReview'; // Replace with your actual API endpoint
-    this.http.post(apiUrl, reviewData).subscribe(
-      (response) => {
-        // Handle successful review submission
-        Swal.fire('Review Submitted', 'Thank you for your review!', 'success');
-      },
-      (error) => {
-        // Handle error
-        Swal.fire('Error', 'An error occurred while submitting your review.', 'error');
-      }
-    );
-  }
-  
-  //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------
-  get width() { return this.customiseForm.get('width'); }
-  get length() { return this.customiseForm.get('length'); }
-  get height() { return this.customiseForm.get('height'); }
-  get quantity() { return this.customiseForm.get('quantity'); }
-}
-
   openReviewModal() {
     Swal.fire({
       title: 'Write a Review',
@@ -798,6 +776,26 @@ export class ProductDetailsComponent {
       }
     });
   }
+  
+  addReview(reviewData: any) {
+    const apiUrl = 'http://localhost:5116/api/Review/AddCustomerReview'; // Replace with your actual API endpoint
+    this.http.post(apiUrl, reviewData).subscribe(
+      (response) => {
+        // Handle successful review submission
+        Swal.fire('Review Submitted', 'Thank you for your review!', 'success');
+      },
+      (error) => {
+        // Handle error
+        Swal.fire('Error', 'An error occurred while submitting your review.', 'error');
+      }
+    );
+  }
+  
+  //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------
+  get width() { return this.customiseForm.get('width'); }
+  get length() { return this.customiseForm.get('length'); }
+  get height() { return this.customiseForm.get('height'); }
+  get quantity() { return this.customiseForm.get('quantity'); }
 }
 
 export interface SizeDropdrownItem {

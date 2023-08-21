@@ -4,6 +4,7 @@ import { RawMaterialVM } from '../shared/rawMaterialVM';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { HttpClient } from '@angular/common/http';
 import { WriteOffReason } from '../shared/write-off-reason';
+import { AuthService } from '../services/auth.service';
 
 interface InventoryItem {
   fixedProductId: number;
@@ -27,7 +28,7 @@ export class StockTakeComponent implements OnInit {
   isWriteOffClicked = false;
   isCancelClicked = false;
 
-  constructor(private dataService: DataService, private http: HttpClient) {}
+  constructor(private dataService: DataService, private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.fetchInventoryItems();
@@ -101,8 +102,10 @@ export class StockTakeComponent implements OnInit {
   }
 
   saveChanges() {
+    const token = localStorage.getItem('access_token');
+    const userId = this.authService.getUserIdFromToken(token!);
     const stockTakeViewModel = {
-      UserId: localStorage.getItem('user_id'),
+      UserId: userId,
       Date: new Date().toISOString(),
       WriteOffs: this.inventory
         .filter(item => item.saveItem) // Only include items with saveItem set to true

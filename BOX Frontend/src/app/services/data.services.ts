@@ -23,6 +23,7 @@ import { Discount } from '../shared/discount';
 import { Users } from '../shared/user';
 import { OrderVM } from '../shared/order-vm';
 import { QuoteVM } from '../shared/quote-vm';
+import { WriteOffItem } from '../shared/write-off-item';
 
 imports: [
   HttpClientModule
@@ -527,5 +528,10 @@ export class DataService {
   GetSalesByCategoryReport(stringStartDate: string, stringEndDate: string): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}Reports/GetSalesByCategoryReport/${stringStartDate}/${stringEndDate}`);
   }
+
+  getWriteOffReport(): Observable<WriteOffItem[]> {
+    return this.httpClient.get<WriteOffItem[]>(`${this.apiUrl}WriteOffReason/GetWriteOffReport`);
+  }
+  
 
 }

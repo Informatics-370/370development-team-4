@@ -35,7 +35,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Admin", (string)null);
+                    b.ToTable("Admin");
                 });
 
             modelBuilder.Entity("BOX.Models.Audit_Trail", b =>
@@ -86,7 +86,7 @@ namespace BOX.Migrations
 
                     b.HasKey("DiscountID");
 
-                    b.ToTable("Bulk_Discount", (string)null);
+                    b.ToTable("Bulk_Discount");
                 });
 
             modelBuilder.Entity("BOX.Models.Category_Size_Variables", b =>
@@ -226,6 +226,10 @@ namespace BOX.Migrations
                     b.Property<string>("CustomerId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -247,6 +251,8 @@ namespace BOX.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.HasKey("CustomerId");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("UserId");
 
@@ -295,7 +301,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Customer_Order", (string)null);
+                    b.ToTable("Customer_Order");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Order_Line", b =>
@@ -376,7 +382,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("CustomerReturnReasonID");
 
-                    b.ToTable("Customer_Return", (string)null);
+                    b.ToTable("Customer_Return");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Return_Reason", b =>
@@ -394,7 +400,7 @@ namespace BOX.Migrations
 
                     b.HasKey("CustomerReturnReasonID");
 
-                    b.ToTable("Customer_Return_Reason", (string)null);
+                    b.ToTable("Customer_Return_Reason");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Review", b =>
@@ -410,21 +416,16 @@ namespace BOX.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("CustomerOrderID")
-                        .HasColumnType("int");
-
                     b.Property<int>("Product_Rating")
                         .HasColumnType("int");
 
                     b.Property<bool>("Recommendation")
+                        .HasMaxLength(256)
                         .HasColumnType("bit");
-                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("CustomerReviewID");
-                    b.HasIndex("CustomerOrderID");
 
-                    b.ToTable("Customer_Review", (string)null);
-                    b.ToTable("Customer_Review", (string)null);
+                    b.ToTable("Customer_Review");
                 });
 
             modelBuilder.Entity("BOX.Models.Employee", b =>
@@ -573,7 +574,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("FixedProductID");
 
-                    b.ToTable("Price", (string)null);
+                    b.ToTable("Price");
                 });
 
             modelBuilder.Entity("BOX.Models.Price_Match_File", b =>
@@ -590,7 +591,7 @@ namespace BOX.Migrations
 
                     b.HasKey("PriceMatchFileID");
 
-                    b.ToTable("Price_Match_File", (string)null);
+                    b.ToTable("Price_Match_File");
                 });
 
             modelBuilder.Entity("BOX.Models.Product_Category", b =>
@@ -690,7 +691,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Quote", (string)null);
+                    b.ToTable("Quote");
                 });
 
             modelBuilder.Entity("BOX.Models.Quote_Duration", b =>
@@ -706,7 +707,7 @@ namespace BOX.Migrations
 
                     b.HasKey("QuoteDurationID");
 
-                    b.ToTable("Quote_Duration", (string)null);
+                    b.ToTable("Quote_Duration");
                 });
 
             modelBuilder.Entity("BOX.Models.Quote_Line", b =>
@@ -742,7 +743,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("QuoteID");
 
-                    b.ToTable("Quote_Line", (string)null);
+                    b.ToTable("Quote_Line");
                 });
 
             modelBuilder.Entity("BOX.Models.Quote_Request", b =>
@@ -769,7 +770,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Quote_Request", (string)null);
+                    b.ToTable("Quote_Request");
                 });
 
             modelBuilder.Entity("BOX.Models.Quote_Request_Line", b =>
@@ -800,7 +801,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("QuoteRequestID");
 
-                    b.ToTable("Quote_Request_Line", (string)null);
+                    b.ToTable("Quote_Request_Line");
                 });
 
             modelBuilder.Entity("BOX.Models.Quote_Request_Status", b =>
@@ -818,7 +819,7 @@ namespace BOX.Migrations
 
                     b.HasKey("QuoteRequestStatusID");
 
-                    b.ToTable("Quote_Request_Status", (string)null);
+                    b.ToTable("Quote_Request_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Quote_Status", b =>
@@ -836,7 +837,7 @@ namespace BOX.Migrations
 
                     b.HasKey("QuoteStatusID");
 
-                    b.ToTable("Quote_Status", (string)null);
+                    b.ToTable("Quote_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Raw_Material", b =>
@@ -884,7 +885,7 @@ namespace BOX.Migrations
 
                     b.HasIndex("PriceMatchFileID");
 
-                    b.ToTable("Reject_Reason", (string)null);
+                    b.ToTable("Reject_Reason");
                 });
 
             modelBuilder.Entity("BOX.Models.Role", b =>
@@ -1036,10 +1037,10 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("SupplierOrderID");
+
                     b.HasIndex("SupplierID");
 
-                    b.ToTable("Supplier_Order", (string)null);
-                    b.ToTable("Supplier_Order", (string)null);
+                    b.ToTable("Supplier_Order");
                 });
 
             modelBuilder.Entity("BOX.Models.Supplier_OrderLine", b =>
@@ -1112,7 +1113,7 @@ namespace BOX.Migrations
 
                     b.HasKey("TitleID");
 
-                    b.ToTable("Title", (string)null);
+                    b.ToTable("Title");
                 });
 
             modelBuilder.Entity("BOX.Models.User", b =>
@@ -1510,6 +1511,12 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Customer", b =>
                 {
+                    b.HasOne("BOX.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1592,17 +1599,6 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer_Return_Reason");
-                });
-
-            modelBuilder.Entity("BOX.Models.Customer_Review", b =>
-                {
-                    b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
-                        .WithMany()
-                        .HasForeignKey("CustomerOrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer_Order");
                 });
 
             modelBuilder.Entity("BOX.Models.Employee", b =>

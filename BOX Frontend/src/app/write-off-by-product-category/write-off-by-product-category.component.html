@@ -1,0 +1,40 @@
+<div class="row">
+    <!-- SIDE NAVBAR -->
+    <div class="col-md-2">
+      <div class="app-menu"></div>
+    </div>
+    <!-- Right Side -->
+    <div class="col-md-10">
+      <h3 class="p-3" style="color: black;">Write Off by Product Category Report</h3>
+  
+      <div *ngIf="loading">Generating report...</div>
+      <div *ngIf="itemsCount === 0">No data available.</div>
+      <div *ngIf="itemsCount > 0">
+        <table class="table" style="max-width: 90%;">
+          <thead>
+            <tr>
+              <th scope="col">Product Item</th>
+              <th scope="col">Category</th>
+              <th scope="col">Quantity On Hand</th>
+              <th scope="col">Last Write Off Date</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let category of categoriesWithSubtotals">
+            <tr *ngFor="let item of category.items">
+              <td>{{ item.productItem }}</td>
+              <td>{{ item.category }}</td>
+              <td>{{ item.quantityOnHand }}</td>
+              <td>{{ item.lastWriteOffDate | date }}</td>
+            </tr>
+            <tr class="bold">
+              <td>Subtotal for {{ category.category }}</td>
+              <td></td>
+              <td>{{ category.totalQuantity }}</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  

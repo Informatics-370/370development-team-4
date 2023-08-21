@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-<<<<<<<< HEAD:BOX API/Migrations/20230820194224_RecommendationIsBool.Designer.cs
-    [Migration("20230820194224_RecommendationIsBool")]
-    partial class RecommendationIsBool
-========
-    [Migration("20230820190644_i")]
-    partial class i
->>>>>>>> Internal-Testing:BOX API/Migrations/20230820190644_i.Designer.cs
+    [Migration("20230821042338_again")]
+    partial class again
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -233,6 +228,10 @@ namespace BOX.Migrations
                     b.Property<string>("CustomerId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -254,6 +253,8 @@ namespace BOX.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.HasKey("CustomerId");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("UserId");
 
@@ -417,22 +418,14 @@ namespace BOX.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("CustomerOrderID")
-                        .HasColumnType("int");
-
                     b.Property<int>("Product_Rating")
                         .HasColumnType("int");
 
                     b.Property<bool>("Recommendation")
-<<<<<<<< HEAD:BOX API/Migrations/20230820194224_RecommendationIsBool.Designer.cs
                         .HasMaxLength(256)
-========
->>>>>>>> Internal-Testing:BOX API/Migrations/20230820190644_i.Designer.cs
                         .HasColumnType("bit");
 
                     b.HasKey("CustomerReviewID");
-
-                    b.HasIndex("CustomerOrderID");
 
                     b.ToTable("Customer_Review");
                 });
@@ -1520,11 +1513,19 @@ namespace BOX.Migrations
 
             modelBuilder.Entity("BOX.Models.Customer", b =>
                 {
+                    b.HasOne("BOX.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Employee");
 
                     b.Navigation("User");
                 });
@@ -1600,17 +1601,6 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer_Return_Reason");
-                });
-
-            modelBuilder.Entity("BOX.Models.Customer_Review", b =>
-                {
-                    b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
-                        .WithMany()
-                        .HasForeignKey("CustomerOrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer_Order");
                 });
 
             modelBuilder.Entity("BOX.Models.Employee", b =>

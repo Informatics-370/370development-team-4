@@ -57,6 +57,7 @@ import { QouteRequestsComponent } from './qoute-requests/qoute-requests.componen
 import { GenerateQuoteComponent } from './generate-quote/generate-quote.component';
 import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
 import { ReviewReportComponent } from './review-report/review-report.component';
+import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 
 
 @NgModule({
@@ -111,8 +112,9 @@ import { ReviewReportComponent } from './review-report/review-report.component';
         MyQuotesComponent,
         QouteRequestsComponent,
         GenerateQuoteComponent,
-        SalesByCategoryReportComponent
-        ReviewReportComponent
+        SalesByCategoryReportComponent,
+        ReviewReportComponent,
+        WriteOffByProductCategoryComponent
         
   ],
   imports: [
