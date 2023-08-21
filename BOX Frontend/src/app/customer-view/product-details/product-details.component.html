@@ -78,6 +78,7 @@
                   </div>
 
                   <button class="btn btn-add-cart" (click)="addToCart()" [disabled]="outOfStock">Add to Cart</button>
+                  <button class="btn btn-add-cart" (click)="openReviewModal()">Write a Review</button>
                   <div *ngIf="cartSuccess" class="success-msg">
                     Successfully added to cart!
                   </div>

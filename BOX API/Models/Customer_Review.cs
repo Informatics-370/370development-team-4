@@ -16,6 +16,6 @@ namespace BOX.Models
 		
 		[Required]
 		[MaxLength(256)] 
-		public string Recommendation { get; set; } = string.Empty;
+		public bool Recommendation { get; set; }
 	}
 }

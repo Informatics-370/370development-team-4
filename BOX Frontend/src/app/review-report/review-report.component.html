@@ -1,0 +1,26 @@
+<div class="app-customer-navbar" style="max-width: 100%;"></div>
+<br>
+<div class="container mt-5">
+    <div class="chart-container">
+        <canvas id="sentimentChart" width="400" height="400"></canvas>
+      </div>
+    <br>
+    <table class="table report-table table-striped table-success table-hover">
+        <thead>
+            <tr>
+                <th>Average Product Rating</th>
+                <th>% of Users Who Recommend Mega Pack</th>
+                <th>% of Users Who Do Not Recommend Mega Pack</th>
+              </tr>
+        </thead>
+        <tbody class="">
+            <tr>
+                <td>{{ averageRating }}</td>
+                <td>{{ recommendPercentage }}</td>
+                <td>{{ nonRecommendPercentage }}</td>
+              </tr>
+        </tbody>
+      </table>
+</div>
+
+<div class="mt-3"></div>

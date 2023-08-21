@@ -40,6 +40,7 @@ import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.compon
 import { EmployeesComponent } from './employees/employees.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
+import { ReviewReportComponent } from './review-report/review-report.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'register', pathMatch: 'full' },
@@ -89,7 +90,8 @@ const routes: Routes = [
   { path: 'two-factor-auth', component: TwoFactorAuthComponent },
   { path: 'employees', component: EmployeesComponent },
   { path: 'profile-page', component: ProfilePageComponent },
-  { path: 'assign-employee', component: AssignEmployeeComponent }
+  { path: 'assign-employee', component: AssignEmployeeComponent },
+  { path: 'review-report', component: ReviewReportComponent }
 ];
 
 @NgModule({

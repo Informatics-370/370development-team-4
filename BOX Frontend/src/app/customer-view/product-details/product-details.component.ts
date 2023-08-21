@@ -10,6 +10,8 @@ import { VAT } from 'src/app/shared/vat';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Cart } from 'src/app/shared/customer-interfaces/cart';
+import Swal from 'sweetalert2';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-product-details',
@@ -55,7 +57,7 @@ export class ProductDetailsComponent {
   //CUSTOMISE PRODUCT
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder, private router: Router, private renderer: Renderer2) {
+    private formBuilder: FormBuilder, private router: Router, private renderer: Renderer2, private http: HttpClient) {
     this.addToCartForm = this.formBuilder.group({
       sizeID: [{ value: '1' }, Validators.required],
       qty: [1, Validators.required]
@@ -411,6 +413,50 @@ export class ProductDetailsComponent {
     let priceInclVAT = amount * (1 + this.vat.percentage/100);
     return priceInclVAT;
   }
+
+  addReview(reviewData: any) {
+    const apiUrl = 'http://localhost:5116/api/Review/AddCustomerReview'; // Replace with your actual API endpoint
+    this.http.post(apiUrl, reviewData).subscribe(
+      (response) => {
+        // Handle successful review submission
+        Swal.fire('Review Submitted', 'Thank you for your review!', 'success');
+      },
+      (error) => {
+        // Handle error
+        Swal.fire('Error', 'An error occurred while submitting your review.', 'error');
+      }
+    );
+  }
+
+  openReviewModal() {
+    Swal.fire({
+      title: 'Write a Review',
+      html:
+        '<input id="productRating" type="number" class="swal2-input" placeholder="Product Rating (1-5)" min="1" max="5">' +
+        '<input id="reviewComments" class="swal2-input" placeholder="Comments">' +
+        '<select id="recommendation" class="swal2-input">' +
+        '  <option value="true">Recommend</option>' +
+        '  <option value="false">Do Not Recommend</option>' +
+        '</select>',
+      focusConfirm: false,
+      preConfirm: () => {
+        const productRatingInput = Swal.getPopup()!.querySelector('#productRating') as HTMLInputElement;
+        const reviewCommentsInput = Swal.getPopup()!.querySelector('#reviewComments') as HTMLInputElement;
+        const recommendationSelect = Swal.getPopup()!.querySelector('#recommendation') as HTMLSelectElement;
+
+        const product_Rating = productRatingInput?.value;
+        const comments = reviewCommentsInput?.value;
+        const recommendation = recommendationSelect?.value === 'true';
+
+        return { product_Rating, comments, recommendation };
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log(result)
+        this.addReview(result.value);
+      }
+    });
+  }
 }
 
 export interface SizeDropdrownItem {
@@ -419,3 +465,4 @@ export interface SizeDropdrownItem {
   price: number;
   qtyOnHand: number;
 }
+

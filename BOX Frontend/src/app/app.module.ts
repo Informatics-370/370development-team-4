@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { Chart } from 'chart.js';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -52,14 +53,15 @@ import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.compon
 import { EmployeesComponent } from './employees/employees.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
+import { ReviewReportComponent } from './review-report/review-report.component';
 
 
 @NgModule({
   declarations: [ 
-    AppComponent,
-    DashboardComponent,
+        AppComponent,
+        DashboardComponent,
         RegisterComponent,
-       ProductItemTestComponent,
+        ProductItemTestComponent,
         ViewHelpInventoryComponent,
         ProductCategoryComponent,
         RefundReasonComponent,
@@ -103,7 +105,8 @@ import { AssignEmployeeComponent } from './assign-employee/assign-employee.compo
         TwoFactorAuthComponent,
         EmployeesComponent,
         ProfilePageComponent,
-        AssignEmployeeComponent
+        AssignEmployeeComponent,
+        ReviewReportComponent
         
   ],
   imports: [
