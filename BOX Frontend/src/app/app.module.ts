@@ -54,6 +54,7 @@ import { AssignEmployeeComponent } from './assign-employee/assign-employee.compo
 import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
 import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
 import { GenerateQuoteComponent } from './generate-quote/generate-quote.component';
+import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
 
 
 @NgModule({
@@ -107,7 +108,8 @@ import { GenerateQuoteComponent } from './generate-quote/generate-quote.componen
         AssignEmployeeComponent,
         MyQuotesComponent,
         QouteRequestsComponent,
-        GenerateQuoteComponent
+        GenerateQuoteComponent,
+        SalesByCategoryReportComponent
         
   ],
   imports: [

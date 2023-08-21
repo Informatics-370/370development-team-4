@@ -168,6 +168,9 @@ namespace BOX.Models
 
         //----------------------------------------------- REJECT REASON -----------------------------------------------
         Task<Reject_Reason> GetRejectReasonAsync(int rejectReasonId);
+
+        //----------------------------------------------- REPORTS -----------------------------------------------
+        Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate);
     }
 
 }

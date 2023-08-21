@@ -702,7 +702,14 @@ namespace BOX.Models
             return rejectReason;
         }
 
-        //
+        //--------------------------------- REPORTS -----------------------------------
+        public Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.Date >= startDate && c.Date <= endDate);
+            return query.ToArrayAsync();
+        }
+
+        //--------------------------------- TRANSACTIONS --------------------------------
         public IDbContextTransaction BeginTransaction()
         {
             return _appDbContext.Database.BeginTransaction();
