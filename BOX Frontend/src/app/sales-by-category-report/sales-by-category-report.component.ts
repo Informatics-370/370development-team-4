@@ -28,6 +28,7 @@ export class SalesByCategoryReportComponent {
   }[] = [];
   grandTotal = 0;
   itemsCount = -1;
+  now = new Date(Date.now());
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder) {
     this.datesForm = this.formBuilder.group({

@@ -994,8 +994,8 @@ namespace BOX.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WriteOffReasonID = table.Column<int>(type: "int", nullable: false),
                     StockTakeID = table.Column<int>(type: "int", nullable: false),
-                    RawMaterialId = table.Column<int>(type: "int", nullable: false),
-                    FixedProductId = table.Column<int>(type: "int", nullable: false),
+                    RawMaterialId = table.Column<int?>(type: "int", nullable: true),
+                    FixedProductId = table.Column<int?>(type: "int", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -1005,14 +1005,12 @@ namespace BOX.Migrations
                         name: "FK_Write_Off_Fixed_Product_FixedProductId",
                         column: x => x.FixedProductId,
                         principalTable: "Fixed_Product",
-                        principalColumn: "FixedProductID",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "FixedProductID");
                     table.ForeignKey(
                         name: "FK_Write_Off_Raw_Material_RawMaterialId",
                         column: x => x.RawMaterialId,
                         principalTable: "Raw_Material",
-                        principalColumn: "RawMaterialID",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "RawMaterialID");
                     table.ForeignKey(
                         name: "FK_Write_Off_Stock_Take_StockTakeID",
                         column: x => x.StockTakeID,
