@@ -27,8 +27,10 @@
     <div *ngIf="itemsCount == 0">No orders found within that range</div>
     <div *ngIf="!loading && itemsCount > 0">
 
-      <h4>Sales By Product Category Report</h4>
-      <div class="p-4 m-4" style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }}</div>
+      <div style="max-width: 90%; margin: auto; margin-left: 25px;">
+        <h4>Sales By Product Category Report</h4>
+        <div style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }} at {{now | date:'hh:mm:ss' }}</div>
+      </div>
 
       <table class="table" style="max-width: 90%;">
         <thead>
