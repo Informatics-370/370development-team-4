@@ -1,11 +1,11 @@
-<div class="row">
-  <!--SIDE NAVBAR-->
+<!-- <div class="row">
+  //SIDE NAVBAR
   <div class="col-md-2"><div class="app-menu"></div></div>
   <div class="col-md-10">
     <div class="container">
       <h2>Record Supplier Order</h2>
       <form [formGroup]="orderForm">
-        <!-- Supplier Name dropdown that gets all Supplier names for the user to select -->
+         Supplier Name dropdown that gets all Supplier names for the user to select
         <div class="form-group">
           <label for="chooseSupplier">Supplier Name:</label>
           <select id="chooseSupplier" formControlName="supplierID" name="supplierID" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
@@ -14,7 +14,7 @@
           </select>
         </div>
     
-        <!-- Product Type dropdown that shows Raw Materials/Fixed Products for the user to select -->
+        Product Type dropdown that shows Raw Materials/Fixed Products for the user to select
         <div class="form-group">
           <label for="chooseProdType">Product Type:</label>
           <select id="chooseProdType" [(ngModel)]="selectedValue" (ngModelChange)="onProductTypeChange()" formControlName="prodType" name="prodType" aria-label="Default select example" class="form-select modal-form-input modal-form-text">
@@ -24,7 +24,7 @@
           </select>
         </div>
     
-        <!-- Product Items dropdown that gets all Product Items stored in the DB for what the user selected in product type -->
+         Product Items dropdown that gets all Product Items stored in the DB for what the user selected in product type 
         <div class="form-group">
           <label for="prodItemID">Product Item:</label>
           <select id="prodItemID" formControlName="prodItemID" name="prodItemID" aria-label="Default select example" class="form-select modal-form-input modal-form-text" (change)="onProductItemChange()">
@@ -40,18 +40,300 @@
           </select>
         </div>
     
-        <!-- Quantity Input Field which increases the Quantity on hand attribute for either Raw material or fixed product -->
+         Quantity Input Field which increases the Quantity on hand attribute for either Raw material or fixed product 
         <div class="form-group">
           <label for="quantity">Quantity:</label>
           <input id="quantity" type="number" formControlName="quantity" class="form-control modal-form-input modal-form-text" placeholder="0" 
             name="quantity" required min="0" step="1">
         </div>
     
-        <!-- Save Order button -->
+         Save Order button 
         <button type="button" (click)="onSaveOrder()" class="btn btn-primary">SAVE Order</button>
       </form>
     </div>
   
   </div>
+</div> -->
+<!-- 
+<div class=" col-md-100">
+  <h3 class="p-3" style="color: black;">Capture supplier order</h3>
+  <span class="bold" style="font-size: 1.05em;"></span><br />
+        <div style="font-size: 0.95em; color: grey;">
+          Order number #: EST {{selectedEstimate.estimateID}}  <br />
+           Status: {{selectedEstimate.estimateStatusDescription}} <br /> 
+          Date: 23 July 2023<br /><br />
+        </div>
+
+        <table id="capture-order-table" class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Supplier</th>
+              <th scope="col">Product</th>
+              <th scope="col">Raw material</th>
+              <th scope="col">Quantity</th>
+            </tr>
+          </thead>
+          <tbody id="supplier-order-details-tbody">
+            <tr id="f-{{estLine.fixedProductID}}-{{estLine.quantity}}" *ngFor="let estLine of selectedEstimate.estimate_Lines">
+              <td>{{estLine.fixedProductDescription}}</td>
+              <td>{{estLine.fixedProductUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{estLine.quantity}}</td>
+              <td>{{estLine.fixedProductUnitPrice * estLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="form-heading">Capture new supplier order</td>
+            </tr>
+            <tr [formGroup]="captureorderForm">
+              <td>
+                <select id="productID" [(ngModel)]="selectedSupplierID" formControlName="supplierID" name="supplierID"
+                  class="form-select modal-form-input modal-form-text table-input estimate-form-select" (change)="changedSupplier()">
+                  <option disabled value="NA">Select supplier</option>
+                  <option *ngFor="let supplier of suppliers" [value]="supplier.supplierID">{{ supplier.name }}</option>
+                </select>
+              </td> -->
+<!--         <td>
+                <select id="productID" [(ngModel)]="selectedFixedProductID" formControlName="fixedproductID" name="fixedproductID"
+                  class="form-select modal-form-input modal-form-text table-input estimate-form-select" (change)="changedFixedProduct()">
+                  <option disabled value="NA">Select product</option>
+                  <option *ngFor="let fixed of fixedProducts" [value]="fixed.fixedProductID">{{fixed.description}}</option>
+                </select>
+              </td>
+              <td>
+                <select id="productID" [(ngModel)]="selectedRawMaterialID" formControlName="rawmaterialID" name="rawmaterialID"
+                  class="form-select modal-form-input modal-form-text table-input estimate-form-select" (change)="changedRawMaterial()">
+                  <option disabled value="NA">Select raw material</option>
+                  <option *ngFor="let raw of rawMaterials" [value]="raw.rawMaterialID">{{raw.description}}</option>
+                </select>
+              </td>
+              <td>
+                <label for="quantity" class="form-label modal-form-label">Quantity:</label>
+              </td>
+              <td>
+                <input id="quantity" type="number" formControlName="quantity"
+                  class="form-control modal-form-input modal-form-text table-input" placeholder="1" name="quantity"
+                  required min="1" step="1" max="{{selectedFixedProduct ? 2000000 : 1}}">
+              </td>
+              <td>
+                <button class="btn btn-create estimate-form-submit" (click)="addEstimateLine()">
+                  Capture received order
+                </button>
+              </td>
+            </tr>
+          </tfoot>
+        </table><br /> 
+        
+</div>-->
+
+<div class="row">
+  <!--SIDE NAVBAR-->
+  <div class="col-md-2">
+    <div class="app-menu"></div>
+  </div>
+  <!--Right Side-->
+  <div class="col-md-10">
+    <h3 class="p-3" style="color: black;">Supplier orders</h3>
+    <div id="searchbar">
+      <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+        placeholder="e.g. Search by ID, customer, status, price" (keyup)="searchSupplierOrders($event)"
+        (change)="searchSupplierOrders($event)" />
+      <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+    </div>
+
+    <hr class="hr hr-blurry m-3" />
+    <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#capturesupplierorder">Capture supplier
+      order</button>
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 110px;" scope="col"></th>
+          <th scope="col">Supplier</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!--Error message if there's no items in the DB-->
+        <tr *ngIf="supplierorderCount==0">
+          <td colspan="4">No supplier orders found. Please capture an order to the system.</td>
+        </tr>
+        <!--Loading message while data is still being retrieved from the DB-->
+        <tr *ngIf="loading">
+          <td colspan="4">Please wait while we load all captured supplier order...</td>
+        </tr>
+        <!--Item data from API-->
+        <tr *ngFor="let order of supplierOrders" >
+          <td><button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#viewsupplierorderdetails">
+              <fa-icon [icon]="['fas','info']"></fa-icon>
+            </button></td>
+          <td> {{order.supplierName}}</td>
+          <td> {{order.date}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
+<!--CAPTURE ORDER MODAL-->
+<div class="modal fade" id="capturesupplierorder" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">Capture Supplier Order</h4>
+        <button class="close-modal" data-bs-dismiss="modal"><fa-icon
+            [icon]="['fas', 'window-close']"></fa-icon></button>
+      </div>
+
+      <!--BODY-->
+      <div class="modal-body" [formGroup]="captureSupplierOrderForm">
+        <!-- <span class="bold" style="font-size: 1.05em;">John LongSurname</span><br />  -->
+        <div style="font-size: 0.95em; color: grey;" >
+            Date : {{capturedsupplierorder.date}}<br /><br />
+            Supplier Name: <br />
+          <div>
+            <select id="add-supplierID" [(ngModel)]="selectedSupplierID" formControlName="supplierID" name="supplier"
+              class="form-select modal-form-input modal-form-text inputfields" (change)="changedSupplier()">
+              <option disabled value="NA">Choose a supplier</option>
+              <option *ngFor="let supplier of suppliers" value={{supplier.supplierID}}>{{supplier.name}}
+              </option>
+            </select>            
+          </div>
+
+        </div>
+
+        <table id="supplier-order-table" class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Product Description</th>
+              <th scope="col">Qty</th>
+
+            </tr>
+          </thead>
+
+          <tbody id="supplier-order-tbody">
+            <tr *ngIf="capturedsupplierorder.supplierOrders.length == 0">
+              Add product to supplier order
+
+            </tr>
+            <tr *ngFor=" let orders of capturedsupplierorder.supplierOrders ">
+              <td>{{orders.fixedProductDescription != '' ? orders.fixedProductDescription: orders.rawMaterialDescription}} </td>
+              <td>{{orders.quantity}}</td>
+            </tr>
+          </tbody>
+
+          <tfoot>
+            <tr>
+              <td colspan="2" class="form-heading"></td>
+            </tr>
+            <tr>
+              <td>
+                <label>Select the product</label>
+                <select id="add-fixedproductID" [(ngModel)]="selectedFixedProductID" formControlName="fixedproductID"
+                  name="fixedproduct" class="form-select modal-form-input modal-form-text inputfields">
+                  <option disabled value="NA">Choose a fixed product</option>
+                  <option *ngFor="let product of fixedProducts" value={{product.fixedProductID}}>{{product.description}}
+                  </option>
+                </select>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <label>Select the raw material</label>
+                <select id="add-rawmaterialID" [(ngModel)]="selectedRawMaterialID" formControlName="rawmaterialID"
+                  name="rawmaterial" class="form-select modal-form-input modal-form-text inputfields">
+                  <option disabled value="NA">Choose a raw material</option>
+                  <option *ngFor="let material of rawMaterials" value={{material.rawMaterialID}}>
+                    {{material.description}}
+                  </option>
+                </select>
+              </td>
+
+              <td>
+                <label for="quantity" class="form-label modal-form-label">Quantity:</label>
+                <input id="quantity" type="number" formControlName="quantity"
+                  class="form-control modal-form-input modal-form-text table-input inputfields" placeholder="1" name="quantity"
+                  required min="1" step="1" max="500000">
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <button class="btn btn-create supplier-form-submit" (click)="addSupplierOrderLine()">
+                  Add supplier order
+                </button>
+              </td>
+            </tr>
+          </tfoot>
+
+        </table>
+        <!--Display validation error message-->
+        <!--  -->
+
+
+        <!--Display validation error message-->
+        <!-- <div *ngIf="(fixedproductID?.dirty || fixedproductID?.touched || submitClicked) && fixedproductID?.value == 'NA'"
+              class="error-msg">
+              Please select a fixed product
+          </div> -->
+
+        <!--Display validation error message-->
+        <!-- <div *ngIf="(fixedproductID?.dirty || fixedproductID?.touched || submitClicked) && fixedproductID?.value == 'NA'"
+            class="error-msg">
+            Please select a fixed product
+        </div> -->
+
+        <div class="form-submit-div">
+          <button class="btn btn-create modal-form-submit" (click)="saveorder()">Capture order</button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- view supplier order details modal -->
+<div class="modal fade" id="viewsupplierorderdetails" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content" *ngIf="viewsupplierorder!= null">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">View supplier order details</h4>
+        <button class="close-modal" data-bs-dismiss="modal">
+          <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+        </button>
+      </div>
+
+      <!--body-->
+      <div class="modal-body">
+        <div>
+          Supplier order# : {{viewsupplierorder.supplierOrderID}} <br />
+          Supplier: {{viewsupplierorder.supplierName}}
+          Contents of order:
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Product Description</th>
+              <th scope="col">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of viewsupplierorder.supplierOrders">
+              <td>{{order.fixedProductDescription != '' ? order.fixedProductDescription: order.rawMaterialDescription}} </td>
+              <td>{{order.quantity}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+
+    </div>
+  </div>
+</div>

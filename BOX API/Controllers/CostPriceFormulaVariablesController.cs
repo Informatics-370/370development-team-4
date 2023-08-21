@@ -49,25 +49,6 @@ namespace BOX.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("AddFormulaVariables")]
-        public async Task<IActionResult> AddFormulaVariables(Cost_Price_Formula_Variables cpfv)
-        {
-            var newCPFV = cpfv;
-
-            try
-            {
-                _repository.Add(newCPFV);
-                await _repository.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                return BadRequest("Invalid transaction");
-            }
-
-            return Ok(newCPFV);
-        }
-
         [HttpPut]
         [Route("EditFormulaVariables/{formulaId}")]
         public async Task<ActionResult<Cost_Price_Formula_Variables>> EditFormulaVariables(int formulaId, Cost_Price_Formula_Variables updatedCPFV)
@@ -88,27 +69,6 @@ namespace BOX.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "Internal Server Error. Please contact B.O.X support. " + ex.Message + " inner exception: " + ex.InnerException);
-            }
-            return BadRequest("Your request is invalid.");
-        }
-
-        [HttpDelete]
-        [Route("DeleteFormulaVariables/{formulaId}")]
-        public async Task<IActionResult> DeleteFormulaVariables(int formulaId)
-        {
-            try
-            {
-                var existingCPFV = await _repository.GetFormulaVariablesAsync(formulaId);
-                if (existingCPFV == null) return NotFound($"The Formula variables do not exist on the B.O.X System");
-
-                _repository.Delete(existingCPFV);
-
-                if (await _repository.SaveChangesAsync()) return Ok(existingCPFV);
-
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server Error. Please contact B.O.X support.");
             }
             return BadRequest("Your request is invalid.");
         }

@@ -21,6 +21,7 @@
                     [(ngModel)]="item.quantity"
                     [disabled]="!showWriteOffSection || !item.saveItem"
                     class="form-control"
+                    max="item.quantity"
                   >
                 </td>
                 <td>

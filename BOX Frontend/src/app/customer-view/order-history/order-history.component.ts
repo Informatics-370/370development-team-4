@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../services/data.services';
+import { AuthService } from '../../services/auth.service';
 import { OrderVM } from '../../shared/order-vm';
-import { OrderLineVM } from '../../shared/order-line-vm';
-import { Discount } from '../../shared/discount';
+import { OrderVMClass } from '../../shared/order-vm-class';
 import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
+import { CustomProductVM } from '../../shared/custom-product-vm';
 import { take, lastValueFrom } from 'rxjs';
 
 @Component({
@@ -15,20 +15,20 @@ import { take, lastValueFrom } from 'rxjs';
 })
 export class OrderHistoryComponent {
   customerOrders: OrderVM[] = []; //hold orders from backend
-  allCustomerOrders: OrderClass[] = []; //hold all orders
-  filteredOrders: OrderClass[] = []; //orders to show user
+  allCustomerOrders: OrderVMClass[] = []; //hold all orders
+  filteredOrders: OrderVMClass[] = []; //orders to show user
+
+  //messages to show user
   orderCount = -1;
   loading = true;
-  customer = {
-    ID: 1,
-    fullName: 'John Doe',
-    discount: 0.05
-  }; //will retrieve from backend when users are up and running
-  vat!: VAT;
+  error = false;
+
+  //customer
+  customerID = '';
+  allVATs!: VAT[];
   fixedProducts: FixedProductVM[] = [];
-  discountList: Discount[] = [];
+  customProducts: CustomProductVM[] = [];
   searchTerm: string = '';
-  success = false;
   /*Statuses:
   1 Placed
   2 In progress
@@ -38,21 +38,13 @@ export class OrderHistoryComponent {
   6 Completed
   */
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute) { }
+  constructor(private dataService: DataService, private authService: AuthService) { }
   
   ngOnInit(): void {
-    const customerIDs = [1, 2, 4]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
-    let index = Math.floor((Math.random() * 3));
-    this.customer.ID = customerIDs[index];
-    
-    //Retrieve the item ID from url
-    this.activatedRoute.paramMap.subscribe(params => {
-      let successMsg = params.get('success');
-      if (successMsg) {
-        this.success = true;
-        this.displaySuccessMessage();
-      }
-    });
+    //get customer ID
+    const token = localStorage.getItem('access_token')!;
+    let id = this.authService.getUserIdFromToken(token);
+    if (id) this.customerID = id;
 
     this.getDataFromDB();
   }
@@ -61,77 +53,97 @@ export class OrderHistoryComponent {
   async getDataFromDB() {
     try {
       //turn Observables that retrieve data from DB into promises
-      const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+      const getFixedProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+      const getCustomProductsPromise = lastValueFrom(this.dataService.GetAllCustomProducts().pipe(take(1)));
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
-      const getDiscountPromise = lastValueFrom(this.dataService.GetDiscounts().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
-      const [allVAT, allFixedProducts, allDiscounts] = await Promise.all([
+      const [allVAT, allFixedProducts, allCustomProducts] = await Promise.all([
         getVATPromise,
-        getProductsPromise,
-        getDiscountPromise
+        getFixedProductsPromise,
+        getCustomProductsPromise
       ]);
 
       //put results from DB in global arrays
       this.fixedProducts = allFixedProducts;
-      this.vat = allVAT[0];
-      this.discountList = allDiscounts;
+      console.log('All fixed products', this.fixedProducts);
+      this.customProducts = allCustomProducts;
+      console.log('All custom products', this.customProducts);
+      this.allVATs = allVAT;
+      console.log('All VAT', this.allVATs);
 
       await this.getCustomerOrdersPromise();
     } catch (error) {
       console.error('An error occurred:', error);
     }
-  }  
+  }
 
   //separate functionality of getting orders so I can call it separately whenever an order is cancelled
   async getCustomerOrdersPromise() {
     this.loading = true;
     try {
-      this.customerOrders = await lastValueFrom(this.dataService.GetOrdersByCustomer(this.customer.ID).pipe(take(1)));
-
-      this.displayCustomerOrderes() //Execute only after data has been retrieved from the DB otherwise error
-
-      return 'Successfully retrieved orders from the database';
+      this.customerOrders = await lastValueFrom(this.dataService.GetOrdersByCustomer(this.customerID).pipe(take(1)));
+      console.log('customer orders', this.customerOrders);
+      this.displayCustomerOrders() //Execute only after data has been retrieved from the DB otherwise error
     } catch (error) {
-      console.log('An error occurred while retrieving orders: ' + error);
-      throw new Error('An error occurred while retrieving orders: ' + error);
+      this.loading = false;
+      this.orderCount = -1;
+      this.error = true;
+      console.error('An error occurred while retrieving orders: ', error);
     }
   }
 
-  displayCustomerOrderes() {
+  displayCustomerOrders() {
     this.filteredOrders = []; //empty array
     this.allCustomerOrders = [];
 
-    this.customerOrders.forEach(ord => {
+    this.customerOrders.forEach(order => {
       //create array that holds product photo
       let orderLines: any[] = [];
-      ord.customerOrders.forEach(line => {
-        let product = this.fixedProducts.find(prod => prod.fixedProductID == line.fixedProductID);
-        let ol: any = {
-          productDescription: line.fixedProductDescription,
-          quantity: line.quantity,
-          unitPrice: this.getVATInclusive(line.fixedProductUnitPrice),
-          productImage: product ? product.productPhotoB64 : ''
+      order.orderLines.forEach(line => {
+        let isFixedProduct: boolean = line.fixedProductID != 0; //first determine if it's a fixed product
+        let fixedProduct: FixedProductVM | undefined;
+        let customProduct: CustomProductVM | undefined;
+
+        if (isFixedProduct) {
+          fixedProduct = this.fixedProducts.find(prod => prod.fixedProductID == line.fixedProductID);
         }
-        
-        orderLines.push(ol);
+        else {
+          customProduct = this.customProducts.find(prod => prod.customProductID == line.customProductID);
+        }
+
+        let orderLine: any = {
+          lineID: isFixedProduct ? line.fixedProductID : line.customProductID,
+          isFixedProduct: isFixedProduct,
+          productID: isFixedProduct ? fixedProduct?.fixedProductID : customProduct?.customProductID,
+          productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription,
+          productFileB64: isFixedProduct ? fixedProduct?.productPhotoB64 : customProduct?.label,
+          confirmedUnitPrice: line.confirmedUnitPrice,
+          quantity: line.quantity,
+        }
+
+        orderLines.push(orderLine);
       });
 
-      let order : OrderClass = new OrderClass(ord, orderLines)
-      this.filteredOrders.push(order);
+      let applicableVAT = this.getApplicableVAT(order.date); //get vat applicable to that date
+      let orderClass: OrderVMClass = new OrderVMClass(order, orderLines, applicableVAT);
+      this.filteredOrders.push(orderClass);
     });
-    
-    this.allCustomerOrders = this.filteredOrders; //store all the order someplace before I search below
-    this.orderCount = this.filteredOrders.length; //update the number of orders
 
-    console.log("All of customer " + this.customer.ID + "'s orders: ", this.filteredOrders);
+    this.allCustomerOrders = this.filteredOrders; //store all the orders someplace before I search below
+    this.orderCount = this.filteredOrders.length; //update the number of orders
     this.loading = false;
   }
 
-  getVATInclusive(amount: number): number { 
-    let priceInclVAT = amount * (1 + this.vat.percentage/100);
-    return parseFloat(priceInclVAT.toFixed(2))
+  getApplicableVAT(date: Date): VAT {
+    for (let i = this.allVATs.length - 1; i >= 0; i--) {
+      if (date >= this.allVATs[i].date) {
+        return this.allVATs[i];
+      }
+    }
+
+    return this.allVATs[this.allVATs.length - 1]; // Fallback to the latest VAT if no applicable VAT is found
   }
 
   /*SEARCH*/
@@ -140,7 +152,8 @@ export class OrderHistoryComponent {
     this.filteredOrders = []; //clear array
     for (let i = 0; i < this.allCustomerOrders.length; i++) {
       //concatenate all the searchable info in one variable
-      let toSearch: string = String(this.allCustomerOrders[i].ID + this.allCustomerOrders[i].statusDescription).toLowerCase();
+      let toSearch: string = String(this.allCustomerOrders[i].customerOrderID + ' ' +
+        this.allCustomerOrders[i].orderStatusDescription).toLowerCase();
 
       if (toSearch.includes(this.searchTerm.toLowerCase())) {
         this.filteredOrders.push(this.allCustomerOrders[i]);
@@ -152,6 +165,7 @@ export class OrderHistoryComponent {
   }
 
   cancelOrder(orderId: number) {
+    //notify them of how cancellation works and their deposit
     try {
       //statusID 3 = 'Cancelled'
       this.dataService.UpdateOrderStatus(orderId, 3).subscribe((result) => {
@@ -163,54 +177,5 @@ export class OrderHistoryComponent {
     } catch (error) {
       console.error('Error updating status: ', error);
     }
-  }
-
-  displaySuccessMessage() {
-    setTimeout(() => {
-      this.success = false;
-    }, 10000);
-    return false
-  }
-
-}
-
-class OrderClass {
-  ID: number;
-  statusID: number;
-  statusDescription: string;
-  deliveryScheduleID: number;
-  date: string;
-  deliveryPhoto: string;
-  total: number; //total before negotiations after discount
-  totalDiscount: number; //total discount in rands before negotiations; customer loyalty discount + bulk discount
-  negotiatedDiscount: number; //discount agreed on during negotiations
-  orderLines: any[]; //array holding product info incl pics
-
-  constructor(order: OrderVM, orderLines: any[], negotiatedDiscount?: number) {
-    this.orderLines = orderLines;
-    this.ID = order.customerOrderID;
-    this.statusID = order.customerStatusID;
-    this.statusDescription = order.orderStatusDescription; 
-    this.date = order.date;
-    this.deliveryScheduleID = order.orderDeliveryScheduleID;
-    this.deliveryPhoto = order.deliveryPhoto;   
-    this.negotiatedDiscount = negotiatedDiscount ? negotiatedDiscount : 0; //includes VAT
-    this.total = this.getTotalBeforeDiscount();
-    this.totalDiscount = this.getDiscount();
-  }
-
-  getTotalBeforeDiscount(): number {
-    let total = 0;
-    this.orderLines.forEach(line => {
-      total += line.unitPrice * line.quantity;
-    });
-
-    return total;
-  }
-
-  getDiscount(): number {
-    let totalBeforeDiscount = this.getTotalBeforeDiscount();
-    let discount = totalBeforeDiscount - this.total;
-    return discount;
   }
 }

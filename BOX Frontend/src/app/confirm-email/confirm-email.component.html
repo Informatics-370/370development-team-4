@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bootstrap 5 Side Bar Navigation</title>
+        <!-- bootstrap 5 css -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous" />
+        <!-- BOX ICONS CSS-->
+        <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css" rel="stylesheet" />
+        <!-- Poppins -->
+        <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    </head>
+    <body>
+        <div class="app-customer-navbar"></div>
+        <section class="h-100 h-custom">
+            <div class="container py-5">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-lg-8">
+                  <div class="card rounded-3 overflow-auto shadow">
+                    <div class="card-body">
+                      <!-- Email Verified Message -->
+                      <div *ngIf="emailVerified" class="text-center">
+                        <h4 class="text-success">Email Verified Successfully</h4>
+                        <p>Your email has been successfully verified. You can now proceed to login.</p>
+                        <button type="button" class="btn btn-success btn-lg text-uppercase text-white ripple shadow" [routerLink]="['/login']">Login</button>
+                      </div>
+                      <!-- End Email Verified Message -->
+                      <!-- Your registration form HTML here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <div class="footer"></div>
+    </body>
+</html>

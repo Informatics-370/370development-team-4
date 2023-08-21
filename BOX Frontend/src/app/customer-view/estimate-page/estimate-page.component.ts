@@ -19,7 +19,7 @@ export class EstimatePageComponent implements OnInit {
   estimateCount = -1;
   loading = true;
   user = {
-    Id: '3804c42b-f8cb-4df3-91cd-8334874b5cf4',
+    Id: '91abe583-4b9a-4925-983e-f4e6daac6921',
     fullName: 'John Doe',
     discount: 0.05
   }; //will retrieve from backend when users are up and running
@@ -41,7 +41,7 @@ export class EstimatePageComponent implements OnInit {
   ngOnInit(): void {
     // const customerIDs = [3, 5, 10, 12, 13]; //the only customers that have estimates in the backend for now excluding 12 who got nothing
     // let index = Math.floor((Math.random() * 5));
-    this.user.Id = '7f8fcf33-1585-47f3-8cc8-ef72cedfc290';
+    this.user.Id = 'd8aa46f8-c696-4206-88bb-2d932c0e0ad8';
     this.getDataFromDB();
   }
 
@@ -77,7 +77,7 @@ export class EstimatePageComponent implements OnInit {
   async getCustomerEstimatesPromise() {
     this.loading = true;
     try {
-      this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.user.Id).pipe(take(1)));
+      //this.customerEstimates = await lastValueFrom(this.dataService.GetEstimatesByCustomer(this.user.Id).pipe(take(1)));
 
       this.displayCustomerEstimates(); //Execute only after data has been retrieved from the DB otherwise error
 
@@ -144,11 +144,11 @@ export class EstimatePageComponent implements OnInit {
   acceptEstimate(estimateId: number) {
     try {
       //statusID 4 = 'Accepted'
-      this.dataService.UpdateEstimateStatus(estimateId, 4).subscribe((result) => {
+      /* this.dataService.UpdateEstimateStatus(estimateId, 4).subscribe((result) => {
         console.log("Result", result);
         this.getCustomerEstimatesPromise(); //refresh list; will be removed once buy now works
         //Navigate to buy now page
-      });
+      }); */
     } catch (error) {
       console.error('Error updating status: ', error);
     }
@@ -157,11 +157,11 @@ export class EstimatePageComponent implements OnInit {
   rejectEstimate(estimateId: number) {
     try {
       //statusID 5 = 'Rejected'
-      this.dataService.UpdateEstimateStatus(estimateId, 5).subscribe((result) => {
+      /* this.dataService.UpdateEstimateStatus(estimateId, 5).subscribe((result) => {
         console.log("Result", result);
         this.deleteEstimate(estimateId); //delete estimate
         this.getCustomerEstimatesPromise(); //refresh list
-      });
+      }); */
     } catch (error) {
       console.error('Error updating status: ', error);
     }
@@ -170,11 +170,11 @@ export class EstimatePageComponent implements OnInit {
   cancelEstimate(estimateId: number) {
     try {
       //statusID 3 = 'Cancelled'
-      this.dataService.UpdateEstimateStatus(estimateId, 3).subscribe((result) => {
+      /* this.dataService.UpdateEstimateStatus(estimateId, 3).subscribe((result) => {
         console.log("Result", result);
         this.deleteEstimate(estimateId); //delete estimate
         this.getCustomerEstimatesPromise(); //refresh list
-      });
+      }); */
     } catch (error) {
       console.error('Error updating status: ', error);
     }

@@ -1,6 +1,15 @@
 @import "../dashboard/dashboard.component.css";
+@import "../product-category/product-category.component.css";
 
-.container {
+
+#supplier-order-table{
+  max-width: 90%;
+}
+
+.inputfields{
+  max-width: 50%;
+}
+/* .container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
@@ -32,7 +41,7 @@
     border-radius: 5px;
   }
   
-  button {
+ button {
     display: block;
     width: 100%;
     padding: 10px;
@@ -42,4 +51,4 @@
     color: #fff;
     font-weight: bold;
     cursor: pointer;
-  }
+  }  */

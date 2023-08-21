@@ -20,7 +20,6 @@ import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
-import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
@@ -45,6 +44,20 @@ import { RegistrationSuccessPopupComponent } from './registration-success-popup/
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
+import { CustomProdComponent } from './custom-prod/custom-prod.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
+import { FooterComponent } from './footer/footer.component';
+import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
+import { EmployeesComponent } from './employees/employees.component';
+import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
+import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
+import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
+import { GenerateQuoteComponent } from './generate-quote/generate-quote.component';
+import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
+import { ProductListReportComponent } from './product-list-report/product-list-report.component';
+import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
+import { SupplierListComponent } from './supplier-list/supplier-list.component';
 
 
 @NgModule({
@@ -64,7 +77,6 @@ import { CustomerOrdersComponent } from './customer-orders/customer-orders.compo
         SupplierComponent,
         StartupDivComponent,
         FixedProductComponent,
-        EstimateDurationComponent,
         RawMaterialComponent,
         ProductsComponent,
         CategoriesMenuComponent,
@@ -89,7 +101,21 @@ import { CustomerOrdersComponent } from './customer-orders/customer-orders.compo
         PlaceOrderComponent,
         OrderHistoryComponent,
         CustomerOrdersComponent,
-        RegistrationSuccessPopupComponent
+        RegistrationSuccessPopupComponent,
+        CustomProdComponent,
+        ConfirmEmailComponent,
+        FooterComponent,
+        TwoFactorAuthComponent,
+        EmployeesComponent,
+        ProfilePageComponent,
+        AssignEmployeeComponent,
+        MyQuotesComponent,
+        QouteRequestsComponent,
+        GenerateQuoteComponent,
+        SalesByCategoryReportComponent,
+        ProductListReportComponent,
+        InactiveCustomerListComponent,
+        SupplierListComponent
         
   ],
   imports: [
