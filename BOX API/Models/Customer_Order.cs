@@ -10,15 +10,25 @@ namespace BOX.Models
 	{
 		[Key]
 		public int CustomerOrderID { get; set; }
-		[ForeignKey("Customer_Order_Status")]
+
+        [ForeignKey("Quote")]
+        public int QuoteID { get; set; }
+        public virtual Quote Quote { get; set; }
+
+        [ForeignKey("Customer_Order_Status")]
 		public int CustomerOrderStatusID { get; set; }
 		public virtual Customer_Order_Status Customer_Order_Status { get; set; }
+		
 		[ForeignKey("Order_Delivery_Schedule")]
 		public int? OrderDeliveryScheduleID { get; set; }
 		public virtual Order_Delivery_Schedule Order_Delivery_Schedule { get; set; }
 
-		[Required] public string Date { get; set; }
-		[Required] public byte[] Delivery_Photo { get; set; }
+        [ForeignKey("User")]
+        public string UserId { get; set; }
+        public virtual User User { get; set; }
 
+        [Required] public DateTime Date { get; set; }
+		[Required] public byte[] Delivery_Photo { get; set; }
+		[Required] public string Delivery_Type { get; set; } //delivery or pick up
 	}
 }

@@ -9,34 +9,57 @@
   <div class="col-md-9 col-sm-9 p-2">
     <div class="row">
       <h3 class="p-4" style="color: black;">Shopping Cart</h3>
+      <div class="loading" *ngIf="loading">
+        Loading your cart..
+      </div>
+      <div class="text-center" *ngIf="productCount == 0">
+        <span class="empty-msg"><fa-icon class="m-3" [icon]="['fas', 'cart-shopping']" ></fa-icon></span><br/>
+        Your cart is empty :(<br/>You can find all our products on our "Products" page.
+      </div>
 
       <div class="col-md-8 col-sm-12">
         <div id="product-cards">
+          <div id="clear-cart-div" *ngIf="productCount > 0">            
+            <button class="btn modal-form-submit btn-request btn-clear" (click)="clearCart()">Clear cart</button>
+          </div>
+
           <div *ngFor="let product of products" class="card-container">
             <div class="card product-card">
+              <!--Delete button-->
+              <button title="Remove this product from my cart" class="CRUD-icon remove-cart" (click)="removeFromCart(product)">
+                <fa-icon [icon]="['fas', 'trash']" ></fa-icon>
+              </button>
               <div class="row align-items-center">
                 <div class="col-md-5 col-sm-5 p-1">
                   <div class="card-img-top">
                     <img class="card-img product-card-img" style="width: auto;"
-                      src="data:image/png;base64,{{product.fixedProduct.productPhotoB64}}"
-                      [alt]="product.fixedProduct.description">
+                      src="data:image/png;base64,{{product.productPhotoB64}}" [alt]="product.description">
                   </div>
                 </div>
                 <div class="col-md-7 col-sm-7">
                   <div class="card-body product-card-body">
-                    <p style="font-weight: 600;">{{product.fixedProduct.description}}</p>
-                    <p style="font-size: 90%;">
+                    <div style="font-weight: 600;">{{product.description}}</div>
+                    <div style="color: grey; font-size: 90%;">{{product.itemDescription}}</div>
+                    <div *ngIf="!product.hasValidQuantity && product.quantityOnHand == 0">
+                      <div class="out-of-stock">OUT OF STOCK</div>
+                      <span style="font-size: 70%; line-height: 0.8em;">Due to high demand, this product is now out of stock. We'll restock soon!</span>
+                    </div>
+                    <div style="margin-bottom: .5em; margin-top: 1rem;">
                       Size: <em>{{product.sizeString}}</em> <br />
-                      Unit price: {{product.fixedProduct.price | currency: 'ZAR':'symbol-narrow'}} excl. VAT
-                    </p>
+                      <!-- Unit price: {{product.fixedProduct.price | currency: 'ZAR':'symbol-narrow'}} excl. VAT -->
+                    </div>
                     <div class="qty-form">
                       Quantity:
-                      <input type="number" [(ngModel)]="product.quantity" (change)="updateTotalPrice()" min="1" />
+                      <input class="form-control modal-form-input modal-form-text quantity-input" type="number"
+                        [(ngModel)]="product.quantity" min="0" (change)="updateCartItemQuantity(product)" />
                     </div>
-                    <div class="total">
+                    <div class="error-msg" *ngIf="!product.hasValidQuantity && product.quantityOnHand != 0">
+                      Due to inventory constraints the maximum you can order is {{product.quantityOnHand}}. We'll restock soon!
+                    </div>
+                    <!-- <div class="total">
                       Total: {{(product.fixedProduct.price * +product.quantity).toFixed(2) | currency:
                       'ZAR':'symbol-narrow'}} excl. VAT
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </div>
@@ -46,10 +69,27 @@
       </div>
 
       <!--CART SUMMARY-->
-      <div class="col-md-4 col-sm-12" style="padding-left: 0;">
+      <div class="col-md-4 col-sm-12" style="padding-left: 0;" *ngIf="productCount > 0">
         <div class="card-container">
           <div id="summary-card" class="card product-card">
-            <p>
+            <p style="font-weight: 600;">Cart Summary</p>
+            <div>Total quantity in cart: {{ getFormattedNumber(totalQuantity) }}</div>
+            <div>Total products in cart: {{ getFormattedNumber(productCount) }}</div>
+            <div class="text-center">
+              <button class="btn modal-form-submit btn-request" [disabled]="cannotRequest" (click)="requestQuote()"
+                title="Registered customers can request a quote and MegaPack will contact them">
+                Request quote
+              </button>
+            </div>
+            <div *ngIf="cannotRequest" class="error-msg" style="font-size: 85%;">
+              <span *ngIf="cannotRequestReason == 'Invalid quantity'">
+                A product in your cart is invalid. Please reduce the quantity or remove it from your cart.
+              </span>
+              <span *ngIf="cannotRequestReason == 'Already requested'">
+                Please finalise your previous quote request before requesting a new quote. You can view your quotes and quote requests on your 'My Quotes' page.
+                </span>
+            </div>
+            <!-- <p>
               Subtotal: <span id="price"></span> (Number of items): <span id="quantity"></span>
             </p>
             <p>
@@ -59,138 +99,21 @@
               Customer Discount: <span id="customerdiscount">%</span>
             </p>
             <p>
+              <button class="btn btn-info" >Request quote</button>
+            </p>
+            <p>
               Total Discount: <span>{{ calculateTotalDiscount() }}%</span>
             </p>
             <p>
               Final Estimated Total Price: {{ cartTotal | currency: 'ZAR':'symbol-narrow'}}
             </p>
             <p>
-              <button [routerLink]="['/place-order']" class="btn btn-info">Pay Now</button>
-            </p>
-            <p>
               <button class="btn btn-info" (click)="showGetInTouchWithUsModal()">Get In Touch With Us</button>
-            </p>
+            </p> -->
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-
-<!-- Get in touch with us modal -->
-<div id="contactModal" class="modal">
-  <div class="modal-content modal-scroll">
-    <button class="close">
-      <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
-    </button>
-    <h2>Contact Us</h2>
-    <form>
-      <div class="row">
-        <div class="col-md-4">
-          <label for="name">Name: </label>
-          <input type="text" id="name" name="name" [(ngModel)]="firstName" placeholder="Enter your name"
-            class="form-control">
-        </div>
-        <div class="col-md-4">
-          <label for="surname">Surname: </label>
-          <input type="text" id="surname" name="surname" [(ngModel)]="lastName" placeholder="Enter your surname"
-            class="form-control">
-        </div>
-        <div class="col-md-4">
-          <label for="email">Email: </label>
-          <input type="email" id="email" name="email" placeholder="Enter your email address" class="form-control">
-        </div>
-      </div>
-      <div class="modal-body">
-        <h2>Items In Cart</h2>
-
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col">Estimated Price</th>
-              <th scope="col">Product Description</th>
-              <th scope="col">Quantity In Your Cart</th>
-              <th scope="col">Estimated Price Before Discount</th>
-
-            </tr>
-          </thead>
-          <tbody>
-
-            <tr *ngFor="let product of products">
-              <td>
-                R{{product.fixedProduct.price}}
-              </td>
-              <td>
-                {{product.fixedProduct.description}}
-              </td>
-              <td>
-                {{product.quantity}}
-              </td>
-              <td>
-                R{{(product.fixedProduct.price * +product.quantity).toFixed(2)}}
-              </td>
-            <tr>
-              <td colspan="3">
-                Total discount given: R{{calculateFinalDiscount().toFixed(2)}}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="3">
-                <b>Final Estimated Price After Discount: R{{ calculateFinalEstimatedTotalPrice().toFixed(2) }}</b>
-              </td>
-            </tr>
-
-          </tbody>
-        </table>
-        <h2>Negotiate Price</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label for="to">To:</label>
-                <input type="text" id="recipientEmail" name="to" class="form-control" value="example@example.com"
-                  readonly>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label for="subject">Subject:</label>
-                <input type="text" id="subject" name="subject" class="form-control"
-                  [value]="'Price Adjustment for: ' + showUsersName()" readonly>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label for="message">Message:</label>
-                <textarea id="message" name="message" class="form-control" rows="8"
-                  placeholder="Compose your message"></textarea>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-group">
-                <div class="row">
-                  <span class="col-md-3">
-                    <button class="btn btn-primary" (click)="createEstimate()">Send</button>
-                  </span>
-                  <span class="col-md-3">
-                    <input type="file" id="attachments" multiple>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </form>
-
-      </div>
-    </form>
   </div>
 </div>
 

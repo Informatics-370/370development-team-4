@@ -1,16 +1,18 @@
-import { Component, Renderer2 } from '@angular/core';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { Component, Renderer2, ElementRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { Item } from '../../shared/item';
 import { SizeVM } from '../../shared/size-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
-//import { Discount } from '../../shared/discount';
-import { VAT } from 'src/app/shared/vat';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Cart } from 'src/app/shared/customer-interfaces/cart';
+import { Cart } from '../../shared/customer-interfaces/cart';
+import { CartService } from '../..//services/customer-services/cart.service';
+import { CustomProductVM } from '../../shared/custom-product-vm';
 import Swal from 'sweetalert2';
+declare var $: any; 
+import { Cart } from 'src/app/shared/customer-interfaces/cart';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -23,7 +25,7 @@ export class ProductDetailsComponent {
 
   //OUT OF STOCK
   outOfStock = false;
-  maxQuantity = 2000000;
+  maxQuantity = 0;
 
   /* //DISCOUNT
   discountApplied = false;
@@ -36,7 +38,7 @@ export class ProductDetailsComponent {
   fixedProducts: FixedProductVM[] = []; //used to store all fixed products as fixed products
   sizes: SizeVM[] = []; //all sizes
   itemID: number = -1; //ID of product item user clicked on to get to this page
-  vat!: VAT;
+  //vat!: VAT;
 
   //ADD TO CART
   sizeDropdownArray: SizeDropdrownItem[] = []; //array used to populate size dropdown
@@ -49,18 +51,95 @@ export class ProductDetailsComponent {
   //MESSAGES TO USER
   invalidQty = false; //validation error logic
   loading = true; //display loading message
-  cartSuccess = false; //display success message when product is added to cart
 
   //DISPLAY RELATED PRODUCTS
   relatedProductsVMList: ProductVM[] = []; //list of max 6 related products
 
   //CUSTOMISE PRODUCT
+  canCustomise = false;
+  customiseForm: FormGroup; //customise form
+  customisableItems: CustomisableProductItem[] = []; //hold array of single wall carton and double wall carton
+  invalidFile = false;
+  sides = 0; //holds number of sides user wants to print on for a custom box
+  //hold styles for box preview that are calculated based on box dimensions
+  front: any = { //styles for box front face
+    width: '10em', /*box length*/
+    height: '8em', /*box height*/
+    transform: 'translateZ(2.5em)' /* half of box width */
+  }
 
-  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder, private router: Router, private renderer: Renderer2, private http: HttpClient) {
+  back: any = { //styles for box back face
+    width: '10em', /*box length*/
+    height: '8em', /*box height*/
+    transform: 'translateZ(-2.5em)' /* half of box width */
+  }
+
+  left: any = { //styles for box left face
+    width: '5em', /*box width*/
+    height: '8em', /*box height*/
+    transform: 'translateX(-5em) rotateY(90deg)' /* half of box length */
+  }
+
+  right: any = { //styles for box right face
+    width: '5em', /*box width*/
+    height: '8em', /*box height*/
+    transform: 'translateX(5em) rotateY(90deg)' /* half of box length */
+  }
+
+  top: any = { //styles for box top face
+    width: '10em', /*box length*/
+    height: '5em', /*box width*/
+    transform: 'translateY(-4em) rotateX(90deg)' /*half of box height*/
+  }
+
+  bottom: any = { //styles for box bottom face
+    width: '10em', /*box length*/
+    height: '5em', /*box width*/
+    transform: 'translateY(4em) rotateX(90deg)' /*half of box height*/
+  }
+
+  topSpan: any = { //styles for box tape on top
+    width: '1em' /*box length divided by 10*/
+  }
+
+  frontBackSpan: any = { //styles for box tape on front
+    height: '2em', /*box height divided by 4*/
+    width: '1em' /*box length divided by 10*/
+  }
+
+  leftRightImg: any = { //styles for box image
+    'max-width': '4em', /*box width times 0.8*/
+    'max-height': '6.4em' /*box height times 0.8*/
+  }
+
+  frontBackImg: any = { //styles for box image
+    'max-width': '8em', /*box length times 0.8*/
+    'max-height': '6.4em' /*box height times 0.8*/
+  }
+
+  topBottomImg: any = { //styles for box image
+    'max-height': '4em' /*box width times 0.8*/
+  }
+
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, private cartService: CartService,
+      private formBuilder: FormBuilder, private renderer: Renderer2, private el: ElementRef, private http: HttpClient) {
     this.addToCartForm = this.formBuilder.group({
       sizeID: [{ value: '1' }, Validators.required],
       qty: [1, Validators.required]
+    });
+
+    this.customiseForm = this.formBuilder.group({
+      height: [80, Validators.required],
+      width: [50, Validators.required],
+      length: [100, Validators.required],
+      itemID: [1, Validators.required],
+      sides: [0, Validators.required],
+      label: [],
+      quantity: [1, Validators.required]
+    });
+
+    this.customiseForm.valueChanges.subscribe(changes => {
+      this.updateCustomBoxPreview(changes);
     });
   }
 
@@ -70,13 +149,15 @@ export class ProductDetailsComponent {
     this.activatedRoute.paramMap.subscribe(params => {
       //product with id 2 and description 'product description' will come as '2-product-description' so split it into array that is ['2', 'product-description']
       let id = params.get('id')?.split('-', 1);
-      console.log(id ? id[0] : 'no id');
       if (id) this.itemID = parseInt(id[0]);
     });
 
-    //Retrieve cart list from local storage; if there's nothing in cart, return empty array
-    this.cart = JSON.parse(localStorage.getItem("MegaPack-cart") || "[]");
-    console.log('cart', this.cart);
+    /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
+    OR THE CART SERVICE WILL BREAK!!!*/
+    this.cartService.getProducts().subscribe(() => {
+      //Retrieve cart list from local storage only after products have been retrieved.
+      this.cart = this.cartService.getCartItems();
+    });
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -86,12 +167,12 @@ export class ProductDetailsComponent {
       const getItemsPromise = lastValueFrom(this.dataService.GetItems().pipe(take(1)));
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
       const getSizesPromise = lastValueFrom(this.dataService.GetSizes().pipe(take(1)));
-      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+      //const getVATPromise = lastValueFrom(this.dataService.GetVAT().pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
-      const [allVAT, allItems, allSizes, allFixedProducts] = await Promise.all([
-        getVATPromise,
+      const [allItems, allSizes, allFixedProducts] = await Promise.all([
+        //getVATPromise,
         getItemsPromise,
         getSizesPromise,
         getProductsPromise
@@ -101,8 +182,31 @@ export class ProductDetailsComponent {
       this.items = allItems;
       this.fixedProducts = allFixedProducts;
       this.sizes = allSizes;
-      this.vat = allVAT[0];
-      console.log(this.vat);
+      //this.vat = applicableVAT;
+
+      //create list for customise box form dropdown
+      let customisableItemsList = this.items.filter(item =>
+        item.description.toLocaleLowerCase() == 'single wall carton' || item.description.toLocaleLowerCase() == 'single wall box' ||
+        item.description.toLocaleLowerCase() == 'double wall carton' || item.description.toLocaleLowerCase() == 'double wall box'
+      );
+
+      //filter to put single wall box first always
+      customisableItemsList.sort((currentItem, nextItem) => {
+        if (currentItem.description.toLocaleLowerCase().includes('single')) { return -1; }
+        return 0;
+      });
+
+      customisableItemsList.forEach(item => {
+        this.customisableItems.push({
+          itemID: item.itemID,
+          itemDescription: item.description,
+          formulaID: item.description.toLocaleLowerCase().includes('single') ? 1 : 2 //if item description is single wall, use formula with ID 0, otherwise 1
+        });
+      });
+      console.log('customisableItems', this.customisableItems);
+      this.customiseForm.patchValue({
+        itemID: this.customisableItems[0].itemID
+      })
 
       this.displayProduct();
     } catch (error) {
@@ -113,6 +217,12 @@ export class ProductDetailsComponent {
   displayProduct() {
     let matchingItem = this.items.find(item => item.itemID == this.itemID); //get the item with matching ID
     let matchingFixedProducts = this.fixedProducts.filter(fixedProd => fixedProd.itemID == this.itemID); //get all products with matching item ID
+
+    //determine if it can be customised
+    if (matchingItem?.description.toLocaleLowerCase() == 'single wall carton' || matchingItem?.description.toLocaleLowerCase() == 'single wall box' || matchingItem?.description.toLocaleLowerCase() == 'double wall carton' || matchingItem?.description.toLocaleLowerCase() == 'double wall box') {
+      this.canCustomise = true;
+    }
+
     /*sort matching fixed products by price so that sizes will also be in order from least expensive to most expensive, 
     which should result in smallest to biggest size*/
     matchingFixedProducts.sort((currentProd, nextProd) => {
@@ -162,14 +272,14 @@ export class ProductDetailsComponent {
           if (sizeDropdownString.trim() === '') sizeDropdownString = 'N/A';
 
           //create object; e.g. result: {sizeString: '150x150', price: 12.99, id: 15, qtyOnHand: 243500}
-          let priceInclVAT = fixedProd.price * (1 + this.vat.percentage/100); //let price shown incl vat
+          //let priceInclVAT = fixedProd.price * (1 + this.vat.percentage / 100); //let price shown incl vat
 
           let sizeDropdownObject: SizeDropdrownItem = {
             sizeString: sizeDropdownString,
-            price: parseFloat(priceInclVAT.toFixed(2)),
+            //price: parseFloat(priceInclVAT.toFixed(2)),
             fixedProductID: fixedProd.fixedProductID,
-            qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000
-            /* qtyOnHand: fixedProd.quantityOnHand //when fixed product quantities can be updated */
+            /* qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000 */
+            qtyOnHand: fixedProd.quantityOnHand //when fixed product quantities can be updated
           };
 
           this.sizeDropdownArray.push(sizeDropdownObject); //push to global array for size dropdown
@@ -222,7 +332,7 @@ export class ProductDetailsComponent {
         }, 8000);
       }
 
-      this.total = this.sizeDropdownArray[this.selectedSizeIndex].price * qtyInputValue; //set product total
+      //this.total = this.sizeDropdownArray[this.selectedSizeIndex].price * qtyInputValue; //set product total
 
       /* //apply discount; keep iterating through the loop until a) reach end of discount list or b) find correct discount to apply
       let i = this.discountList.length - 1;
@@ -259,9 +369,96 @@ export class ProductDetailsComponent {
     this.discountApplied = true; //display discount    
   } */
 
-  addToCart() {
-    let id = this.sizeDropdownArray[this.selectedSizeIndex].fixedProductID;
-    let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
+  async addToCart(isFixedProduct: boolean) {
+    let id = 0;
+    let prodDescription = '';
+    let prodItemDescription = '';
+    let concatenatedSizeString = '';
+    let prodPhotoB64 = '';
+    let qtyToAdd = this.addToCartForm.get("qty")?.value;
+
+    if (isFixedProduct) { //if this is a fixed product
+      id = this.sizeDropdownArray[this.selectedSizeIndex].fixedProductID;
+      let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
+
+      if (fixedProdToAdd) {
+        prodDescription = fixedProdToAdd.description;
+        prodItemDescription = this.selectedProductVM.description;
+        concatenatedSizeString = this.selectedProductVM.sizeStringArray[this.selectedSizeIndex];
+        prodPhotoB64 = fixedProdToAdd.productPhotoB64;
+      }
+    }
+    else { //it's a custom product and we must first create it and send to backend. Then retrieve it and save to cart
+      const formData = this.customiseForm.value; //get form data
+
+      let selectedCustomisableItem = this.customisableItems.find(item => item.itemID == formData.itemID); //determine whether they want to customise a single or double wall box
+
+      if (selectedCustomisableItem) {
+        //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input
+        const inputElement = document.getElementById('label') as HTMLInputElement;
+        const formImage = inputElement.files?.[0];
+
+        //put in VM
+        //numeric data has already been truncated in updateBoxPreview function
+        let newCustomProduct: CustomProductVM = {
+          customProductID: 0,
+          itemID: formData.itemID,
+          itemDescription: '',
+          formulaID: selectedCustomisableItem.formulaID,
+          width: formData.width,
+          height: formData.height,
+          length: formData.length,
+          sides: formData.sides,
+          label: formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
+        }
+        
+        console.log(newCustomProduct);
+
+        try {
+          const addCustomProductPromise = lastValueFrom(this.dataService.AddCustomProduct(newCustomProduct).pipe(take(1)));
+
+          const [result] = await Promise.all([
+            addCustomProductPromise
+          ]);
+
+          console.log('result', result);
+
+          //put result in variables to add to cart
+          id = result.customProductID;
+          prodDescription = 'Custom ' + result.itemDescription;
+          prodItemDescription = result.itemDescription;
+          concatenatedSizeString = result.length + 'mm x ' + result.width + 'mm x ' + result.height + 'mm';
+          prodPhotoB64 = result.label;
+          if (result.sides > 0) {
+            concatenatedSizeString += ' with printing on ' + result.sides + ' side(s)'
+          }
+          isFixedProduct = false;
+          qtyToAdd = this.quantity?.value;
+
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+
+    if (this.cartService.addToCart(id, prodDescription, prodItemDescription, concatenatedSizeString,
+      prodPhotoB64, isFixedProduct, qtyToAdd)) {
+
+        //close customise modal
+        $('#customise').modal('hide');
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Successfully added to cart!',
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
+        }).then((result) => {
+          console.log(result);
+        });
+    }
+
+    /* let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
     if (fixedProdToAdd) {
       //check if user already has that product in their cart
       let duplicateCartItem = this.cart.find(cartItem => cartItem.fixedProduct.fixedProductID == fixedProdToAdd?.fixedProductID);
@@ -275,7 +472,7 @@ export class ProductDetailsComponent {
       }
       else {
         //if not, create new cart item
-        fixedProdToAdd.price = this.getVATInclusive(fixedProdToAdd.price); //make fixed product price vat inclusive so cart is auto vat inclusive
+        //fixedProdToAdd.price = this.getVATInclusive(fixedProdToAdd.price); //make fixed product price vat inclusive so cart is auto vat inclusive
 
         let newCartItem: Cart = {
           fixedProduct: fixedProdToAdd,
@@ -285,14 +482,7 @@ export class ProductDetailsComponent {
 
         this.cart.push(newCartItem);
       }
-
-      //store updated cart in local storage
-      localStorage.setItem("MegaPack-cart", JSON.stringify(this.cart));
-      this.cartSuccess = true;
-      setTimeout(() => {
-        this.cartSuccess = false;
-      }, 8000);
-    }
+    } */
   }
 
   toggleOutOfStock(isProductOutOfStock: boolean) {
@@ -315,7 +505,7 @@ export class ProductDetailsComponent {
     //display max 6 related products
     let maxProducts: number = 6;
     if (matchingProductItems.length <= 4) maxProducts = matchingProductItems.length; //if there's less than 6 related products, don't loop 4 times
-    
+
     let relatedProductContainer = document.getElementById('related-products-container') as HTMLElement; //get row that holds related products
     relatedProductContainer.innerHTML = '';
 
@@ -402,16 +592,160 @@ export class ProductDetailsComponent {
   redirectToProductDetails(productItemID: number, itemDescription: string) {
     //url is expecting product with id 2 and description 'product description' to be '2-product-description', so combine string into that
     let urlParameter = productItemID + '-' + itemDescription.replaceAll(' ', '-');
-    /* this.router.navigate(['product-details', urlParameter]); //change URL */
     //update displayed product info
     window.location.href = '/product-details/' + urlParameter;
-    /* this.itemID = productItemID;
-    this.displayProduct(); */
-  }  
-  
-  getVATInclusive(amount: number): number { 
-    let priceInclVAT = amount * (1 + this.vat.percentage/100);
-    return priceInclVAT;
+  }
+
+  //convert image to B64
+  convertToBase64(img: File): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target?.result as string;
+        resolve(base64String.substring(base64String.indexOf(',') + 1)); // Resolve the promise with the base64 string; get rid of the data:image/... that auto appends itself to the B64 string
+      };
+      reader.onerror = (error) => {
+        reject(error); // Reject the promise if an error occurs
+      };
+      reader.readAsDataURL(img);
+    });
+  }
+
+  /*---------------------CUSTOMISE BOX LOGIC----------------------*/
+  //function to display image name since I decided to be fancy with a custom input button
+  showImageName(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const chosenFile = inputElement.files?.[0];
+    let imageName = document.getElementById('imageName') as HTMLSpanElement;
+    const imageElements = this.el.nativeElement.querySelectorAll('.print');
+
+    console.log(imageElements);
+
+    if (chosenFile) { //if there is a file chosen
+      //if chosen file is pdf/jpg
+      if (chosenFile.type.includes('pdf') || chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) {
+        imageName.innerHTML = chosenFile.name; //display file name
+        imageName.style.display = 'inline-block';
+        this.invalidFile = false;
+
+        if (chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) { //if chosen file is an image
+          const reader = new FileReader();
+          reader.readAsDataURL(chosenFile); //NB!!
+          reader.onload = (e) => {
+            imageElements.forEach((imgElement: HTMLImageElement) => {
+              imgElement.src = e.target?.result as string; // Set the src attribute of the image element
+            });
+          };
+        }
+      }
+      else {
+        imageName.style.display = 'none';
+        this.invalidFile = true;
+      }
+    }
+  }
+
+  //function to update custom box preview
+  updateCustomBoxPreview(changes: any) {
+    //first some validation aka no decimals allowed
+    changes.length = Math.round(changes.length);
+    changes.width = Math.round(changes.width);
+    changes.height = Math.round(changes.height);
+    this.sides = Math.round(this.sides);
+
+    //if any side is greater than 500mm, make it a doube wall box
+    //first get the dropdown item that's a double wall box
+    let doubleWallItemID = this.customisableItems[1].itemID;
+
+    if ((changes.length > 500 || changes.width > 500 || changes.height > 500) && this.customiseForm.get('itemID')?.value != doubleWallItemID) {
+      this.customiseForm.patchValue({
+        itemID: doubleWallItemID
+      });
+    }
+
+    //10mm = 1em
+    //Max length, width and height that can be displayed = 14em aka 140mm aka 14cm
+
+    let newLength: number = changes.length;
+    let newWidth: number = changes.width;
+    let newHeight: number = changes.height;
+
+    // Max size that can be displayed is 14em aka 140mm
+    const maxSize = 140;
+
+    // Check if any dimension exceeds the maximum size
+    if (newLength > maxSize || newWidth > maxSize || newHeight > maxSize) {
+      // Find the largest dimension
+      const largestDimension = Math.max(newLength, newWidth, newHeight);
+
+      // Calculate the scaling factor to fit within the max size
+      const scalingFactor = maxSize / largestDimension;
+
+      // Scale down all dimensions while maintaining the aspect ratio
+      newLength = Math.floor(newLength * scalingFactor);
+      newWidth = Math.floor(newWidth * scalingFactor);
+      newHeight = Math.floor(newHeight * scalingFactor);
+    }
+
+    this.front = { //styles for box front face
+      width: (newLength / 10).toFixed(1) + 'em', /*box length*/
+      height: (newHeight / 10).toFixed(1) + 'em', /*box height*/
+      transform: 'translateZ(' + (newWidth / 20).toFixed(1) + 'em)' /* half of box width */
+    }
+
+    this.back = { //styles for box back face
+      width: (newLength / 10).toFixed(1) + 'em', /*box length*/
+      height: (newHeight / 10).toFixed(1) + 'em', /*box height*/
+      transform: 'translateZ(-' + (newWidth / 20).toFixed(1) + 'em)' /* half of box width */
+    }
+
+    this.left = { //styles for box left face
+      width: (newWidth / 10).toFixed(1) + 'em', /*box width*/
+      height: (newHeight / 10).toFixed(1) + 'em', /*box height*/
+      transform: 'translateX(-' + (newLength / 20).toFixed(1) + 'em) rotateY(90deg)' /* half of box length */
+    }
+
+    this.right = { //styles for box right face
+      width: (newWidth / 10).toFixed(1) + 'em', /*box width*/
+      height: (newHeight / 10).toFixed(1) + 'em', /*box height*/
+      transform: 'translateX(' + (newLength / 20).toFixed(1) + 'em) rotateY(90deg)' /* half of box length */
+    }
+
+    this.top = { //styles for box top face
+      width: (newLength / 10).toFixed(1) + 'em', /*box length*/
+      height: (newWidth / 10).toFixed(1) + 'em', /*box width*/
+      transform: 'translateY(-' + (newHeight / 20).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
+    }
+
+    this.bottom = { //styles for box bottom face
+      width: (newLength / 10).toFixed(1) + 'em', /*box length*/
+      height: (newWidth / 10).toFixed(1) + 'em', /*box width*/
+      transform: 'translateY(' + (newHeight / 200).toFixed(1) + 'em) rotateX(90deg)' /*half of box height*/
+    }
+
+    this.topSpan = { //styles for box tape on top
+      width: (newLength / 100).toFixed(1) + 'em' /*box length divided by 10*/
+    }
+
+    this.frontBackSpan = { //styles for box tape on front
+      height: (newHeight / 40).toFixed(1) + 'em', /*box height divided by 4*/
+      width: (newLength / 100).toFixed(1) + 'em' /*box length divided by 10*/
+    }
+
+    this.topBottomImg = { //styles for box image
+      'max-height': (newWidth * 0.8 / 10).toFixed(1) + 'em', /*box width times 0.8*/
+      'max-width': (newLength * 0.8 / 10).toFixed(1) + 'em' /*box length times 0.8*/
+    }
+
+    this.leftRightImg = { //styles for box image
+      'max-width': (newWidth * 0.8 / 10).toFixed(1) + 'em', /*box width times 0.8*/
+      'max-height': (newHeight * 0.8 / 10).toFixed(1) + 'em' /*box height times 0.8*/
+    }
+
+    this.frontBackImg = { //styles for box image
+      'max-width': (newLength * 0.8 / 10).toFixed(1) + 'em', /*box length times 0.8*/
+      'max-height': (newHeight * 0.8 / 10).toFixed(1) + 'em' /*box height times 0.8*/
+    }
   }
 
   addReview(reviewData: any) {
@@ -427,6 +761,13 @@ export class ProductDetailsComponent {
       }
     );
   }
+  
+  //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------
+  get width() { return this.customiseForm.get('width'); }
+  get length() { return this.customiseForm.get('length'); }
+  get height() { return this.customiseForm.get('height'); }
+  get quantity() { return this.customiseForm.get('quantity'); }
+}
 
   openReviewModal() {
     Swal.fire({
@@ -462,7 +803,12 @@ export class ProductDetailsComponent {
 export interface SizeDropdrownItem {
   fixedProductID: number;
   sizeString: string;
-  price: number;
+  //price: number;
   qtyOnHand: number;
 }
 
+interface CustomisableProductItem {
+  itemID: number;
+  itemDescription: string;
+  formulaID: number;
+}

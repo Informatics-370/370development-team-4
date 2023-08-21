@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BOX.Models
 {
 	public class Customer_Review
 	{
-		[Key]
-		public int CustomerReviewID { get; set; }
+		[Key] public int CustomerReviewID { get; set; }
 
 		[Required] 
 		public int Product_Rating { get; set; }

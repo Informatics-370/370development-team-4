@@ -7,11 +7,11 @@ import { CategoryVM } from '../shared/category-vm';
 import { Item } from '../shared/item';
 import { ItemVM } from '../shared/item-vm';
 import { CustomProductVM } from '../shared/custom-product-vm';
-import { RefundReason } from '../shared/refund-reason';
+import { ReturnReason } from '../shared/return-reason';
 import { WriteOffReason } from '../shared/write-off-reason';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
-import { EstimateDuration } from '../shared/estimate-duration';
+import { QuoteDuration } from '../shared/quote-duration';
 import { SizeVM } from '../shared/size-vm';
 import { Supplier } from '../shared/supplier';
 import { Customer } from '../shared/customer';
@@ -22,6 +22,7 @@ import { SupplierOrderVM } from '../shared/supplierOrder-vm';
 import { Discount } from '../shared/discount';
 import { Users } from '../shared/user';
 import { OrderVM } from '../shared/order-vm';
+import { QuoteVM } from '../shared/quote-vm';
 
 imports: [
   HttpClientModule
@@ -124,30 +125,31 @@ export class DataService {
     return this.httpClient.put<ItemVM>(`${this.apiUrl}ProductItem/UpdateItem/${itemId}`, itemVM, this.httpOptions);
   }
 
-  //------------CUSTOMER REFUND REASON------------ [Give it its own service?]
-  GetRefundReasons(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}RefundReason/GetAllCustomerRefundReasons`)
+  //------------CUSTOMER RETURN REASON------------ [Give it its own service?]
+  GetReturnReasons(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}ReturnReason/GetAllCustomerReturnReasons`)
       .pipe(map(result => result))
   }
 
-  GetRefundReason(customerrefundreasonId: number): Observable<RefundReason> {
-    return this.httpClient.get<RefundReason>(`${this.apiUrl}RefundReason/GetCustomerRefundReason/${customerrefundreasonId}`)
+  GetReturnReason(customerreturnreasonId: number): Observable<ReturnReason> {
+    return this.httpClient.get<ReturnReason>(`${this.apiUrl}ReturnReason/GetCustomerReturnReason/${customerreturnreasonId}`)
       .pipe(map(result => result));
   }
 
-  AddReason(rrvm: any): Observable<RefundReason> {
-    return this.httpClient.post<RefundReason>(
-      `${this.apiUrl}RefundReason/AddRefundReason`, rrvm, this.httpOptions
+  AddReason(rrvm: any): Observable<ReturnReason> {
+    return this.httpClient.post<ReturnReason>(
+      `${this.apiUrl}ReturnReason/AddReturnReason`, rrvm, this.httpOptions
     );
   }
 
-  DeleteRefundReason(customerrefundreasonId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}RefundReason/DeleteCustomerRefundReason/${customerrefundreasonId}`, this.httpOptions);
+  DeleteReturnReason(customerreturnreasonId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}ReturnReason/DeleteCustomerReturnReason/${customerreturnreasonId}`, this.httpOptions);
   }
 
-  UpdateRefundReason(customerrefundreasonId: number, refundreasonModel: any): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}RefundReason/EditCustomerRefundReason/${customerrefundreasonId}`, refundreasonModel, this.httpOptions);
+  UpdateReturnReason(customerreturnreasonId: number, returnreasonModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}ReturnReason/EditCustomerReturnReason/${customerreturnreasonId}`, returnreasonModel, this.httpOptions);
   }
+
 
   //----------WRITE-OFF REASON---------------
   GetWriteOffReasons(): Observable<any> {
@@ -176,27 +178,19 @@ export class DataService {
 
   //------------VAT------------
   GetAllVAT(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}VAT/GetAllVATs`)
+    return this.httpClient.get(`${this.apiUrl}VAT/GetAllVAT`)
       .pipe(map(result => result))
   }
 
-  GetVAT(vatId: number): Observable<VAT> {
-    return this.httpClient.get<VAT>(`${this.apiUrl}VAT/GetVat/${vatId}`)
+  GetVAT(): Observable<VAT> {
+    return this.httpClient.get<VAT>(`${this.apiUrl}VAT/GetVAT`)
       .pipe(map(result => result));
   }
 
   AddVAT(newVAT: VAT): Observable<any> {
     return this.httpClient.post<any>(
-      `${this.apiUrl}VAT/AddVat`, newVAT, this.httpOptions
+      `${this.apiUrl}VAT/AddVAT`, newVAT, this.httpOptions
     );
-  }
-
-  DeleteVAT(vatId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}VAT/DeleteVat/${vatId}`, this.httpOptions);
-  }
-
-  UpdateVAT(vatId: number, updatedVAT: VAT): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}VAT/EditVat/${vatId}`, updatedVAT, this.httpOptions);
   }
 
   //-------------------------------------------------------FIXED PRODUCT-------------------------------------------------------
@@ -224,29 +218,14 @@ export class DataService {
     return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
   }
 
-  //------------ESTIMATE DURATION------------ 
-  GetEstimateDurations(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}EstimateDuration/GetAllEstimateDurations`)
-      .pipe(map(result => result))
-  }
-
-  GetEstimateDuration(estimatedurationId: number): Observable<EstimateDuration> {
-    return this.httpClient.get<EstimateDuration>(`${this.apiUrl}EstimateDuration/GetEstimateDuration/${estimatedurationId}`)
+  //------------QUOTE DURATION------------
+  GetQuoteDuration(quotedurationId: number): Observable<QuoteDuration> {
+    return this.httpClient.get<QuoteDuration>(`${this.apiUrl}QuoteDuration/GetQuoteDuration/${quotedurationId}`)
       .pipe(map(result => result));
   }
 
-  AddEstimateDuration(rrvm: any): Observable<EstimateDuration> {
-    return this.httpClient.post<EstimateDuration>(
-      `${this.apiUrl}EstimateDuration/AddEstimateDuration`, rrvm, this.httpOptions
-    );
-  }
-
-  DeleteEstimateDuration(estimatedurationId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}EstimateDuration/DeleteEstimateDuration/${estimatedurationId}`, this.httpOptions);
-  }
-
-  UpdateEstimateDuration(estimatedurationId: number, estimatedurationModel: any): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}EstimateDuration/EditEstimateDuration/${estimatedurationId}`, estimatedurationModel, this.httpOptions);
+  UpdateQuoteDuration(quotedurationId: number, quotedurationModel: any): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}QuoteDuration/EditQuoteDuration/${quotedurationId}`, quotedurationModel, this.httpOptions);
   }
 
   //----------RAW MATERIAL---------------
@@ -310,33 +289,37 @@ export class DataService {
   //     .pipe(map(result => result));
   // }
 
-  //---------------------------------------ESTIMATE----------------------------------
+  //------------------------------------------ QUOTE ------------------------------------------
   GetAllEstimates(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}Estimate/GetAllEstimates`)
       .pipe(map(result => result))
   }
 
-  GetEstimate(estimateId: number): Observable<EstimateVM> {
-    return this.httpClient.get<EstimateVM>(`${this.apiUrl}Estimate/GetEstimate/${estimateId}`)
+  GetQuote(quoteId: number): Observable<QuoteVM> {
+    return this.httpClient.get<QuoteVM>(`${this.apiUrl}Quote/GetQuote/${quoteId}`)
       .pipe(map(result => result));
   }
 
-  GetEstimatesByCustomer(customerId: string): Observable<any> {
-    return this.httpClient.get<any>(`${this.apiUrl}Estimate/GetEstimateByCustomer/${customerId}`).pipe(map(result => result));
+  GetQuotesByCustomer(customerId: string): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}Quote/GetQuoteByCustomer/${customerId}`).pipe(map(result => result));
   }
 
-  AddEstimate(estimateViewModel: EstimateVM): Observable<any> {
+  GetCustomerMostRecentQuote(customerId: string): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}Quote/GetCustomerMostRecentQuote/${customerId}`).pipe(map(result => result));
+  }
+
+  AddQuote(quoteViewModel: QuoteVM): Observable<any> {
     return this.httpClient.post<any>(
-      `${this.apiUrl}Estimate/AddEstimate`, estimateViewModel, this.httpOptions
+      `${this.apiUrl}Quote/AddQuote`, quoteViewModel, this.httpOptions
     );
   }
 
   UpdateEstimate(estimateId: number, estimateViewModel: EstimateVM): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimate/${estimateId}`, estimateViewModel, this.httpOptions);
   }
-
-  UpdateEstimateStatus(estimateId: number, statusId: number): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimateStatus/${estimateId}/${statusId}`, this.httpOptions);
+  
+  UpdateQuoteStatus(quoteId: number, statusId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Quote/UpdateQuoteStatus/${quoteId}/${statusId}`, this.httpOptions);
   }
 
   DeleteEstimate(estimateId: number): Observable<any> {
@@ -404,28 +387,28 @@ export class DataService {
 
   //------------DISCOUNTS------------ 
   GetDiscounts(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}Discount/GetAllDiscounts`)
+    return this.httpClient.get(`${this.apiUrl}BulkDiscount/GetAllDiscounts`)
       .pipe(map(result => result))
   }
 
 
   GetDiscount(discountId: number): Observable<Discount> {
-    return this.httpClient.get<Discount>(`${this.apiUrl}Discount/GetDiscount/${discountId}`)
+    return this.httpClient.get<Discount>(`${this.apiUrl}BulkDiscount/GetDiscount/${discountId}`)
       .pipe(map(result => result));
   }
 
   AddDiscount(rrvm: any): Observable<Discount> {
     return this.httpClient.post<Discount>(
-      `${this.apiUrl}Discount/AddDiscount`, rrvm, this.httpOptions
+      `${this.apiUrl}BulkDiscount/AddDiscount`, rrvm, this.httpOptions
     );
   }
 
   DeleteDiscount(discountId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}Discount/DeleteDiscount/${discountId}`, this.httpOptions);
+    return this.httpClient.delete<any>(`${this.apiUrl}BulkDiscount/DeleteDiscount/${discountId}`, this.httpOptions);
   }
 
   UpdateDiscount(discountId: number, discountModel: Discount): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}Discount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
+    return this.httpClient.put<any>(`${this.apiUrl}BulkDiscount/EditDiscount/${discountId}`, discountModel, this.httpOptions);
   }
   //------------------------------------------------------Users----------------------------------------------------------
   GetUsers(): Observable<any> {
@@ -434,9 +417,9 @@ export class DataService {
   }
 
 
-   DeleteUser(emailOrPhoneNumber: string): Observable<any> {
-     return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
-   }
+  DeleteUser(emailOrPhoneNumber: string): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}User/DeleteUser/${emailOrPhoneNumber}`, this.httpOptions);
+  }
 
   UpdateUser(email: string, updatedUser: Users): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}User/UpdateUser/${email}`, updatedUser, this.httpOptions);
@@ -458,7 +441,7 @@ export class DataService {
   }
   //---------------------------------------ORDER----------------------------------
   GetAllCustomerOrders(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}CustomerOrder/GetAllCustomerOrders`)
+    return this.httpClient.get<any>(`${this.apiUrl}CustomerOrder/GetAllCustomerOrders`)
       .pipe(map(result => result))
   }
 
@@ -467,8 +450,8 @@ export class DataService {
       .pipe(map(result => result));
   }
 
-  GetOrdersByCustomer(customerId: number): Observable<any> {
-    return this.httpClient.get<any>(`${this.apiUrl}CustomerOrder/GetOrderByCustomer/${customerId}`).pipe(map(result => result));
+  GetOrdersByCustomer(customerId: string): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}CustomerOrder/GetOrdersByCustomer/${customerId}`).pipe(map(result => result));
   }
 
   AddCustomerOrder(customerOrderViewModel: OrderVM): Observable<any> {
@@ -492,6 +475,34 @@ export class DataService {
       .pipe(map(result => result));
   }
 
+  AddCustomProduct(customProductViewModel: CustomProductVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}CustomProduct/CreateCustomProduct`, customProductViewModel, this.httpOptions
+    );
+  }
+
+  //-------------------------------------------------------QUOTE REQUESTS-------------------------------------------------------
+  GetAllActiveQuoteRequests(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}QuoteRequest/GetAllActiveQuoteRequests`)
+      .pipe(map(result => result))
+  }
+
+  GetQuoteRequest(quoteRequestId: number): Observable<QuoteVM> {
+    return this.httpClient.get<QuoteVM>(`${this.apiUrl}QuoteRequest/GetQuoteRequest/${quoteRequestId}`)
+      .pipe(map(result => result));
+  }
+
+  CheckForActiveQuoteRequest(customerId: string): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}QuoteRequest/CheckForActiveQuoteRequest/${customerId}`)
+      .pipe(map(result => result));
+  }
+
+  AddQuoteRequest(quoteRequestViewModel: QuoteVM): Observable<any> {
+    return this.httpClient.post<any>(
+      `${this.apiUrl}QuoteRequest/AddQuoteRequest`, quoteRequestViewModel, this.httpOptions
+    );
+  }
+
   //---------------------------------------- Confirm Email ----------------------------------------
   confirmEmail(token: string, email: string): Observable<any> {
     const encodedToken = encodeURIComponent(token);
@@ -510,6 +521,11 @@ export class DataService {
   //---------------------------------------- Customers ----------------------------------------
   GetCustomers(): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}User/GetAllCustomers`);
+  }
+
+  //---------------------------------------- REPORTS ----------------------------------------
+  GetSalesByCategoryReport(stringStartDate: string, stringEndDate: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${this.apiUrl}Reports/GetSalesByCategoryReport/${stringStartDate}/${stringEndDate}`);
   }
 
 }

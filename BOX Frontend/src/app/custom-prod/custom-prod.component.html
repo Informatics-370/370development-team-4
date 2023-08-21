@@ -16,39 +16,35 @@
                     <th style="width: 110px;" scope="col">ID</th>
                     <th scope="col">Label</th>
                     <th scope="col">Item</th>
-                    <th scope="col">Width x Height x Length</th>
+                    <th scope="col">Length x Width x Height</th>
+                    <th scope="col">No of sides</th>
                 </tr>
             </thead>
             <tbody>                
                 <!--Error message if there's no write-off reasons in the DB-->
                 <tr *ngIf="customproductCount==0">
-                    <td colspan="2">No custom products found.</td>
+                    <td colspan="5">No custom products found.</td>
                 </tr>
                 <!--Loading message while data is still being retrieved from the DB-->
                 <tr *ngIf="loading">
-                    <td colspan="2">Please wait while we load all custom products...</td>
+                    <td colspan="5">Please wait while we load all custom products...</td>
                 </tr>
                 <!--Reasons data from API-->
                 <tr *ngFor="let customproduct of filteredCustomProducts">
-                    <!-- <td>
-                        <button title="Delete this stock write-off reason" class="CRUD-icon" >
-                            <fa-icon class="m-3" [icon]="['fas', 'trash']" (click)="openDeleteModal(reason.writeOffReasonID)"></fa-icon>
-                        </button>
-                        <button title="Update this stock write-off reason" class="CRUD-icon" (click)="openUpdateModal(reason.writeOffReasonID)" >
-                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
-                        </button>                                              
-                    </td> -->
                     <td>
                         {{customproduct.customProductID}}
                     </td>
                     <td>
-                        <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{customproduct.label}}" alt="No image for this custom product" />
+                        <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{customproduct.label}}" alt="No preview for this custom product" />
                     </td>
                     <td>
                         {{customproduct.itemDescription}}
                     </td>
                     <td>
-                        {{customproduct.width}}mm x {{customproduct.height}}mm x {{customproduct.length}}mm
+                        {{customproduct.length}}mm x {{customproduct.width}}mm x {{customproduct.height}}mm
+                    </td>
+                    <td>
+                        {{customproduct.sides}}
                     </td>
                 </tr>
             </tbody>

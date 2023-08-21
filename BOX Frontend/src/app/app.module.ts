@@ -21,7 +21,6 @@ import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
-import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
@@ -53,6 +52,10 @@ import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.compon
 import { EmployeesComponent } from './employees/employees.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
+import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
+import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
+import { GenerateQuoteComponent } from './generate-quote/generate-quote.component';
+import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
 import { ReviewReportComponent } from './review-report/review-report.component';
 
 
@@ -73,7 +76,6 @@ import { ReviewReportComponent } from './review-report/review-report.component';
         SupplierComponent,
         StartupDivComponent,
         FixedProductComponent,
-        EstimateDurationComponent,
         RawMaterialComponent,
         ProductsComponent,
         CategoriesMenuComponent,
@@ -106,6 +108,10 @@ import { ReviewReportComponent } from './review-report/review-report.component';
         EmployeesComponent,
         ProfilePageComponent,
         AssignEmployeeComponent,
+        MyQuotesComponent,
+        QouteRequestsComponent,
+        GenerateQuoteComponent,
+        SalesByCategoryReportComponent
         ReviewReportComponent
         
   ],

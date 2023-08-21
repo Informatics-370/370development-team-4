@@ -50,7 +50,6 @@ namespace BOX.Controllers
                     LastName = u.user_LastName,
                     Email = u.Email,
                     Address = u.user_Address,
-                    Title = u.title,
                     PhoneNumber = u.PhoneNumber
                 })
                 .ToListAsync();
@@ -70,7 +69,6 @@ namespace BOX.Controllers
                     LastName = u.user_LastName,
                     Email = u.Email,
                     Address = u.user_Address,
-                    Title = u.title,
                     PhoneNumber = u.PhoneNumber
                 })
                 .FirstOrDefaultAsync();
@@ -101,7 +99,6 @@ namespace BOX.Controllers
             user.user_LastName = updatedUser.LastName;
             user.Email = updatedUser.Email;
             user.user_Address = updatedUser.Address;
-            user.title = updatedUser.Title;
             user.PhoneNumber = updatedUser.PhoneNumber;
 
             await _dbContext.SaveChangesAsync();
@@ -133,12 +130,12 @@ namespace BOX.Controllers
         {
             var customers = await _dbContext.Customer
                 .Include(c => c.User) // Include the User navigation property
-                .Include(c => c.Employee) // Include the Employee navigation property
+                //.Include(c => c.Employee) // Include the Employee navigation property
                 .Select(c => new GetCustomerDTO
                 {
                     CustomerId = c.CustomerId,
                     UserId = c.UserId,
-                    EmployeeId = c.EmployeeId,
+                    //EmployeeId = c.EmployeeId,
                     IsBusiness = c.isBusiness,
                     VatNo = c.vatNo,
                     CreditLimit = c.creditLimit,
@@ -149,18 +146,18 @@ namespace BOX.Controllers
                         FirstName = c.User.user_FirstName,
                         LastName = c.User.user_LastName,
                         Address = c.User.user_Address,
-                        Title = c.User.title,
+                        Title = c.User.Title.Description,
                         Email = c.User.Email,
                         PhoneNumber = c.User.PhoneNumber
                     },
                     Employee = new EmployeeDTO // Include employee information from User table
                     {
                         UserId = c.UserId,
-                        EmployeeId = c.EmployeeId,
+                        /*EmployeeId = c.EmployeeId,
                         FirstName = c.Employee.User.user_FirstName,
                         LastName = c.Employee.User.user_LastName,
                         Address = c.Employee.User.user_Address,
-                        Title = c.Employee.User.title,
+                        Title = c.Employee.User.Title.Description,*/
                         Email = c.User.Email, 
                         PhoneNumber = c.User.PhoneNumber
                     }
@@ -181,7 +178,7 @@ namespace BOX.Controllers
                 {
                     CustomerId = c.CustomerId,
                     UserId = c.UserId,
-                    EmployeeId = c.EmployeeId,
+                    //EmployeeId = c.EmployeeId,
                     IsBusiness = c.isBusiness,
                     VatNo = c.vatNo,
                     CreditLimit = c.creditLimit,

@@ -17,11 +17,6 @@ namespace BOX.Models
         public virtual User User { get; set; }
 
         [Required]
-        [ForeignKey("Employee")]
-        public string? EmployeeId { get; set; }
-        public virtual Employee Employee { get; set; }
-
-        [Required]
         public bool isBusiness { get; set; }
 
         [StringLength(10)]

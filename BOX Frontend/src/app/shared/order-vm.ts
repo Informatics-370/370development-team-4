@@ -1,13 +1,16 @@
 import { OrderLineVM } from "./order-line-vm";
 
 export interface OrderVM {
-    customerOrderID: number;
-    customerStatusID: number;
-    userId: string;
-    orderDeliveryScheduleID: number;
-    date: string;
-    deliveryPhoto: string;
-    customerFullName: string;
-    orderStatusDescription: string;
-    customerOrders: OrderLineVM[];
+  customerOrderID: number;
+  quoteID: number;
+  customerId: string;
+  customerFullName: string;
+  orderStatusID: number;
+  orderStatusDescription: string;
+  date: Date; //date ordered
+  deliveryScheduleID: number;
+  deliveryDate: Date;
+  deliveryType: string; //delivery or pick up
+  deliveryPhoto: string;
+  orderLines: OrderLineVM[];
 }

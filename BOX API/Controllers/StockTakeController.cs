@@ -39,7 +39,7 @@ namespace BOX.Controllers
             var stockTake = new Stock_Take
             {
                 UserId = stockTakeViewModel.UserId,
-                Date = DateTime.Now.ToString()
+                Date = DateTime.Now
             };
 
             _repository.Add(stockTake);

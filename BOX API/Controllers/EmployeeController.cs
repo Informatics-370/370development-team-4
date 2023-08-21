@@ -59,7 +59,7 @@ namespace BOX.Controllers
                     LastName = u.User.user_LastName,
                     Email = u.User.Email,
                     Address = u.User.user_Address,
-                    Title = u.User.title,
+                    Title = u.User.Title.Description,
                     PhoneNumber = u.User.PhoneNumber,
                     UserId = u.User.Id
                 })
