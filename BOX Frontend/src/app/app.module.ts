@@ -56,6 +56,7 @@ import { QouteRequestsComponent } from './qoute-requests/qoute-requests.componen
 import { GenerateQuoteComponent } from './generate-quote/generate-quote.component';
 import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
 import { ProductListReportComponent } from './product-list-report/product-list-report.component';
+import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
 
 
 @NgModule({
@@ -111,7 +112,8 @@ import { ProductListReportComponent } from './product-list-report/product-list-r
         QouteRequestsComponent,
         GenerateQuoteComponent,
         SalesByCategoryReportComponent,
-        ProductListReportComponent
+        ProductListReportComponent,
+        InactiveCustomerListComponent
         
   ],
   imports: [

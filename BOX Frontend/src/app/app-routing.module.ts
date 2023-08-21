@@ -42,6 +42,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
 import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
 import { ProductListReportComponent } from './product-list-report/product-list-report.component';
+import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
@@ -87,7 +88,8 @@ const routes: Routes = [
   { path: 'my-quotes', component: MyQuotesComponent },
   { path: 'quote-requests', component: QouteRequestsComponent },
   { path: 'sales-by-category', component: SalesByCategoryReportComponent },
-  { path: 'product-list', component: ProductListReportComponent }
+  { path: 'product-list', component: ProductListReportComponent },
+  { path: 'inactive-customers', component: InactiveCustomerListComponent }
 ];
 
 @NgModule({

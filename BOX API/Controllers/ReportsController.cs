@@ -102,5 +102,52 @@ namespace BOX.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + " inner exception " +  ex.InnerException);
             }
         }
+
+        [HttpGet]
+        [Route("GetInactiveCustomerList")]
+        public async Task<IActionResult> GetInactiveCustomerList()
+        {
+            try
+            {
+                //a customer is inactive if they haven't ordered in 90 days
+                DateTime now = DateTime.Now;
+                int daysToSubtract = 90;
+                //int minutesToSubtract = 15;
+
+                DateTime ninetyDaysAgo = now.AddDays(-daysToSubtract);
+                //DateTime fifteenMinutesAgo = now.AddMinutes(-minutesToSubtract);
+
+                var allCustomers = await _repository.GetAllCustomersAsync();
+                List<UserViewModel> inactiveCustomers  = new List<UserViewModel>();
+
+                foreach (var cus in allCustomers)
+                {
+                    var customerOrdersWithinRange = await _repository.GetCustomerOrdersWithinRange(cus.UserId, ninetyDaysAgo, now);
+                    //var customerOrdersWithinRange = await _repository.GetCustomerOrdersWithinRange(cus.UserId, fifteenMinutesAgo, now);
+
+                    if (!(customerOrdersWithinRange.Count() > 0))
+                    {
+                        var user = await _repository.GetUserAsync(cus.UserId);
+                        string fullname = await _repository.GetUserFullNameAsync(cus.UserId);
+
+                        UserViewModel userVM = new UserViewModel
+                        {
+                            emailaddress = user.Email,
+                            firstName = fullname
+                        };
+                        
+                        inactiveCustomers.Add(userVM);
+                    }
+                }
+
+                return Ok(inactiveCustomers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + " inner exception " + ex.InnerException);
+            }
+
+
+        }
     }
 }

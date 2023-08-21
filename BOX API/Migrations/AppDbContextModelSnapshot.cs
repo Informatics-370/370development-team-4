@@ -1260,12 +1260,14 @@ namespace BOX.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WriteOffID"), 1L, 1);
 
                     b.Property<int?>("FixedProductId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<int?>("RawMaterialId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int>("StockTakeID")
@@ -1914,11 +1916,15 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.Fixed_Product", "FixedProduct")
                         .WithMany()
-                        .HasForeignKey("FixedProductId");
+                        .HasForeignKey("FixedProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BOX.Models.Raw_Material", "RawMaterial")
                         .WithMany()
-                        .HasForeignKey("RawMaterialId");
+                        .HasForeignKey("RawMaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BOX.Models.Stock_Take", "Stock_Take")
                         .WithMany()

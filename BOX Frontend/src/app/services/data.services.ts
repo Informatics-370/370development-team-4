@@ -527,5 +527,9 @@ export class DataService {
   GetSalesByCategoryReport(stringStartDate: string, stringEndDate: string): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}Reports/GetSalesByCategoryReport/${stringStartDate}/${stringEndDate}`);
   }
+  
+  GetInactiveCustomerList(): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${this.apiUrl}Reports/GetInactiveCustomerList`);
+  }
 
 }

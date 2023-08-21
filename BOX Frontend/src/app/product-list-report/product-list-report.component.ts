@@ -11,7 +11,6 @@ import { RawMaterialVM } from '../shared/rawMaterialVM';
 })
 export class ProductListReportComponent {
   //messages to user
-  invalid = false;
   loading = false;
   productCount = -1;
 
