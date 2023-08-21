@@ -34,7 +34,7 @@ export class ProductListReportComponent {
     //put results from DB in global arrays
     this.fixedProducts = allFP;
     console.log('All fixed products:', this.fixedProducts);
-    this.rawMaterials = allFP;
+    this.rawMaterials = allRM;
     console.log('All raw materials:', this.rawMaterials);
     this.productCount = this.fixedProducts.length + this.rawMaterials.length;
 

@@ -531,5 +531,9 @@ export class DataService {
   GetInactiveCustomerList(): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}Reports/GetInactiveCustomerList`);
   }
+  
+  GetSupplierListReport(productId: number, isFixedProduct: string): Observable<Supplier[]> {
+    return this.httpClient.get<Supplier[]>(`${this.apiUrl}Reports/GetSupplierListReport/${productId}/${isFixedProduct}`);
+  }
 
 }

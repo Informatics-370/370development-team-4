@@ -149,5 +149,37 @@ namespace BOX.Controllers
 
 
         }
+
+        [HttpGet]
+        [Route("GetSupplierListReport/{productId}/{isFixedProduct}")]
+        public async Task<IActionResult> GetSupplierListReport(int productId, string isFixedProduct)
+        {
+            try
+            {
+                //get all supplier orders that contain this product
+                bool fixedProductOrdered = isFixedProduct == "true"; //is true if fixed product was ordered
+                var allOrderLines = await _repository.GetSupplierOrderLinesByProductAsync(productId, fixedProductOrdered);
+                List<Supplier> supplierList = new List<Supplier>();
+
+                foreach (var line in allOrderLines)
+                {
+                    var order = await _repository.GetSupplierOrderAsync(line.SupplierOrderID);
+                    var supplier = await _repository.GetSupplierAsync(order.SupplierID);
+                    supplierList.Add(supplier);
+                }
+
+                //remove duplicate suppliers from list
+                supplierList = supplierList.Distinct().ToList();
+
+                return Ok(supplierList);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + " inner exception " + ex.InnerException);
+            }
+
+
+        }
+
     }
 }

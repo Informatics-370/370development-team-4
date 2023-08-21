@@ -722,6 +722,20 @@ namespace BOX.Models
             return query.ToArrayAsync();
         }
 
+        public Task<Supplier_OrderLine[]> GetSupplierOrderLinesByProductAsync(int productId, bool isFixedProduct = true)
+        {
+            if (isFixedProduct) //if we're searching for a fixed product
+            {
+                IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.FixedProductID  == productId);
+                return query.ToArrayAsync();
+            }
+            else
+            {
+                IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.RawMaterialID == productId);
+                return query.ToArrayAsync();
+            }
+        }
+
         //--------------------------------- TRANSACTIONS --------------------------------
         public IDbContextTransaction BeginTransaction()
         {
