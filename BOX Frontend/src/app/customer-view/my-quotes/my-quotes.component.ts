@@ -25,7 +25,7 @@ export class MyQuotesComponent {
   filteredQuotes: QuoteVMClass[] = []; //quotes to show user
   quoteCount = -1;
   loading = true;
-  searchTerm: string = '';
+  //searchTerm: string = '';
 
   //data from DB
   allVATs: VAT[] = [];
@@ -212,7 +212,7 @@ export class MyQuotesComponent {
   }
 
   //--------------------------------------------- SEARCH QUOTE ---------------------------------------------
-  searchQuotes(event: Event) {
+  /* searchQuotes(event: Event) {
     this.searchTerm = (event.target as HTMLInputElement).value;
     this.filteredQuotes = []; //clear array
     for (let i = 0; i < this.allCustomerQuotes.length; i++) {
@@ -226,7 +226,7 @@ export class MyQuotesComponent {
 
     this.quoteCount = this.filteredQuotes.length; //update quote count
     console.log('Search results:', this.filteredQuotes);
-  }
+  } */
 
   //--------------------------------------------- ACCEPT ---------------------------------------------- 
   //ACCEPT QUOTE aka BUY NOW
