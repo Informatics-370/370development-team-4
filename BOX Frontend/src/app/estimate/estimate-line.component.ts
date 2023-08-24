@@ -233,7 +233,7 @@ export class EstimateLineComponent {
 
         console.log('Updated estimate: ', updatedEstimate);
 
-        this.dataService.UpdateEstimate(this.selectedEstimate.estimateID, updatedEstimate).subscribe(
+        /* this.dataService.UpdateEstimate(this.selectedEstimate.estimateID, updatedEstimate).subscribe(
           (result: any) => {
             console.log('Successfully updated estimate! ', result);
             this.getEstimatesPromise(); //refresh estimate list
@@ -241,7 +241,7 @@ export class EstimateLineComponent {
             $('#confirmEdit').modal('hide');
             $('#editPrice').modal('hide');
           }
-        );
+        ); */
       }
       catch (error) {
         console.log('Error submitting form', error)

@@ -284,10 +284,10 @@ export class DataService {
   }
 
   //---------------------------------------Customer--------------------------------------------
-  // GetCustomer(customerId: number): Observable<Customer> {
-  //   return this.httpClient.get<Customer>(`${this.apiUrl}Customer/GetCustomer/${customerId}`)
-  //     .pipe(map(result => result));
-  // }
+  /* GetCustomer(customerId: number): Observable<Customer> {
+     return this.httpClient.get<Customer>(`${this.apiUrl}Customer/GetCustomer/${customerId}`)
+       .pipe(map(result => result));
+  } */
 
   //------------------------------------------ QUOTE ------------------------------------------
   GetAllEstimates(): Observable<any> {
@@ -314,16 +314,17 @@ export class DataService {
     );
   }
 
-  UpdateEstimate(estimateId: number, estimateViewModel: EstimateVM): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimate/${estimateId}`, estimateViewModel, this.httpOptions);
+  RejectQuote(quoteVM: QuoteVM): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Quote/RejectQuote`, quoteVM, this.httpOptions);
   }
   
   UpdateQuoteStatus(quoteId: number, statusId: number): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Quote/UpdateQuoteStatus/${quoteId}/${statusId}`, this.httpOptions);
   }
-
-  DeleteEstimate(estimateId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}Estimate/DeleteEstimate/${estimateId}`, this.httpOptions);
+  
+  GetAllRejectReasons(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Quote/GetAllRejectReasons`)
+      .pipe(map(result => result))
   }
 
   //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------

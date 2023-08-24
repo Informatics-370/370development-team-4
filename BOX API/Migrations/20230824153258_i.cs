@@ -124,19 +124,6 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Price_Match_File",
-                columns: table => new
-                {
-                    PriceMatchFileID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    File = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Price_Match_File", x => x.PriceMatchFileID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Product_Category",
                 columns: table => new
                 {
@@ -199,6 +186,19 @@ namespace BOX.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Quote_Status", x => x.QuoteStatusID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reject_Reason",
+                columns: table => new
+                {
+                    RejectReasonID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reject_Reason", x => x.RejectReasonID);
                 });
 
             migrationBuilder.CreateTable(
@@ -354,25 +354,6 @@ namespace BOX.Migrations
                         principalTable: "Customer_Return_Reason",
                         principalColumn: "CustomerReturnReasonID",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Reject_Reason",
-                columns: table => new
-                {
-                    RejectReasonID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PriceMatchFileID = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Reject_Reason", x => x.RejectReasonID);
-                    table.ForeignKey(
-                        name: "FK_Reject_Reason_Price_Match_File_PriceMatchFileID",
-                        column: x => x.PriceMatchFileID,
-                        principalTable: "Price_Match_File",
-                        principalColumn: "PriceMatchFileID");
                 });
 
             migrationBuilder.CreateTable(
@@ -731,7 +712,7 @@ namespace BOX.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Credit_Application_Credit_Application_Status_CreditApplicationStatusID",
                         column: x => x.CreditApplicationStatusID,
@@ -994,8 +975,8 @@ namespace BOX.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WriteOffReasonID = table.Column<int>(type: "int", nullable: false),
                     StockTakeID = table.Column<int>(type: "int", nullable: false),
-                    RawMaterialId = table.Column<int?>(type: "int", nullable: true),
-                    FixedProductId = table.Column<int?>(type: "int", nullable: true),
+                    RawMaterialId = table.Column<int>(type: "int", nullable: false),
+                    FixedProductId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -1005,12 +986,14 @@ namespace BOX.Migrations
                         name: "FK_Write_Off_Fixed_Product_FixedProductId",
                         column: x => x.FixedProductId,
                         principalTable: "Fixed_Product",
-                        principalColumn: "FixedProductID");
+                        principalColumn: "FixedProductID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Write_Off_Raw_Material_RawMaterialId",
                         column: x => x.RawMaterialId,
                         principalTable: "Raw_Material",
-                        principalColumn: "RawMaterialID");
+                        principalColumn: "RawMaterialID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Write_Off_Stock_Take_StockTakeID",
                         column: x => x.StockTakeID,
@@ -1047,7 +1030,7 @@ namespace BOX.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Customer_Order_Customer_Order_Status_CustomerOrderStatusID",
                         column: x => x.CustomerOrderStatusID,
@@ -1064,6 +1047,33 @@ namespace BOX.Migrations
                         column: x => x.QuoteID,
                         principalTable: "Quote",
                         principalColumn: "QuoteID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Price_Match_File",
+                columns: table => new
+                {
+                    PriceMatchFileID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuoteID = table.Column<int>(type: "int", nullable: false),
+                    RejectReasonID = table.Column<int>(type: "int", nullable: false),
+                    File = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Price_Match_File", x => x.PriceMatchFileID);
+                    table.ForeignKey(
+                        name: "FK_Price_Match_File_Quote_QuoteID",
+                        column: x => x.QuoteID,
+                        principalTable: "Quote",
+                        principalColumn: "QuoteID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Price_Match_File_Reject_Reason_RejectReasonID",
+                        column: x => x.RejectReasonID,
+                        principalTable: "Reject_Reason",
+                        principalColumn: "RejectReasonID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -1359,6 +1369,16 @@ namespace BOX.Migrations
                 column: "FixedProductID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Price_Match_File_QuoteID",
+                table: "Price_Match_File",
+                column: "QuoteID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Price_Match_File_RejectReasonID",
+                table: "Price_Match_File",
+                column: "RejectReasonID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Product_Item_CategoryID",
                 table: "Product_Item",
                 column: "CategoryID");
@@ -1432,11 +1452,6 @@ namespace BOX.Migrations
                 name: "IX_Raw_Material_QRCodeID",
                 table: "Raw_Material",
                 column: "QRCodeID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reject_Reason_PriceMatchFileID",
-                table: "Reject_Reason",
-                column: "PriceMatchFileID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Size_Units_CategoryID",
@@ -1550,6 +1565,9 @@ namespace BOX.Migrations
                 name: "Price");
 
             migrationBuilder.DropTable(
+                name: "Price_Match_File");
+
+            migrationBuilder.DropTable(
                 name: "Quote_Line");
 
             migrationBuilder.DropTable(
@@ -1659,9 +1677,6 @@ namespace BOX.Migrations
 
             migrationBuilder.DropTable(
                 name: "Quote_Request_Status");
-
-            migrationBuilder.DropTable(
-                name: "Price_Match_File");
 
             migrationBuilder.DropTable(
                 name: "Title");

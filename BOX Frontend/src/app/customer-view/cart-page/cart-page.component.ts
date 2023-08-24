@@ -72,16 +72,16 @@ export class CartPageComponent {
         });
   
         //if they already can't request due to already having an active QR, there's no point in checking for an quote
-        if (this.cannotRequest == true) {
-          //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired)
+        if (!this.cannotRequest) {
+          console.log('Got here');
+          //if they have an active quote, quote with status that is 1 (Generated), or 4 (Rejected and will renegotiate)
           this.dataService.GetCustomerMostRecentQuote(this.customerID).subscribe((result) => {
-            if (result.quoteStatusID == 2 || result.quoteStatusID == 5) {
+            if (result.quoteStatusID == 1 && result.quoteStatusID == 4) {
               this.cannotRequest = true;
               this.cannotRequestReason = 'Already requested';          
             }
           });
-        }
-  
+        }  
       } catch (error) {
         console.error(error);
       }      

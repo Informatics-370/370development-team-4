@@ -136,3 +136,31 @@ td {
   cursor: pointer;
   font-weight: normal;
 } */
+
+.download {
+  background-color: white;
+  border: 1px solid #32AF99;
+  color: #32AF99;
+  /* color: #373435; */
+  margin-left: 0;
+  padding: 2px 1rem;
+  margin-bottom: 1rem;
+}
+
+.download:hover {
+  background-color: #32AF99;
+  color: white;
+}
+
+.imageName { margin-left: 0.75em; font-size: 85%; }
+
+/* .red-outline {
+  background-color: white;
+  border: 1px solid #E33131;
+  color: #E33131;
+}
+
+.red-outline:hover {
+  background-color: #E33131;
+  color: white;
+} */

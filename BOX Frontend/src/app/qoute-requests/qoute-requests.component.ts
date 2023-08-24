@@ -62,24 +62,31 @@ export class QouteRequestsComponent {
   
     if (years >= 1) {
       return date.toDateString();
-    } else if (months >= 1) {
+    } 
+    else if (months >= 1) {
       if (months == 1) {
         return `${months} month ago`;
       }
       return `${months} months ago`;
-    } else if (days >= 1) {
+    } 
+    else if (days >= 1) {
       if (days == 1) {
         return `${days} day ago`;
       }
       return `${days} days ago`;
-    } else if (hours >= 1) {
+    } 
+    else if (hours >= 1) {
       if (hours == 1) {
         return `${hours} hour ago`;
       }
       return `${hours} hours ago`;
-    } else {
+    } 
+    else {
       if (minutes == 1) {
         return `${minutes} minute ago`;
+      }
+      else if (minutes == 0) {
+        return `Just now`;
       }
       return `${minutes} minutes ago`;
     }

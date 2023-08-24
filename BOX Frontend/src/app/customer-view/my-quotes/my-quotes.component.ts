@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
 import { AuthService } from '../../services/auth.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Customer } from '../../shared/customer';
 import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
@@ -9,6 +10,7 @@ import { QuoteVM } from '../../shared/quote-vm';
 import { Route, Router } from '@angular/router';
 import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { take, lastValueFrom } from 'rxjs';
+declare var $: any;
 
 @Component({
   selector: 'app-my-quotes',
@@ -23,12 +25,28 @@ export class MyQuotesComponent {
   filteredQuotes: QuoteVMClass[] = []; //quotes to show user
   quoteCount = -1;
   loading = true;
+  searchTerm: string = '';
+
+  //data from DB
   allVATs: VAT[] = [];
   fixedProducts: FixedProductVM[] = [];
   customProducts: CustomProductVM[] = [];
-  searchTerm: string = '';
+  rejectReasons: {
+    rejectReasonID: number,
+    description: string
+  }[] = [];
+
+  //customer info
   customer!: Customer;
   customerID: string | null = '';
+
+  //reject quote
+  showForm = false;
+  noFileSelected = true;
+  rejectBtnText = 'Request new quote';
+  rejectReasonId = 1;
+  rejectQuoteForm: FormGroup;
+
   /*Status list: no need to retrieve this from the backend because it's static:
   1 Generated
   2 Accepted
@@ -36,7 +54,13 @@ export class MyQuotesComponent {
   4 Rejected and will renegotiate
   5 Expired */
 
-  constructor(private dataService: DataService, private router: Router, private authService: AuthService) { }
+  constructor(private dataService: DataService, private router: Router, private authService: AuthService, private formBuilder: FormBuilder) {
+    this.rejectQuoteForm = this.formBuilder.group({
+      quoteID: [0, Validators.required],
+      rejectReasonID: [1, Validators.required],
+      priceMatchFileB64: [],
+    });
+  }
 
   ngOnInit(): void {
     //get customer data
@@ -54,24 +78,25 @@ export class MyQuotesComponent {
         const getCustomProductsPromise = lastValueFrom(this.dataService.GetAllCustomProducts().pipe(take(1)));
         const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
         const getActiveQuoteRequestPromise = lastValueFrom(this.dataService.CheckForActiveQuoteRequest(this.customerID).pipe(take(1)));
+        const getRejectReasonsPromise = lastValueFrom(this.dataService.GetAllRejectReasons().pipe(take(1)));
   
         /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
         That's what the Promise.all method is supposed to be doing.*/
-        const [allFixedProducts, allCustomProducts, allVAT, activeQR] = await Promise.all([
+        const [allFixedProducts, allCustomProducts, allVAT, activeQR, allRejectReasons] = await Promise.all([
           getFixedProductsPromise,
           getCustomProductsPromise,
           getVATPromise,
-          getActiveQuoteRequestPromise
+          getActiveQuoteRequestPromise,
+          getRejectReasonsPromise
         ]);
   
         //put results from DB in global arrays
         this.fixedProducts = allFixedProducts;
-        console.log('All fixed products', this.fixedProducts);
         this.customProducts = allCustomProducts;
-        console.log('All custom products', this.customProducts);
         this.allVATs = allVAT;
-        console.log('All VAT', this.allVATs);
         if (activeQR != null) this.quoteRequestFromBackend = activeQR;
+        this.rejectReasons = allRejectReasons;
+        console.log('All reject reasons', this.rejectReasons);
   
         await this.getCustomerQuotesPromise();
       }      
@@ -86,7 +111,12 @@ export class MyQuotesComponent {
     try {
       if (this.customerID) {
         this.customerQuotes = await lastValueFrom(this.dataService.GetQuotesByCustomer(this.customerID).pipe(take(1)));
-        console.log('customerQuotes', this.customerQuotes);
+        
+        //sort quotes by quote ID so later quotes are first
+        this.customerQuotes.sort((currentQuote, nextQuote) => {
+          return nextQuote.quoteID - currentQuote.quoteID;
+        });
+
         this.displayCustomerQuotes(); //Execute only after data has been retrieved from the DB otherwise error
       }
     } catch (error) {
@@ -198,7 +228,7 @@ export class MyQuotesComponent {
     console.log('Search results:', this.filteredQuotes);
   }
 
-  //--------------------------------------------- ACCEPT/REJECT ---------------------------------------------- 
+  //--------------------------------------------- ACCEPT ---------------------------------------------- 
   //ACCEPT QUOTE aka BUY NOW
   acceptQuote(quoteId: number) {
     try {
@@ -226,16 +256,88 @@ export class MyQuotesComponent {
     return gibberish;
   }
 
-  rejectQuote(quoteId: number) {
-    try {
-      //statusID 5 = 'Rejected'
-      /* this.dataService.UpdateQuoteStatus(quoteId, 5).subscribe((result) => {
-        console.log("Result", result);
-        this.deleteQuote(quoteId); //delete quote
-        this.getCustomerQuotesPromise(); //refresh list
-      }); */
-    } catch (error) {
-      console.error('Error updating status: ', error);
+  //--------------------------------------------- REJECT ----------------------------------------------
+  openRejectModal(id: number) {
+    this.rejectQuoteForm.get("quoteID")?.setValue(id);
+    $('#rejectQuote').modal('show');
+  }
+
+  changedRejectReason() {
+    if (this.rejectReasonId == 1)
+      this.rejectBtnText = 'Request new quote';
+    else
+      this.rejectBtnText = 'Reject quote';
+  }
+
+  //function to display image name since I decided to be fancy with a custom input button
+  showImageName(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const chosenFile = inputElement.files?.[0];
+    let imageName = document.getElementById('imageName') as HTMLSpanElement;
+
+    if (chosenFile) { //if there is a file chosen
+      imageName.innerHTML = chosenFile.name; //display file name
+      imageName.style.display = 'inline-block';
+      this.noFileSelected = false;
+    }
+    else {
+      imageName.style.display = 'none';
+      this.noFileSelected = true;
+    }
+  }
+
+  //convert image to B64
+  convertToBase64(img: File): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target?.result as string;
+        resolve(base64String.substring(base64String.indexOf(',') + 1)); // Resolve the promise with the base64 string; get rid of the data:image/... that auto appends itself to the B64 string
+      };
+      reader.onerror = (error) => {
+        reject(error); // Reject the promise if an error occurs
+      };
+      reader.readAsDataURL(img);
+    });
+  }
+
+  async rejectQuote() {
+    //get form data
+    const formData = this.rejectQuoteForm.get("quoteID")?.value;
+    //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
+    const inputElement = document.getElementById('priceMatchFileB64') as HTMLInputElement;
+    const formImage = inputElement.files?.[0];    
+    let priceMatchFileB64 = formImage ? await this.convertToBase64(formImage) : ''; //convert to B64 if there's an image selected, otherwise, empty string
+
+    //put data in qoute VM
+    let quoteVM: QuoteVM = {
+      quoteID: formData,
+      rejectReasonID: this.rejectReasonId,
+      priceMatchFileB64: priceMatchFileB64,
+      quoteRequestID: 0,
+      quoteStatusID: 0,
+      quoteStatusDescription: '',
+      quoteDurationID: 0,
+      quoteDuration: 0,
+      rejectReasonDescription: '',
+      dateRequested: new Date(),
+      dateGenerated: new Date(),
+      customerId: '',
+      customerFullName: '',
+      lines: []
+    }
+
+    //don't let them reject they say they want to renegotiate but didn't upload a file
+    if (this.rejectReasonId == 1 && priceMatchFileB64 != '') {
+      try {
+        this.dataService.RejectQuote(quoteVM).subscribe((result) => {
+          $('#rejectQuote').modal('hide');
+          console.log("Result", result);
+          this.getCustomerQuotesPromise(); //refresh list
+        });
+      } catch (error) {
+        console.error('Error rejeting quote: ', error);
+      }
     }
   }
 

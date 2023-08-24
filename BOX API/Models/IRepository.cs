@@ -167,7 +167,11 @@ namespace BOX.Models
         Task<string>GetUserFullNameAsync(string userId);
 
         //----------------------------------------------- REJECT REASON -----------------------------------------------
+        Task<Reject_Reason[]> GetAllRejectReasonsAsync();
         Task<Reject_Reason> GetRejectReasonAsync(int rejectReasonId);
+
+        //----------------------------------------------- PRICE MATCH FILE -----------------------------------------------
+        Task<Price_Match_File> GetPriceMatchFileByQuoteAsync(int quoteId);
 
         //----------------------------------------------- REPORTS -----------------------------------------------
         Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate);

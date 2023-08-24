@@ -117,7 +117,7 @@
             </table>
             <div *ngIf="quote.quoteStatusID == 1"><!--status 1 = Generated-->
               <div class="buttons flex-space-between">
-                <button class="btn btn-reject" >Reject Quote</button>
+                <button class="btn btn-reject" (click)="openRejectModal(quote.quoteID)">Reject Quote</button>
                 <button title="Buy now" class="btn btn-accept" (click)="acceptQuote(quote.quoteID)">Accept Quote</button>
               </div>
               <div style="text-align: center;">This quote expires on <span class="light-bold">{{ quote.dateExpiring | date:'ccc, d MMM yyyy' }}</span>.</div>
@@ -137,3 +137,49 @@
 </div>
 
 <div class="app-footer"></div>
+
+<!--REJECT QUOTE MODAL-->
+<div class="modal fade" id="rejectQuote" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">Reject Quote</h4>
+        <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+      </div>
+
+      <!--BODY-->
+      <div class="modal-body">        
+        <form [formGroup]="rejectQuoteForm" style="margin-top: 0.5em;">
+          <input type="hidden" formControlName="quoteID">
+          
+          <div class="form-group">
+            <label for="rejectReasonID" class="form-label modal-form-label bold">Please tell us why you're rejecting this quote:</label>
+            <select id="rejectReasonID" [(ngModel)]="rejectReasonId" formControlName="rejectReasonID" 
+              class="form-select modal-form-input modal-form-text" (click)="changedRejectReason()">
+                <option *ngFor="let reason of rejectReasons" value={{reason.rejectReasonID}}>{{reason.description}}</option>
+            </select>                
+          </div>
+
+          <div class="form-group" id="choose-img" *ngIf="rejectReasonId == 1"> <!--1 = I got a better price elsewhere. Can you beat it?-->
+            <div class="bold">Upload the quote you received from a competitor (image or pdf):</div>
+            <label class="form-label btn-create btn download">
+              <input id="priceMatchFileB64" type="file" accept=".pdf,image/*" formControlName="priceMatchFileB64" name="priceMatchFileB64"
+                style="display: none;" (change)="showImageName($event)" />
+              Upload file
+            </label>
+            <span id="imageName" class="imageName"> </span>
+            <span *ngIf="noFileSelected" class="imageName" style="color: #E33131;">No file selected. Please upload quote from competitor.</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer justify-content-evenly">
+          <button  data-bs-dismiss="modal" class="btn btn-create modal-form-submit">Cancel</button>
+          <button class="btn btn-create red-btn modal-form-submit" (click)="rejectQuote()" >{{rejectBtnText}}</button>
+      </div>
+    </div>
+  </div>
+</div>

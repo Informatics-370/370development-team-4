@@ -64,13 +64,12 @@ INSERT INTO [dbo].[cost_Price_Formula_Variables]
 GO
 
 INSERT INTO [dbo].[Reject_Reason]
-           ([PriceMatchFileID]
-           ,[Description])
+           ([Description])
      VALUES
-           (null,  'I got a better price elsewhere. Can you beat that price?'),
-           (null, 'I got a better price elsewhere.'),
-           (null, 'I don''t want these products anymore.'),
-           (null, 'Other')
+           ('I got a better price elsewhere. Can you beat it?'),
+           ('I got a better price elsewhere.'),
+           ('I don''t want these products anymore.'),
+           ('Other')
 GO
 
 INSERT INTO [dbo].[Title]

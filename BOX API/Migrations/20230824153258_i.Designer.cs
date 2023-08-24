@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230820190644_i")]
+    [Migration("20230824153258_i")]
     partial class i
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -589,7 +589,17 @@ namespace BOX.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<int>("QuoteID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RejectReasonID")
+                        .HasColumnType("int");
+
                     b.HasKey("PriceMatchFileID");
+
+                    b.HasIndex("QuoteID");
+
+                    b.HasIndex("RejectReasonID");
 
                     b.ToTable("Price_Match_File");
                 });
@@ -878,12 +888,7 @@ namespace BOX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PriceMatchFileID")
-                        .HasColumnType("int");
-
                     b.HasKey("RejectReasonID");
-
-                    b.HasIndex("PriceMatchFileID");
 
                     b.ToTable("Reject_Reason");
                 });
@@ -1683,6 +1688,25 @@ namespace BOX.Migrations
                     b.Navigation("Fixed_Product");
                 });
 
+            modelBuilder.Entity("BOX.Models.Price_Match_File", b =>
+                {
+                    b.HasOne("BOX.Models.Quote", "Quote")
+                        .WithMany()
+                        .HasForeignKey("QuoteID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BOX.Models.Reject_Reason", "Reject_Reason")
+                        .WithMany()
+                        .HasForeignKey("RejectReasonID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quote");
+
+                    b.Navigation("Reject_Reason");
+                });
+
             modelBuilder.Entity("BOX.Models.Product_Item", b =>
                 {
                     b.HasOne("BOX.Models.Product_Category", "Product_Category")
@@ -1809,15 +1833,6 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("QR_Code");
-                });
-
-            modelBuilder.Entity("BOX.Models.Reject_Reason", b =>
-                {
-                    b.HasOne("BOX.Models.Price_Match_File", "Price_Match_File")
-                        .WithMany()
-                        .HasForeignKey("PriceMatchFileID");
-
-                    b.Navigation("Price_Match_File");
                 });
 
             modelBuilder.Entity("BOX.Models.Size_Units", b =>
