@@ -528,6 +528,14 @@ export class DataService {
   GetSalesByCategoryReport(stringStartDate: string, stringEndDate: string): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}Reports/GetSalesByCategoryReport/${stringStartDate}/${stringEndDate}`);
   }
+  
+  GetInactiveCustomerList(): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${this.apiUrl}Reports/GetInactiveCustomerList`);
+  }
+  
+  GetSupplierListReport(productId: number, isFixedProduct: string): Observable<Supplier[]> {
+    return this.httpClient.get<Supplier[]>(`${this.apiUrl}Reports/GetSupplierListReport/${productId}/${isFixedProduct}`);
+  }
 
   getWriteOffReport(): Observable<WriteOffItem[]> {
     return this.httpClient.get<WriteOffItem[]>(`${this.apiUrl}WriteOffReason/GetWriteOffReport`);

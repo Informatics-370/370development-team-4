@@ -102,5 +102,84 @@ namespace BOX.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + " inner exception " +  ex.InnerException);
             }
         }
+
+        [HttpGet]
+        [Route("GetInactiveCustomerList")]
+        public async Task<IActionResult> GetInactiveCustomerList()
+        {
+            try
+            {
+                //a customer is inactive if they haven't ordered in 90 days
+                DateTime now = DateTime.Now;
+                int daysToSubtract = 90;
+                //int minutesToSubtract = 15;
+
+                DateTime ninetyDaysAgo = now.AddDays(-daysToSubtract);
+                //DateTime fifteenMinutesAgo = now.AddMinutes(-minutesToSubtract);
+
+                var allCustomers = await _repository.GetAllCustomersAsync();
+                List<UserViewModel> inactiveCustomers  = new List<UserViewModel>();
+
+                foreach (var cus in allCustomers)
+                {
+                    var customerOrdersWithinRange = await _repository.GetCustomerOrdersWithinRange(cus.UserId, ninetyDaysAgo, now);
+                    //var customerOrdersWithinRange = await _repository.GetCustomerOrdersWithinRange(cus.UserId, fifteenMinutesAgo, now);
+
+                    if (!(customerOrdersWithinRange.Count() > 0))
+                    {
+                        var user = await _repository.GetUserAsync(cus.UserId);
+                        string fullname = await _repository.GetUserFullNameAsync(cus.UserId);
+
+                        UserViewModel userVM = new UserViewModel
+                        {
+                            emailaddress = user.Email,
+                            firstName = fullname
+                        };
+                        
+                        inactiveCustomers.Add(userVM);
+                    }
+                }
+
+                return Ok(inactiveCustomers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + " inner exception " + ex.InnerException);
+            }
+
+
+        }
+
+        [HttpGet]
+        [Route("GetSupplierListReport/{productId}/{isFixedProduct}")]
+        public async Task<IActionResult> GetSupplierListReport(int productId, string isFixedProduct)
+        {
+            try
+            {
+                //get all supplier orders that contain this product
+                bool fixedProductOrdered = isFixedProduct == "true"; //is true if fixed product was ordered
+                var allOrderLines = await _repository.GetSupplierOrderLinesByProductAsync(productId, fixedProductOrdered);
+                List<Supplier> supplierList = new List<Supplier>();
+
+                foreach (var line in allOrderLines)
+                {
+                    var order = await _repository.GetSupplierOrderAsync(line.SupplierOrderID);
+                    var supplier = await _repository.GetSupplierAsync(order.SupplierID);
+                    supplierList.Add(supplier);
+                }
+
+                //remove duplicate suppliers from list
+                supplierList = supplierList.Distinct().ToList();
+
+                return Ok(supplierList);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + " inner exception " + ex.InnerException);
+            }
+
+
+        }
+
     }
 }

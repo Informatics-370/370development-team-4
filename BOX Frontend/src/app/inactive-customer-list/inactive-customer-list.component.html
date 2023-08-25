@@ -1,0 +1,41 @@
+<div class="row">
+    <!--SIDE NAVBAR-->
+    <div class="col-md-2">
+      <div class="app-menu"></div>
+    </div>
+    <!--Right Side-->
+    <div class="col-md-10">
+      <h3 class="p-3" style="color: black;">Generate Inactive Customer List</h3>
+
+      <button type="submit" class="btn btn-create" [disabled]="loading" (click)="generateReport()">Generate</button>
+      <hr class="hr hr-blurry m-3" />
+      <div *ngIf="loading">Generating report for you...</div>
+      <div *ngIf="userCount == 0">No customers were inactive in the past 90 days.</div>
+      <div *ngIf="!loading && userCount > 0">
+  
+        <div style="max-width: 90%; margin: auto; margin-left: 25px;">
+            <h4>Inactive Customer List</h4>
+            <div style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }} at {{now | date:'hh:mm:ss' }}</div>
+        </div>
+  
+        <table class="table" style="max-width: 90%;">
+          <thead>
+            <tr>
+              <td colspan="3">
+                <img src="../../assets/mega-pack-header.jpg" alt="MegaPack header"
+                  class="header" />
+              </td>
+            </tr>
+            <tr>
+              <th scope="col">Customer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cus of inactiveCustomers">
+              <td>{{cus.emailaddress}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

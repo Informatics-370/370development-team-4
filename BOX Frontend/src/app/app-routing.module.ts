@@ -41,6 +41,9 @@ import { EmployeesComponent } from './employees/employees.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
 import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
+import { ProductListReportComponent } from './product-list-report/product-list-report.component';
+import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
+import { SupplierListComponent } from './supplier-list/supplier-list.component';
 import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 
@@ -85,11 +88,14 @@ const routes: Routes = [
   { path: 'employees', component: EmployeesComponent },
   { path: 'profile-page', component: ProfilePageComponent },
   { path: 'my-quotes', component: MyQuotesComponent },
-  { path: 'quote-requests', component: QouteRequestsComponent },  
+  { path: 'quote-requests', component: QouteRequestsComponent },
   { path: 'sales-by-category', component: SalesByCategoryReportComponent },
-  { path: 'assign-employee', component: AssignEmployeeComponent },
-  { path: 'review-report', component: ReviewReportComponent },
-  { path: 'write-off-report', component: WriteOffByProductCategoryComponent}
+  { path: 'product-list', component: ProductListReportComponent },
+    { path: 'inactive-customers', component: InactiveCustomerListComponent },
+    { path: 'assign-employee', component: AssignEmployeeComponent },
+    { path: 'supplier-list', component: SupplierListComponent },
+    { path: 'review-report', component: ReviewReportComponent },
+    { path: 'write-off-report', component: WriteOffByProductCategoryComponent }
 ];
 
 @NgModule({

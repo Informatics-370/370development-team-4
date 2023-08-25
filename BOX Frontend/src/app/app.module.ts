@@ -56,6 +56,9 @@ import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component
 import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
 import { GenerateQuoteComponent } from './generate-quote/generate-quote.component';
 import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
+import { ProductListReportComponent } from './product-list-report/product-list-report.component';
+import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
+import { SupplierListComponent } from './supplier-list/supplier-list.component';
 import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 
@@ -114,7 +117,10 @@ import { WriteOffByProductCategoryComponent } from './write-off-by-product-categ
         GenerateQuoteComponent,
         SalesByCategoryReportComponent,
         ReviewReportComponent,
-        WriteOffByProductCategoryComponent
+        WriteOffByProductCategoryComponent,
+        ProductListReportComponent,
+        InactiveCustomerListComponent,
+        SupplierListComponent
         
   ],
   imports: [

@@ -702,11 +702,38 @@ namespace BOX.Models
             return rejectReason;
         }
 
-        //--------------------------------- REPORTS -----------------------------------
+        //----------------------------------- CUSTOMER -----------------------------------
+        public Task<Customer[]> GetAllCustomersAsync()
+        {
+            IQueryable<Customer> query = _appDbContext.Customer;
+            return query.ToArrayAsync();
+        }
+
+        //----------------------------------- REPORTS -----------------------------------
         public Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate)
         {
             IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.Date >= startDate && c.Date <= endDate);
             return query.ToArrayAsync();
+        }
+
+        public Task<Customer_Order[]> GetCustomerOrdersWithinRange(string customerId, DateTime startDate, DateTime endDate)
+        {
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.UserId == customerId && c.Date >= startDate && c.Date <= endDate);
+            return query.ToArrayAsync();
+        }
+
+        public Task<Supplier_OrderLine[]> GetSupplierOrderLinesByProductAsync(int productId, bool isFixedProduct = true)
+        {
+            if (isFixedProduct) //if we're searching for a fixed product
+            {
+                IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.FixedProductID  == productId);
+                return query.ToArrayAsync();
+            }
+            else
+            {
+                IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.RawMaterialID == productId);
+                return query.ToArrayAsync();
+            }
         }
 
         //--------------------------------- TRANSACTIONS --------------------------------
