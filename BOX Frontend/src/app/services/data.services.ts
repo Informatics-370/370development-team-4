@@ -349,7 +349,7 @@ export class DataService {
   }
 
   // Get a specific Role by ID
-  GetRole(roleId: number): Observable<Role> {
+  GetRole(roleId: string): Observable<Role> {
     return this.httpClient.get<Role>(`${this.apiUrl}Roles/GetRole/${roleId}`)
       .pipe(map(result => result));
   }
@@ -541,5 +541,9 @@ export class DataService {
     return this.httpClient.get<WriteOffItem[]>(`${this.apiUrl}WriteOffReason/GetWriteOffReport`);
   }
   
-
+  UpdateUserRoleAndNotifyAdmin(email: string, roleId: string): Observable<any> {
+    const url = `${this.apiUrl}User/UpdateUserRoleAndNotifyAdmin`;
+    const body = { email: email, roleId: roleId };
+    return this.httpClient.put(url, body);
+  }
 }

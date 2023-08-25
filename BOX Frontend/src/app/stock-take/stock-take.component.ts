@@ -5,7 +5,6 @@ import { RawMaterialVM } from '../shared/rawMaterialVM';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { HttpClient } from '@angular/common/http';
 import { WriteOffReason } from '../shared/write-off-reason';
-import { AuthService } from '../services/auth.service';
 
 interface InventoryItem {
   fixedProductId: number;

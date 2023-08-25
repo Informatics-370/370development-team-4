@@ -91,11 +91,11 @@ const routes: Routes = [
   { path: 'quote-requests', component: QouteRequestsComponent },
   { path: 'sales-by-category', component: SalesByCategoryReportComponent },
   { path: 'product-list', component: ProductListReportComponent },
-    { path: 'inactive-customers', component: InactiveCustomerListComponent },
-    { path: 'assign-employee', component: AssignEmployeeComponent },
-    { path: 'supplier-list', component: SupplierListComponent },
-    { path: 'review-report', component: ReviewReportComponent },
-    { path: 'write-off-report', component: WriteOffByProductCategoryComponent }
+  { path: 'inactive-customers', component: InactiveCustomerListComponent },
+  { path: 'assign-employee', component: AssignEmployeeComponent },
+  { path: 'supplier-list', component: SupplierListComponent },
+  { path: 'review-report', component: ReviewReportComponent },
+  { path: 'write-off-report', component: WriteOffByProductCategoryComponent }
 ];
 
 @NgModule({

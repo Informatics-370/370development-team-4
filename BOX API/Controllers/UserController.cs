@@ -1,3 +1,4 @@
+using BOX.Migrations;
 using BOX.Models;
 using BOX.Services;
 using BOX.ViewModel;
@@ -178,7 +179,7 @@ namespace BOX.Controllers
                 {
                     CustomerId = c.CustomerId,
                     UserId = c.UserId,
-                    //EmployeeId = c.EmployeeId,
+                    EmployeeId = c.EmployeeId,
                     IsBusiness = c.isBusiness,
                     VatNo = c.vatNo,
                     CreditLimit = c.creditLimit,
@@ -193,6 +194,81 @@ namespace BOX.Controllers
             }
 
             return customer;
+        }
+
+        [HttpPut]
+        [Route("UpdateUserRoleAndNotifyAdmin")]
+        public async Task<IActionResult> UpdateUserRoleAndNotifyAdmin(string email, string roleId)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return NotFound(); // User not found
+            }
+
+            // Get the role by ID
+            var role = await _roleManager.FindByIdAsync(roleId);
+
+            if (role == null)
+            {
+                return NotFound("Role not found"); // Role not found
+            }
+
+            // Remove user from all existing roles
+            var existingRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, existingRoles);
+
+            // Add user to the new role
+            var addToRoleResult = await _userManager.AddToRoleAsync(user, role.Name);
+
+            if (!addToRoleResult.Succeeded)
+            {
+                return BadRequest("Failed to update role"); // Role update failed
+            }
+
+            if (role.Name == "Admin")
+            {
+                var admin = new Admin
+                {
+                    AdminId = Guid.NewGuid().ToString(),
+                    UserId = user.Id,
+                };
+                _repository.Add(admin);
+                await _repository.SaveChangesAsync();
+
+                var employeeToDelete = await _repository.GetEmployeeByUserId(user.Id);
+                if (employeeToDelete != null)
+                {
+                    _repository.Delete(employeeToDelete);
+                    await _repository.SaveChangesAsync();
+                }
+
+                // Send email to the admin
+                var message = new Message(new string[] { user.Email }, "Admin Role Update", "Congratulations! You've been assigned the 'Admin' role.");
+                _emailService.SendEmail(message);
+            }
+            else if (role.Name == "Employee")
+            {
+                var employee = new Employee
+                {
+                    EmployeeId = Guid.NewGuid().ToString(),
+                    UserId = user.Id,
+                };
+
+                _repository.Add(employee);
+                await _repository.SaveChangesAsync();
+
+                var adminToDelete = await _repository.GetAdminByUserId(user.Id);
+                if (adminToDelete != null)
+                {
+                    _repository.Delete(adminToDelete);
+                    await _repository.SaveChangesAsync();
+                }
+
+            }
+
+            return NoContent(); // Role updated successfully
         }
 
 
