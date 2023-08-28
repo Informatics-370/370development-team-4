@@ -4,7 +4,6 @@ import { DataService } from '../../services/data.services';
 import { CartService } from '../../services/customer-services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { Cart } from '../../shared/customer-interfaces/cart';
-import { HttpClient } from '@angular/common/http';
 import { QuoteVM } from '../../shared/quote-vm';
 import { QuoteLineVM } from '../../shared/quote-line-vm';
 import { Customer } from '../../shared/customer';
@@ -34,7 +33,7 @@ export class CartPageComponent {
   lastName: string = '';
   cartTotal = 0; */
 
-  constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService,
+  constructor(private router: Router, private dataService: DataService, private cartService: CartService,
     private authService: AuthService) { }
 
   //---------------------------- LOAD CART PAGE ----------------------------
@@ -64,7 +63,6 @@ export class CartPageComponent {
       try {
         //if they have an active qr (a quote request that hasn't been attended to), don't let them request a new quote
         this.dataService.CheckForActiveQuoteRequest(this.customerID).subscribe((result) => {
-          console.log('active quote request', result);
           if (result != null) {
             this.cannotRequest = true;
             this.cannotRequestReason = 'Already requested';
@@ -73,7 +71,6 @@ export class CartPageComponent {
   
         //if they already can't request due to already having an active QR, there's no point in checking for an quote
         if (!this.cannotRequest) {
-          console.log('Got here');
           //if they have an active quote, quote with status that is 1 (Generated), or 4 (Rejected and will renegotiate)
           this.dataService.GetCustomerMostRecentQuote(this.customerID).subscribe((result) => {
             if (result.quoteStatusID == 1 || result.quoteStatusID == 4) {
@@ -191,8 +188,6 @@ export class CartPageComponent {
         newQR.lines.push(qrLine); //put quote request line in QR
       });
 
-      console.log('new quote request before posting', newQR);
-
       //post to backend
       try {
         this.dataService.AddQuoteRequest(newQR).subscribe((result) => {
@@ -209,7 +204,6 @@ export class CartPageComponent {
             timerProgressBar: true,
             confirmButtonColor: '#32AF99'
           }).then((result) => {
-            console.log(result);
           });
 
           this.router.navigate(['/my-quotes']); //redirect to quotes page

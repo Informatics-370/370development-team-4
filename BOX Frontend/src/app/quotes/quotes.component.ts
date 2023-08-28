@@ -162,7 +162,7 @@ export class QuotesComponent {
     this.selectedQuote = new QuoteVMClass(quoteVM, quoteLines, applicableVAT);
   }
 
-  //--------------------- DOWNLOAD PRICE MATCH FILE ---------------------
+  //--------------------- DOWNLOAD PRICE MATCH FILE AND CUSTOM PROD PIC/FILE ---------------------
   //determine file type from base64 string
   determineFileType(base64: string): string {
     const fileTypes = [

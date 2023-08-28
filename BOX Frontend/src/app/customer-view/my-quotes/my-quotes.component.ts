@@ -66,7 +66,6 @@ export class MyQuotesComponent {
     //get customer data
     const token = localStorage.getItem('access_token')!;
     this.customerID = this.authService.getUserIdFromToken(token);
-    console.log(this.customerID);
     this.getDataFromDB();
   }
 
@@ -96,7 +95,6 @@ export class MyQuotesComponent {
         this.allVATs = allVAT;
         if (activeQR != null) this.quoteRequestFromBackend = activeQR;
         this.rejectReasons = allRejectReasons;
-        console.log('All reject reasons', this.rejectReasons);
   
         await this.getCustomerQuotesPromise();
       }      
@@ -134,20 +132,25 @@ export class MyQuotesComponent {
         let isFixedProduct: boolean = line.fixedProductID != 0; //first determine if it's a fixed product
         let fixedProduct: FixedProductVM | undefined;
         let customProduct: CustomProductVM | undefined;
+        let customProdDescription = '';
 
         if (isFixedProduct) {
           fixedProduct = this.fixedProducts.find(prod => prod.fixedProductID == line.fixedProductID);
         }
         else {
           customProduct = this.customProducts.find(prod => prod.customProductID == line.customProductID);
+          customProdDescription = customProduct?.label != '' ? ' with printing on ' + customProduct?.sides + ' side(s)' : '';
         }
+
+        let b64 = isFixedProduct ? fixedProduct?.productPhotoB64 : customProduct?.label;
 
         let quoteLine: any = {
           lineID: isFixedProduct ? line.fixedProductID : line.customProductID,
           isFixedProduct: isFixedProduct,
           productID: isFixedProduct ? fixedProduct?.fixedProductID : customProduct?.customProductID,
-          productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription,
-          productFileB64: isFixedProduct ? fixedProduct?.productPhotoB64 : customProduct?.label,
+          productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription + customProdDescription,
+          productFileB64: b64,
+          fileType: this.determineFileType(b64 ? b64 : ''),
           confirmedUnitPrice: line.suggestedUnitPrice,
           quantity: line.quantity,
         }
@@ -170,20 +173,25 @@ export class MyQuotesComponent {
         let isFixedProduct: boolean = line.fixedProductID != 0; //first determine if it's a fixed product
         let fixedProduct: FixedProductVM | undefined;
         let customProduct: CustomProductVM | undefined;
+        let customProdDescription = '';
 
         if (isFixedProduct) {
           fixedProduct = this.fixedProducts.find(prod => prod.fixedProductID == line.fixedProductID);
         }
         else {
           customProduct = this.customProducts.find(prod => prod.customProductID == line.customProductID);
+          customProdDescription = customProduct?.label != '' ? ' with printing on ' + customProduct?.sides + ' side(s)' : '';
         }
+
+        let b64 = isFixedProduct ? fixedProduct?.productPhotoB64 : customProduct?.label;
 
         let quoteLine: any = {
           lineID: isFixedProduct ? line.fixedProductID : line.customProductID,
           isFixedProduct: isFixedProduct,
           productID: isFixedProduct ? fixedProduct?.fixedProductID : customProduct?.customProductID,
-          productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription,
-          productFileB64: isFixedProduct ? fixedProduct?.productPhotoB64 : customProduct?.label,
+          productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription + customProdDescription,
+          productFileB64: b64,
+          fileType: this.determineFileType(b64 ? b64 : ''),
           confirmedUnitPrice: line.confirmedUnitPrice,
           quantity: line.quantity,
         }
@@ -345,10 +353,65 @@ export class MyQuotesComponent {
           this.getCustomerQuotesPromise(); //refresh list
         });
       } catch (error) {
-        console.error('Error rejeting quote: ', error);
+        console.error('Error rejecting quote: ', error);
       }
     }
   }
 
+  //--------------------------------------------- DOWNLOAD CUSTOM PROD FILE ---------------------------------------------
+  //determine file type from base64 string
+  determineFileType(base64: string): string {
+    const fileTypes = [
+      {
+        startingChars: 'JVBERi0',
+        type: "application/pdf"
+      },
+      {
+        startingChars: 'iVBORw0KGgo',
+        type: "image/png"
+      },
+      {
+        startingChars: '/9j/',
+        type: "image/jpg"
+      }
+    ];
+    let returnString = 'undefined';
 
+    fileTypes.forEach(ft => {
+      if (base64.startsWith(ft.startingChars)) returnString = ft.type;      
+    });
+
+    return returnString;
+  }
+
+  downloadFile(base64: string, fileName: string) {
+    var arrayBuffer = this.B64ToArrayBuffer(base64);
+    let fileType: string = this.determineFileType(base64);
+    console.log(fileType);
+
+    if (fileType != 'undefined')
+    {
+      const blob = new Blob([arrayBuffer], { type: fileType });
+
+      //Create link; apparently, I need this even though I have a download button
+      const toDownload = document.createElement('a');
+      toDownload.href = URL.createObjectURL(blob);
+      toDownload.download = fileName + '.' + fileType.substring(fileType.length - 3);
+      //priceMatchFile.download = 'Quote #' + this.selectedQuote.quoteID + ' price match file'
+      toDownload.click(); //click link to start downloading
+      URL.revokeObjectURL(toDownload.href); //clean up URL object
+    }
+  }
+
+  //need to convert to array buffer first otherwise file is corrupted
+  B64ToArrayBuffer(B64String: string) {
+    var binaryString = window.atob(B64String); //decodes a Base64 string into a binary string
+    var binaryLength = binaryString.length;
+    var byteArray = new Uint8Array(binaryLength);
+    for (var i = 0; i < binaryLength; i++) {
+      var ascii = binaryString.charCodeAt(i); //retrieve the ASCII code of the character in the binary string
+      byteArray[i] = ascii; //assigns ASCII code to corresponding character in byte array
+    }
+    return byteArray;
+  }
 }
