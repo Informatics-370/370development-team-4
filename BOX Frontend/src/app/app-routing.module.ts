@@ -21,7 +21,6 @@ import { CustomerHomepageComponent } from './customer-view/customer-homepage/cus
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
-import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
@@ -44,6 +43,7 @@ import { SalesByCategoryReportComponent } from './sales-by-category-report/sales
 import { ProductListReportComponent } from './product-list-report/product-list-report.component';
 import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
 import { SupplierListComponent } from './supplier-list/supplier-list.component';
+import { QuotesComponent } from './quotes/quotes.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
@@ -91,7 +91,8 @@ const routes: Routes = [
   { path: 'sales-by-category', component: SalesByCategoryReportComponent },
   { path: 'product-list', component: ProductListReportComponent },
   { path: 'inactive-customers', component: InactiveCustomerListComponent },
-  { path: 'supplier-list', component: SupplierListComponent }
+  { path: 'supplier-list', component: SupplierListComponent },
+  { path: 'customer-quotes', component: QuotesComponent }
 ];
 
 @NgModule({

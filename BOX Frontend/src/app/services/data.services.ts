@@ -290,8 +290,8 @@ export class DataService {
   } */
 
   //------------------------------------------ QUOTE ------------------------------------------
-  GetAllEstimates(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}Estimate/GetAllEstimates`)
+  GetAllQuotes(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Quote/GetAllQuotes`)
       .pipe(map(result => result))
   }
 

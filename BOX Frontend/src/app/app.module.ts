@@ -58,6 +58,7 @@ import { SalesByCategoryReportComponent } from './sales-by-category-report/sales
 import { ProductListReportComponent } from './product-list-report/product-list-report.component';
 import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
 import { SupplierListComponent } from './supplier-list/supplier-list.component';
+import { QuotesComponent } from './quotes/quotes.component';
 
 
 @NgModule({
@@ -115,7 +116,8 @@ import { SupplierListComponent } from './supplier-list/supplier-list.component';
         SalesByCategoryReportComponent,
         ProductListReportComponent,
         InactiveCustomerListComponent,
-        SupplierListComponent
+        SupplierListComponent,
+        QuotesComponent
         
   ],
   imports: [

@@ -1,0 +1,53 @@
+<div class="row" style="max-width: 100%;">
+  <!--Menu bar-->
+  <div class="col-md-3">
+    <div class="app-menu"></div>
+  </div>
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 page-content">
+    <h3 class="p-3" style="color: black;">Customer Quotes</h3>
+    <!--Search bar-->
+    <div id="searchbar">
+      <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+        placeholder="e.g. Search by ID, customer, status" (keyup)="searchQuotes($event)" (change)="searchQuotes($event)" />
+      <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+    </div>
+
+    <hr class="hr hr-blurry m-3" />
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 120px;" scope="col">Quote ID</th>
+          <th scope="col">Customer</th>
+          <th scope="col">Status</th>
+          <th scope="col">Total incl. VAT</th>
+          <th class="new-quote-col" scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!--Messages to the user-->
+        <tr>
+          <!--Message if there's no quotes in the DB-->
+          <td *ngIf="quoteCount == 0" colspan="5">No customers have requested quotes.</td>
+          <!--Loading message while data is still being retrieved from the DB-->
+          <td *ngIf="loading" colspan="5">Please wait while we load all quotes...</td>
+          <!--Error message-->
+          <td *ngIf="error" colspan="5">Error loading data from the database. Please contact support services.</td>
+        </tr>
+        <!--Category data from API-->
+        <tr *ngFor="let quote of filteredQuotes">
+          <td>QUO{{quote.quoteID}}</td>
+          <td>{{quote.customerFullName}}</td>
+          <td>{{quote.quoteStatusDescription}}</td>
+          <td>{{quote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+          <td class="text-center">
+            <button title="Create new quote" class="btn btn-create btn-new-quote"
+              *ngIf="quote.quoteStatusID == 4"  > <!--status 4 = Rejected and will renegotiate-->
+              New quote
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

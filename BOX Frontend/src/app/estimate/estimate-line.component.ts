@@ -76,13 +76,13 @@ export class EstimateLineComponent {
   //get estimates separately so I can update only estimates list when estimate is updated to save time
   async getEstimatesPromise(): Promise<any> {
     try {
-      let allEstimates: EstimateVM[] = await lastValueFrom(this.dataService.GetAllEstimates().pipe(take(1)));
+      /* let allEstimates: EstimateVM[] = await lastValueFrom(this.dataService.GetAllEstimates().pipe(take(1)));
       this.filteredEstimates = [];
 
       allEstimates.forEach((currentEst: EstimateVM) => {
         let newEstimate: VATInclusiveEstimate = new VATInclusiveEstimate(currentEst, this.vat.percentage);
         this.filteredEstimates.push(newEstimate);
-      });
+      }); */
 
       this.estimates = this.filteredEstimates; //store all the estimates someplace before I search below
       this.estimateCount = this.filteredEstimates.length; //update the number of estimates
