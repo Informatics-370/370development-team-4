@@ -6,8 +6,7 @@ import { tap, map } from 'rxjs/operators';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { CustomProductVM } from 'src/app/shared/custom-product-vm';
 /* import { Discount } from '../../shared/discount';
-import { VAT } from '../../shared/vat';
- */
+import { VAT } from '../../shared/vat'; */
 
 @Injectable({
   providedIn: 'root'

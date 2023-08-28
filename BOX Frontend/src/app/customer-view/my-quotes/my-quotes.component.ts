@@ -304,10 +304,15 @@ export class MyQuotesComponent {
   async rejectQuote() {
     //get form data
     const formData = this.rejectQuoteForm.get("quoteID")?.value;
-    //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
-    const inputElement = document.getElementById('priceMatchFileB64') as HTMLInputElement;
-    const formImage = inputElement.files?.[0];    
-    let priceMatchFileB64 = formImage ? await this.convertToBase64(formImage) : ''; //convert to B64 if there's an image selected, otherwise, empty string
+    let priceMatchFileB64 = '';
+    
+    //only get file if they want to renegotiate
+    if (this.rejectReasonId == 1) {
+      //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
+      const inputElement = document.getElementById('priceMatchFileB64') as HTMLInputElement;
+      const formImage = inputElement.files?.[0];
+      priceMatchFileB64 = formImage ? await this.convertToBase64(formImage) : ''; //convert to B64 if there's an image selected, otherwise, empty string
+    }
 
     //put data in qoute VM
     let quoteVM: QuoteVM = {
@@ -328,7 +333,10 @@ export class MyQuotesComponent {
     }
 
     //don't let them reject they say they want to renegotiate but didn't upload a file
-    if (this.rejectReasonId == 1 && priceMatchFileB64 != '') {
+    if (this.rejectReasonId == 1 && priceMatchFileB64 == '') {
+      console.error('Error in form data');
+    }
+    else {
       try {
         this.dataService.RejectQuote(quoteVM).subscribe((result) => {
           $('#rejectQuote').modal('hide');

@@ -117,6 +117,8 @@ export class QouteRequestsComponent {
 
   closedGenerateQuoteModal(result: boolean) {
     if (result) { //if quote was generated successfully
+      //email customer
+      
       //notify user
       Swal.fire({
         icon: 'success',

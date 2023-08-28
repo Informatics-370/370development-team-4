@@ -537,4 +537,8 @@ export class DataService {
     return this.httpClient.get<Supplier[]>(`${this.apiUrl}Reports/GetSupplierListReport/${productId}/${isFixedProduct}`);
   }
 
+  //------------------------------------------------------- EMAIL -------------------------------------------------------
+  SendEmail(email: any): Observable<any> {
+    return this.httpClient.post<any>(`${this.apiUrl}Email/SendEmail`, email, this.httpOptions);
+  }
 }

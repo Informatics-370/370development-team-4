@@ -25,7 +25,8 @@ INSERT INTO [dbo].[Quote_Status]
            ('Accepted'),
            ('Rejected'),
            ('Rejected and will renegotiate'),
-           ('Expired')
+           ('Expired'),
+		   ('Rejected; Successfully renegotiated')
 GO
 
 INSERT INTO [dbo].[Quote_Request_Status]

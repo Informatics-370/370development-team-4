@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../services/data.services';
+import { EmailService } from '../services/email.service';
 import { take, lastValueFrom } from 'rxjs';
 declare var $: any;
 import { QuoteVM } from '../shared/quote-vm';
@@ -17,6 +18,7 @@ export class QuotesComponent {
   quotes: QuoteVMClass[] = []; //hold all quotes
   filteredQuotes: QuoteVMClass[] = []; //quotes to show user
   selectedQuote!: QuoteVMClass; //specific quote to show user
+  oldQuote!: QuoteVM; //quote which was rejected that user wants to recreate with diff prices
   allVATs: VAT[] = [];
   searchTerm: string = '';
 
@@ -32,9 +34,10 @@ export class QuotesComponent {
   2 Accepted
   3 Rejected
   4 Rejected and will renegotiate
-  5 Expired */
+  5 Expired
+  6 Rejected; Successfully renegotiated */
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private emailService: EmailService) { }
 
   ngOnInit() {
     this.getDataFromDB();
@@ -53,10 +56,18 @@ export class QuotesComponent {
 
       //put results from DB in global arrays
       this.allVATs = allVAT;
+
+      //put quotes in quote class
+      this.filteredQuotes = []; //empty array
       allQuotes.forEach((quote: QuoteVM) => {
         let applicableVAT = this.getApplicableVAT(quote.dateGenerated); //get vat applicable to that date
         let quoteClassObj = new QuoteVMClass(quote, quote.lines, applicableVAT);
         this.filteredQuotes.push(quoteClassObj);
+      });
+
+      //sort quotes by quote ID so later quotes are first
+      this.filteredQuotes.sort((currentQuote, nextQuote) => {
+        return nextQuote.quoteID - currentQuote.quoteID;
       });
   
       this.quotes = this.filteredQuotes; //store all the quote someplace before I search below
@@ -144,7 +155,7 @@ export class QuotesComponent {
     });
   }
 
-  //download price match file
+  //--------------------- DOWNLOAD PRICE MATCH FILE ---------------------
   //determine file type from base64 string
   determineFileType(base64: string): string {
     const fileTypes = [
@@ -200,5 +211,74 @@ export class QuotesComponent {
     }
     return byteArray;
   }
-  
+
+  openGenerateQuoteModal(requestID: number, quoteID: number) {
+    this.newQuoteQRID = requestID;
+    $('#generateQuote').modal('show');
+    
+    //get OG quote from backend to change it's status later
+    this.dataService.GetQuote(quoteID).subscribe((result) => {
+      this.oldQuote = result;
+      console.log('oldQuote before we try to do anything to it' ,this.oldQuote);
+    });
+  }
+
+  async closedGenerateQuoteModal(result: boolean) {
+    if (result) { //if quote was generated successfully
+      console.log('oldQuote after making new quote' ,this.oldQuote);
+
+      //change old quote status to just successfully renegotiated
+      this.updateQuoteStatus(this.oldQuote.quoteID);
+
+      //email customer; in future, add login link
+      let emailBody = `<div style='width: 50%; margin: auto;' <h3>Hi ${this.oldQuote.customerFullName},</h3>` +
+        `After reviewing the competitor's quote you provided, we have created a new ` +
+        `quotation to hopefully beat that price.<br/>You can view it on your quotes page.<br/><br/>` +
+        `Kind regards<br/>MegaPack</div>`;
+
+      this.emailService.sendEmail('charistas2003@gmail.com', 'New quotation!', emailBody);
+
+      //notify user
+      Swal.fire({
+        icon: 'success',
+        title: "Quote created successfully.",
+        html: 'The customer has been notified via email.',
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        console.log(result);
+        window.location.reload(); //refresh quote request list
+      });
+
+      //refresh quote request list
+      /* this.error = false;
+      this.quoteCount = -1;
+      this.loading = true;
+      await this.getDataFromDB(); */
+    }
+    else {      
+      //notify user
+      Swal.fire({
+        icon: 'error',
+        title: "An error occurred while trying to create a new quote.",
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#E33131'
+      }).then((result) => {
+        console.log(result);
+      });
+    }
+  }
+
+  updateQuoteStatus(quoteId: number) {
+    try {
+      //statusID 6 = 'Rejected; Successfully renegotiated'; //should be 6
+      this.dataService.UpdateQuoteStatus(quoteId, 7).subscribe((result) => {
+        console.log("Successfully updated quote status!");
+      });
+    } catch (error) {
+      console.error('Error updating status: ', error);
+    }
+  }
 }

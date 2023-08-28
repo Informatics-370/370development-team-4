@@ -29,6 +29,13 @@
   color: black;
 }
 
+.quote-status {
+  font-weight: 600;
+  color: black;
+  line-height: 0.9em;
+  text-align: right;
+}
+
 .title {
   font-size: 110%;
 }

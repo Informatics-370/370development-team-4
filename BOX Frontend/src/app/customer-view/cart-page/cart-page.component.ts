@@ -76,7 +76,7 @@ export class CartPageComponent {
           console.log('Got here');
           //if they have an active quote, quote with status that is 1 (Generated), or 4 (Rejected and will renegotiate)
           this.dataService.GetCustomerMostRecentQuote(this.customerID).subscribe((result) => {
-            if (result.quoteStatusID == 1 && result.quoteStatusID == 4) {
+            if (result.quoteStatusID == 1 || result.quoteStatusID == 4) {
               this.cannotRequest = true;
               this.cannotRequestReason = 'Already requested';          
             }
