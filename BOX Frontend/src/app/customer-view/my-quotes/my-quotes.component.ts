@@ -282,10 +282,17 @@ export class MyQuotesComponent {
     const inputElement = event.target as HTMLInputElement;
     const chosenFile = inputElement.files?.[0];
     let imageName = document.getElementById('imageName') as HTMLSpanElement;
+    //create button to remove an uploaded pic
+    let removeBtn: HTMLButtonElement = document.createElement('button');
+    removeBtn.classList.add('remove-pic');
+    removeBtn.setAttribute('title', 'Remove file')
+    removeBtn.innerHTML = 'Remove';
+    removeBtn.addEventListener('click', this.removeFile.bind(this));
 
     if (chosenFile) { //if there is a file chosen
       imageName.innerHTML = chosenFile.name; //display file name
       imageName.style.display = 'inline-block';
+      imageName.appendChild(removeBtn);
       this.noFileSelected = false;
     }
     else {
@@ -307,6 +314,17 @@ export class MyQuotesComponent {
       };
       reader.readAsDataURL(img);
     });
+  }  
+
+  removeFile() {
+    //get file input and name span from reject quote form modal
+    let fileName: HTMLSpanElement = document.getElementById('imageName') as HTMLSpanElement;
+    let fileInput : HTMLInputElement = document.getElementById('priceMatchFileB64') as HTMLInputElement;
+
+    //remove file from file input
+    fileInput.value = '';
+    fileName.innerHTML = '';
+    this.noFileSelected = true;
   }
 
   async rejectQuote() {
@@ -342,7 +360,7 @@ export class MyQuotesComponent {
     }
 
     //don't let them reject they say they want to renegotiate but didn't upload a file
-    if (this.rejectReasonId == 1 && priceMatchFileB64 == '') {
+    if (this.rejectReasonId == 1 && this.noFileSelected) {
       console.error('Error in form data');
     }
     else {

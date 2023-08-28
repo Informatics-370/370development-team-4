@@ -548,7 +548,7 @@ export class FixedProductComponent {
       imageElement.alt = chosenFile.name;
       imageName.style.display = 'block';
       imageName.innerHTML = chosenFile.name; //display file name
-      imageName.appendChild(removeBtn);      
+      imageName.appendChild(removeBtn);
     }
   }
 
