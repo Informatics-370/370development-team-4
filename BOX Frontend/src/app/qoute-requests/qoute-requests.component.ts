@@ -129,6 +129,7 @@ export class QouteRequestsComponent {
         confirmButtonColor: '#32AF99'
       }).then((result) => {
         console.log(result);
+        window.location.reload(); //refresh quote request list
       });
 
       //refresh quote request list

@@ -231,12 +231,12 @@ export class QuotesComponent {
       this.updateQuoteStatus(this.oldQuote.quoteID);
 
       //email customer; in future, add login link
-      let emailBody = `<div style='width: 50%; margin: auto;' <h3>Hi ${this.oldQuote.customerFullName},</h3>` +
-        `After reviewing the competitor's quote you provided, we have created a new ` +
-        `quotation to hopefully beat that price.<br/>You can view it on your quotes page.<br/><br/>` +
+      let emailBody = `<div style='width: 50%; margin: auto;'><h3>Hi ${this.oldQuote.customerFullName},</h3>` +
+        `<p>After reviewing the competitor's quote you provided, we have created a new ` +
+        `quotation to hopefully beat that price.</p><p>You can view it on your quotes page.</p><br/>` +
         `Kind regards<br/>MegaPack</div>`;
 
-      this.emailService.sendEmail('charistas2003@gmail.com', 'New quotation!', emailBody);
+      this.emailService.sendEmail(this.oldQuote.customerEmail, 'New quotation!', emailBody);
 
       //notify user
       Swal.fire({
@@ -248,7 +248,7 @@ export class QuotesComponent {
         confirmButtonColor: '#32AF99'
       }).then((result) => {
         console.log(result);
-        window.location.reload(); //refresh quote request list
+        window.location.reload(); //refresh quotes list
       });
 
       //refresh quote request list

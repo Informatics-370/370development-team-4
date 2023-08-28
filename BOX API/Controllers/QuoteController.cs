@@ -126,6 +126,7 @@ namespace BOX.Controllers
                 }
 
                 string fullName = await _repository.GetUserFullNameAsync(quote.UserId);
+                var user = await _repository.GetUserAsync(quote.UserId);
                 var status = await _repository.GetQuoteStatusAsync(quote.QuoteStatusID);
                 var duration = await _repository.GetQuoteDurationAsync(quote.QuoteDurationID);
                 var rejectReason = new Reject_Reason();
@@ -149,6 +150,7 @@ namespace BOX.Controllers
                     QuoteStatusDescription = status.Description,
                     CustomerId = quote.UserId,
                     CustomerFullName = fullName,
+                    CustomerEmail = user.Email,
                     QuoteDurationID = quote.QuoteDurationID,
                     QuoteDuration = duration.Duration,
                     DateGenerated = quote.Date_Generated,

@@ -170,6 +170,7 @@ export class CartPageComponent {
         priceMatchFileB64: '',
         customerId: this.customerID ? this.customerID : '',
         customerFullName: '',
+        customerEmail: '',
         lines: []
       }
 

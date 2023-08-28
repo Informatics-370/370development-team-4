@@ -210,6 +210,7 @@ export class GenerateQuoteComponent implements OnChanges {
         priceMatchFileB64: '',
         customerId: this.selectedQuote.customerId,
         customerFullName: '',
+        customerEmail: '',
         lines: []
       };
 

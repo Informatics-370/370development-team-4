@@ -329,6 +329,7 @@ export class MyQuotesComponent {
       dateGenerated: new Date(),
       customerId: '',
       customerFullName: '',
+      customerEmail: '',
       lines: []
     }
 
