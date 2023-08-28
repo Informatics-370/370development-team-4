@@ -106,6 +106,7 @@ export class QuotesComponent {
     let quoteVM: QuoteVM;
 
     this.dataService.GetQuote(quoteID).subscribe((result) => {
+      console.log('result', result);
       quoteVM = result;
 
       //put in quote class
@@ -141,6 +142,63 @@ export class QuotesComponent {
   
       $('#viewQuote').modal('show');
     });
+  }
+
+  //download price match file
+  //determine file type from base64 string
+  determineFileType(base64: string): string {
+    const fileTypes = [
+      {
+        startingChars: 'JVBERi0',
+        type: "application/pdf"
+      },
+      {
+        startingChars: 'iVBORw0KGgo',
+        type: "image/png"
+      },
+      {
+        startingChars: '/9j/',
+        type: "image/jpg"
+      }
+    ];
+    let returnString = 'undefined';
+
+    fileTypes.forEach(ft => {
+      if (base64.startsWith(ft.startingChars)) returnString = ft.type;      
+    });
+
+    return returnString;
+  }
+
+  downloadPriceMatchFile() {
+    var arrayBuffer = this.B64ToArrayBuffer(this.selectedQuote.priceMatchFileB64);
+    let fileType: string = this.determineFileType(this.selectedQuote.priceMatchFileB64);
+    console.log(fileType);
+
+    if (fileType != 'undefined')
+    {
+      const blob = new Blob([arrayBuffer], { type: fileType });
+
+      //Create link; apparently, I need this even though I have a download button
+      const priceMatchFile = document.createElement('a');
+      priceMatchFile.href = URL.createObjectURL(blob);
+      // priceMatchFile.href = this.selectedQuote.priceMatchFileB64;
+      priceMatchFile.download = 'Quote #' + this.selectedQuote.quoteID + ' price match file.' + fileType.substring(fileType.length - 3);
+      priceMatchFile.click(); //click link to start downloading
+      URL.revokeObjectURL(priceMatchFile.href); //clean up URL object
+    }
+  }
+
+  //need to convert to array buffer first otherwise file is corrupted
+  B64ToArrayBuffer(B64String: string) {
+    var binaryString = window.atob(B64String); //decodes a Base64 string into a binary string
+    var binaryLength = binaryString.length;
+    var byteArray = new Uint8Array(binaryLength);
+    for (var i = 0; i < binaryLength; i++) {
+      var ascii = binaryString.charCodeAt(i); //retrieve the ASCII code of the character in the binary string
+      byteArray[i] = ascii; //assigns ASCII code to corresponding character in byte array
+    }
+    return byteArray;
   }
   
 }

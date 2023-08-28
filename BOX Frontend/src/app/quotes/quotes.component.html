@@ -76,17 +76,23 @@
         <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
         <div style="font-size: 0.95em; color: grey;">
           Quote #: QUO{{selectedQuote.quoteID}} <br />
-          Status: {{selectedQuote.quoteStatusDescription}} <br />
           Date: {{selectedQuote.dateGenerated | date:'d MMM yyyy HH:mm' }}<br />
+          Status: {{selectedQuote.quoteStatusDescription}} <br />
           <span *ngIf="selectedQuote.quoteStatusID == 1"> <!--status 1 = Generated-->
             Expires:  {{selectedQuote.dateExpiring | date:'d MMM yyyy HH:mm' }}<br /><br />
           </span>
           <span *ngIf="selectedQuote.quoteStatusID == 5"> <!--status 5 = Expired-->
             Expired on:  {{selectedQuote.dateExpiring | date:'d MMM yyyy HH:mm' }}<br /><br />
           </span>
-          <span *ngIf="selectedQuote.quoteStatusID == 4"> <!--status 4 = Rejected and will renegotiate-->
-            Rejected because:  {{selectedQuote.rejectReasonDescription}}<br />
-            Quote from competitor: <a>Download price match file</a> <br /><br />
+          <span *ngIf="selectedQuote.quoteStatusID == 3 || selectedQuote.quoteStatusID == 4"> <!--status 4 = Rejected and will renegotiate-->
+            Rejection reason: {{selectedQuote.rejectReasonDescription}}<br />
+            
+            <span *ngIf="selectedQuote.quoteStatusID == 4">
+              Quote from competitor:               
+              <a class="download" (click)="downloadPriceMatchFile()" >
+                <fa-icon style="margin-right: 0.5rem;" [icon]="['fas', 'download']"></fa-icon>Download price match file
+              </a> <br /><br />
+            </span>
           </span>
         </div>
 
@@ -112,11 +118,11 @@
         <!--Footer-->
         <table class="totals">
           <tr>
-            <td class="totals-label">Subtotal:</td>
+            <td class="totals-label" style="padding-top: 0.5rem;">Subtotal:</td>
             <td class="totals-qty">{{selectedQuote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr class="light-bold">
-            <td class="totals-label">VAT:</td>
+            <td class="totals-label" style="padding-top: 0.5rem;">VAT:</td>
             <td class="totals-qty">+{{selectedQuote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr class="total-divider">

@@ -69,4 +69,14 @@
   margin: 0;
 }
 
-.quote-form-select { max-width: 100%;}
+.download {
+  cursor: pointer;
+  margin-left: 0.5em;
+  color: #373435;
+  font-size: 0.95em;
+  text-decoration: underline;
+}
+
+.download:hover {
+  font-size: 1em;
+}
