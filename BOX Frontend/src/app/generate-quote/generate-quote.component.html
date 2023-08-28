@@ -10,6 +10,9 @@
     <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
   <div style="font-size: 0.95em; color: grey;">
     Requested: {{selectedQuote.dateRequested | date:'d MMM yyyy HH:mm' }}<br />
+    Once created, this quote is valid for 
+    <input id="duration" type="number" class="form-control modal-form-text table-input" required min="1" value="{{quoteDuration.duration}}"> 
+    days.
   </div>
 
   <table id="quote-details-table" class="table table-hover">
@@ -34,7 +37,7 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="4" class="form-heading">Add new product to quote</td>
+        <td colspan="5" class="form-heading">Add new product to quote</td>
       </tr>
       <tr [formGroup]="addQuoteLineForm">
         <td>
@@ -58,8 +61,11 @@
             min="1" step="1">
         </td>
         <td class="text-center">
-          <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()">Add</button>
+          <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()" [disabled]="outOfStock">Add</button>
         </td>
+      </tr>
+      <tr style="color: #E33131; font-size: 80%;" *ngIf="outOfStock">
+        <td colspan="5">This product is out of stock</td>
       </tr>
     </tfoot>
   </table><br />

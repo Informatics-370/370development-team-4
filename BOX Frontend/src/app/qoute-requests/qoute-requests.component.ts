@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../services/data.services';
+import { EmailService } from '../services/email.service';
 import { take, lastValueFrom } from 'rxjs';
 import { QuoteVM } from '../shared/quote-vm';
 import Swal from 'sweetalert2';
@@ -13,6 +14,7 @@ declare var $: any;
 export class QouteRequestsComponent {
   quoteRequests: QuoteVM[] = []; //hold all quote requests
   filteredQuoteRequests: QuoteVM[] = []; //quote requests to show user
+  oldQuoteRequest!: QuoteVM; //store quote request user wants to generate a quote from
   searchTerm: string = '';
   //display messages to user
   quoteRequestCount = -1;
@@ -20,7 +22,7 @@ export class QouteRequestsComponent {
   error: boolean = false;
   selectedQRID = 0;
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private emailService: EmailService) { }
 
   ngOnInit() {
     this.getQuoteRequestsPromise();
@@ -113,10 +115,17 @@ export class QouteRequestsComponent {
   openGenerateQuoteModal(id: number) {
     this.selectedQRID = id;
     $('#generateQuote').modal('show');
+    
+    //get OG quote from backend to change it's status later
+    this.dataService.GetQuoteRequest(id).subscribe((result) => {
+      this.oldQuoteRequest = result;
+      console.log('old QR before we try to do anything to it' ,this.oldQuoteRequest);
+    });
   }
 
   closedGenerateQuoteModal(result: boolean) {
     if (result) { //if quote was generated successfully
+      console.log('old QR after making new quote' ,this.oldQuoteRequest);
       //email customer
       
       //notify user

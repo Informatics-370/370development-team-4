@@ -16,7 +16,6 @@ import { SizeVM } from '../shared/size-vm';
 import { Supplier } from '../shared/supplier';
 import { Customer } from '../shared/customer';
 import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
-import { EstimateVM } from '../shared/estimate-vm';
 import { Role } from '../shared/role';
 import { SupplierOrderVM } from '../shared/supplierOrder-vm';
 import { Discount } from '../shared/discount';

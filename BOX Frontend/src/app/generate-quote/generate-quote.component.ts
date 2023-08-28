@@ -24,7 +24,8 @@ export class GenerateQuoteComponent implements OnChanges {
   fixedProducts: FixedProductVM[] = [];
   filteredFixedProducts: FixedProductVM[] = [];
   vat!: VAT;
-  customer!: Customer;
+  quoteDuration: any;
+  outOfStock = false;
 
   //messages to user
   loading = true; //is true when data is successfully retrieved from backend
@@ -52,12 +53,9 @@ export class GenerateQuoteComponent implements OnChanges {
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['quoteRequestID']) {
       // The quoteRequestID input property has changed; Perform actions based on the change
-      console.log('quoteRequestID changed');
-
       //however, when the modal opens for the first time, the ngOnChanges considers this a change too. That will cause getQuoteRequest to fire twice. We don't want that
       const previousQuoteRequestID = changes['quoteRequestID'].previousValue;
       if (previousQuoteRequestID != 0) { //if it's 0, this modal is opening for the first time
-        console.log('previousQuoteRequestID', previousQuoteRequestID);
         this.error = false;
         this.loading = true;
         await this.getQuoteRequest();
@@ -70,19 +68,22 @@ export class GenerateQuoteComponent implements OnChanges {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetVAT().pipe(take(1)));
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
+      const getQuoteDurationPromise = lastValueFrom(this.dataService.GetQuoteDuration(1).pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
       That's what the Promise.all method is supposed to be doing.*/
-      const [currentVAT, allProducts] = await Promise.all([
+      const [currentVAT, allProducts, duration] = await Promise.all([
         getVATPromise,
-        getProductsPromise
+        getProductsPromise,
+        getQuoteDurationPromise
       ]);
 
       //put results from DB in global arrays
       this.vat = currentVAT;
       this.filteredFixedProducts = allProducts;
       this.fixedProducts = this.filteredFixedProducts; //store all products someplace before I filter below
-      console.log('All products: ', this.fixedProducts, 'and current VAT: ', this.vat);
+      this.quoteDuration = duration;
+      console.log(this.quoteDuration);
 
       await this.getQuoteRequest();
     } catch (error) {
@@ -159,6 +160,8 @@ export class GenerateQuoteComponent implements OnChanges {
     this.selectedProduct = this.fixedProducts.find(fp => fp.fixedProductID == parseInt(this.selectedProductID));
 
     //display out of stock message for products that are out of stock
+    if (this.selectedProduct && this.selectedProduct.quantityOnHand > 0) this.outOfStock = false;
+    else this.outOfStock = true;
   }
 
   addQuoteLine() {
@@ -181,7 +184,6 @@ export class GenerateQuoteComponent implements OnChanges {
       };
 
       this.selectedQuote.addNewQuoteLine(newQuoteLine);
-      console.log('Quote after adding', this.selectedQuote);
 
       //reset form
       this.selectedProductID = 'NA'; //reset product dropdown
@@ -231,11 +233,9 @@ export class GenerateQuoteComponent implements OnChanges {
         newQuote.lines.push(newQuoteLine);
       });
 
-      console.log('New quote: ', newQuote);
-
       this.dataService.AddQuote(newQuote).subscribe(
         (result: any) => {
-          console.log('Successfully updated quote! ', result);
+          console.log('Successfully added quote! ', result);
           //send result back
           this.resultEvent.emit(true); // Emit the boolean parameter
         }
