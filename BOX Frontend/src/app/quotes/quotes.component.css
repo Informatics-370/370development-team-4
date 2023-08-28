@@ -17,14 +17,34 @@
 
 #quote-details-table { margin: 0; }
 
-#total-table {
+/* #total-table {
   width: 100%;
 }
 
 #total-table tr td {
   padding-right: 5px;
   line-height: 1.2em;
+} */
+
+.totals {
+  width: 100%;
+  text-align: right;
 }
+
+.totals tr td {
+  padding-right: 5px;
+  line-height: 1.1em;
+}
+
+.totals-label { width: 80%; }
+
+.total-divider {
+  border: none;
+  border-top: double;
+  border-top-color: rgba(0, 0, 0, 0.2);
+}
+
+.totals-qty { text-align: left; padding: 0 0.5rem; }
 
 .quote-form-submit, .quote-form-submit:hover, .quote-form-submit:active {
   margin: 0;

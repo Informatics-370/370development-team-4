@@ -17,6 +17,7 @@
     <table class="table">
       <thead>
         <tr>
+          <th style="width: 55px;" scope="col"></th>
           <th style="width: 120px;" scope="col">Quote ID</th>
           <th scope="col">Customer</th>
           <th scope="col">Status</th>
@@ -34,8 +35,13 @@
           <!--Error message-->
           <td *ngIf="error" colspan="5">Error loading data from the database. Please contact support services.</td>
         </tr>
-        <!--Category data from API-->
+        <!--Data from API-->
         <tr *ngFor="let quote of filteredQuotes">
+          <td style="text-align: center;">
+              <button title="View quote details" class="CRUD-icon" (click)="openviewQuote(quote.quoteID)" >
+                  <fa-icon [icon]="['fas', 'circle-info']"></fa-icon>
+              </button>
+          </td>
           <td>QUO{{quote.quoteID}}</td>
           <td>{{quote.customerFullName}}</td>
           <td>{{quote.quoteStatusDescription}}</td>
@@ -49,5 +55,84 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!--VIEW QUOTE MODAL-->
+<div class="modal fade" id="viewQuote" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content" *ngIf="selectedQuote != null">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">View Quote</h4>
+        <button class="close-modal" data-bs-dismiss="modal">
+          <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+        </button>
+      </div>
+
+      <!--BODY-->
+      <div class="modal-body">
+        <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
+        <div style="font-size: 0.95em; color: grey;">
+          Quote #: QUO{{selectedQuote.quoteID}} <br />
+          Status: {{selectedQuote.quoteStatusDescription}} <br />
+          Date: {{selectedQuote.dateGenerated | date:'d MMM yyyy HH:mm' }}<br />
+          <span *ngIf="selectedQuote.quoteStatusID == 1"> <!--status 1 = Generated-->
+            Expires:  {{selectedQuote.dateExpiring | date:'d MMM yyyy HH:mm' }}<br /><br />
+          </span>
+          <span *ngIf="selectedQuote.quoteStatusID == 5"> <!--status 5 = Expired-->
+            Expired on:  {{selectedQuote.dateExpiring | date:'d MMM yyyy HH:mm' }}<br /><br />
+          </span>
+          <span *ngIf="selectedQuote.quoteStatusID == 4"> <!--status 4 = Rejected and will renegotiate-->
+            Rejected because:  {{selectedQuote.rejectReasonDescription}}<br />
+            Quote from competitor: <a>Download price match file</a> <br /><br />
+          </span>
+        </div>
+
+        <table id="quote-details-table" class="table">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Price</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody id="quote-details-tbody">
+            <tr *ngFor="let line of selectedQuote.lines">
+              <td>{{line.productDescription}}</td>
+              <td>{{line.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{line.quantity}}</td>
+              <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!--Footer-->
+        <table class="totals">
+          <tr>
+            <td class="totals-label">Subtotal:</td>
+            <td class="totals-qty">{{selectedQuote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+          <tr class="light-bold">
+            <td class="totals-label">VAT:</td>
+            <td class="totals-qty">+{{selectedQuote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+          <tr class="total-divider">
+            <td colspan="2"></td>
+          </tr>
+          <tr class="bold">
+            <td class="totals-label">Total:</td>
+            <td class="totals-qty">{{selectedQuote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+        </table>
+        
+        <div class="form-submit-div">
+          <button class="btn btn-create modal-form-submit" data-bs-toggle="modal" data-bs-target="#confirmEdit">Close</button>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>

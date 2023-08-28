@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
 import { QuoteVM } from '../shared/quote-vm';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 declare var $: any;
 
 @Component({

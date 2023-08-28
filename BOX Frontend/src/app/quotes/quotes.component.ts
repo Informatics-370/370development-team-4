@@ -6,6 +6,7 @@ import { QuoteVM } from '../shared/quote-vm';
 import { QuoteLineVM } from '../shared/quote-line-vm';
 import { QuoteVMClass } from '../shared/quote-vm-class';
 import { VAT } from '../shared/vat';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-quotes',
@@ -18,10 +19,14 @@ export class QuotesComponent {
   selectedQuote!: QuoteVMClass; //specific quote to show user
   allVATs: VAT[] = [];
   searchTerm: string = '';
+
   //display messages to user
   quoteCount = -1;
   loading = true;
   error: boolean = false;
+
+  //regenerate quote for customer who wants to renegotiate
+  newQuoteQRID = 0; //ID of QUOTE REQUEST that you want to regenerate a quote
   /*Status list: no need to retrieve this from the backend because it's static:
   1 Generated
   2 Accepted
@@ -96,5 +101,46 @@ export class QuotesComponent {
   }
 
   //-------------------VIEW SPECIFIC QUOTE LOGIC-------------------
+  openviewQuote(quoteID: number) {
+    //get quote from backend
+    let quoteVM: QuoteVM;
+
+    this.dataService.GetQuote(quoteID).subscribe((result) => {
+      quoteVM = result;
+
+      //put in quote class
+      let quoteLines: any[] = [];
+      quoteVM.lines.forEach(line => {
+        let isFixedProduct: boolean = line.fixedProductID != 0; //first determine if it's a fixed product
+  
+        /*line = {
+          lineID: 0,
+          isFixedProduct: true,
+          productID: 0,
+          productDescription: '',
+          suggestedUnitPrice: 0,
+          confirmedUnitPrice: 0,
+          quantity: 0
+        }*/
+        let quoteLine: any = {
+          lineID: isFixedProduct ? line.fixedProductID : line.customProductID,
+          isFixedProduct: isFixedProduct,
+          productID: isFixedProduct ? line.fixedProductID : line.customProductID,
+          productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription,
+          suggestedUnitPrice: line.suggestedUnitPrice,
+          confirmedUnitPrice: line.confirmedUnitPrice,
+          quantity: line.quantity,
+        }
+  
+        quoteLines.push(quoteLine);
+      });
+  
+      quoteVM.dateGenerated = new Date(quoteVM.dateGenerated); //convert date string to date object
+      let applicableVAT = this.getApplicableVAT(quoteVM.dateGenerated); //get vat applicable to that date
+      this.selectedQuote = new QuoteVMClass(quoteVM, quoteLines, applicableVAT);
+  
+      $('#viewQuote').modal('show');
+    });
+  }
   
 }
