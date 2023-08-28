@@ -65,7 +65,7 @@
 
       <!--HEADER-->
       <div class="modal-header">
-        <h4 class="modal-title">View Quote</h4>
+        <h4 class="modal-title">Quote #{{selectedQuote.quoteID}}</h4>
         <button class="close-modal" data-bs-dismiss="modal">
           <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
         </button>
@@ -75,7 +75,6 @@
       <div class="modal-body">
         <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
         <div style="font-size: 0.95em; color: grey;">
-          Quote #: QUO{{selectedQuote.quoteID}} <br />
           Date: {{selectedQuote.dateGenerated | date:'d MMM yyyy HH:mm' }}<br />
           Status: {{selectedQuote.quoteStatusDescription}} <br />
           <span *ngIf="selectedQuote.quoteStatusID == 1"> <!--status 1 = Generated-->
@@ -84,12 +83,13 @@
           <span *ngIf="selectedQuote.quoteStatusID == 5"> <!--status 5 = Expired-->
             Expired on:  {{selectedQuote.dateExpiring | date:'d MMM yyyy HH:mm' }}<br /><br />
           </span>
-          <span *ngIf="selectedQuote.quoteStatusID == 3 || selectedQuote.quoteStatusID == 4"> <!--status 4 = Rejected and will renegotiate-->
+          <span *ngIf="selectedQuote.quoteStatusID == 3 || selectedQuote.quoteStatusID == 4 || selectedQuote.quoteStatusID == 7"> <!--status 4 = Rejected and will renegotiate-->
             Rejection reason: {{selectedQuote.rejectReasonDescription}}<br />
             
-            <span *ngIf="selectedQuote.quoteStatusID == 4">
+            <span *ngIf="selectedQuote.quoteStatusID == 4 || selectedQuote.quoteStatusID == 7"> <!--change 7 to 6-->
               Quote from competitor:               
-              <a class="download" (click)="downloadPriceMatchFile()" >
+              <a class="download" title="Download quote from competitor" style="margin-left: 0.5rem;"
+               (click)="downloadFile(selectedQuote.priceMatchFileB64, 'Quote #' + selectedQuote.quoteID + ' price match file')" >
                 <fa-icon style="margin-right: 0.5rem;" [icon]="['fas', 'download']"></fa-icon>Download price match file
               </a> <br /><br />
             </span>
@@ -107,7 +107,14 @@
           </thead>
           <tbody id="quote-details-tbody">
             <tr *ngFor="let line of selectedQuote.lines">
-              <td>{{line.productDescription}}</td>
+              <td *ngIf="line.productFileB64 == ''">{{line.productDescription}}</td>
+              <!--Allow them to download custom product file if there is-->
+              <td *ngIf="line.productFileB64 != ''">
+                <a class="download" title="Download quote from competitor"
+                 (click)="downloadFile(line.productFileB64, line.productDescription)">
+                  {{line.productDescription}}
+                </a>
+              </td>
               <td>{{line.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
               <td>{{line.quantity}}</td>
               <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>

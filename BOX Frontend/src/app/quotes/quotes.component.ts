@@ -112,47 +112,54 @@ export class QuotesComponent {
   }
 
   //-------------------VIEW SPECIFIC QUOTE LOGIC-------------------
-  openviewQuote(quoteID: number) {
+  async openviewQuote(quoteID: number) {
+    await this.getQuote(quoteID);
+    $('#viewQuote').modal('show');
+  }
+
+  async getQuote(quoteID: number) {    
     //get quote from backend
-    let quoteVM: QuoteVM;
+    let quoteVM: QuoteVM = await lastValueFrom(this.dataService.GetQuote(quoteID).pipe(take(1)));
+    
+    //put in quote class
+    let quoteLines: any[] = [];
+    for (let i = 0; i < quoteVM.lines.length; i++) {
+      const line = quoteVM.lines[i];
+      let isFixedProduct: boolean = line.fixedProductID != 0; //first determine if it's a fixed product
+      let custom: any;
+      let customProdDescription = '';
 
-    this.dataService.GetQuote(quoteID).subscribe((result) => {
-      console.log('result', result);
-      quoteVM = result;
+      //if it's a custom product, get file for printing
+      if (!isFixedProduct) {
+        custom = await lastValueFrom(this.dataService.GetCustomProduct(line.customProductID).pipe(take(1)));
+        customProdDescription = custom.sides > 0 ? ' with printing on ' + custom.sides + ' side(s)' : ' with no label'; //add no of sides to print on to prod description
+      }
 
-      //put in quote class
-      let quoteLines: any[] = [];
-      quoteVM.lines.forEach(line => {
-        let isFixedProduct: boolean = line.fixedProductID != 0; //first determine if it's a fixed product
-  
-        /*line = {
-          lineID: 0,
-          isFixedProduct: true,
-          productID: 0,
-          productDescription: '',
-          suggestedUnitPrice: 0,
-          confirmedUnitPrice: 0,
-          quantity: 0
-        }*/
-        let quoteLine: any = {
-          lineID: isFixedProduct ? line.fixedProductID : line.customProductID,
-          isFixedProduct: isFixedProduct,
-          productID: isFixedProduct ? line.fixedProductID : line.customProductID,
-          productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription,
-          suggestedUnitPrice: line.suggestedUnitPrice,
-          confirmedUnitPrice: line.confirmedUnitPrice,
-          quantity: line.quantity,
-        }
-  
-        quoteLines.push(quoteLine);
-      });
-  
-      quoteVM.dateGenerated = new Date(quoteVM.dateGenerated); //convert date string to date object
-      let applicableVAT = this.getApplicableVAT(quoteVM.dateGenerated); //get vat applicable to that date
-      this.selectedQuote = new QuoteVMClass(quoteVM, quoteLines, applicableVAT);
-  
-      $('#viewQuote').modal('show');
-    });
+      /*line = {
+        lineID: 0,
+        isFixedProduct: true,
+        productID: 0,
+        productDescription: '',
+        productFileB64: '' //stores product image / pdf (for custom products) as base64 string
+        confirmedUnitPrice: 0,
+        quantity: 0
+      } */
+      let quoteLine: any = {
+        lineID: isFixedProduct ? line.fixedProductID : line.customProductID,
+        isFixedProduct: isFixedProduct,
+        productID: isFixedProduct ? line.fixedProductID : line.customProductID,
+        productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription + customProdDescription,
+        productFileB64: custom ? custom.label : '',
+        confirmedUnitPrice: line.confirmedUnitPrice,
+        quantity: line.quantity,
+      }
+
+      quoteLines.push(quoteLine);
+    }
+
+    quoteVM.dateGenerated = new Date(quoteVM.dateGenerated); //convert date string to date object
+    let applicableVAT = this.getApplicableVAT(quoteVM.dateGenerated); //get vat applicable to that date
+    this.selectedQuote = new QuoteVMClass(quoteVM, quoteLines, applicableVAT);
   }
 
   //--------------------- DOWNLOAD PRICE MATCH FILE ---------------------
@@ -181,9 +188,9 @@ export class QuotesComponent {
     return returnString;
   }
 
-  downloadPriceMatchFile() {
-    var arrayBuffer = this.B64ToArrayBuffer(this.selectedQuote.priceMatchFileB64);
-    let fileType: string = this.determineFileType(this.selectedQuote.priceMatchFileB64);
+  downloadFile(base64: string, fileName: string) {
+    var arrayBuffer = this.B64ToArrayBuffer(base64);
+    let fileType: string = this.determineFileType(base64);
     console.log(fileType);
 
     if (fileType != 'undefined')
@@ -191,12 +198,12 @@ export class QuotesComponent {
       const blob = new Blob([arrayBuffer], { type: fileType });
 
       //Create link; apparently, I need this even though I have a download button
-      const priceMatchFile = document.createElement('a');
-      priceMatchFile.href = URL.createObjectURL(blob);
-      // priceMatchFile.href = this.selectedQuote.priceMatchFileB64;
-      priceMatchFile.download = 'Quote #' + this.selectedQuote.quoteID + ' price match file.' + fileType.substring(fileType.length - 3);
-      priceMatchFile.click(); //click link to start downloading
-      URL.revokeObjectURL(priceMatchFile.href); //clean up URL object
+      const toDownload = document.createElement('a');
+      toDownload.href = URL.createObjectURL(blob);
+      toDownload.download = fileName + '.' + fileType.substring(fileType.length - 3);
+      //priceMatchFile.download = 'Quote #' + this.selectedQuote.quoteID + ' price match file'
+      toDownload.click(); //click link to start downloading
+      URL.revokeObjectURL(toDownload.href); //clean up URL object
     }
   }
 
@@ -250,12 +257,6 @@ export class QuotesComponent {
         console.log(result);
         window.location.reload(); //refresh quotes list
       });
-
-      //refresh quote request list
-      /* this.error = false;
-      this.quoteCount = -1;
-      this.loading = true;
-      await this.getDataFromDB(); */
     }
     else {      
       //notify user

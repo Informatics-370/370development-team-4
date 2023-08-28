@@ -392,9 +392,9 @@ export class ProductDetailsComponent {
       let selectedCustomisableItem = this.customisableItems.find(item => item.itemID == formData.itemID); //determine whether they want to customise a single or double wall box
 
       if (selectedCustomisableItem) {
-        //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input
+        //form data makes the file a string with a fake url which I can't convert to B64 so I must get the actual value of the file input
         const inputElement = document.getElementById('label') as HTMLInputElement;
-        const formImage = inputElement.files?.[0];
+        const formFile = inputElement.files?.[0];
 
         //put in VM
         //numeric data has already been truncated in updateBoxPreview function
@@ -406,8 +406,8 @@ export class ProductDetailsComponent {
           width: formData.width,
           height: formData.height,
           length: formData.length,
-          sides: formData.sides,
-          label: formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
+          sides: formFile ? formData.sides : 0, //if a file is selected, get the sides; otherwise, 0
+          label: formFile ? await this.convertToBase64(formFile) : '' //convert to B64 if there's a file selected, otherwise, empty string
         }
         
         console.log(newCustomProduct);
@@ -625,6 +625,7 @@ export class ProductDetailsComponent {
         imageName.innerHTML = chosenFile.name; //display file name
         imageName.style.display = 'inline-block';
         this.invalidFile = false;
+        this.sides = this.sides > 0 ? this.sides : 1; //if sides is 0 but they chose an image/file, make sides 1
 
         if (chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) { //if chosen file is an image
           const reader = new FileReader();
