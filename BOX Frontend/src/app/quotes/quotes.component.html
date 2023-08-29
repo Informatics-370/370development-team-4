@@ -12,6 +12,13 @@
         placeholder="e.g. Search by ID, customer, status" (keyup)="searchQuotes($event)" (change)="searchQuotes($event)" />
       <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
     </div>
+    
+    <div class="duration-container">
+      Once created, every quote expires within
+      <input id="duration" type="number" class="form-control modal-form-text table-input" required min="1" 
+       value="{{quoteDuration ? quoteDuration.duration : 0}}"> 
+      days. <button class="btn btn-create btn-duration" (click)="updateQuoteDuration()">Update</button>
+    </div>
 
     <hr class="hr hr-blurry m-3" />
     <table class="table">

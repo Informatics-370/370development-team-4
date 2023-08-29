@@ -4,25 +4,29 @@ import { EmailService } from '../services/email.service';
 import { take, lastValueFrom } from 'rxjs';
 import { QuoteVM } from '../shared/quote-vm';
 import Swal from 'sweetalert2';
+import { DatePipe } from '@angular/common';
 declare var $: any;
 
 @Component({
   selector: 'app-qoute-requests',
   templateUrl: './qoute-requests.component.html',
-  styleUrls: ['./qoute-requests.component.css']
+  styleUrls: ['./qoute-requests.component.css'],
+  providers: [DatePipe]
 })
 export class QouteRequestsComponent {
   quoteRequests: QuoteVM[] = []; //hold all quote requests
   filteredQuoteRequests: QuoteVM[] = []; //quote requests to show user
   oldQuoteRequest!: QuoteVM; //store quote request user wants to generate a quote from
   searchTerm: string = '';
+  quoteDuration: any;
+
   //display messages to user
   quoteRequestCount = -1;
   loading = true;
   error: boolean = false;
   selectedQRID = 0;
 
-  constructor(private dataService: DataService, private emailService: EmailService) { }
+  constructor(private dataService: DataService, private emailService: EmailService, private datePipe: DatePipe) { }
 
   ngOnInit() {
     this.getQuoteRequestsPromise();
@@ -31,6 +35,7 @@ export class QouteRequestsComponent {
   //get quoteRequests separately so I can update only quoteRequests list when quoteRequest is updated to save time
   async getQuoteRequestsPromise(): Promise<any> {
     try {
+      this.quoteDuration = await lastValueFrom(this.dataService.GetQuoteDuration(1).pipe(take(1)));
       let allQRs: QuoteVM[] = await lastValueFrom(this.dataService.GetAllActiveQuoteRequests().pipe(take(1)));
 
       //date comes as string so convert back to date
@@ -125,33 +130,54 @@ export class QouteRequestsComponent {
 
   closedGenerateQuoteModal(result: boolean) {
     if (result) { //if quote was generated successfully
-      console.log('old QR after making new quote' ,this.oldQuoteRequest);
-      //email customer
+      try {
+        $('#generateQuote').modal('hide');
       
-      //notify user
-      Swal.fire({
-        icon: 'success',
-        title: "Quote created successfully.",
-        html: 'The customer has been notified via email.',
-        timer: 3000,
-        timerProgressBar: true,
-        confirmButtonColor: '#32AF99'
-      }).then((result) => {
-        console.log(result);
-        window.location.reload(); //refresh quote request list
-      });
+        //email customer; in future, add login link
+        let expiryDate = new Date(Date.now());
+        expiryDate.setDate(expiryDate.getDate() + this.quoteDuration.duration);
 
-      //refresh quote request list
-      this.error = false;
-      this.quoteRequestCount = -1;
-      this.loading = true;
-      this.getQuoteRequestsPromise();
+        let emailBody = `<div style='width: 50%; margin: auto;'><h3>Hi ${this.oldQuoteRequest.customerFullName},</h3>` +
+          `<p>Your quote is ready! We worked tirelessly to give you the best price. You can view it on your quotes page. `+ 
+          `Hurry, because it expires on ` + 
+          `${this.datePipe.transform(expiryDate, 'EEEE, d MMMM')}.</p><br/>` +
+          `Kind regards<br/>MegaPack</div>`;
+
+        this.emailService.sendEmail(this.oldQuoteRequest.customerEmail, 'New quotation!', emailBody);
+        
+        //notify user
+        Swal.fire({
+          icon: 'success',
+          title: "Success!",
+          html: 'Quote created successfully. The customer has been notified via email.',
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
+        }).then((result) => {
+          console.log(result);
+          window.location.reload(); //refresh quote request list
+        });
+      } 
+      catch (error) {
+        //notify user
+        Swal.fire({
+          icon: 'error',
+          title: "Oops..",
+          html: 'An error occurred.' + error,
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#E33131'
+        }).then((result) => {
+          console.log(result);
+        });        
+      }
     }
-    else {      
+    else {
       //notify user
       Swal.fire({
         icon: 'error',
-        title: "An error occurred while trying to create the quote.",
+        title: "Oops..",
+        html: 'An error occurred while trying to create the quote.',
         timer: 3000,
         timerProgressBar: true,
         confirmButtonColor: '#E33131'

@@ -79,3 +79,21 @@
 .download:hover {
   font-size: 1em;
 }
+
+.table-input {
+  max-width: 100px;
+  padding: 2px 5px;
+  display: inline;
+  margin: 0;
+  margin-left: 0.2em;
+}
+
+.btn-duration {
+  margin: 0 1rem;
+  padding: 2px 8px;
+}
+
+.duration-container {
+  margin-left: 2rem;
+  margin-top: 1rem;
+}

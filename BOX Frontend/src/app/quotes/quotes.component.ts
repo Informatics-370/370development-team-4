@@ -4,15 +4,16 @@ import { EmailService } from '../services/email.service';
 import { take, lastValueFrom } from 'rxjs';
 declare var $: any;
 import { QuoteVM } from '../shared/quote-vm';
-import { QuoteLineVM } from '../shared/quote-line-vm';
 import { QuoteVMClass } from '../shared/quote-vm-class';
 import { VAT } from '../shared/vat';
 import Swal from 'sweetalert2';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-quotes',
   templateUrl: './quotes.component.html',
-  styleUrls: ['./quotes.component.css']
+  styleUrls: ['./quotes.component.css'],
+  providers: [DatePipe]
 })
 export class QuotesComponent {
   quotes: QuoteVMClass[] = []; //hold all quotes
@@ -20,6 +21,7 @@ export class QuotesComponent {
   selectedQuote!: QuoteVMClass; //specific quote to show user
   oldQuote!: QuoteVM; //quote which was rejected that user wants to recreate with diff prices
   allVATs: VAT[] = [];
+  quoteDuration: any;
   searchTerm: string = '';
 
   //display messages to user
@@ -37,7 +39,7 @@ export class QuotesComponent {
   5 Expired
   6 Rejected; Successfully renegotiated */
 
-  constructor(private dataService: DataService, private emailService: EmailService) { }
+  constructor(private dataService: DataService, private emailService: EmailService, private datePipe: DatePipe) { }
 
   ngOnInit() {
     this.getDataFromDB();
@@ -48,14 +50,18 @@ export class QuotesComponent {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
       const getQuotesPromise = lastValueFrom(this.dataService.GetAllQuotes().pipe(take(1)));
+      const getQuoteDurationPromise = lastValueFrom(this.dataService.GetQuoteDuration(1).pipe(take(1)));
 
-      const [allVAT, allQuotes] = await Promise.all([
+      const [allVAT, allQuotes, duration] = await Promise.all([
         getVATPromise,
-        getQuotesPromise
+        getQuotesPromise,
+        getQuoteDurationPromise
       ]);
 
       //put results from DB in global arrays
       this.allVATs = allVAT;
+      this.quoteDuration = duration;
+      console.log(this.quoteDuration);
 
       //put quotes in quote class
       this.filteredQuotes = []; //empty array
@@ -80,7 +86,7 @@ export class QuotesComponent {
       this.error = true;
       console.error('Error retrieving data:', error);
     }
-  }  
+  }
 
   getApplicableVAT(date: Date): VAT {
     for (let i = this.allVATs.length - 1; i >= 0; i--) {
@@ -231,16 +237,22 @@ export class QuotesComponent {
   }
 
   async closedGenerateQuoteModal(result: boolean) {
-    if (result) { //if quote was generated successfully
+    if (result) { //if quote was generated successfully      
+      try {
+        $('#generateQuote').modal('hide');
       console.log('oldQuote after making new quote' ,this.oldQuote);
 
       //change old quote status to just successfully renegotiated
       this.updateQuoteStatus(this.oldQuote.quoteID);
 
       //email customer; in future, add login link
+      let expiryDate = new Date(Date.now());
+      expiryDate.setDate(expiryDate.getDate() + this.quoteDuration.duration);
+
       let emailBody = `<div style='width: 50%; margin: auto;'><h3>Hi ${this.oldQuote.customerFullName},</h3>` +
         `<p>After reviewing the competitor's quote you provided, we have created a new ` +
-        `quotation to hopefully beat that price.</p><p>You can view it on your quotes page.</p><br/>` +
+        `quotation to hopefully beat that price. You can view it on your quotes page. Hurry, because it expires on ` + 
+        `${this.datePipe.transform(expiryDate, 'EEEE, d MMMM')}.</p><br/>` +
         `Kind regards<br/>MegaPack</div>`;
 
       this.emailService.sendEmail(this.oldQuote.customerEmail, 'New quotation!', emailBody);
@@ -248,8 +260,8 @@ export class QuotesComponent {
       //notify user
       Swal.fire({
         icon: 'success',
-        title: "Quote created successfully.",
-        html: 'The customer has been notified via email.',
+        title: "Success!",
+        html: 'Quote created successfully. The customer has been notified via email.',
         timer: 3000,
         timerProgressBar: true,
         confirmButtonColor: '#32AF99'
@@ -257,12 +269,27 @@ export class QuotesComponent {
         console.log(result);
         window.location.reload(); //refresh quotes list
       });
+      } 
+      catch (error) {
+        //notify user
+        Swal.fire({
+          icon: 'error',
+          title: "Oops..",
+          html: 'An error occurred.' + error,
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#E33131'
+        }).then((result) => {
+          console.log(result);
+        });        
+      }
     }
     else {      
       //notify user
       Swal.fire({
         icon: 'error',
-        title: "An error occurred while trying to create a new quote.",
+        title: "Oops..",
+        html: 'An error occurred while trying to create the quote.',
         timer: 3000,
         timerProgressBar: true,
         confirmButtonColor: '#E33131'
@@ -281,5 +308,55 @@ export class QuotesComponent {
     } catch (error) {
       console.error('Error updating status: ', error);
     }
+  }
+
+  //------------------------------------ UPDATE QUOTE DURATION ------------------------------------
+  updateQuoteDuration() {
+    //check if duration changed
+    let durationInput = document.getElementById('duration') as HTMLInputElement;
+    let newDuration = Math.floor(parseInt(durationInput.value));
+    console.log('New ' + newDuration + ' vs old ' + this.quoteDuration.duration);
+
+    if (newDuration != this.quoteDuration.duration) {
+      //warn user
+      Swal.fire({
+        icon: 'warning',
+        title: "Are you sure?",
+        html: `<b>Every quote</b> created from this point onwards and every active quote <b>(status of 'Generated')</b> will only be valid for ${newDuration} days.`,
+        confirmButtonColor: '#32AF99',
+        confirmButtonText: 'Yes, update it!',
+        showCancelButton: true,
+        cancelButtonColor: '#E33131',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.updateDurationInBackend(newDuration);
+        }
+      });
+    }
+  }
+
+  updateDurationInBackend(newDuration: number) {
+    let duration = {
+      duration: newDuration
+    }
+
+    this.dataService.UpdateQuoteDuration(1, duration).subscribe((result) => {
+      console.log('Successfully updated quote durations to', result);
+      
+      //notify user
+      Swal.fire({
+        icon: 'success',
+        title: "Updated!",
+        html: `Quote duration has been updated to ${newDuration} days.`,
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        console.log(result);
+      });
+
+      this.quoteDuration.duration = newDuration;
+    });
   }
 }

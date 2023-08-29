@@ -7,7 +7,6 @@ import { QuoteLineVM } from '../shared/quote-line-vm';
 import { QuoteVMClass } from '../shared/quote-vm-class';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
-import { Customer } from '../shared/customer';
 declare var $: any;
 
 @Component({
@@ -24,12 +23,12 @@ export class GenerateQuoteComponent implements OnChanges {
   fixedProducts: FixedProductVM[] = [];
   filteredFixedProducts: FixedProductVM[] = [];
   vat!: VAT;
-  quoteDuration: any;
-  outOfStock = false;
 
   //messages to user
   loading = true; //is true when data is successfully retrieved from backend
   error: boolean = false;
+  outOfStock = false;
+  invalidPrices = false;
 
   //forms logic
   addQuoteLineForm: FormGroup;
@@ -68,22 +67,18 @@ export class GenerateQuoteComponent implements OnChanges {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetVAT().pipe(take(1)));
       const getProductsPromise = lastValueFrom(this.dataService.GetAllFixedProducts().pipe(take(1)));
-      const getQuoteDurationPromise = lastValueFrom(this.dataService.GetQuoteDuration(1).pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
       That's what the Promise.all method is supposed to be doing.*/
-      const [currentVAT, allProducts, duration] = await Promise.all([
+      const [currentVAT, allProducts] = await Promise.all([
         getVATPromise,
-        getProductsPromise,
-        getQuoteDurationPromise
+        getProductsPromise
       ]);
 
       //put results from DB in global arrays
       this.vat = currentVAT;
       this.filteredFixedProducts = allProducts;
       this.fixedProducts = this.filteredFixedProducts; //store all products someplace before I filter below
-      this.quoteDuration = duration;
-      console.log(this.quoteDuration);
 
       await this.getQuoteRequest();
     } catch (error) {
@@ -194,8 +189,6 @@ export class GenerateQuoteComponent implements OnChanges {
   
   //-------------------CREATE QUOTE LOGIC-------------------
   generateQuote() {
-    //check that no confirmed unit price is 0
-
     try {
       //put quote data in VM
       let newQuote: QuoteVM = {
@@ -218,6 +211,12 @@ export class GenerateQuoteComponent implements OnChanges {
 
       //put quote line data in VM
       this.selectedQuote.lines.forEach(line => {
+        //check that no confirmed unit price is 0
+        if (line.confirmedUnitPrice < 1) {
+          this.invalidPrices = true;
+          throw 'price is 0';
+        }
+
         let newQuoteLine: QuoteLineVM = {
           quoteRequestLineID: 0,
           quoteLineID: 0,
@@ -242,9 +241,10 @@ export class GenerateQuoteComponent implements OnChanges {
       );
     }
     catch (error) {
+      if (error != 'price is 0')
+        this.resultEvent.emit(false); //send result back
+      
       console.error('Error creating quote', error);
-      //send result back
-      this.resultEvent.emit(false);
     }
   }
 }

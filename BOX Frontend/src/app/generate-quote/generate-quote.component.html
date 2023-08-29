@@ -10,9 +10,6 @@
     <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
   <div style="font-size: 0.95em; color: grey;">
     Requested: {{selectedQuote.dateRequested | date:'d MMM yyyy HH:mm' }}<br />
-    Once created, this quote is valid for 
-    <input id="duration" type="number" class="form-control modal-form-text table-input" required min="1" value="{{quoteDuration.duration}}"> 
-    days.
   </div>
 
   <table id="quote-details-table" class="table table-hover">
@@ -33,6 +30,9 @@
         <td>R<input [(ngModel)]="line.confirmedUnitPrice" type="number" class="form-control modal-form-input modal-form-text table-input" placeholder="0.00" name="negotiatedTotal"
           required min="1" step="0.01" (keyup)="selectedQuote.refreshTotals()"></td>
         <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+      </tr>
+      <tr style="color: #E33131; font-size: 80%;" *ngIf="invalidPrices">
+        <td colspan="5">Every product must have a valid price.</td>
       </tr>
     </tbody>
     <tfoot>
@@ -85,7 +85,7 @@
     </tr>
   </table>
   <div class="form-submit-div" style="width: 100%;">
-    <button class="btn btn-create modal-form-submit" data-bs-dismiss="modal" (click)="generateQuote()">Generate Quote</button>
+    <button class="btn btn-create modal-form-submit" (click)="generateQuote()">Generate Quote</button>
   </div>
   </div>
 </div>

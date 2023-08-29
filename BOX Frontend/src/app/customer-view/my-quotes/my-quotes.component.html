@@ -43,12 +43,27 @@
           <!--Body-->
           <div class="quote-details">
             <div class="quote-line row"  *ngFor="let qrLine of quoteRequest.lines">
-              <div class="product-img-container col-4">
-                <img *ngIf="qrLine.fileType !='undefined' && qrLine.fileType !='application/pdf'" 
-                  class="product-img" src="data:{{qrLine.fileType}};base64,{{qrLine.productFileB64}}" alt="No preview available" />
-                <img *ngIf="qrLine.fileType =='undefined' || qrLine.fileType =='application/pdf'" 
-                  class="product-img" alt="No preview available" />
+
+              <!--For fixed products-->
+              <div class="product-img-container col-4" *ngIf="qrLine.isFixedProduct">
+                <img class="product-img" alt="No preview available"
+                  src="{{qrLine.productFileB64 != '' ? 'data:image/png;base64,' + qrLine.productFileB64 : ''}}" />
+                <!-- <img *ngIf="quoteLine.fileType =='undefined' || quoteLine.fileType =='application/pdf'" 
+                  class="product-img" alt="No preview available" /> -->
               </div>
+              
+              <!--For custom products-->
+              <div class="product-img-container col-4 download-container" *ngIf="!qrLine.isFixedProduct"
+               (click)="downloadFile(qrLine.productFileB64, qrLine.productDescription)">
+                <img class="{{qrLine.productFileB64 != '' ? 'product-img download-img' : 'product-img'}}" alt="No preview available"
+                  src="{{qrLine.fileType == 'image/jpg' ? 'data:image/jpg;base64,' + qrLine.productFileB64 : ''}}" />
+                <div class="download-overlay" *ngIf="qrLine.productFileB64 != ''">
+                  <div class="download-btn">
+                    <fa-icon style="margin-right: 0.5rem;" [icon]="['fas', 'download']"></fa-icon><br/>Download
+                  </div>
+                </div>
+              </div>
+              
               <div class="col-8">
                 <span class="light-bold">{{qrLine.productDescription}}</span><br />
 
