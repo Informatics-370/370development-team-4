@@ -12,12 +12,10 @@ namespace BOX.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //This sets the composite key for the Quote Line Entity and does the same for the remaining Associative entities
-            modelBuilder.Entity<User_Role_Permission>()
-     .HasKey(e => new { e.RoleId, e.UserPermissionID });
+            //This sets the composite key for the Quote Line Entity and does the same for the remaining Associative entitiesz
 
             modelBuilder.Entity<Category_Size_Variables>()
- .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
+                .HasKey(e => new { e.CategoryID, e.SizeVariablesID });
 
         }
 
@@ -37,6 +35,7 @@ namespace BOX.Models
 
         public DbSet<Bulk_Discount> Bulk_Discount { get; set; }
         public DbSet<Employee> Employee { get; set; }
+        public DbSet<RegisterMessages> RegisterMessages { get; set; }
         public DbSet<Quote> Quote { get; set; }
         public DbSet<Quote_Duration> Quote_Duration { get; set; }
 

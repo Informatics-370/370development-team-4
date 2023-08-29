@@ -26,6 +26,10 @@
             <fa-icon class="fa-icon-large" [icon]="['fas', 'industry']"></fa-icon>
             Dashboard
           </a><pre></pre>
+          <a [routerLink]="'/write-off-reason'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'message']"></fa-icon>
+            Messages <span class="badge bg-secondary">{{ messages.length }}</span>
+          </a><pre></pre>
           <a href="#" class="nav-link py-2 ripple">
             <fa-icon class="fa-icon-large" [icon]="['fas', 'clipboard-list']"></fa-icon>
             Delivery Schedule

@@ -46,6 +46,8 @@ import { InactiveCustomerListComponent } from './inactive-customer-list/inactive
 import { SupplierListComponent } from './supplier-list/supplier-list.component';
 import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
+import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
+import { MessagesComponent } from './messages/messages.component';
 
 const routes: Routes = [
   { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
@@ -95,7 +97,9 @@ const routes: Routes = [
   { path: 'assign-employee', component: AssignEmployeeComponent },
   { path: 'supplier-list', component: SupplierListComponent },
   { path: 'review-report', component: ReviewReportComponent },
-  { path: 'write-off-report', component: WriteOffByProductCategoryComponent }
+  { path: 'write-off-report', component: WriteOffByProductCategoryComponent },
+  { path: 'inventory-chart', component: InventoryChartComponent },
+  { path: 'messages', component: MessagesComponent }
 ];
 
 @NgModule({

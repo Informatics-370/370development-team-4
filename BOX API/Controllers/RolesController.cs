@@ -175,5 +175,23 @@ namespace BOX.Controllers
             }
             return BadRequest("Your request is invalid.");
         }
+
+        [HttpPost]
+        [Route("CreatePermission")]
+        public async Task<IActionResult> CreatePermission(User_Permission newPermission)
+        {
+            try
+            {
+                _repository.Add(newPermission);
+                await _repository.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status201Created, newPermission);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid transaction");
+            }
+        }
+
     }
 }

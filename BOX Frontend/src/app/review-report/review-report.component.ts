@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Chart } from 'chart.js/auto';
+import jsPDF, { jsPDFAPI } from 'jspdf';
 
 @Component({
   selector: 'app-review-report',
@@ -68,6 +69,8 @@ export class ReviewReportComponent implements OnInit {
         }
       }
     });
+
+    this.canvas = canvas;
   }
 
   fetchAdditionalData() {
@@ -103,32 +106,24 @@ export class ReviewReportComponent implements OnInit {
   }
 
   downloadReport() {
-    const docDefinition = {
-      content: [
-        { text: 'Customer Review Report', style: 'header' },
-        { text: 'Sentiment Chart', style: 'subheader' },
-        {
-          image: this.canvas.toDataURL(),
-          width: 400,
-          height: 400
-        }
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          margin: [0, 0, 0, 10]
-        },
-        subheader: {
-          fontSize: 16,
-          bold: true,
-          margin: [0, 10, 0, 5]
-        }
-      }
-    };
-
-
+    const doc = new jsPDF();
+  
+    doc.setFontSize(18);
+    doc.text('Customer Review Report', 10, 20);
+  
+    // Convert the canvas to an image data URL
+    const canvasDataURL = this.canvas.toDataURL();
+  
+    const imgWidth = 180; // Adjust as needed
+    const imgHeight = (this.canvas.height / this.canvas.width) * imgWidth;
+  
+    // Add the image to the PDF with the calculated dimensions
+    doc.addImage(canvasDataURL, 'PNG', 10, 50, imgWidth, imgHeight);
+  
+    // Save the PDF
+    doc.save('review_report.pdf');
   }
+    
 
 
 }

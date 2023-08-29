@@ -61,6 +61,8 @@ import { InactiveCustomerListComponent } from './inactive-customer-list/inactive
 import { SupplierListComponent } from './supplier-list/supplier-list.component';
 import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
+import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
+import { MessagesComponent } from './messages/messages.component';
 
 
 @NgModule({
@@ -120,8 +122,9 @@ import { WriteOffByProductCategoryComponent } from './write-off-by-product-categ
         WriteOffByProductCategoryComponent,
         ProductListReportComponent,
         InactiveCustomerListComponent,
-        SupplierListComponent
-        
+        SupplierListComponent,
+        InventoryChartComponent,
+        MessagesComponent,        
   ],
   imports: [
     BrowserModule,

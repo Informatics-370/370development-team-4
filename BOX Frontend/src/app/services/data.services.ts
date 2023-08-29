@@ -546,4 +546,12 @@ export class DataService {
     const body = { email: email, roleId: roleId };
     return this.httpClient.put(url, body);
   }
+
+  getAllMessages(): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${this.apiUrl}Authentication/GetAllMessages`);
+  }
+
+  clearAllMessages(): Observable<string> {
+    return this.httpClient.delete<string>(`${this.apiUrl}Authentication/ClearAllMessages`);
+  }
 }
