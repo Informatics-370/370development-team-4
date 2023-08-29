@@ -481,6 +481,10 @@ export class DataService {
     );
   }
 
+  DeleteCustomProduct(customProductId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}CustomProduct/DeleteCustomProduct/${customProductId}`, this.httpOptions);
+  }
+
   //-------------------------------------------------------QUOTE REQUESTS-------------------------------------------------------
   GetAllActiveQuoteRequests(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}QuoteRequest/GetAllActiveQuoteRequests`)

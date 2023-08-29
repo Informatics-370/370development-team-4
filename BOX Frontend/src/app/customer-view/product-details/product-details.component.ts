@@ -616,14 +616,19 @@ export class ProductDetailsComponent {
     const chosenFile = inputElement.files?.[0];
     let imageName = document.getElementById('imageName') as HTMLSpanElement;
     const imageElements = this.el.nativeElement.querySelectorAll('.print');
-
-    console.log(imageElements);
+    //create button to remove an uploaded file
+    let removeBtn: HTMLButtonElement = document.createElement('button');
+    removeBtn.classList.add('remove-pic');
+    removeBtn.setAttribute('title', 'Remove file')
+    removeBtn.innerHTML = 'Remove';
+    removeBtn.addEventListener('click', this.removeFile.bind(this));
 
     if (chosenFile) { //if there is a file chosen
       //if chosen file is pdf/jpg
       if (chosenFile.type.includes('pdf') || chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) {
         imageName.innerHTML = chosenFile.name; //display file name
         imageName.style.display = 'inline-block';
+        imageName.appendChild(removeBtn);
         this.invalidFile = false;
         this.sides = this.sides > 0 ? this.sides : 1; //if sides is 0 but they chose an image/file, make sides 1
 
@@ -642,6 +647,17 @@ export class ProductDetailsComponent {
         this.invalidFile = true;
       }
     }
+  }
+
+  removeFile() {
+    //get file input and name span from reject quote form modal
+    let fileName: HTMLSpanElement = document.getElementById('imageName') as HTMLSpanElement;
+    let fileInput : HTMLInputElement = document.getElementById('label') as HTMLInputElement;
+
+    //remove file from file input
+    fileInput.value = '';
+    fileName.innerHTML = 'No file selected (pdf or jpg)';
+    this.sides = 0; //reset sides
   }
 
   //function to update custom box preview

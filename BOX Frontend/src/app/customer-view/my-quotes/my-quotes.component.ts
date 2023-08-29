@@ -314,7 +314,7 @@ export class MyQuotesComponent {
       };
       reader.readAsDataURL(img);
     });
-  }  
+  }
 
   removeFile() {
     //get file input and name span from reject quote form modal

@@ -210,9 +210,7 @@
                   style="display: none;" (change)="showImageName($event)" />
                 Upload file
               </label>
-              <span id="imageName" class="imageName">
-                <span class="bold">No file selected</span> (pdf or jpg)
-              </span>
+              <span id="imageName" class="bold imageName"> No file selected (pdf or jpg) </span>
               <span class="imageName" *ngIf="invalidFile">Invalid file. Please choose a jpg or pdf file</span>
               <div>We're sorry but we can't provide previews of pdf files.</div>
             </div>

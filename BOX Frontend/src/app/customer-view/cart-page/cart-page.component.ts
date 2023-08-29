@@ -134,6 +134,14 @@ export class CartPageComponent {
   //remove item from cart
   removeFromCart(cartItem: Cart) {
     this.cartService.removeFromCart(cartItem);
+
+    //delete custom products that are removed from cart
+    if (!cartItem.isFixedProduct) {
+      this.dataService.DeleteCustomProduct(cartItem.productID).subscribe((result) => {
+        console.log('Successfully deleted', result);
+      });
+    }
+
     this.refreshCart();
   }
 
