@@ -82,6 +82,7 @@ namespace BOX.Models
         Task<Quote> GetQuoteAsync(int quoteId);
         Task<Quote[]> GetQuotesByCustomerAsync(string customerId);
         Quote GetCustomerMostRecentQuote(string customerId); //get quote customer is using to place an order synchronously because it's used in create order function
+        Task<Quote[]> GetQuotesByStatus(int statusId);
         Task UpdateQuoteAsync(Quote quote);
 
         //-----------------------------------------------QUOTE LINE---------------------------------------------

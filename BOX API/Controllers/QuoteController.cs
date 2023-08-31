@@ -2,7 +2,6 @@ using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace BOX.Controllers
 {
     [Route("api/[controller]")]
@@ -22,8 +21,6 @@ namespace BOX.Controllers
         {
             try
             {
-                //check for any quotes that should have expired and expire them
-
                 var quotes = await _repository.GetAllQuotesAsync();
 
                 List<QuoteViewModel> qouteViewModels = new List<QuoteViewModel>(); //create array of VMs
@@ -82,8 +79,6 @@ namespace BOX.Controllers
         {
             try
             {
-                //check for any quotes that should have expired and expire them
-
                 var quote = await _repository.GetQuoteAsync(quoteId);
                 if (quote == null) return NotFound("The quote does not exist on the B.O.X System");
 
@@ -138,7 +133,7 @@ namespace BOX.Controllers
                     int rejectReasonID = quote.RejectReasonID.Value;
                     rejectReason = await _repository.GetRejectReasonAsync(rejectReasonID);
                 }
-                
+
                 if (priceMatch != null) //convert file to b64 if it exists
                     priceMatchFileB64 = Convert.ToBase64String(priceMatch.File);
 
@@ -499,6 +494,6 @@ namespace BOX.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
             }
         }
-
+        
     }
 }

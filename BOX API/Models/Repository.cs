@@ -317,6 +317,12 @@ namespace BOX.Models
             }
         }
 
+        public async Task<Quote[]> GetQuotesByStatus(int statusId)
+        {
+            IQueryable<Quote> query = _appDbContext.Quote.Where(c => c.QuoteStatusID == statusId);
+            return await query.ToArrayAsync();
+        }
+
         public async Task UpdateQuoteAsync(Quote quote)
         {
             // Update the Quote entity in the data storage
