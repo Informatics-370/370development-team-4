@@ -207,7 +207,7 @@ export class CartPageComponent {
           Swal.fire({
             icon: 'success',
             title: "Requested",
-            html: "You've successfully requested a quote! An employee from MegaPack will contact you soon.",
+            html: "You've successfully requested a quote. Your dedicated salesperson will contact you soon.",
             timer: 3000,
             timerProgressBar: true,
             confirmButtonColor: '#32AF99'

@@ -42,6 +42,8 @@ export class QouteRequestsComponent {
       allQRs.forEach(qr => {
         qr.dateRequested = new Date(qr.dateRequested);
         this.filteredQuoteRequests.push(qr);
+
+        //if user currently logged in is an emloyee, filter quote requests to only be for customers assigned to that employee
       });
 
       this.quoteRequests = this.filteredQuoteRequests; //store all the quote requests someplace before I search below
