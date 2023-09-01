@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
 import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Customer } from '../../shared/customer';
 import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { CustomProductVM } from '../../shared/custom-product-vm';
@@ -10,7 +9,10 @@ import { QuoteVM } from '../../shared/quote-vm';
 import { Route, Router } from '@angular/router';
 import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { take, lastValueFrom } from 'rxjs';
+import { Users } from '../../shared/user';
 declare var $: any;
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-my-quotes',
@@ -37,7 +39,7 @@ export class MyQuotesComponent {
   }[] = [];
 
   //customer info
-  customer!: Customer;
+  customer!: Users;
   customerID: string | null = '';
 
   //reject quote
@@ -46,6 +48,16 @@ export class MyQuotesComponent {
   rejectBtnText = 'Request new quote';
   rejectReasonId = 1;
   rejectQuoteForm: FormGroup;
+
+  //invoice info
+  invoice: any = null;
+
+  // Create a new instance of jsPDF
+  pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
 
   /*Status list: no need to retrieve this from the backend because it's static:
   1 Generated
@@ -66,7 +78,18 @@ export class MyQuotesComponent {
     //get customer data
     const token = localStorage.getItem('access_token')!;
     this.customerID = this.authService.getUserIdFromToken(token);
+    this.getCustomerData();
+
     this.getDataFromDB();
+  }
+
+  async getCustomerData() {
+    const token = localStorage.getItem('access_token')!;
+    let email = this.authService.getEmailFromToken(token);
+    if (email) {
+      this.customer = await this.authService.getUserByEmail(email);
+      console.log(this.customer);
+    }
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -78,7 +101,7 @@ export class MyQuotesComponent {
         const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
         const getActiveQuoteRequestPromise = lastValueFrom(this.dataService.CheckForActiveQuoteRequest(this.customerID).pipe(take(1)));
         const getRejectReasonsPromise = lastValueFrom(this.dataService.GetAllRejectReasons().pipe(take(1)));
-  
+
         /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
         That's what the Promise.all method is supposed to be doing.*/
         const [allFixedProducts, allCustomProducts, allVAT, activeQR, allRejectReasons] = await Promise.all([
@@ -88,16 +111,16 @@ export class MyQuotesComponent {
           getActiveQuoteRequestPromise,
           getRejectReasonsPromise
         ]);
-  
+
         //put results from DB in global arrays
         this.fixedProducts = allFixedProducts;
         this.customProducts = allCustomProducts;
         this.allVATs = allVAT;
         if (activeQR != null) this.quoteRequestFromBackend = activeQR;
         this.rejectReasons = allRejectReasons;
-  
+
         await this.getCustomerQuotesPromise();
-      }      
+      }
     } catch (error) {
       console.error('An error occurred:', error);
     }
@@ -109,7 +132,7 @@ export class MyQuotesComponent {
     try {
       if (this.customerID) {
         this.customerQuotes = await lastValueFrom(this.dataService.GetQuotesByCustomer(this.customerID).pipe(take(1)));
-        
+
         //sort quotes by quote ID so later quotes are first
         this.customerQuotes.sort((currentQuote, nextQuote) => {
           return nextQuote.quoteID - currentQuote.quoteID;
@@ -238,23 +261,165 @@ export class MyQuotesComponent {
 
   //--------------------------------------------- ACCEPT ---------------------------------------------- 
   //ACCEPT QUOTE aka BUY NOW
-  acceptQuote(quoteId: number) {
+  acceptQuote(quote: QuoteVMClass) {
     try {
+      //generate invoice
+      this.createInvoice(quote);
+
       //statusID 2 = 'Accepted'
-      this.dataService.UpdateQuoteStatus(quoteId, 2).subscribe((result) => {
+      /* this.dataService.UpdateQuoteStatus(quoteId, 2).subscribe((result) => {
         console.log("Result", result);
         //email customer their invoice
 
         //Navigate to PLACE ORDER page and send quote ID encoded in URL:
         let gibberish = this.encodeQuoteID(quoteId);
         this.router.navigate(['place-order', gibberish]);
-      });
+      }); */
     } catch (error) {
       console.error('Error updating status: ', error);
     }
   }
 
   //create invoice PDF
+  async createInvoice(quote: QuoteVMClass) {
+    let address = this.customer.address.split(', ');
+    let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
+    let restOfAddress = '';
+
+    for (let i = 2; i < address.length; i++) {
+      restOfAddress += address[i] + ', ';
+    }
+
+    let invoiceLines: any[] = [];
+    quote.lines.forEach(line => {
+      let invoiceL = {
+        productDescription: line.productDescription,
+        quantity: line.quantity,
+        confirmedUnitPrice: line.confirmedUnitPrice,
+        total: line.quantity * line.confirmedUnitPrice
+      };
+
+      invoiceLines.push(invoiceL);
+    });
+
+    this.invoice = {
+      date: new Date(Date.now()),
+      customer: customerName,
+      addressLine1: address[0],
+      addressLine2: address[1],
+      addressLine3: restOfAddress.substring(0, restOfAddress.length - 2),
+      deposit: quote.totalBeforeVAT * 0.2,
+      totalExlcudingDeposit: quote.totalBeforeVAT * 0.8,
+      totalVAT: quote.totalVAT,
+      total: quote.getTotalAfterVAT(),
+      lines: invoiceLines
+    }
+
+    // Wait 100 millisec to ensure the invoice is rendered and the data displayed before trying to screenshot and all that
+    await this.delay(10);
+
+    let invoiceImg = document.getElementById("invoice-img") as HTMLElement;
+    let invoiceHdLeft = document.getElementById("header-left") as HTMLElement;
+    let invoiceHdRight = document.getElementById("header-right") as HTMLElement;
+    let invoiceBod = document.getElementById("invoice-body") as HTMLElement;
+    let invoiceFtLeft = document.getElementById("footer-left") as HTMLElement;
+    let invoiceFtRight = document.getElementById("footer-right") as HTMLElement;
+    let invoiceParts = [];
+
+    invoiceParts.push(invoiceImg, invoiceHdLeft, invoiceHdRight, invoiceBod, invoiceFtLeft, invoiceFtRight);
+
+    // Call the html2canvas function and pass the elements as an argument also use Promise.all to wait for all calls to complete
+    const invoiceCanvases = await Promise.all(invoiceParts.map(async (part) => {
+      const canvas = await html2canvas(part);
+      return canvas; // Return the canvas directly
+      // Get the image data as a base64-encoded string
+      /* const imageData = canvas.toDataURL("image/png");
+ 
+      // Do something with the image data, such as saving it as a file or sending it to a server
+      const link = document.createElement("a");
+      link.setAttribute("download", "screenshot.png");
+      link.setAttribute("href", imageData);
+      link.click(); */
+    }));
+
+    console.log(invoiceCanvases);
+    this.createPDF(invoiceCanvases, 'Invoice for Quotation #' + quote.quoteID);
+  }
+
+  createPDF(canvases: HTMLCanvasElement[], pdfName: string) {
+    // dimensions and positions for each part of the PDF
+    const fullWidth = this.pdf.internal.pageSize.getWidth();
+    const pageWidth = this.pdf.internal.pageSize.getWidth() - 20; //add margin of 20mm
+    const halfPageWidth = (fullWidth / 2) - 12.5; //account for 10mm margin and 5mm space between half page blocks
+    const margin = 10; //margin between blocks that are half the page
+    let yOffset = 10; //used to recalculate starting y position
+
+    // Add the canvases to the PDF
+    /* this.addCanvasToPDF(canvases[0], 0, 0, pageWidth); //Add invoiceImg (full width)
+    console.log(0)
+    this.addCanvasToPDF(canvases[1], margin, fullPageHeight, halfPageWidth - margin); //Add invoiceHdLeft (under, floated left)
+    console.log(1)
+    this.addCanvasToPDF(canvases[2], halfPageWidth, fullPageHeight, halfPageWidth - margin); // Add invoiceHdRight (floated right)
+    console.log(2)
+    this.addCanvasToPDF(canvases[3], 0, 2 * fullPageHeight, pageWidth); // Add invoiceBod (full width)
+    console.log(3)
+    this.addCanvasToPDF(canvases[4], margin, 3 * fullPageHeight, halfPageWidth - margin); // Add invoiceFtLeft (underneath, floated left)
+    console.log(4)
+    this.addCanvasToPDF(canvases[5], halfPageWidth, 3 * fullPageHeight, halfPageWidth - margin); // Add invoiceFtRight (floated right)
+    console.log(5) */
+
+    // Add the canvases to the PDF
+    canvases.forEach((canvas, index) => {
+      let x = 10; //give 10mm margin between left paper edge and doc content
+      let y = yOffset; //give 10mm margin between top paper edge and doc content
+      let width = halfPageWidth;
+
+      // Adjust x and y coordinates for each canvas as needed
+      if (index === 0) {
+        width = pageWidth;
+      }
+      else if (index === 1) {
+        //x = margin;
+        //y = fullPageHeight;
+      } else if (index === 2) {
+        x = fullWidth - width - margin; //calculate x from the right margin not the left
+        //y = fullPageHeight;
+      } else if (index === 3) {
+        //y = fullPageHeight / 2;
+        width = pageWidth;
+      } else if (index === 4) {
+        //x = margin;
+        //y = fullPageHeight / 3;
+      } else if (index === 5) {
+        x = fullWidth - halfPageWidth - margin; //calculate x from the right margin not the left
+        //y = fullPageHeight / 3;
+      }
+
+      // Calculate the height based on the aspect ratio
+      const aspectRatio = canvas.height / canvas.width;
+      const height = width * aspectRatio;
+
+      console.log(index, x, y, width, height);
+      this.addCanvasToPDF(canvas, x, y, width, height, index);
+
+      // Update the yOffset for the next canvas; unless it's a half block that should have the same y position as the previous half block
+      if (index === 0 || index === 2 || index === 3) yOffset = y + height + margin;
+    });
+
+    //Save the combined PDF
+    this.pdf.save(pdfName + '.pdf');
+  }
+
+  // Function to add a canvas to the PDF with specified position and dimensions
+  addCanvasToPDF(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, i: number) {
+    const imageData = canvas.toDataURL("image/png");
+    this.pdf.addImage(imageData, 'PNG', x, y, width, height, 'alias' + i, 'FAST');
+  }
+
+  //delay action by a number of milliseconds using promise
+  delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   //I want to send quote ID in url to order page but don't want to send the ID as is
   encodeQuoteID(quoteID: number): string {
@@ -319,7 +484,7 @@ export class MyQuotesComponent {
   removeFile() {
     //get file input and name span from reject quote form modal
     let fileName: HTMLSpanElement = document.getElementById('imageName') as HTMLSpanElement;
-    let fileInput : HTMLInputElement = document.getElementById('priceMatchFileB64') as HTMLInputElement;
+    let fileInput: HTMLInputElement = document.getElementById('priceMatchFileB64') as HTMLInputElement;
 
     //remove file from file input
     fileInput.value = '';
@@ -331,7 +496,7 @@ export class MyQuotesComponent {
     //get form data
     const formData = this.rejectQuoteForm.get("quoteID")?.value;
     let priceMatchFileB64 = '';
-    
+
     //only get file if they want to renegotiate
     if (this.rejectReasonId == 1) {
       //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
@@ -396,7 +561,7 @@ export class MyQuotesComponent {
     let returnString = 'undefined';
 
     fileTypes.forEach(ft => {
-      if (base64.startsWith(ft.startingChars)) returnString = ft.type;      
+      if (base64.startsWith(ft.startingChars)) returnString = ft.type;
     });
 
     return returnString;
@@ -407,8 +572,7 @@ export class MyQuotesComponent {
     let fileType: string = this.determineFileType(base64);
     console.log(fileType);
 
-    if (fileType != 'undefined')
-    {
+    if (fileType != 'undefined') {
       const blob = new Blob([arrayBuffer], { type: fileType });
 
       //Create link; apparently, I need this even though I have a download button

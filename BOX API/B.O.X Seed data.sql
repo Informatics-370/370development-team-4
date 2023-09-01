@@ -15,7 +15,7 @@ GO
 INSERT INTO [dbo].[Quote_Duration]
            ([Duration])
      VALUES
-           (7)
+           (30)
 GO
 
 INSERT INTO [dbo].[Quote_Status]

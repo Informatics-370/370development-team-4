@@ -195,6 +195,60 @@ td {
 
 .imageName { margin-left: 0.75em; font-size: 85%; }
 
+#invoice-container {
+  width: 90%; 
+  padding: 1rem; 
+  margin: auto; 
+  font-family: Tahoma, Arial, Helvetica, sans-serif;
+}
+
+.invoice-block {
+  width: 48%;
+  display: inline-block;
+  margin: 1rem;
+  margin-left: 0;
+  padding: 1rem 0.5rem;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.small-block { height: 25vh; }
+
+.right { float: right; margin: 1rem 0; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+.full { width: 100%; }
+.half { width: 40%; display: inline-block; }
+.fit { width: fit-content;}
+
+#invoice-lines thead th {
+  border-bottom: 1px solid black;
+}
+
+#invoice-lines tbody tr td {
+  padding: 0.25em 0.5em;
+}
+
+.footer-block { height: 20vh; }
+
+.footer-table { display: inline-block; }
+
+.footer-table tr td {
+  padding-right: 0.75rem;
+  padding-bottom: 0.5em;
+  width: fit-content;
+}
+
+#invoice-totals { width: 100%; text-align: right; }
+
+#invoice-totals tr td {
+  padding: 0.25em 0.75rem;
+}
+
+#invoice-totals tr td:first-child {
+  border-right: 1px solid black;
+}
+
 /* .red-outline {
   background-color: white;
   border: 1px solid #E33131;

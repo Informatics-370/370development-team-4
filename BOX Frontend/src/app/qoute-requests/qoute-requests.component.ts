@@ -139,11 +139,15 @@ export class QouteRequestsComponent {
         let expiryDate = new Date(Date.now());
         expiryDate.setDate(expiryDate.getDate() + this.quoteDuration.duration);
 
-        let emailBody = `<div style='width: 50%; margin: auto;'><h3>Hi ${this.oldQuoteRequest.customerFullName},</h3>` +
-          `<p>Your quote is ready! We worked tirelessly to give you the best price. You can view it on your quotes page. `+ 
-          `Hurry, because it expires on ` + 
-          `${this.datePipe.transform(expiryDate, 'EEEE, d MMMM')}.</p><br/>` +
-          `Kind regards<br/>MegaPack</div>`;
+        let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
+                          <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
+                            <h3>Hi ${this.oldQuoteRequest.customerFullName},</h3>
+                            <p>Your quote is ready! We worked tirelessly to give you the best price. You can view it on your quotes page. 
+                            Hurry, because it expires on ${this.datePipe.transform(expiryDate, 'EEEE, d MMMM')}. </p><br />
+                            Kind regards<br />
+                            MegaPack
+                          </div>
+                        </div>`;
 
         this.emailService.sendEmail(this.oldQuoteRequest.customerEmail, 'New quotation!', emailBody);
         
@@ -161,11 +165,12 @@ export class QouteRequestsComponent {
         });
       } 
       catch (error) {
+        console.error(error);
         //notify user
         Swal.fire({
           icon: 'error',
           title: "Oops..",
-          html: 'An error occurred.' + error,
+          html: 'Something went wrong while trying to create the quote or send the email.',
           timer: 3000,
           timerProgressBar: true,
           confirmButtonColor: '#E33131'
@@ -179,7 +184,7 @@ export class QouteRequestsComponent {
       Swal.fire({
         icon: 'error',
         title: "Oops..",
-        html: 'An error occurred while trying to create the quote.',
+        html: 'Something went wrong while trying to create the quote or send the email.',
         timer: 3000,
         timerProgressBar: true,
         confirmButtonColor: '#E33131'
