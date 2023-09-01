@@ -1,0 +1,51 @@
+<div class="row">
+    <!--SIDE NAVBAR-->
+    <div class="col-md-2">
+      <div class="app-menu"></div>
+    </div>
+    <!--Right Side-->
+    <div class="col-md-10">
+      <h3 class="p-3" style="color: black;">Generate Supplier List Report</h3>
+
+      <form>
+        <div class="form-group">
+            <label for="product" class="bold">Product:</label>
+            <select id="product" required class="form-select date-form" [(ngModel)]="selectedProductID" name="product">
+                <option value="NA" disabled>Choose a fixed product or raw material</option>
+                <option *ngFor="let prod of productDropdown" value={{prod.ID}}>{{prod.description}}</option>
+            </select>
+          </div>
+      </form>
+
+      <button type="submit" class="btn btn-create" [disabled]="loading" (click)="generateReport()">Generate</button>
+      <button *ngIf="!loading && supplierCount > 0" class="btn btn-create" (click)="generatePDFReport()">Download PDF</button>
+      <hr class="hr hr-blurry m-3" />
+      <div *ngIf="loading">Generating report for you...</div>
+      <div *ngIf="supplierCount == 0">No suppliers supply this product.</div>
+      <div *ngIf="!loading && supplierCount > 0" id="pdf-content">
+  
+        <div style="max-width: 90%; margin: auto; margin-left: 25px;">
+            <h4>Supplier List Report</h4>
+            <div style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }} at {{now | date:'hh:mm:ss' }}</div>
+        </div>
+  
+        <table class="table" style="max-width: 90%;">
+          <thead>
+            <tr>
+              <td colspan="3">
+                <img src="../../assets/mega-pack-header.png" alt="MegaPack header"
+                  class="header" />
+              </td>
+            </tr>
+            <tr>
+              <th scope="col">Supplier</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let supplier of supplierList">
+              <td>{{supplier.name}}</td>
+            </tr>
+        </table>
+      </div>
+    </div>
+  </div>

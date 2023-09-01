@@ -1,3 +1,4 @@
+using BOX.Migrations;
 using BOX.Models;
 using BOX.Services;
 using BOX.ViewModel;
@@ -50,7 +51,6 @@ namespace BOX.Controllers
                     LastName = u.user_LastName,
                     Email = u.Email,
                     Address = u.user_Address,
-                    Title = u.title,
                     PhoneNumber = u.PhoneNumber
                 })
                 .ToListAsync();
@@ -59,18 +59,17 @@ namespace BOX.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserByEmailOrPhoneNumber/{emailOrPhoneNumber}")]
-        public async Task<ActionResult<UserDTO>> GetUserByEmailOrPhoneNumber(string emailOrPhoneNumber)
+        [Route("GetUserByEmail/{email}")]
+        public async Task<ActionResult<UserDTO>> GetUserByEmail(string email)
         {
             var user = await _dbContext.Users
-                .Where(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber)
+                .Where(u => u.Email == email)
                 .Select(u => new UserDTO
                 {
                     FirstName = u.user_FirstName,
                     LastName = u.user_LastName,
                     Email = u.Email,
                     Address = u.user_Address,
-                    Title = u.title,
                     PhoneNumber = u.PhoneNumber
                 })
                 .FirstOrDefaultAsync();
@@ -84,11 +83,11 @@ namespace BOX.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateUser/{emailOrPhoneNumber}")]
-        public async Task<IActionResult> UpdateUser(string emailOrPhoneNumber, [FromBody] UserDTO updatedUser)
+        [Route("UpdateUser/{email}")]
+        public async Task<IActionResult> UpdateUser(string email, [FromBody] UserDTO updatedUser)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber);
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
             {
@@ -96,11 +95,11 @@ namespace BOX.Controllers
             }
 
             // Update the user's properties with the values from the updatedUser DTO
+            user.Id = user.Id;
             user.user_FirstName = updatedUser.FirstName;
             user.user_LastName = updatedUser.LastName;
             user.Email = updatedUser.Email;
             user.user_Address = updatedUser.Address;
-            user.title = updatedUser.Title;
             user.PhoneNumber = updatedUser.PhoneNumber;
 
             await _dbContext.SaveChangesAsync();
@@ -109,11 +108,11 @@ namespace BOX.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteUser/{emailOrPhoneNumber}")]
-        public async Task<IActionResult> DeleteUser(string emailOrPhoneNumber)
+        [Route("DeleteUser/{email}")]
+        public async Task<IActionResult> DeleteUser(string email)
         {
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == emailOrPhoneNumber || u.PhoneNumber == emailOrPhoneNumber);
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
             {
@@ -126,6 +125,151 @@ namespace BOX.Controllers
             return NoContent(); // Deletion successful, return 204 No Content response
         }
 
+        [HttpGet]
+        [Route("GetAllCustomers")]
+        public async Task<ActionResult<IEnumerable<GetCustomerDTO>>> GetAllCustomers()
+        {
+            var customers = await _dbContext.Customer
+                .Include(c => c.User) // Include the User navigation property
+                //.Include(c => c.Employee) // Include the Employee navigation property
+                .Select(c => new GetCustomerDTO
+                {
+                    CustomerId = c.CustomerId,
+                    UserId = c.UserId,
+                    //EmployeeId = c.EmployeeId,
+                    IsBusiness = c.isBusiness,
+                    VatNo = c.vatNo,
+                    CreditLimit = c.creditLimit,
+                    CreditBalance = c.creditBalance,
+                    Discount = c.discount,
+                    User = new UserDTO // Include user information
+                    {
+                        FirstName = c.User.user_FirstName,
+                        LastName = c.User.user_LastName,
+                        Address = c.User.user_Address,
+                        Title = c.User.Title.Description,
+                        Email = c.User.Email,
+                        PhoneNumber = c.User.PhoneNumber
+                    },
+                    Employee = new EmployeeDTO // Include employee information from User table
+                    {
+                        UserId = c.UserId,
+                        /*EmployeeId = c.EmployeeId,
+                        FirstName = c.Employee.User.user_FirstName,
+                        LastName = c.Employee.User.user_LastName,
+                        Address = c.Employee.User.user_Address,
+                        Title = c.Employee.User.Title.Description,*/
+                        Email = c.User.Email, 
+                        PhoneNumber = c.User.PhoneNumber
+                    }
+                })
+                .ToListAsync();
+
+            return customers;
+        }
+
+
+        [HttpGet]
+        [Route("GetCustomerByCustomerId/{customerId}")]
+        public async Task<ActionResult<CustomerDTO>> GetCustomerByCustomerId(string customerId)
+        {
+            var customer = await _dbContext.Customer
+                .Where(c => c.CustomerId == customerId)
+                .Select(c => new CustomerDTO
+                {
+                    CustomerId = c.CustomerId,
+                    UserId = c.UserId,
+                    EmployeeId = c.EmployeeId,
+                    IsBusiness = c.isBusiness,
+                    VatNo = c.vatNo,
+                    CreditLimit = c.creditLimit,
+                    CreditBalance = c.creditBalance,
+                    Discount = c.discount
+                })
+                .FirstOrDefaultAsync();
+
+            if (customer == null)
+            {
+                return NotFound(); // Customer not found
+            }
+
+            return customer;
+        }
+
+        [HttpPut]
+        [Route("UpdateUserRoleAndNotifyAdmin")]
+        public async Task<IActionResult> UpdateUserRoleAndNotifyAdmin(string email, string roleId)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return NotFound(); // User not found
+            }
+
+            // Get the role by ID
+            var role = await _roleManager.FindByIdAsync(roleId);
+
+            if (role == null)
+            {
+                return NotFound("Role not found"); // Role not found
+            }
+
+            // Remove user from all existing roles
+            var existingRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, existingRoles);
+
+            // Add user to the new role
+            var addToRoleResult = await _userManager.AddToRoleAsync(user, role.Name);
+
+            if (!addToRoleResult.Succeeded)
+            {
+                return BadRequest("Failed to update role"); // Role update failed
+            }
+
+            if (role.Name == "Admin")
+            {
+                var admin = new Admin
+                {
+                    AdminId = Guid.NewGuid().ToString(),
+                    UserId = user.Id,
+                };
+                _repository.Add(admin);
+                await _repository.SaveChangesAsync();
+
+                var employeeToDelete = await _repository.GetEmployeeByUserId(user.Id);
+                if (employeeToDelete != null)
+                {
+                    _repository.Delete(employeeToDelete);
+                    await _repository.SaveChangesAsync();
+                }
+
+                // Send email to the admin
+                var message = new Message(new string[] { user.Email }, "Admin Role Update", "Congratulations! You've been assigned the 'Admin' role.");
+                _emailService.SendEmail(message);
+            }
+            else if (role.Name == "Employee")
+            {
+                var employee = new Employee
+                {
+                    EmployeeId = Guid.NewGuid().ToString(),
+                    UserId = user.Id,
+                };
+
+                _repository.Add(employee);
+                await _repository.SaveChangesAsync();
+
+                var adminToDelete = await _repository.GetAdminByUserId(user.Id);
+                if (adminToDelete != null)
+                {
+                    _repository.Delete(adminToDelete);
+                    await _repository.SaveChangesAsync();
+                }
+
+            }
+
+            return NoContent(); // Role updated successfully
+        }
 
 
 

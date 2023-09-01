@@ -6,7 +6,6 @@ import { Item } from '../../shared/item';
 import { CategoryVM } from '../../shared/category-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { take, lastValueFrom } from 'rxjs';
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -107,8 +106,6 @@ export class ProductsComponent {
 
     this.displayProducts();
   }
-//This is to show the cartIcon and thus allow font awesome to be imported into this particular template.
-  cartIcon = faShoppingCart;
 
   //used to display products to user; can filter if necessary; will add filtering later
   displayProducts() {

@@ -14,6 +14,6 @@ namespace BOX.Models
 		public virtual User User { get; set; }
 		
 		[Required]
-		public string Date { get; set; }
+		public DateTime Date { get; set; }
     }
 }

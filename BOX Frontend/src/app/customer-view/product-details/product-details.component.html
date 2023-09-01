@@ -17,8 +17,8 @@
           <!--DISPLAY PRODUCT INFO-->
           <div class="row align-items-center" *ngIf="!loading">
             <div class="col-sm-12 col-md-6 product-img special-img">
-              <img class="card-img product-card-img special-card-img" src="data:image/png;base64,{{selectedProductVM.productPhotoB64}}"
-                alt="Single wall box">
+              <img class="card-img product-card-img special-card-img"
+                src="data:image/png;base64,{{selectedProductVM.productPhotoB64}}" alt={{selectedProductVM.description}}>
             </div>
             <div class="col-sm-12 col-md-6 card-body product-card-body special-card-body">
               <h5 class="card-text">{{selectedProductVM.description}} (Standard)</h5>
@@ -27,14 +27,15 @@
                 <li *ngFor="let sizeListString of selectedProductVM.sizeStringArray"><em>{{sizeListString}}</em></li>
               </ul>
 
-              <p><span id="estimated-price">Unit price (estimate):<br />
-                  <strong class="price">{{sizeDropdownArray[selectedSizeIndex].price | currency: 'ZAR':'symbol-narrow'}}</strong>
+              <!-- <p><span id="estimated-price">Unit price (estimate):<br />
+                  <strong class="price">{{sizeDropdownArray[selectedSizeIndex].price | currency:
+                    'ZAR':'symbol-narrow'}}</strong>
                 </span>
                 <span id="discount-applied"
                   *ngIf="(addToCartForm.get('qty')?.dirty || addToCartForm.get('qty')?.touched)"> <br />
-                  Total: <strong class="price"><br />{{total | currency: 'ZAR':'symbol-narrow'}}</strong>                  
+                  Total: <strong class="price"><br />{{total | currency: 'ZAR':'symbol-narrow'}}</strong>
                 </span>
-              </p>
+              </p> -->
 
               <!-- <p><span id="estimated-price" [className]="discountApplied ? 'strikethrough' : ''">Unit price
                   (estimate):<br />
@@ -73,13 +74,18 @@
                       (keyup)="changedQty()" (change)="changedQty()">
                   </div>
                   <div *ngIf="invalidQty" class="error-msg">
-                    Due to inventory level constraints, the mininum you can order is 1 and the maximum is
-                    {{maxQuantity}}
+                    Due to inventory level constraints, the mininum you can order is 1 and the maximum is {{maxQuantity}}.
                   </div>
 
-                  <button class="btn btn-add-cart" (click)="addToCart()" [disabled]="outOfStock">Add to Cart</button>
-                  <div *ngIf="cartSuccess" class="success-msg">
-                    Successfully added to cart!
+                  <div class="col-6" style="margin-bottom: 0.25rem;" *ngIf="canCustomise">
+                    <button class="btn btn-add-cart btn-customise" data-bs-toggle="modal" title="Customise this product"
+                      data-bs-target="#customise">Customise</button>
+                  </div>
+                  <div class="col-lg-6 col-md-12">
+                    <button title="Add to my cart" class="btn btn-add-cart" (click)="addToCart(true)" [disabled]="outOfStock">Add to Cart</button>
+                  </div>
+                  <div class="col-lg-6 col-md-12">
+                    <button title="Add to my cart" class="btn btn-add-cart" (click)="openReviewModal()">Leave A Review</button>
                   </div>
                 </form>
               </div>
@@ -98,3 +104,148 @@
     </div>
   </div>
 </div>
+
+<!--CUSTOMISE PRODUCT MODAL-->
+<div class="modal fade" id="customise" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 id="modal-title" class="modal-title">Custom box</h4>
+        <button class="close-modal" data-bs-dismiss="modal"><fa-icon
+            [icon]="['fas', 'window-close']"></fa-icon></button>
+      </div>
+
+      <!--BODY-->
+      <div class="modal-body row">
+        <!--CSS GENERATED BOX-->
+        <div class="col-md-6 col-sm-12 customised-box">
+          <div class="preview">
+            <div class="left face" [ngStyle]="left">
+              <img class="print left-img" [ngStyle]="leftRightImg" src="" [ngClass]="{'hide': sides < 4}" />
+            </div>
+            <div class="right face" [ngStyle]="right">
+              <img class="print right-img" [ngStyle]="leftRightImg" src="" [ngClass]="{'hide': sides < 3}" />
+            </div>
+            <div class="front face" [ngStyle]="front">
+              <span [ngStyle]="frontBackSpan"></span>
+              <img class="print front-img" [ngStyle]="frontBackImg" src="" [ngClass]="{'hide': sides < 1}" />
+            </div>
+            <div class="back face" [ngStyle]="back">
+              <span [ngStyle]="frontBackSpan"></span>
+              <img class="print back-img" [ngStyle]="frontBackImg" src="" [ngClass]="{'hide': sides < 2}" />
+            </div>
+            <div class="top face" [ngStyle]="top">
+              <span [ngStyle]="topSpan"></span>
+              <img class="print top-img" [ngStyle]="topBottomImg" src="" [ngClass]="{'hide': sides < 5}" />
+            </div>
+            <div class="bottom face" [ngStyle]="bottom">
+              <img class="print bottom-img" [ngStyle]="topBottomImg" src="" [ngClass]="{'hide': sides < 6}" />
+            </div>
+          </div>
+          <span class="preview-text">
+            This is only a preview and not an accurate representation of the final product. Contact MegaPack for enquiries.
+          </span>
+        </div>
+
+        <!--FORM-->
+        <div class="col-md-6 col-sm-12">
+          <form [formGroup]="customiseForm">
+            <div class="form-group" style="text-align: center;">
+              <select style="width: 100%;" formControlName="itemID"
+                class="form-select modal-form-input modal-form-text customise-input">
+                <option *ngFor="let item of customisableItems" value={{item.itemID}}>{{item.itemDescription}}</option>
+              </select>
+            </div>
+
+            <div>Dimensions:</div>
+            <hr class="customise-hr hr-blurry" />
+
+            <div class="form-group">
+              <label for="length" class="form-label modal-form-label bold">Length:</label>
+              <input type="number" formControlName="length"
+                class="form-control modal-form-input modal-form-text customise-input" name="length" required min="1"
+                step="1"> mm
+
+                <div *ngIf="(length?.dirty || length?.touched) && length?.errors?.['required'] || length?.errors?.['min']" class="error-msg">
+                  Please enter a whole number above 0.
+                </div>
+            </div>
+            <div class="form-group">
+              <label for="width" class="form-label modal-form-label bold">Width:</label>
+              <input type="number" formControlName="width"
+                class="form-control modal-form-input modal-form-text customise-input" name="width" required min="1"
+                step="1"> mm
+
+                <div *ngIf="(width?.dirty || width?.touched) && width?.errors?.['required'] || width?.errors?.['min']" class="error-msg">
+                  Please enter a whole number above 0.
+                </div>
+            </div>
+            <div class="form-group">
+              <label for="height" class="form-label modal-form-label bold">Height:</label>
+              <input type="number" formControlName="height"
+                class="form-control modal-form-input modal-form-text customise-input" name="height" required min="1"
+                step="1"> mm
+
+                <div *ngIf="(height?.dirty || height?.touched) && height?.errors?.['required'] || height?.errors?.['min']" class="error-msg">
+                  Please enter a whole number above 0.
+                </div>
+            </div>
+
+            <div>Printing:</div>
+            <hr class="customise-hr hr-blurry" />
+
+            <div class="form-group">
+              <label for="sides" class="form-label modal-form-label bold">No of sides to print on:</label>
+              <input type="number" formControlName="sides" [(ngModel)]="sides"
+                class="form-control modal-form-input modal-form-text customise-input" name="sides" required
+                min="0" max="6" step="1" style="width: 50%;">
+
+                <div *ngIf="sides < 0 || sides > 6" class="error-msg">
+                  Please enter a whole number between 0 and 6.
+                </div>
+            </div>
+
+            <div class="form-group" id="choose-img" class="display-photo">
+              <label class="form-label btn-create btn download">
+                <input id="label" type="file" accept=".pdf,.jpeg,.jpg" formControlName="label" name="label"
+                  style="display: none;" (change)="showImageName($event)" />
+                Upload file
+              </label>
+              <span id="imageName" class="imageName">
+                <span class="bold">No file selected</span> (pdf or jpg)
+              </span>
+              <span class="imageName" *ngIf="invalidFile">Invalid file. Please choose a jpg or pdf file</span>
+              <div>We're sorry but we can't provide previews of pdf files.</div>
+            </div>
+
+            <hr class="customise-hr hr-blurry" />
+
+            <div class="form-group">
+              <label for="quantity" class="form-label modal-form-label bold">Quantity of boxes:</label>
+              <input type="number" formControlName="quantity" class="form-control modal-form-input modal-form-text customise-input" 
+              name="quantity" required min="1" step="1" style="width: 50%;">
+              
+              <div *ngIf="(quantity?.dirty || quantity?.touched) && quantity?.errors?.['required'] || quantity?.errors?.['min']" class="error-msg">
+                Please enter an amount above 0.
+              </div>
+            </div>
+
+            <div class="form-submit-div">
+              <button class="btn btn-add-cart modal-form-submit" title="Add to my cart" (click)="addToCart(false)">Add to cart</button>
+            </div>
+
+          </form>
+        </div>
+        
+        <div id="extra-info">
+          *Please note that all decimal values will be truncated.<br/>
+          *Any box with a side over 500mm must be a double wall box due to weight constraints.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-footer"></div>

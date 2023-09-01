@@ -1,0 +1,15 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100vh; /* Adjust this as needed to control vertical centering */
+  }
+  
+  .chart-container {
+    width: 600px; /* Set the desired width */
+    height: 600px; /* Set the desired height */
+    margin: 0 auto; /* Center horizontally */
+  }
+  

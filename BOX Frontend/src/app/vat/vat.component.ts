@@ -44,7 +44,12 @@ export class VatComponent {
       let allVAT: any[] = result;
       this.filteredVATs = []; //empty VAT array
       allVAT.forEach((vat) => {
-        this.filteredVATs.push(vat);
+        let vatFromBackend: VAT = {
+          vatID : vat.vatID,
+          percentage: vat.percentage,
+          date: new Date(vat.date)
+        }
+        this.filteredVATs.push(vatFromBackend);
       });
       this.VATs = this.filteredVATs; //store all the vat someplace before I search below
       this.vatCount = this.filteredVATs.length; //update the number of vat
@@ -76,7 +81,8 @@ export class VatComponent {
      const formData = this.addVATForm.value;
       let newVAT: VAT = {
         vatID: 0,
-        percentage: Math.floor(formData.percentage)
+        percentage: Math.floor(formData.percentage),
+        date: new Date(Date.now())
       };
       
       this.dataService.AddVAT(newVAT).subscribe(
@@ -96,7 +102,7 @@ export class VatComponent {
   }
 
   //--------------------UPDATE VAT LOGIC----------------
-  openUpdateModal(vatId: number) {
+  /* openUpdateModal(vatId: number) {
     //get vat and display data
     this.dataService.GetVAT(vatId).subscribe(
       (result) => {
@@ -200,7 +206,7 @@ export class VatComponent {
     );
 
     this.closeDeleteModal();
-  }
+  } */
 
   //---------------------------VALIDATION ERRORS LOGIC-----------------------
   //methods to show validation error messages on reactive forms. NT that the form will not submit if fields are invalid whether or not 

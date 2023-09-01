@@ -120,8 +120,8 @@ export class EstimateLineComponent {
   //-------------------UPDATE ESTIMATE DETAILS TABLE LOGIC-------------------
   async openUpdateEstimateModal(id: number) {
     //get estimate to show details of
-    let theEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));
-    this.selectedEstimate = new VATInclusiveEstimate(theEstimate, this.vat.percentage);
+    //let theEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));
+    //this.selectedEstimate = new VATInclusiveEstimate(theEstimate, this.vat.percentage);
     console.log('Estimate before adding', this.selectedEstimate);
 
     //set global negotiated total value
@@ -159,15 +159,6 @@ export class EstimateLineComponent {
     let priceInclVAT = amount * (1 + this.vat.percentage / 100);
     return priceInclVAT;
   }
-
-  /* getVATInclusiveTotal(est: EstimateVM): number {
-    let totalInclVAT = 0;
-    est.estimate_Lines.forEach(estimateLine => {
-      totalInclVAT += estimateLine.fixedProductUnitPrice * (1 + this.vat.percentage / 100) * estimateLine.quantity;
-    });
-
-    return totalInclVAT;
-  } */
 
   //changing product using dropdown should change the max value of the qty input field to be whatever is the product's qty on hand
   //this method handles that
@@ -224,10 +215,10 @@ export class EstimateLineComponent {
             customProductUnitPrice: 0,
             quantity: line.quantity
           };
-  
+
           updatedEstLines.push(updatedEstimateLine);
         });
-  
+
         //put estimate data in VM
         let updatedEstimate: EstimateVM = {
           estimateID: this.selectedEstimate.estimateID,
@@ -239,9 +230,9 @@ export class EstimateLineComponent {
           confirmedTotal: this.negotiatedTotal / (1 + this.vat.percentage / 100),
           estimate_Lines: updatedEstLines
         };
-  
+
         console.log('Updated estimate: ', updatedEstimate);
-  
+
         this.dataService.UpdateEstimate(this.selectedEstimate.estimateID, updatedEstimate).subscribe(
           (result: any) => {
             console.log('Successfully updated estimate! ', result);

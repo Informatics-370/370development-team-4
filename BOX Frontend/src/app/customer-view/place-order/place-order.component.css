@@ -1,6 +1,6 @@
 @import "../../dashboard/dashboard.component.css";
 @import "../../product-category/product-category.component.css";
-@import "../../estimate/estimate-line.component.css";
+@import "../../generate-quote/generate-quote.component.css";
 
 .progress {
     height: 10px;
@@ -33,17 +33,21 @@ input[type='radio'] {
     padding: 0 15px;
 }
 
-.btn-next, .btn-next:active {
+.btn-order {
+    padding: 1px 20px;
     background-color: #32AF99;
 }
 
-.btn-next:hover { background-color: #2a9783;}
+.btn-order:hover, .btn-order:active { background-color: #2a9783;}
 
-.btn-order, .btn-order:active {
-    padding: 1px 20px;
-    background-color: #e7a427;
-}
+.btn-next { background-color: #e7a427; }
 
-.btn-order:hover { background-color: #d59724;}
+.btn-next:hover, .btn-next:active { background-color: #d59724;}
+
+.btn-red { background-color: #E33131; }
+
+.btn-red:hover, .btn-red:active { background-color: #a92626; }
 
 .light-bold {font-weight: 600;}
+
+#tfoot tr td { border: none; }

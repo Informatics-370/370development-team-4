@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
+import { AuthService } from '../../services/auth.service';
 import { take, lastValueFrom } from 'rxjs';
-import { CartService } from '../../services/customer-services/cart.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Cart } from '../../shared/customer-interfaces/cart';
-import { Route, Router } from '@angular/router';
+import { Route, Router, ActivatedRoute } from '@angular/router';
 import { OrderVM } from '../../shared/order-vm';
 import { OrderLineVM } from '../../shared/order-line-vm';
+import { QuoteVM } from '../../shared/quote-vm';
+import { QuoteVMClass } from '../../shared/quote-vm-class';
+import { VAT } from '../../shared/vat';
+import Swal from 'sweetalert2';
 declare var $: any;
 
 @Component({
@@ -15,20 +18,29 @@ declare var $: any;
   styleUrls: ['./place-order.component.css']
 })
 export class PlaceOrderComponent {
-  cart: Cart[] = [];
-  cartTotal = 0;
-  totalBeforeDiscount = 0;
-  randomDiscount = 0;
+  //tabs
   tab = 1;
+  progress = 0;
+
+  //handle credit customers
   creditAllowed = true;
   creditBalanceDate: Date = new Date(Date.now());
-  creditBalanceDue = '';
-  progress = 0;
+  creditBalanceDue: Date = new Date();
+
+  //customer
+  customerID = '';
+
+  //quote and order
+  currentVAT!: VAT;
+  quoteID = 0;
+  quote!: QuoteVMClass;
   placedOrder!: OrderVM;
+
   //forms logic
   placeOrderForm: FormGroup;
 
-  constructor(private router: Router, private dataService: DataService, private cartService: CartService, private formBuilder: FormBuilder) {
+  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder, 
+    private activatedRoute: ActivatedRoute, private authService: AuthService) {
     this.placeOrderForm = this.formBuilder.group({
       deliveryType: ['Pick up', Validators.required],
       shippingAddress: ['123 Fake Road, Pretoria North', Validators.required],
@@ -37,12 +49,19 @@ export class PlaceOrderComponent {
   }
 
   ngOnInit() {
+    //Retrieve the quote ID that leads to this order from url
+    this.activatedRoute.paramMap.subscribe(params => {
+      //product with id 2 and description 'product description' will come as '2-product-description' so split it into array that is ['2', 'product-description']
+      let id = params.get('quoteID');
+      if (id) this.quoteID = this.decodeQuoteID(id);
+    });
+
+    //get customer ID
+    const token = localStorage.getItem('access_token')!;
+    let id = this.authService.getUserIdFromToken(token);
+    if (id) this.customerID = id;
+
     this.getDataFromDB();
-    this.randomDiscount = Math.floor(Math.random() * 10 + 1);
-    this.cart = this.cartService.getCartItems();
-    this.cartTotal = this.cartService.getCartTotal(this.randomDiscount);
-    console.log(this.randomDiscount, this.cartTotal);
-    this.checkCredit();
     this.getCreditDueDate();
   }
 
@@ -50,33 +69,71 @@ export class PlaceOrderComponent {
   async getDataFromDB() {
     try {
       //turn Observables that retrieve data from DB into promises
-      const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
-      const getDiscountPromise = lastValueFrom(this.dataService.GetDiscounts().pipe(take(1)));
+      const getVATPromise = lastValueFrom(this.dataService.GetVAT().pipe(take(1)));
+      const getQuotePromise = lastValueFrom(this.dataService.GetQuote(this.quoteID).pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
       That's what the Promise.all method is supposed to be doing.*/
-      const [allVAT, allDiscounts] = await Promise.all([
+      const [currentVAT, quote] = await Promise.all([
         getVATPromise,
-        getDiscountPromise
+        getQuotePromise
       ]);
 
-      //put results from DB in global arrays
-      let vat = allVAT[0];
-      let discountList = allDiscounts;
+      //put results from DB in global attributes
+      this.currentVAT = currentVAT;
+      console.log('Applicable VAT', this.currentVAT);
 
-      this.cartService.setGlobalVariables(discountList, vat);
-      this.cartTotal = this.cartService.getCartTotal(this.randomDiscount);
-      this.totalBeforeDiscount = this.cartService.getCartTotalBeforeDiscount();
+      //put quote in class
+      let quoteLines: any[] = [];
+      quote.lines.forEach(line => {
+        let isFixedProduct: boolean = line.fixedProductID != 0; //first determine if it's a fixed product
+
+        let qrline = {
+          lineID: line.quoteRequestLineID,
+          isFixedProduct: isFixedProduct,
+          productID: isFixedProduct ? line.fixedProductID : line.customProductID,
+          productDescription: isFixedProduct ? line.fixedProductDescription : line.customProductDescription,
+          suggestedUnitPrice: line.suggestedUnitPrice,
+          confirmedUnitPrice: line.confirmedUnitPrice,
+          quantity: line.quantity
+        };
+
+        quoteLines.push(qrline);
+      });
+
+      this.quote = new QuoteVMClass(quote, quoteLines, this.currentVAT);
+      console.log('Quote to order from: ', this.quote);
+      //check if customer can buy on credit
+      this.creditAllowed = this.checkCredit();
     } catch (error) {
       console.error('An error occurred:', error);
     }
   }
 
-  //check if user is approved for credit and sufficient credit left to place this order
-  checkCredit() {
-
+  //decode quote ID from url
+  decodeQuoteID(gibberish: string): number {
+    var sensible = atob(gibberish);
+    let sensibleArr = sensible.split('-');
+    return parseInt(sensibleArr[1]);
   }
 
+  //check if user is approved for credit and sufficient credit left to place this order
+  checkCredit(): boolean {
+    //check if user is approved for credit
+
+    //check for sufficient credit balance
+    let creditBalance = 2000000;
+    if (this.quote.getTotalAfterVAT() > creditBalance) return false;
+
+    return true;
+  }
+
+  getCreditDueDate() {
+    let dueDate = this.creditBalanceDate.setDate(this.creditBalanceDate.getDate() + 30);
+    this.creditBalanceDate = new Date(dueDate);
+  }
+
+  //go to next tab
   changeTab(direction: string) {
     if (direction == 'next') this.tab++;
     else this.tab--;
@@ -111,72 +168,99 @@ export class PlaceOrderComponent {
     $('#bar').css('width', this.progress + '%');
   }
 
-  getCreditDueDate() {
-    let dueDate = this.creditBalanceDate.setDate(this.creditBalanceDate.getDate() + 30);
-    let newDate = new Date(dueDate);
-    this.creditBalanceDue = newDate.toLocaleDateString('za');
+  //cancel placing of order (not the same as cancel order UC; this is an alt step in place order)
+  cancel() {
+    try {
+      //statusID 1 = 'Generated'
+      this.dataService.UpdateQuoteStatus(this.quoteID, 1).subscribe((result) => {
+        console.log("Result", result);
+        //email customer to ignore previous invoice email
+
+        //Navigate to 'My quotes' page and send quote ID encoded in URL:
+        this.router.navigate(['my-quotes']);
+      });
+    } catch (error) {
+      console.error('Error updating status: ', error);
+    }
   }
 
   /*-------------PLACE ORDER------------ */
   placeOrder() {
+    //update user address with shipping address
+
+    //create order vm for order
+    let newOrder: OrderVM = {
+      customerOrderID: 0,
+      quoteID: this.quoteID,
+      orderStatusID: 0,
+      orderStatusDescription: '',
+      date: new Date(),
+      deliveryScheduleID: 0,
+      deliveryDate: new Date(),
+      deliveryType: this.deliveryType?.value,
+      deliveryPhoto: '',
+      customerId: this.customerID,
+      customerFullName: '',
+      orderLines: []
+    };
+
     //create order lines for each cart item
-    let orderLines: OrderLineVM[] = [];
-    this.cart.forEach(cartItem => {
+    this.quote.lines.forEach(line => {
       let ol: OrderLineVM = {
         customerOrderLineID: 0,
         customerOrderID: 0,
-        fixedProductID: cartItem.fixedProduct.fixedProductID,
+        fixedProductID: line.isFixedProduct ? line.productID : 0,
         fixedProductDescription: '',
-        fixedProductUnitPrice: 0,
-        customProductID: 0,
+        customProductID: !line.isFixedProduct ? line.productID : 0,
         customProductDescription: '',
-        customProductUnitPrice: 0,
-        quantity: cartItem.quantity,
-        customerRefundID: 0
+        confirmedUnitPrice: line.confirmedUnitPrice,
+        quantity: line.quantity,
+        customerReturnID: 0
       }
 
-      orderLines.push(ol);
+      newOrder.orderLines.push(ol);
     });
 
-    //create order vm for order
-    //put date in correct format to post to DB
-    let now = new Date(Date.now());
-    const yyyy = now.getFullYear();
-    let mm = String(now.getMonth() + 1); // month is zero-based
-    let dd = now.getDate().toString();
-    let hh = now.getHours().toString();
-    let min = now.getMinutes().toString();
-    
-    if (parseInt(dd) < 10) dd = '0' + dd;
-    if (parseInt(mm) < 10) mm = '0' + mm;
-    if (parseInt(hh) < 10) hh = '0' + hh;
-    if (parseInt(min) < 10) min = '0' + min;
-    
-    let dateInCorrectFormat = yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + min;
-    console.log('dateInCorrectFormat', dateInCorrectFormat); // 2023-07-31 18:23
-    let newOrder: OrderVM = {
-      userId: '7f8fcf33-1585-47f3-8cc8-ef72cedfc290',
-      customerOrderID: 0,
-      customerStatusID: 0,
-      orderDeliveryScheduleID: 0,
-      date: dateInCorrectFormat,
-      deliveryPhoto: '',
-      customerFullName: '',
-      orderStatusDescription: '',
-      customerOrders: orderLines
-    };
+    console.log('Order before posting', newOrder);
 
-    console.log('order before posting', newOrder);
+    let successMessage = '';
+    //decrease credit balance for credit customers
+    if (this.paymentType?.value == "Credit") {
+
+      successMessage = "Your credit balance has been updated!";
+    }
 
     try {
       //post to backend
       this.dataService.AddCustomerOrder(newOrder).subscribe((result) => {
+        //sucess message
+        Swal.fire({
+          icon: 'success',
+          title: "Order placed successfully!",
+          html: successMessage,
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
+        }).then((result) => {
+          console.log(result);
+        });
+
         this.placedOrder = result;
-        this.cartService.emptyCart(); //clear cart
-        this.router.navigate(['/order-history', 'success']); //redirect to order history page
-        //this.changeTab('next'); //go to success tab
+        this.router.navigate(['/order-history']); //redirect to order history page        
       });
     } catch (error) {
+      //error message
+        Swal.fire({
+          icon: 'error',
+          title: "Oops...",
+          html: "Something went wrong and we could not process your order.",
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
+        }).then((result) => {
+          console.log(result);
+        });
+
       console.error('Error submitting order: ', error);
     }
   }

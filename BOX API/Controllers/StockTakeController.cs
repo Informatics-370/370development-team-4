@@ -1,9 +1,12 @@
-﻿using BOX.Models;
+﻿using BOX.Hub;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using QRCoder;
 using System.Drawing;
@@ -22,12 +25,14 @@ namespace BOX.Controllers
         private readonly AppDbContext _appDbContext;
         private readonly IRepository _repository;
         private readonly UserManager<User> _userManager;
+        private readonly IHubContext<InventoryHub> _hubContext;
 
-        public StockTakeController(AppDbContext appDbContext, IRepository repository, UserManager<User> userManager)
+        public StockTakeController(AppDbContext appDbContext, IRepository repository, UserManager<User> userManager, IHubContext<InventoryHub> hubContext)
         {
             _appDbContext = appDbContext;
             _repository = repository;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         //=============================== PERFORM STOCK TAKE =====================================
@@ -39,7 +44,7 @@ namespace BOX.Controllers
             var stockTake = new Stock_Take
             {
                 UserId = stockTakeViewModel.UserId,
-                Date = DateTime.Now.ToString()
+                Date = DateTime.Now
             };
 
             _repository.Add(stockTake);
@@ -50,6 +55,18 @@ namespace BOX.Controllers
                 for (int i = 0; i < stockTakeViewModel.WriteOffs.Count(); i++)
                 {
                     var writeOffVM = stockTakeViewModel.WriteOffs[i];
+                    bool fixedProductWrittenOff = writeOffVM.FixedProductId > 0; //is true if fp was written off
+                    Raw_Material rawMaterial = new Raw_Material();
+                    Fixed_Product fixedProduct = new Fixed_Product();
+
+                    if (fixedProductWrittenOff)
+                    {
+                        fixedProduct = await _repository.GetFixedProductAsync(writeOffVM.FixedProductId);
+                    }
+                    else
+                    {
+                        rawMaterial = await _repository.GetRawMaterialAsync(writeOffVM.RawMaterialId);
+                    }
 
                     Write_Off writeOffRecord = new Write_Off
                     {
@@ -57,27 +74,22 @@ namespace BOX.Controllers
                         StockTakeID = stockTake.StockTakeID,
                         FixedProductId = writeOffVM.FixedProductId == 0 ? null : writeOffVM.FixedProductId,
                         RawMaterialId = writeOffVM.RawMaterialId == 0 ? null : writeOffVM.RawMaterialId,
-                        Quantity = writeOffVM.Quantity
-                    };
+                        //store quantity written off not updated quantity of products
+                        Quantity = fixedProductWrittenOff ? fixedProduct.Quantity_On_Hand - writeOffVM.Quantity : rawMaterial.Quantity_On_Hand - writeOffVM.Quantity
+                        
+                };
 
                     _repository.Add(writeOffRecord);
 
                     // Update the quantity on hand of Raw_Material or Fixed_Product entities
-                    if (writeOffVM.RawMaterialId != 0)
+                    if (writeOffVM.RawMaterialId != 0 && rawMaterial != null)
                     {
-                        var rawMaterial = await _repository.GetRawMaterialAsync(writeOffVM.RawMaterialId);
-                        if (rawMaterial != null)
-                        {
-                            rawMaterial.Quantity_On_Hand = writeOffVM.Quantity;
-                        }
+                        rawMaterial.Quantity_On_Hand = writeOffVM.Quantity;
                     }
                     else if (writeOffVM.FixedProductId != 0)
                     {
-                        var fixedProduct = await _repository.GetFixedProductAsync(writeOffVM.FixedProductId);
-                        if (fixedProduct != null)
-                        {
-                            fixedProduct.Quantity_On_Hand = writeOffVM.Quantity;
-                        }
+                        fixedProduct.Quantity_On_Hand = writeOffVM.Quantity;
+                        await _hubContext.Clients.All.SendAsync("ReceiveInventoryUpdate", writeOffVM.FixedProductDescription, fixedProduct.Quantity_On_Hand);
                     }
                 }
 
@@ -88,7 +100,7 @@ namespace BOX.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(400, "Bad Request" + ex);
+                return StatusCode(400, "Bad Request" + ex.InnerException);
             }
         }
 

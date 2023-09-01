@@ -2,13 +2,12 @@ namespace BOX.ViewModel
 {
 	public class SupplierOrderLineViewModel
 	{
-		public int Supplier_OrderLineID { get; set; }
-		public int Supplier_OrderID { get; set; }
-		public int? Fixed_ProductID { get; set; }
-		public int? Raw_MaterialID { get; set; }
-		public int Supplier_ReturnID { get; set; }
-		public string FixedProduct_Description { get; set; }	
-		public string Raw_Material_Description { get; set; }
+		public int SupplierOrderLineID { get; set; }
+		public int FixedProductID { get; set; }
+		public int RawMaterialID { get; set; }
+		public int SupplierReturnID { get; set; }
+		public string FixedProductDescription { get; set; }	
+		public string RawMaterialDescription { get; set; }
 		public int Quantity { get; set; }
 
 	}
