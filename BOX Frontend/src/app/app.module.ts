@@ -45,6 +45,8 @@ import { RegistrationSuccessPopupComponent } from './registration-success-popup/
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
+import { CreditApplicationComponent } from './credit-application/credit-application.component';
+import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 
 
 @NgModule({
@@ -89,7 +91,9 @@ import { CustomerOrdersComponent } from './customer-orders/customer-orders.compo
         PlaceOrderComponent,
         OrderHistoryComponent,
         CustomerOrdersComponent,
-        RegistrationSuccessPopupComponent
+        RegistrationSuccessPopupComponent,
+        CreditApplicationComponent,
+        AdminCreditApplicationComponent
         
   ],
   imports: [

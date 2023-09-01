@@ -1,0 +1,22 @@
+<div class="app-customer-navbar"></div>
+
+<div class="container mt-4">
+  <h1 class="display-5 text-center">Credit Application</h1>
+  <div class="card mt-4">
+    <div class="card-header d-flex justify-content-between">
+      <p class="status"> Credit Application Status:  </p>
+    </div>
+    <div class="card-body">
+      <p>If you would like to apply for credit with Mega Pack, you can download the credit application here.</p>
+      <button class="btn btn-info"  >Download Application</button> <!--(click)="onDownloadApplication()"-->
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+      <!-- File input for uploading PDF -->
+      <input type="file" accept=".pdf" #pdfUpload style="display:none;" (change)="displayFileName($event)">
+      <button class="btn btn-info" (click)="onUploadButtonClick()">Upload Application</button>
+      <!-- Element to display the selected PDF file name -->
+      <div class="text-muted small mt-2">{{ selectedFileName }}</div>
+      <button class="btn btn-info" (click)="onSubmitApplication()">Submit Application</button> <!-- submitApplication method on click -->
+    </div>
+  </div>
+</div>

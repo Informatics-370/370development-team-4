@@ -473,4 +473,24 @@ AddSupplierOrder(newSupplierOrder:SupplierOrderVM):Observable<any>{
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
 
+  //--------------------------------CREDIT APPLICATION------------------------------------
+  GetCreditApplications(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CreditApplication/GetCreditApplications`)
+      .pipe(map(result => result))
+  }
+  submitApplication(formData: FormData): Observable<any> {
+    const endpoint = `${this.apiUrl}CreditApplication/SubmitApplication`;
+    return this.httpClient.post(endpoint, formData);
+  }
+
+  uploadApplication(formData: FormData): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CreditApplication/UploadApplication`)
+    .pipe(map(result => result))
+  }
+
+  downloadApplication(formData: FormData): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CreditApplication/DownloadFile`)
+    .pipe(map(result => result))
+  }
+
 }

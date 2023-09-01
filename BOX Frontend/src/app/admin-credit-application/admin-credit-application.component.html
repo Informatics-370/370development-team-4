@@ -1,0 +1,45 @@
+<div class="row">
+    <!--SIDE NAVBAR-->
+    <div class="col-md-2"><div class="app-menu"></div></div>
+    <!--Right Side-->
+    <div class="col-md-10">
+        <h3 class="p-3" style="color: black;">Credit Applications</h3>
+        <!--Search bar-->
+        <div id="searchbar" >
+            <input (keyup)="searchCrApp($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. 15 " />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
+
+        <hr class="hr hr-blurry m-3" />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col">Credit Application</th>
+                </tr>
+            </thead>
+            <tbody>                
+                <!--Error message if there's no items in the DB-->
+                <tr *ngIf="CreditAppCount==0">
+                    <td colspan="2">No credit applications found. Once a customer submits a application for credit, it will appear here.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all credit applications...</td>
+                </tr>
+                <!--Item data from API-->
+                <tr *ngFor="let CreditApplication of filteredCrApp"> 
+                    <td>
+                        {{CreditApplication.ApplicationFile}}
+                    </td>
+                    <td>
+                       <button class="btn btn-success" > Accept </button> 
+                        <button class="btn btn-danger" > Reject </button>
+                                                                       
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

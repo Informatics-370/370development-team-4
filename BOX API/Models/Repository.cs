@@ -1,3 +1,4 @@
+using BOX.Migrations;
 using Microsoft.EntityFrameworkCore;
 namespace BOX.Models
 {
@@ -353,19 +354,57 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
-       
-		//----------------------------------------------------EMPLOYEE (TEMP)-------------------------------------
-		//public async Task<Employee> GetEmployeeAsync(int employeeId)
-		//{
-		//	IQueryable<Employee> query = _appDbContext.Employee.Where(c => c.EmployeeID == employeeId);
-		//	return await query.FirstOrDefaultAsync();
-		//}
+        //--------------------------------- CREDIT APPLICATION -------------------------
+
+        public async Task<Credit_Application[]> GetCreditApplicationsAsync() //Get All Credit Applications (admin)
+        {
+            IQueryable<Credit_Application> query = _appDbContext.Credit_Application;
+            return await query.ToArrayAsync();
+        }
+
+        public async Task<Credit_Application[]> SubmitApplicationAsync(Credit_Application creditApplication) //Submit Credit Applications (Customer)
+        {
+            _appDbContext.Credit_Application.Add(creditApplication);
+            await _appDbContext.SaveChangesAsync();
+
+            // Retrieve and return the updated array of credit applications
+            return await _appDbContext.Credit_Application.ToArrayAsync();
+        }
+        //Upload Credit Application (customer)
+        private readonly string _fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "CreditApplicationForm");
+        public async Task UploadCreditApplicationAsync(IFormFile file)
+        {
+            string filePath = Path.Combine(_fileStoragePath, file.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+        }
+        //Download Credit application (customer) 
+        public async Task<Stream> DownloadCreditApplicationAsync(string fileName)
+        {
+            string filePath = Path.Combine(_fileStoragePath, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+                return null;
+
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            return fileStream;
+        }
+
+        //----------------------------------------------------EMPLOYEE (TEMP)-------------------------------------
+        //public async Task<Employee> GetEmployeeAsync(int employeeId)
+        //{
+        //	IQueryable<Employee> query = _appDbContext.Employee.Where(c => c.EmployeeID == employeeId);
+        //	return await query.FirstOrDefaultAsync();
+        //}
 
 
-		//------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
+        //------------------------------------------------------- CUSTOM PRODUCT -----------------------------------------------------------------
 
-		//Get All Fixed Products
-		public async Task<Custom_Product[]> GetAllCustomProductsAsync()
+        //Get All Fixed Products
+        public async Task<Custom_Product[]> GetAllCustomProductsAsync()
 		{
 			IQueryable<Custom_Product> query = _appDbContext.Custom_Product;
 			return await query.ToArrayAsync();

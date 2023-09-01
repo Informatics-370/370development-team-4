@@ -133,5 +133,105 @@ namespace BOX.Controllers
 
 
         //============================= CREDIT APPLICATION ===================================
+
+        //---------------------------------- GET ALL CREDIT APPLICATIONS ------------------------------
+        [HttpGet]
+        [Route("GetCreditApplications")]
+        public async Task<IActionResult> GetCreditApplications()
+        {
+            try
+            {
+                var results = await _repository.GetCreditApplicationsAsync();
+                return Ok(results);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
+        //---------------------------------- SUBMIT APPLICATION ------------------------------
+        [HttpPost]
+        [Route("SubmitApplication")]
+        public async Task<IActionResult> SubmitApplication([FromForm] CreditApplicationViewModel creditAppVM)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(creditAppVM.Application_Pdf64))
+                {
+                    // Read the uploaded PDF file as a byte array
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        byte[] pdfBytes = Convert.FromBase64String(creditAppVM.Application_Pdf64);
+
+                        // Create a new credit application for a user
+                        var creditApplication = new Credit_Application
+                        {
+                            creditApplicationID = creditAppVM.CreditApplicationID,
+                            CreditApplicationStatusID = creditAppVM.CreditApplicationStatusID,
+                            UserId = creditAppVM.UserId,
+                            Application_Pdf = pdfBytes
+                        };
+                        // Save the credit application to the repository using the Add method
+                        _repository.Add(creditApplication);
+
+                        await _repository.SaveChangesAsync();
+
+                        // Return the created credit application
+                        var CreditAppViewModel = new CreditApplicationViewModel
+                        {
+                            CreditApplicationID = creditApplication.creditApplicationID,
+                            CreditApplicationStatusID = creditApplication.CreditApplicationStatusID,
+                            UserId = creditApplication.UserId,
+                            Application_Pdf64 = Convert.ToBase64String(creditApplication.Application_Pdf)
+                        };
+
+                        return Ok(CreditAppViewModel);
+                    }
+                }
+                else
+                {
+                    return BadRequest("No PDF file uploaded.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+        
+
+        //---------------------------------- UPLOAD APPLICATION (ADMIN) ------------------------------
+        private readonly string _fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "370development-team4");
+
+        [HttpPost]
+        [Route("UploadApplication")]
+        public async Task<IActionResult> UploadApplication(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            string filePath = Path.Combine(_fileStoragePath, file.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok("File uploaded successfully.");
+        }
+
+        [HttpGet]
+        [Route("download/{fileName}")]
+        public IActionResult DownloadFile(string fileName)
+        {
+            string filePath = Path.Combine(_fileStoragePath, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound("File not found.");
+
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            return File(fileStream, "application/pdf", fileName);
+        }
     }
 }
