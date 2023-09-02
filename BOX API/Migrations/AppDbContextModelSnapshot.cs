@@ -273,6 +273,10 @@ namespace BOX.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("Delivery_Date")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
                     b.Property<byte[]>("Delivery_Photo")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
