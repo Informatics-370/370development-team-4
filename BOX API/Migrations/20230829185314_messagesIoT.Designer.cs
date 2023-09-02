@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230831044646_Del Date added to Cus Order")]
-    partial class DelDateaddedtoCusOrder
+    [Migration("20230829185314_messagesIoT")]
+    partial class messagesIoT
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -273,10 +273,6 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("Delivery_Date")
-                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Delivery_Photo")

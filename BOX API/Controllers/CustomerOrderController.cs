@@ -67,7 +67,7 @@ namespace BOX.Controllers
                         CustomerId = order.UserId,
                         CustomerFullName = fullName,
                         DeliveryScheduleID = deliverySchedule.OrderDeliveryScheduleID,
-                        DeliveryDate = (DateTime)order.Delivery_Date,
+                        DeliveryDate = deliverySchedule.Date,
                         Date = order.Date,
                         DeliveryType = order.Delivery_Type,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
@@ -158,7 +158,7 @@ namespace BOX.Controllers
                     CustomerId = order.UserId,
                     CustomerFullName = fullName,
                     DeliveryScheduleID = deliverySchedule.OrderDeliveryScheduleID,
-                    DeliveryDate = (DateTime)order.Delivery_Date,
+                    DeliveryDate = deliverySchedule.Date,
                     DeliveryType = order.Delivery_Type,
                     DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
                     Date = order.Date,
@@ -246,7 +246,7 @@ namespace BOX.Controllers
                         CustomerId = order.UserId,
                         CustomerFullName = fullName,
                         DeliveryScheduleID = deliverySchedule.OrderDeliveryScheduleID,
-                        DeliveryDate = (DateTime)order.Delivery_Date,
+                        DeliveryDate = deliverySchedule.Date,
                         Date = order.Date,
                         DeliveryType = order.Delivery_Type,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
@@ -265,8 +265,7 @@ namespace BOX.Controllers
 
         [HttpPost]
         [Route("AddCustomerOrder")]
-		
-		public IActionResult AddCustomerOrder([FromBody] CustomerOrderViewModel customerOrderViewModel)
+        public IActionResult AddCustomerOrder([FromBody] CustomerOrderViewModel customerOrderViewModel)
         {
             // Start a database transaction; because of this, nothing is fully saved until the end i.e. unless order and order lines are created successfully with no errors, the order isn't placed
             var transaction = _repository.BeginTransaction();
@@ -303,7 +302,6 @@ namespace BOX.Controllers
                     CustomerOrderStatusID = 1, //status of 'Placed'. Statuses can't be CRUDed so this can be hard coded
                     Delivery_Photo = Convert.FromBase64String(""),
                     Date = DateTime.Now,
-                    Delivery_Date = CalculateTwoDaysFromNowOnWeekday(),
                     Delivery_Type = customerOrderViewModel.DeliveryType
                 };
 
@@ -365,25 +363,7 @@ namespace BOX.Controllers
                 transaction.Rollback(); // Rollback the transaction if an exception occurs
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services. " + ex.Message + " has inner exception of " + ex.InnerException);
             }
-
-			//this is a function whch calcualtes the expected delivery date for when an order is initially placed:
-			 DateTime CalculateTwoDaysFromNowOnWeekday()
-			{
-				DateTime currentDate = DateTime.Now.Date;
-				DateTime futureDate = currentDate.AddDays(2); // Adding two days
-
-				// Check if the future date falls on a weekend (Saturday or Sunday)
-				while (futureDate.DayOfWeek == DayOfWeek.Saturday || futureDate.DayOfWeek == DayOfWeek.Sunday)
-				{
-					futureDate = futureDate.AddDays(1); // Move to the next day
-				}
-
-				return futureDate;
-			}
-
-
-
-		}
+        }
 
 
         //[HttpPost]
@@ -485,34 +465,5 @@ namespace BOX.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
             }
         }
-
-		[HttpPut]
-		[Route("UpdateDeliveryDate/{customerOrderId}/{newDeliveryDate}")]
-		public async Task<IActionResult> UpdateDeliveryDate(int customerOrderId, DateTime newDeliveryDate)
-		{
-			try
-			{
-				var existingOrder = await _repository.GetCustomerOrderAsync(customerOrderId);
-
-				if (existingOrder == null)
-				{
-					return NotFound("The order does not exist on the B.O.X System");
-				}
-
-				existingOrder.Delivery_Date = newDeliveryDate;
-				await _repository.SaveChangesAsync();
-
-				return Ok(existingOrder);
-			}
-			catch (Exception)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-			}
-		}
-
-
-	}
-
-
-
+    }
 }

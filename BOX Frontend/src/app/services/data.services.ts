@@ -465,10 +465,6 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
 
-  updateDeliveryDate(orderId: number, newDeliveryDate: Date): Observable<any> {
-    const url = `${this.apiUrl}CustomerOrder/UpdateDeliveryDate/${orderId}`;
-    return this.httpClient.put(url, { newDeliveryDate });
-  }
   //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
   GetAllCustomProducts(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)

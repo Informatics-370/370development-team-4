@@ -63,9 +63,8 @@ import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
 import { MessagesComponent } from './messages/messages.component';
-import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
-import { FullCalendarModule } from '@fullcalendar/angular';
-import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
+
+
 @NgModule({
   declarations: [ 
         AppComponent,
@@ -125,9 +124,7 @@ import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calend
         InactiveCustomerListComponent,
         SupplierListComponent,
         InventoryChartComponent,
-        MessagesComponent,
-        OrderDeliveryScheduleComponent,
-        OrderDelCalendarComponent,
+        MessagesComponent,        
   ],
   imports: [
     BrowserModule,
@@ -136,8 +133,7 @@ import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calend
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    FullCalendarModule,
- ],
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

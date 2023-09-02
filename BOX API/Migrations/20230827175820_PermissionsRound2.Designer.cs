@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230830194152_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20230827175820_PermissionsRound2")]
+    partial class PermissionsRound2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -866,23 +866,6 @@ namespace BOX.Migrations
                     b.HasIndex("QRCodeID");
 
                     b.ToTable("Raw_Material");
-                });
-
-            modelBuilder.Entity("BOX.Models.RegisterMessages", b =>
-                {
-                    b.Property<int>("messageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("messageId"), 1L, 1);
-
-                    b.Property<string>("message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("messageId");
-
-                    b.ToTable("RegisterMessages");
                 });
 
             modelBuilder.Entity("BOX.Models.Reject_Reason", b =>

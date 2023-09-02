@@ -48,9 +48,6 @@ import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
 import { MessagesComponent } from './messages/messages.component';
-import{OrderDeliveryScheduleComponent} from './order-delivery-schedule/order-delivery-schedule.component';
-import{OrderDelCalendarComponent} from './order-del-calendar/order-del-calendar.component';
-
 
 const routes: Routes = [
   { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
@@ -102,11 +99,7 @@ const routes: Routes = [
   { path: 'review-report', component: ReviewReportComponent },
   { path: 'write-off-report', component: WriteOffByProductCategoryComponent },
   { path: 'inventory-chart', component: InventoryChartComponent },
-  { path: 'messages', component: MessagesComponent },
-  {path: 'order-schedule', component:OrderDeliveryScheduleComponent},
-  {path: 'order-calendar', component:OrderDelCalendarComponent},
-
-  
+  { path: 'messages', component: MessagesComponent }
 ];
 
 @NgModule({

@@ -28,7 +28,6 @@ namespace BOX.Models
         public virtual User User { get; set; }
 
         [Required] public DateTime Date { get; set; }
-		[Required] public DateTime Delivery_Date { get; set; }
 		[Required] public byte[] Delivery_Photo { get; set; }
 		[Required] public string Delivery_Type { get; set; } //delivery or pick up
 	}
