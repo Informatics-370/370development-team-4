@@ -350,8 +350,8 @@ export class MyQuotesComponent {
     // dimensions and positions for each part of the PDF
     const fullWidth = this.pdf.internal.pageSize.getWidth();
     const pageWidth = this.pdf.internal.pageSize.getWidth() - 20; //add margin of 20mm
-    const halfPageWidth = (fullWidth / 2) - 12.5; //account for 10mm margin and 5mm space between half page blocks
-    const margin = 10; //margin between blocks that are half the page
+    const halfPageWidth = (fullWidth / 2) - 12.5; //account for 20mm margin and 5mm space between half page blocks. Therefore, 10 + 2.5
+    const margin = 10; //margin of the page
     let yOffset = 10; //used to recalculate starting y position
 
     // Add the canvases to the PDF
