@@ -225,7 +225,7 @@ namespace BOX.Controllers
                     }
 
                     string fullName = await _repository.GetUserFullNameAsync(order.UserId);
-                    var status = await _repository.GetQuoteStatusAsync(order.CustomerOrderStatusID);
+                    var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID);
                     var rejectReason = new Reject_Reason();
 
                     //get delivery schedule date

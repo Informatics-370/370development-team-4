@@ -79,7 +79,7 @@ const routes: Routes = [
   { path: 'users', component: UsersViewComponent },
   { path: 'place-order/:quoteID', component: PlaceOrderComponent },
   { path: 'order-history', component: OrderHistoryComponent },
-  { path: 'customer-orders', component: CustomerOrdersComponent },
+  { path: 'manage-orders', component: CustomerOrdersComponent },
   { path: 'custom-product', component: CustomProdComponent },
   { path: 'confirm-email', component: ConfirmEmailComponent},
   { path: 'two-factor-auth', component: TwoFactorAuthComponent },
@@ -92,7 +92,7 @@ const routes: Routes = [
   { path: 'product-list', component: ProductListReportComponent },
   { path: 'inactive-customers', component: InactiveCustomerListComponent },
   { path: 'supplier-list', component: SupplierListComponent },
-  { path: 'customer-quotes', component: QuotesComponent }
+  { path: 'manage-quotes', component: QuotesComponent }
 ];
 
 @NgModule({

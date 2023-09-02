@@ -39,8 +39,11 @@ export class OrderVMClass {
   applicableVAT: VAT;
   totalBeforeVAT = 0;
   totalVAT = 0;
+  checked!: boolean; //keep track of process order checkbox value
 
   constructor(order: OrderVM, lines: any[], applicableVAT: VAT) {
+    this.applicableVAT = applicableVAT;
+    this.orderLines = lines;
     this.customerOrderID = order.customerOrderID;
     this.quoteID = order.quoteID;
     this.customerId = order.customerId;
@@ -52,8 +55,12 @@ export class OrderVMClass {
     this.deliveryDate = new Date(order.deliveryDate);
     this.deliveryType = order.deliveryType;
     this.deliveryPhoto = order.deliveryPhoto;
-    this.applicableVAT = applicableVAT;
-    this.orderLines = lines;
+    this.totalBeforeVAT = this.getTotalBeforeVAT();
+    this.totalVAT = this.getVATAmount();
+
+    if (this.orderStatusID == 1) { //if order has status of Placed, then it can be changed to In progress
+      this.checked = false; //set checkbox value
+    }
   }
 
   getTotalBeforeVAT(): number {
