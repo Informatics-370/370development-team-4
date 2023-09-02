@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
 import { AuthService } from '../../services/auth.service';
+import { EmailService } from '../../services/email.service';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Route, Router, ActivatedRoute } from '@angular/router';
@@ -10,6 +11,7 @@ import { QuoteVM } from '../../shared/quote-vm';
 import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { VAT } from '../../shared/vat';
 import Swal from 'sweetalert2';
+import { Users } from '../../shared/user';
 declare var $: any;
 
 @Component({
@@ -29,6 +31,7 @@ export class PlaceOrderComponent {
 
   //customer
   customerID = '';
+  customer!: Users;
 
   //quote and order
   currentVAT!: VAT;
@@ -39,8 +42,8 @@ export class PlaceOrderComponent {
   //forms logic
   placeOrderForm: FormGroup;
 
-  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder, 
-    private activatedRoute: ActivatedRoute, private authService: AuthService) {
+  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder,
+    private activatedRoute: ActivatedRoute, private authService: AuthService, private emailService: EmailService) {
     this.placeOrderForm = this.formBuilder.group({
       deliveryType: ['Pick up', Validators.required],
       shippingAddress: ['123 Fake Road, Pretoria North', Validators.required],
@@ -60,9 +63,18 @@ export class PlaceOrderComponent {
     const token = localStorage.getItem('access_token')!;
     let id = this.authService.getUserIdFromToken(token);
     if (id) this.customerID = id;
+    this.getCustomerData();
 
     this.getDataFromDB();
     this.getCreditDueDate();
+  }
+
+  async getCustomerData() {
+    const token = localStorage.getItem('access_token')!;
+    let email = this.authService.getEmailFromToken(token);
+    if (email) {
+      this.customer = await this.authService.getUserByEmail(email);
+    }
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -175,6 +187,19 @@ export class PlaceOrderComponent {
       this.dataService.UpdateQuoteStatus(this.quoteID, 1).subscribe((result) => {
         console.log("Result", result);
         //email customer to ignore previous invoice email
+        let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
+        let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
+                          <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
+                            <h3>Hi ${customerName},</h3>
+                            <p>We hope you're well. Please ignore the previous email which contained your Invoice for Quotation #
+                            ${this.quoteID}. Since you cancelled the order before you could finish paying the deposit, that invoice is no longer valid.</p>
+                            <p>If you cancelled by mistake, just accept the quote again to restart the process.</p>
+                            Kind regards<br />
+                            MegaPack
+                          </div>
+                        </div>`;
+
+        this.emailService.sendEmail(this.customer.email, 'Order not placed', emailBody);
 
         //Navigate to 'My quotes' page and send quote ID encoded in URL:
         this.router.navigate(['my-quotes']);
@@ -250,16 +275,16 @@ export class PlaceOrderComponent {
       });
     } catch (error) {
       //error message
-        Swal.fire({
-          icon: 'error',
-          title: "Oops...",
-          html: "Something went wrong and we could not process your order.",
-          timer: 3000,
-          timerProgressBar: true,
-          confirmButtonColor: '#32AF99'
-        }).then((result) => {
-          console.log(result);
-        });
+      Swal.fire({
+        icon: 'error',
+        title: "Oops...",
+        html: "Something went wrong and we could not process your order.",
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        console.log(result);
+      });
 
       console.error('Error submitting order: ', error);
     }

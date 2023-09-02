@@ -85,7 +85,6 @@ export class MyQuotesComponent {
     const token = localStorage.getItem('access_token')!;
     this.customerID = this.authService.getUserIdFromToken(token);
     this.getCustomerData();
-
     this.getDataFromDB();
   }
 
@@ -94,6 +93,7 @@ export class MyQuotesComponent {
     let email = this.authService.getEmailFromToken(token);
     if (email) {
       this.customer = await this.authService.getUserByEmail(email);
+      console.log(this.customer)
     }
   }
 
@@ -268,20 +268,18 @@ export class MyQuotesComponent {
   //ACCEPT QUOTE aka BUY NOW
   acceptQuote(quote: QuoteVMClass) {
     try {
-      this.pleaseWait = true;
-      document.body.style.overflowY = 'none';
-      //generate invoice
-      this.createInvoice(quote);
-
       //statusID 2 = 'Accepted'
-      /* this.dataService.UpdateQuoteStatus(quoteId, 2).subscribe((result) => {
+      this.dataService.UpdateQuoteStatus(quote.quoteID, 2).subscribe(async (result) => {
         console.log("Result", result);
-        //email customer their invoice
+        //email customer their invoice; this can take a while so let them know, we're on it.
+        this.pleaseWait = true;
+        document.body.style.overflowY = 'none';
+        await this.createInvoice(quote);
 
         //Navigate to PLACE ORDER page and send quote ID encoded in URL:
-        let gibberish = this.encodeQuoteID(quoteId);
+        let gibberish = this.encodeQuoteID(quote.quoteID);
         this.router.navigate(['place-order', gibberish]);
-      }); */
+      });
     } catch (error) {
       this.pleaseWait = true;
       document.body.style.overflowY = 'scroll';
