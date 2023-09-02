@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
 import { AuthService } from '../../services/auth.service';
+import { EmailService } from '../../services/email.service';
+import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
@@ -8,8 +10,8 @@ import { CustomProductVM } from '../../shared/custom-product-vm';
 import { QuoteVM } from '../../shared/quote-vm';
 import { Route, Router } from '@angular/router';
 import { QuoteVMClass } from '../../shared/quote-vm-class';
-import { take, lastValueFrom } from 'rxjs';
 import { Users } from '../../shared/user';
+import { EmailAttachmentVM } from '../../shared/email-attachment-vm';
 declare var $: any;
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -25,8 +27,11 @@ export class MyQuotesComponent {
   quoteRequest!: QuoteVMClass; //hold quote request in format to display to user
   allCustomerQuotes: QuoteVMClass[] = []; //hold all quotes
   filteredQuotes: QuoteVMClass[] = []; //quotes to show user
+
+  //messages to user
   quoteCount = -1;
   loading = true;
+  pleaseWait = false;
   //searchTerm: string = '';
 
   //data from DB
@@ -66,7 +71,8 @@ export class MyQuotesComponent {
   4 Rejected and will renegotiate
   5 Expired */
 
-  constructor(private dataService: DataService, private router: Router, private authService: AuthService, private formBuilder: FormBuilder) {
+  constructor(private dataService: DataService, private router: Router, private authService: AuthService, 
+    private formBuilder: FormBuilder, private emailService: EmailService) {
     this.rejectQuoteForm = this.formBuilder.group({
       quoteID: [0, Validators.required],
       rejectReasonID: [1, Validators.required],
@@ -88,7 +94,6 @@ export class MyQuotesComponent {
     let email = this.authService.getEmailFromToken(token);
     if (email) {
       this.customer = await this.authService.getUserByEmail(email);
-      console.log(this.customer);
     }
   }
 
@@ -263,6 +268,8 @@ export class MyQuotesComponent {
   //ACCEPT QUOTE aka BUY NOW
   acceptQuote(quote: QuoteVMClass) {
     try {
+      this.pleaseWait = true;
+      document.body.style.overflowY = 'none';
       //generate invoice
       this.createInvoice(quote);
 
@@ -276,6 +283,8 @@ export class MyQuotesComponent {
         this.router.navigate(['place-order', gibberish]);
       }); */
     } catch (error) {
+      this.pleaseWait = true;
+      document.body.style.overflowY = 'scroll';
       console.error('Error updating status: ', error);
     }
   }
@@ -318,64 +327,61 @@ export class MyQuotesComponent {
     // Wait 100 millisec to ensure the invoice is rendered and the data displayed before trying to screenshot and all that
     await this.delay(10);
 
-    let invoiceImg = document.getElementById("invoice-img") as HTMLElement;
+    let invoiceImg = document.getElementById("invoice-img") as HTMLImageElement;
+    //add mega pack header to the pdf manually cos trying to html2canvas it is giving errors
+    this.pdf.addImage(invoiceImg, 'JPG', 10, 10, 190, 62.301845, 'aliasIMG', 'FAST');
+
+    //get other parts of invoice for html2canvas
     let invoiceHdLeft = document.getElementById("header-left") as HTMLElement;
     let invoiceHdRight = document.getElementById("header-right") as HTMLElement;
     let invoiceBod = document.getElementById("invoice-body") as HTMLElement;
     let invoiceFtLeft = document.getElementById("footer-left") as HTMLElement;
     let invoiceFtRight = document.getElementById("footer-right") as HTMLElement;
+    //let disclaimer = document.getElementById("disclaimer") as HTMLElement;
     let invoiceParts = [];
 
-    invoiceParts.push(invoiceImg, invoiceHdLeft, invoiceHdRight, invoiceBod, invoiceFtLeft, invoiceFtRight);
+    invoiceParts.push(invoiceHdLeft, invoiceHdRight, invoiceBod, invoiceFtLeft, invoiceFtRight);
 
     // Call the html2canvas function and pass the elements as an argument also use Promise.all to wait for all calls to complete
     const invoiceCanvases = await Promise.all(invoiceParts.map(async (part) => {
       const canvas = await html2canvas(part);
       return canvas; // Return the canvas directly
-      // Get the image data as a base64-encoded string
-      /* const imageData = canvas.toDataURL("image/png");
- 
-      // Do something with the image data, such as saving it as a file or sending it to a server
-      const link = document.createElement("a");
-      link.setAttribute("download", "screenshot.png");
-      link.setAttribute("href", imageData);
-      link.click(); */
     }));
 
     console.log(invoiceCanvases);
-    this.createPDF(invoiceCanvases, 'Invoice for Quotation #' + quote.quoteID);
+    this.createPDF(invoiceCanvases, quote.quoteID);
   }
 
-  createPDF(canvases: HTMLCanvasElement[], pdfName: string) {
+  createPDF(canvases: HTMLCanvasElement[], quoteNo: number) {
     // dimensions and positions for each part of the PDF
     const fullWidth = this.pdf.internal.pageSize.getWidth();
+    const pageHeight = this.pdf.internal.pageSize.getHeight() - 20;
     const pageWidth = this.pdf.internal.pageSize.getWidth() - 20; //add margin of 20mm
-    const halfPageWidth = (fullWidth / 2) - 12.5; //account for 20mm margin and 5mm space between half page blocks. Therefore, 10 + 2.5
+    const halfPageWidth = (fullWidth / 2) - 11.5; //account for 20mm margin and 3mm space between half page blocks. Therefore, 10 + 1.5
     const margin = 10; //margin of the page
-    let yOffset = 10; //used to recalculate starting y position
-
-    // Add the canvases to the PDF
-    /* this.addCanvasToPDF(canvases[0], 0, 0, pageWidth); //Add invoiceImg (full width)
-    console.log(0)
-    this.addCanvasToPDF(canvases[1], margin, fullPageHeight, halfPageWidth - margin); //Add invoiceHdLeft (under, floated left)
-    console.log(1)
-    this.addCanvasToPDF(canvases[2], halfPageWidth, fullPageHeight, halfPageWidth - margin); // Add invoiceHdRight (floated right)
-    console.log(2)
-    this.addCanvasToPDF(canvases[3], 0, 2 * fullPageHeight, pageWidth); // Add invoiceBod (full width)
-    console.log(3)
-    this.addCanvasToPDF(canvases[4], margin, 3 * fullPageHeight, halfPageWidth - margin); // Add invoiceFtLeft (underneath, floated left)
-    console.log(4)
-    this.addCanvasToPDF(canvases[5], halfPageWidth, 3 * fullPageHeight, halfPageWidth - margin); // Add invoiceFtRight (floated right)
-    console.log(5) */
-
+    let yOffset = 20 + 62.301845; //used to recalculate starting y position
+    
     // Add the canvases to the PDF
     canvases.forEach((canvas, index) => {
       let x = 10; //give 10mm margin between left paper edge and doc content
       let y = yOffset; //give 10mm margin between top paper edge and doc content
       let width = halfPageWidth;
+      let height = pageHeight / 8; //calculate height
 
-      // Adjust x and y coordinates for each canvas as needed
-      if (index === 0) {
+      // Adjust x coordinates for each canvas as needed
+      if (index === 1) {
+        x = fullWidth - width - margin; //calculate x from the right margin not the left
+      } else if (index === 2) {
+        height = 8 + (this.invoice.lines.length * 8); //for each invoice line, add 8mm. And add 8mm at the start for the table headings
+        width = pageWidth;
+      } else if (index === 3) {
+        height = pageHeight / 10;
+      } else if (index === 4) {
+        height = pageHeight / 10;
+        x = fullWidth - width - margin; //calculate x from the right margin not the left
+      }
+      
+      /* if (index === 0) {
         width = pageWidth;
       }
       else if (index === 1) {
@@ -392,27 +398,56 @@ export class MyQuotesComponent {
         //y = fullPageHeight / 3;
       } else if (index === 5) {
         x = fullWidth - halfPageWidth - margin; //calculate x from the right margin not the left
-        //y = fullPageHeight / 3;
       }
-
-      // Calculate the height based on the aspect ratio
-      const aspectRatio = canvas.height / canvas.width;
-      const height = width * aspectRatio;
+      else if (index == 6) {
+        width = pageWidth * 0.8;
+      } */
 
       console.log(index, x, y, width, height);
       this.addCanvasToPDF(canvas, x, y, width, height, index);
 
       // Update the yOffset for the next canvas; unless it's a half block that should have the same y position as the previous half block
-      if (index === 0 || index === 2 || index === 3) yOffset = y + height + margin;
+      if (index === 1 || index === 2|| index === 4) yOffset = y + height + margin;
     });
 
+    //add disclaimer text to pdf
+    this.pdf.setFontSize(9); // Set the font size to be less than normal
+    // Add the text
+    this.pdf.text('*Note that every order contains a deposit of 20% and without this down payment, your order cannot be processed.', 10, yOffset);
+
+    this.pleaseWait = false; //stop showing please wait message and redirect them to place order
+    document.body.style.overflowY = 'scroll';
+
+    //send email
+    let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
+                        <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
+                          <h3>Hi ${this.invoice.customer},</h3>
+                          <p>We hope you're well. Please see attached your invoice for Quote ${quoteNo}. 
+                          Thank you for shopping with us. We really appreciate your business! </p>
+                          <p>Please don't hesitate to reach out if you have any questions.</p>
+                          Kind regards<br />
+                          MegaPack
+                        </div>
+                      </div>`;
+
+    let pdfData = this.pdf.output("datauristring");
+    var base64String = pdfData.split(',')[1];
+    
+    let attachment: EmailAttachmentVM = {
+      fileName: 'Invoice for Quotation #' + quoteNo + '.pdf',
+      fileBase64: base64String
+    }
+
+    this.emailService.sendEmail(this.customer.email, 'Invoice', emailBody, [attachment]);
+
     //Save the combined PDF
-    this.pdf.save(pdfName + '.pdf');
+    //this.pdf.save(pdfName + '.pdf');
   }
 
   // Function to add a canvas to the PDF with specified position and dimensions
   addCanvasToPDF(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, i: number) {
     const imageData = canvas.toDataURL("image/png");
+    //console.log(i, imageData);
     this.pdf.addImage(imageData, 'PNG', x, y, width, height, 'alias' + i, 'FAST');
   }
 

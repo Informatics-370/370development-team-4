@@ -273,7 +273,7 @@
     <div id="footer-right" class="invoice-block footer-block right">
       <table id="invoice-totals">
         <tr>
-          <td style="width: 70%;">Deposit (20%)</td>
+          <td style="width: 70%;">Deposit* (20%)</td>
           <td>{{invoice.deposit | currency: 'ZAR':'symbol-narrow' }}</td>
         </tr>
         <tr>
@@ -293,6 +293,8 @@
         </tr>
       </table>
     </div>
+
+    <span id="disclaimer" style="font-size: 80%;">*Note that every order contains a deposit of 20% and without this down payment, your order cannot be processed.</span>
   </div>
 </div>
 
@@ -348,3 +350,8 @@
     </div>
   </div>
 </div>
+
+<!--DIV TO SHOW WHILE INVOICE IS STILL BEING GENERATED-->
+<div id="pleaseWait" *ngIf="pleaseWait">
+</div>
+<div id="pleaseWaitText" *ngIf="pleaseWait">Please wait. We will redirect you soon.</div>

@@ -60,9 +60,9 @@ namespace BOX.Controllers
                 if (Send(emailMessage)) return Ok(true);
                 else return Ok(false);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest(false);
+                return BadRequest("Email could not be sent due to " + ex.Message + " caused by " + ex.InnerException);
             }
         }
 
