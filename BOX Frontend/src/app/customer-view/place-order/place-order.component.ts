@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { DataService } from '../../services/data.services';
 import { AuthService } from '../../services/auth.service';
 import { EmailService } from '../../services/email.service';
@@ -12,6 +13,10 @@ import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { VAT } from '../../shared/vat';
 import Swal from 'sweetalert2';
 import { Users } from '../../shared/user';
+import { Md5 } from 'ts-md5';
+import { UntypedFormBuilder } from '@angular/forms'
+import { environment } from 'src/environments/environment';
+declare function payfast_do_onsite_payment(param1: any, callback: any): any;
 declare var $: any;
 
 @Component({
@@ -19,7 +24,7 @@ declare var $: any;
   templateUrl: './place-order.component.html',
   styleUrls: ['./place-order.component.css']
 })
-export class PlaceOrderComponent {
+export class PlaceOrderComponent implements OnDestroy {
   //tabs
   tab = 1;
   progress = 0;
@@ -42,13 +47,18 @@ export class PlaceOrderComponent {
   //forms logic
   placeOrderForm: FormGroup;
 
-  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder,
-    private activatedRoute: ActivatedRoute, private authService: AuthService, private emailService: EmailService) {
+  orderBtnText = 'Order >';
+  isOrderPlaced = false;
+
+  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder, private httpComms: HttpClient,
+    private activatedRoute: ActivatedRoute, private authService: AuthService, private emailService: EmailService,
+    private buildForm: UntypedFormBuilder) {
     this.placeOrderForm = this.formBuilder.group({
       deliveryType: ['Pick up', Validators.required],
       shippingAddress: ['123 Fake Road, Pretoria North', Validators.required],
       paymentType: ['Pay immediately', Validators.required],
     });
+    console.log(environment.production);
   }
 
   ngOnInit() {
@@ -67,6 +77,38 @@ export class PlaceOrderComponent {
 
     this.getDataFromDB();
     this.getCreditDueDate();
+  }
+
+  // Add ngOnDestroy method to handle component destruction.
+  ngOnDestroy() {
+    // Place your cleanup or trigger function here.
+    this.onPageCloseOrNavigation(null);
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onPageCloseOrNavigation($event: any): void {
+    // This function will be triggered when the page is closed or navigated away from.
+    console.log('Page is closing or navigating away.');
+    
+    //undo acceptance of quote
+    //statusID 1 = 'Generated'
+    this.dataService.UpdateQuoteStatus(this.quoteID, 1).subscribe((result) => {
+      console.log("Result", result);
+      //email customer to ignore previous invoice email
+      let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
+      let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
+                        <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
+                          <h3>Hi ${customerName},</h3>
+                          <p>We hope you're well. Please ignore the previous email which contained your Invoice for Quotation #
+                          ${this.quoteID}. Since you cancelled the order before you could finish paying the deposit, that invoice is no longer valid.</p>
+                          <p>If you cancelled by mistake, just accept the quote again to restart the process.</p>
+                          Kind regards<br />
+                          MegaPack
+                        </div>
+                      </div>`;
+
+      this.emailService.sendEmail(this.customer.email, 'Order not placed', emailBody);
+    });
   }
 
   async getCustomerData() {
@@ -176,6 +218,9 @@ export class PlaceOrderComponent {
         break;
     }
 
+    if (this.paymentType?.value == 'Credit') this.orderBtnText = 'Order >';
+    else this.orderBtnText = 'Make payment >';
+
     //update progress bar
     $('#bar').css('width', this.progress + '%');
   }
@@ -210,7 +255,27 @@ export class PlaceOrderComponent {
   }
 
   /*-------------PLACE ORDER------------ */
-  placeOrder() {
+  async choosePaymentMethod() {
+    let amount = 0;
+    //decrease credit balance for credit customers
+    if (this.paymentType?.value == "Credit") {
+
+      let successMessage = "Your credit balance has been updated!";
+      this.placeOrder(successMessage)
+    }
+    else if (this.paymentType?.value == "Cash on delivery") {
+      amount = this.quote.totalBeforeVAT * 0.2;
+      console.log(amount);
+      await this.doOnSitePayment(amount);
+    }
+    else if (this.paymentType?.value == "Pay immediately") {
+      amount = this.quote.getTotalAfterVAT();
+      console.log(amount);
+      await this.doOnSitePayment(amount);
+    }
+  }
+
+  placeOrder(successMessage: string) {
     //update user address with shipping address
 
     //create order vm for order
@@ -248,17 +313,11 @@ export class PlaceOrderComponent {
 
     console.log('Order before posting', newOrder);
 
-    let successMessage = '';
-    //decrease credit balance for credit customers
-    if (this.paymentType?.value == "Credit") {
-
-      successMessage = "Your credit balance has been updated!";
-    }
-
     try {
       //post to backend
       this.dataService.AddCustomerOrder(newOrder).subscribe((result) => {
-        //sucess message
+        this.isOrderPlaced = true;
+        //success message
         Swal.fire({
           icon: 'success',
           title: "Order placed successfully!",
@@ -288,6 +347,115 @@ export class PlaceOrderComponent {
 
       console.error('Error submitting order: ', error);
     }
+  }
+
+  //Make payment methods from PayFast
+  getSignature(data: Map<string, string>): string {
+    let tmp = new URLSearchParams();
+    data.forEach((v, k) => {
+      tmp.append(k, v)
+    });
+    let queryString = tmp.toString();
+    let sig = Md5.hashStr(queryString);
+    return sig;
+  }
+
+  async doOnSitePayment(paymentAmount: number) {
+    try {
+      let onSiteUserData = new Map<string, string>();
+      onSiteUserData.set("merchant_id", "10030872")
+      onSiteUserData.set("merchant_key", "ommqhfbzaejj8")
+
+      //onSiteUserData.set('return_url', window.location.origin + '/order-history')
+      //onSiteUserData.set('cancel_url', window.location.origin + '/my-quotes')
+
+      onSiteUserData.set("email_address", this.customer.email);
+
+      onSiteUserData.set("amount", paymentAmount.toString());
+      onSiteUserData.set("item_name", '#' + this.quoteID);
+
+      onSiteUserData.set('passphrase', 'MegapackByBox');
+
+      let signature = this.getSignature(onSiteUserData);
+      onSiteUserData.set('signature', signature);
+
+      let formData = new FormData();
+      onSiteUserData.forEach((val, key) => {
+        formData.append(key, val);
+      });
+
+      console.log('formData', formData);
+
+      let response = await fetch(environment.payfastOnsiteEndpoint, {
+        method: 'POST',
+        body: formData,
+        redirect: 'follow'
+      });
+
+      console.log('response', response);
+      let respJson = await response.json();
+      console.log('respJson', respJson)
+      let uuid = respJson['uuid'];
+      
+      console.log('uuid', uuid, 'not undefined')
+      payfast_do_onsite_payment({ 'uuid': uuid }, (res: any) => {
+        if (res == true) {
+          //successful payment
+          console.log('Successful payment')
+          /* Swal.fire({
+            icon: 'success',
+            title: "Success!",
+            html: 'Payment successful!',
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonColor: '#32AF99'
+          }).then((result) => {
+            console.log(result);
+          }); */
+        }
+        else {
+          //failed payment
+          console.log('Failed payment')
+          /* Swal.fire({
+            icon: 'error',
+            title: "Oops...",
+            html: "Something went wrong and your payment could not be processed.",
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonColor: '#32AF99'
+          }).then((result) => {
+            console.log(result);
+          }); */
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  doFormPayment(paymentAmount: number) {
+    let onSiteUserData = new Map<string, string>();
+    onSiteUserData.set("merchant_id", "10030872")
+    onSiteUserData.set("merchant_key", "ommqhfbzaejj8")
+
+    //onSiteUserData.set('return_url', window.location.origin)
+    //onSiteUserData.set('cancel_url', window.location.origin + '/cancel')
+
+    onSiteUserData.set("email_address", this.customer.email);
+
+    onSiteUserData.set("amount", paymentAmount.toString());
+    onSiteUserData.set("item_name", '#' + this.quoteID);
+
+    onSiteUserData.set('passphrase', 'MegapackByBox');
+
+    let signature = this.getSignature(onSiteUserData);
+    onSiteUserData.set('signature', signature);
+
+    let autoPaymentForm = this.buildForm.group(onSiteUserData);
+    
+    this.httpComms.post('https://sandbox.payfast.co.za/eng/process', onSiteUserData).subscribe(resp => {
+      console.log(resp);
+    });
   }
 
   get deliveryType() { return this.placeOrderForm.get('deliveryType'); }
