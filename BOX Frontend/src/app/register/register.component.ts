@@ -127,8 +127,6 @@ export class RegisterComponent implements OnInit {
     return true;
   }
   
-  
-  
 
   // Validate title field
   validateTitle(): boolean {
@@ -333,7 +331,7 @@ submitForm() {
     firstName: (document.getElementById('firstName') as HTMLInputElement).value,
     lastName: this.isBusiness ? '' : (document.getElementById('lastName') as HTMLInputElement).value,
     address: (document.getElementById('addressInput') as HTMLInputElement).value,
-    title: this.isBusiness ? '' : (document.getElementById('title') as HTMLInputElement).value,
+    //title: this.isBusiness ? '' : (document.getElementById('title') as HTMLInputElement).value,
     isBusiness: isBusiness,
     vatNo: !this.isBusiness ? '' : (document.getElementById('vatNo') as HTMLInputElement).value,
   };

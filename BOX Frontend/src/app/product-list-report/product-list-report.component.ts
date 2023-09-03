@@ -3,7 +3,7 @@ import { DataService } from '../services/data.services';
 import { take, lastValueFrom } from 'rxjs';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { RawMaterialVM } from '../shared/rawMaterialVM';
-
+import * as html2pdf from 'html2pdf.js'
 @Component({
   selector: 'app-product-list-report',
   templateUrl: './product-list-report.component.html',
@@ -55,4 +55,11 @@ export class ProductListReportComponent {
     return qty;
   }
 
+  generatePDFReport() {
+    const content = document.getElementById('pdf-content');
+    
+    if (content) {
+      html2pdf().from(content).save();
+    }
+  }
 }

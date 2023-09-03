@@ -18,10 +18,11 @@
       </form>
 
       <button type="submit" class="btn btn-create" [disabled]="loading" (click)="generateReport()">Generate</button>
+      <button *ngIf="!loading && supplierCount > 0" class="btn btn-create" (click)="generatePDFReport()">Download PDF</button>
       <hr class="hr hr-blurry m-3" />
       <div *ngIf="loading">Generating report for you...</div>
       <div *ngIf="supplierCount == 0">No suppliers supply this product.</div>
-      <div *ngIf="!loading && supplierCount > 0">
+      <div *ngIf="!loading && supplierCount > 0" id="pdf-content">
   
         <div style="max-width: 90%; margin: auto; margin-left: 25px;">
             <h4>Supplier List Report</h4>
@@ -32,7 +33,7 @@
           <thead>
             <tr>
               <td colspan="3">
-                <img src="../../assets/mega-pack-header.jpg" alt="MegaPack header"
+                <img src="../../assets/mega-pack-header.png" alt="MegaPack header"
                   class="header" />
               </td>
             </tr>

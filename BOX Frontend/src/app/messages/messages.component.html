@@ -1,0 +1,28 @@
+<!-- Menu Bar -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="app-menu"></div>
+    </div>
+    <!-- Dashboard -->
+<div class="col-md-9">
+    <div class="container mt-4">
+        <h2 class="display-6">Messages</h2>
+        <div>
+        <table class="table table-striped mt-4">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Message</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let message of messages; let i = index">
+                <td>{{ message.messageId }}</td>
+                <td>{{ message.message }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-danger" (click)="clearAllMessages()">Clear Messages</button>
+        </div>
+      </div>
+</div>

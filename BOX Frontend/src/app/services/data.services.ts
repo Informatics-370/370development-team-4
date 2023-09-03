@@ -22,6 +22,7 @@ import { Discount } from '../shared/discount';
 import { Users } from '../shared/user';
 import { OrderVM } from '../shared/order-vm';
 import { QuoteVM } from '../shared/quote-vm';
+import { WriteOffItem } from '../shared/write-off-item';
 
 imports: [
   HttpClientModule
@@ -348,7 +349,7 @@ export class DataService {
   }
 
   // Get a specific Role by ID
-  GetRole(roleId: number): Observable<Role> {
+  GetRole(roleId: string): Observable<Role> {
     return this.httpClient.get<Role>(`${this.apiUrl}Roles/GetRole/${roleId}`)
       .pipe(map(result => result));
   }
@@ -464,6 +465,10 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
 
+  updateDeliveryDate(orderId: number, newDeliveryDate: Date): Observable<any> {
+    const url = `${this.apiUrl}CustomerOrder/UpdateDeliveryDate/${orderId}`;
+    return this.httpClient.put(url, { newDeliveryDate });
+  }
   //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
   GetAllCustomProducts(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)
@@ -540,8 +545,21 @@ export class DataService {
     return this.httpClient.get<Supplier[]>(`${this.apiUrl}Reports/GetSupplierListReport/${productId}/${isFixedProduct}`);
   }
 
-  //------------------------------------------------------- EMAIL -------------------------------------------------------
-  SendEmail(email: any): Observable<any> {
-    return this.httpClient.post<any>(`${this.apiUrl}Email/SendEmail`, email, this.httpOptions);
+  getWriteOffReport(): Observable<WriteOffItem[]> {
+    return this.httpClient.get<WriteOffItem[]>(`${this.apiUrl}WriteOffReason/GetWriteOffReport`);
+  }
+  
+  UpdateUserRoleAndNotifyAdmin(email: string, roleId: string): Observable<any> {
+    const url = `${this.apiUrl}User/UpdateUserRoleAndNotifyAdmin`;
+    const body = { email: email, roleId: roleId };
+    return this.httpClient.put(url, body);
+  }
+
+  getAllMessages(): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${this.apiUrl}Authentication/GetAllMessages`);
+  }
+
+  clearAllMessages(): Observable<string> {
+    return this.httpClient.delete<string>(`${this.apiUrl}Authentication/ClearAllMessages`);
   }
 }

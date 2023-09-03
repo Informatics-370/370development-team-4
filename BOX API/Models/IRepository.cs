@@ -181,6 +181,11 @@ namespace BOX.Models
 
         //----------------------------------------------- CUSTOMER -----------------------------------------------
         Task<Customer[]> GetAllCustomersAsync();
+
+        //-------------------------------------------- EMPLOYEE -----------------------------------
+        Task<Employee> GetEmployeeByUserId(string userId);
+        Task<Admin> GetAdminByUserId(string userId);
+        Task<Customer> GetCustomerByUserId(string userId);
     }
 
 }

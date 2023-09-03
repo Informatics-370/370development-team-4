@@ -747,6 +747,22 @@ namespace BOX.Models
             }
         }
 
+        //-------------------------------------------- UPATING USER ------------------------------------
+        public async Task<Employee> GetEmployeeByUserId(string userId)
+        {
+            return await _appDbContext.Employee.FirstOrDefaultAsync(e => e.UserId == userId);
+        }
+
+        public async Task<Customer> GetCustomerByUserId(string userId)
+        {
+            return await _appDbContext.Customer.FirstOrDefaultAsync(e => e.UserId == userId);
+        }
+
+        public async Task<Admin> GetAdminByUserId(string userId)
+        {
+            return await _appDbContext.Admin.FirstOrDefaultAsync(e => e.UserId == userId);
+        }
+
         //--------------------------------- TRANSACTIONS --------------------------------
         public IDbContextTransaction BeginTransaction()
         {

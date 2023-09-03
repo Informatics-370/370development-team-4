@@ -20,18 +20,17 @@ namespace BOX.ViewModel
         public string firstName { get; set; }
 
         [StringLength(50)]
-        public string lastName { get; set; }
+        public string? lastName { get; set; }
 
         [Required]
         [StringLength(100)]
         public string address { get; set; }
 
-        [StringLength(4)]
-        public string title { get; set; }
+        //public string? employeeId
 
         [Required]
         public bool isBusiness { get; set; }
 
-        public string vatNo { get; set; }
+        public string? vatNo { get; set; }
     }
 }

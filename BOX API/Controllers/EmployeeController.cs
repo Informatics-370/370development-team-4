@@ -9,6 +9,7 @@ using BOX.ViewModel;
 using Org.BouncyCastle.Bcpg;
 using System.Text;
 using System.Web;
+using BOX.Hub;
 
 namespace BOX.Controllers
 {

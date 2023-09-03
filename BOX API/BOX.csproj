@@ -30,9 +30,7 @@
     <PackageReference Include="QRCoder" Version="1.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.30.1" />
+    <PackageReference Include="Twilio" Version="6.11.0" />
     <PackageReference Include="ZXing.Net" Version="0.16.9" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>

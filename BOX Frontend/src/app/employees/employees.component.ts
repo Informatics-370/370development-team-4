@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DataService } from '../services/data.services';
 import Swal from 'sweetalert2';
 import { AuthService } from '../services/auth.service';
+import { Role } from '../shared/role';
 
 @Component({
   selector: 'app-employees',
@@ -18,6 +19,7 @@ export class EmployeesComponent implements OnInit{
   submitClicked = false; //keep track of when submit button is clicked in forms, for validation errors
   loading = true; //show loading message while data loads
   createEmployeeForm: FormGroup;
+  roleOptions: Role[] = [];
 
   constructor(private dataService: DataService, private authService: AuthService, private formBuilder: FormBuilder) {  
     this.createEmployeeForm = this.formBuilder.group({
@@ -32,6 +34,7 @@ export class EmployeesComponent implements OnInit{
   
   ngOnInit(): void {
     this.getAllUsers();
+    this.getRoles();
   }
 
   getAllUsers() { //get all Users
@@ -210,5 +213,72 @@ export class EmployeesComponent implements OnInit{
     );
   }  
   
+
+  getRoles() {
+    this.dataService.GetAllRoles().subscribe(
+      (roles: Role[]) => {
+        // Filter out the 'Customer' role
+        this.roleOptions = roles.filter(role => role.name !== 'Customer');
+      },
+      (error) => {
+        console.error('Error fetching roles', error);
+      }
+    );
+  }
+
+  updateUserRole(email: string) {
+    Swal.fire({
+      title: 'Update Role',
+      html: `<select id="role-select" class="swal2-select">
+              <option value="0">Select a Role</option>
+              ${this.roleOptions.map(role => `<option value="${role.id}">${role.name}</option>`).join('')}
+            </select>`,
+      confirmButtonText: 'Update',
+      confirmButtonColor: '#D6AD60',
+      showCancelButton: true,
+      cancelButtonColor: '#E33131',
+      focusConfirm: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const roleIdElement = document.getElementById('role-select')! as HTMLSelectElement; // Get the selected role ID
+        const roleId = roleIdElement.value;
+        console.log(roleId);
+        if (roleId !== '0') { // Check if a valid role is selected
+          // Fetch the user's data based on the email
+          this.dataService.GetUser(email).subscribe(
+            (userData) => {
+              // Destructure the user's data
+              const { firstName, lastName, email, phoneNumber, address, title } = userData;
+              console.log(email)
+              // Update the user's role
+              this.dataService.UpdateUserRoleAndNotifyAdmin(email, roleId).subscribe(
+                () => {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Role Updated',
+                    text: `The role for ${firstName} ${lastName} has been updated.`,
+                  });
+                  this.getAllUsers(); // Refresh the user list
+                },
+                (error) => {
+                  console.error('Error updating user role', error);
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Role Update Failed',
+                    text: 'Failed to update the role. Please try again.',
+                  });
+                }
+              );
+            },
+            (error) => {
+              console.error('Error fetching user data', error);
+            }
+          );
+        }
+      }
+    });
+  }
   
+  
+    
 }

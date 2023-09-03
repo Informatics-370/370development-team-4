@@ -53,7 +53,7 @@ export class RolesComponent {
   //--------------------SEARCH BAR LOGIC----------------
   searchRole(event: Event) {
     this.searchTerm = (event.target as HTMLInputElement).value;
-    this.filteredRoles = this.roles.filter(role => role.description.toLowerCase().includes(this.searchTerm.toLowerCase()));
+    this.filteredRoles = this.roles.filter(role => role.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
     this.roleCount = this.filteredRoles.length; // Update role count so message can be displayed if no roles are found
     console.log(this.filteredRoles);
   }
@@ -64,8 +64,8 @@ export class RolesComponent {
     if (this.addRoleForm.valid) {
       const formData = this.addRoleForm.value;
       let newRole: Role = {
-        roleID: 0,
-        description: formData.description // Update the property name to "description"
+        id: '',
+        name: formData.description // Update the property name to "description"
       };
 
       this.dataService.AddRole(newRole).subscribe(
@@ -84,14 +84,14 @@ export class RolesComponent {
   }
 
   //--------------------UPDATE ROLE LOGIC----------------
-  openUpdateModal(roleId: number) {
+  openUpdateModal(roleId: string) {
     console.log("Received roleId:", roleId);
     // Get Role and display data
     this.dataService.GetRole(roleId).subscribe(
       (result) => {
         console.log('Role to update: ', result);
         this.updateRoleForm.setValue({
-          uDescription: result.description // Update the property name to "uDescription"
+          uDescription: result.name // Update the property name to "uDescription"
         }); // Display data
 
         // Open the modal manually after data is retrieved and displayed
@@ -130,8 +130,8 @@ export class RolesComponent {
       // Get form data
       const formValues = this.updateRoleForm.value;
       let updatedRole: Role = {
-        roleID: 0,
-        description: formValues.uDescription // Update the property name to "description"
+        id: '',
+        name: formValues.uDescription // Update the property name to "description"
       };
 
       console.log(updatedRole);
@@ -151,7 +151,7 @@ export class RolesComponent {
   }
 
   //--------------------DELETE ROLE LOGIC----------------
-  openDeleteModal(roleId: number) {
+  openDeleteModal(roleId: string) {
     console.log("Received roleId:", roleId);
     // Open the modal manually
     this.deleteModal.nativeElement.classList.add('show');

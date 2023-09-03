@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace BOX.Controllers
@@ -28,14 +29,15 @@ namespace BOX.Controllers
         {
             try
             {
-                var results = await _repository.GetAllRolesAsync();
-                return Ok(results);
+                var roles = await _roleManager.Roles.ToListAsync(); // Retrieve all roles from the AspNetRoles table
+                return Ok(roles);
             }
             catch (Exception)
             {
                 return StatusCode(500, "Internal Server Error. Please contact BOX support services.");
             }
         }
+
 
         //------------------------------ GET ONE ROLE ------------------------------
 
@@ -173,5 +175,23 @@ namespace BOX.Controllers
             }
             return BadRequest("Your request is invalid.");
         }
+
+        [HttpPost]
+        [Route("CreatePermission")]
+        public async Task<IActionResult> CreatePermission(User_Permission newPermission)
+        {
+            try
+            {
+                _repository.Add(newPermission);
+                await _repository.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status201Created, newPermission);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid transaction");
+            }
+        }
+
     }
 }

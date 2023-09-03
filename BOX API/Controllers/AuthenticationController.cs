@@ -13,7 +13,11 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
-using ZXing;
+using Twilio.Types;
+using Twilio.Clients;
+using Twilio.Rest.Api.V2010.Account;
+using Microsoft.AspNetCore.SignalR;
+using BOX.Hub;
 
 namespace BOX.Controllers
 {
@@ -29,6 +33,8 @@ namespace BOX.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailService _emailService;
         private readonly AppDbContext _dbContext;
+        private readonly ITwilioRestClient _client;
+        private readonly IHubContext<RegistrationHub> _hubContext;
 
         public AuthenticationController(UserManager<User> userManager,
             IUserClaimsPrincipalFactory<User> claimsPrincipalFactory,
@@ -36,7 +42,9 @@ namespace BOX.Controllers
             RoleManager<IdentityRole> roleManager,
             SignInManager<User> signInManager,
             IEmailService emailService,
-            AppDbContext dbContext)
+            AppDbContext dbContext,
+            ITwilioRestClient client,
+            IHubContext<RegistrationHub> hubContext)
         {
             _userManager = userManager;
             _claimsPrincipalFactory = claimsPrincipalFactory;
@@ -46,6 +54,8 @@ namespace BOX.Controllers
             _signInManager = signInManager;
             _emailService = emailService;
             _dbContext = dbContext;
+            _client = client;
+            _hubContext = hubContext;
         }
 
         //***************************** Customer **********************************
@@ -85,7 +95,7 @@ namespace BOX.Controllers
                     {
                         CustomerId = Guid.NewGuid().ToString(),
                         UserId = user.Id,
-                        //EmployeeId = "",
+                        EmployeeId = "",
                         isBusiness = uvm.isBusiness,
                         vatNo = uvm.vatNo,
                         creditLimit = 0, // default of 0
@@ -102,11 +112,18 @@ namespace BOX.Controllers
                         if (!roleExists)
                         {
                             await _roleManager.CreateAsync(new IdentityRole(role));
-                        }
+                        }                        
 
                         // Create the customer
                         _repository.Add(customer);
                         await _repository.SaveChangesAsync();
+
+                        // Store the registration message in the database
+                        var registrationMessage = $"New registration: {uvm.firstName} {uvm.lastName} has signed up to Mega Pack using this email address. ({uvm.emailaddress}) \n\n Please assign {uvm.firstName} {uvm.lastName} to a sales consultant as soon as possible";
+                        _dbContext.RegisterMessages.Add(new RegisterMessages { message = registrationMessage });
+                        await _dbContext.SaveChangesAsync();
+
+                        await _hubContext.Clients.All.SendAsync("SendRegistrationAlert", registrationMessage);
 
                         // Assign the user to a customer role
                         await _userManager.AddToRoleAsync(user, role);
@@ -136,6 +153,18 @@ namespace BOX.Controllers
                 return Forbid("Account already exists.");
             }
 
+        }
+
+        [HttpPost("send-sms")]
+        public IActionResult SendSms(string phoneNumber)
+        {
+            var sms = MessageResource.Create(
+                            to: new PhoneNumber("+27832448443"),
+                            from: new PhoneNumber("+17075498722"),
+                            body: "Hello Kuziwa. This is Ismail Starke from MegaPack!",
+                            client: _client);
+
+            return Ok("Success" + sms);
         }
 
         //--------------------------- Confirm Email -------------------------------
@@ -487,6 +516,38 @@ namespace BOX.Controllers
             return password.ToString();
         }
 
+            [HttpGet]
+            [Route("GetAllMessages")]
+            public async Task<IActionResult> GetAllMessages()
+            {
+                try
+                {
+                    var messages = await _dbContext.RegisterMessages.ToListAsync();
+                    return Ok(messages);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error: " + ex.Message);
+                }
+            }
+
+            [HttpDelete]
+            [Route("ClearAllMessages")]
+            public async Task<IActionResult> ClearAllMessages()
+            {
+                try
+                {
+                    _dbContext.RegisterMessages.RemoveRange(_dbContext.RegisterMessages);
+                    await _dbContext.SaveChangesAsync();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error: " + ex.Message);
+                }
+            }
+
+
         [HttpPut]
         [Route("AssignEmployee/{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, [FromBody] AssignEmpDTO assignEmp)
@@ -510,7 +571,7 @@ namespace BOX.Controllers
             }
 
             // Update the user's properties with the values from the updatedUser DTO
-            //customer.EmployeeId = assignEmp.EmployeeId;
+            customer.EmployeeId = assignEmp.EmployeeId;
 
             // Send email to customer
             var customerMessage = new Message(new string[] { customer.User.Email }, 
