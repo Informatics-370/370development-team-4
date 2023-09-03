@@ -170,7 +170,7 @@ export class OrderHistoryComponent {
     Swal.fire({
       icon: 'warning',
       title: "Are you sure?",
-      html: `20% of every order is a deposit. This amount is <b>non-refundable</b>`,
+      html: `20% of every order is a deposit. This amount is <b>not refundable</b>`,
       confirmButtonColor: '#32AF99',
       confirmButtonText: 'Yes, cancel order!',
       showCancelButton: true,
