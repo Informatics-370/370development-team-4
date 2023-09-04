@@ -562,9 +562,7 @@ namespace BOX.Controllers
         [Route("AssignEmployee/{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, [FromBody] AssignEmpDTO assignEmp)
         {
-            var customer = await _dbContext.Customer
-                .Include(c => c.User) // Include the User details of the customer
-                .FirstOrDefaultAsync(u => u.UserId == userId);
+            var customer = await _repository.GetCustomerByUserId(userId);
 
             if (customer == null)
             {
