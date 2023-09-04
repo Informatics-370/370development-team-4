@@ -141,7 +141,7 @@ import { QuotesComponent } from './quotes/quotes.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    FullCalendarModule,
+    FullCalendarModule
  ],
   providers: [],
   bootstrap: [AppComponent]

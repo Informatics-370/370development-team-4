@@ -78,7 +78,7 @@
         <span class="bold">Customer: </span>{{selectedOrder.customerFullName}}<br />
         <span class="bold">Status: </span>{{selectedOrder.orderStatusDescription}}<br />
         <span class="bold">Date: </span>{{selectedOrder.date | date:'d MMM yyyy HH:mm' }}<br />
-        <span class="bold">Delivery date: </span>{{selectedOrder.deliveryScheduleID == 0 ? 'Not yet scheduled for delivery' : selectedOrder.deliveryDate.toDateString() }} <br />
+        <span class="bold">Delivery date: </span>{{selectedOrder.orderStatusID != 4 ? 'Not yet scheduled for delivery' : selectedOrder.deliveryDate.toDateString() }} <br />
         <div *ngIf="selectedOrder.deliveryScheduleID > 0">
           <span class="bold">Photo of delivery: </span>
         <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{selectedOrder.deliveryPhoto}}"

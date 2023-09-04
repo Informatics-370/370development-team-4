@@ -336,7 +336,7 @@ export class MyQuotesComponent {
     let invoiceFtLeft = document.getElementById("footer-left") as HTMLElement;
     let invoiceFtRight = document.getElementById("footer-right") as HTMLElement;
     //let disclaimer = document.getElementById("disclaimer") as HTMLElement;
-    let invoiceParts = [];
+    let invoiceParts: HTMLElement[] = [];
 
     invoiceParts.push(invoiceHdLeft, invoiceHdRight, invoiceBod, invoiceFtLeft, invoiceFtRight);
 

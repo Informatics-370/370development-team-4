@@ -1,6 +1,34 @@
 USE [BOX]
 GO
 
+--Step 1:
+DROP INDEX IX_Customer_EmployeeId ON [BOX].[dbo].[Customer];
+
+--Step 2:
+ALTER TABLE [BOX].[dbo].[Customer]
+DROP CONSTRAINT FK_Customer_Employee_EmployeeId;
+
+--Step 3:
+ALTER TABLE [BOX].[dbo].[Customer]
+ALTER COLUMN [EmployeeId] NVARCHAR(50) NULL;
+
+--Step 4:
+CREATE INDEX IX_Customer_EmployeeId ON [BOX].[dbo].[Customer] ([EmployeeId]);
+
+--Step 1:
+DROP INDEX IX_Customer_TitleId ON [BOX].[dbo].[Customer];
+
+--Step 2:
+ALTER TABLE [BOX].[dbo].[Customer]
+DROP CONSTRAINT FK_Customer_Title_TitleId;
+
+--Step 3:
+ALTER TABLE [BOX].[dbo].[Customer]
+ALTER COLUMN [TitleId] NVARCHAR(50) NULL;
+
+--Step 4:
+CREATE INDEX IX_Customer_TitleId ON [BOX].[dbo].[Customer] ([TitleId]);
+
 INSERT INTO [dbo].[Customer_Order_Status]
            ([Description])
      VALUES
@@ -82,3 +110,17 @@ INSERT INTO [dbo].[Title]
            ('Prof'),
            ('Dr')
 GO
+
+SELECT name
+FROM sys.tables
+
+select * from vat
+select * from title
+select * from reject_reason
+select * from quote_status
+select * from quote_duration
+select * from payment_type
+select * from customer_order_status
+select * from credit_application_status
+select * from cost_price_formula_variables
+select * from bulk_discount

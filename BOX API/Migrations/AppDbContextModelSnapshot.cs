@@ -273,8 +273,7 @@ namespace BOX.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("Delivery_Date")
-                        .IsRequired()
+                    b.Property<DateTime>("Delivery_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Delivery_Photo")
@@ -424,11 +423,10 @@ namespace BOX.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("Recommendation")
+                        .HasMaxLength(256)
                         .HasColumnType("bit");
 
                     b.HasKey("CustomerReviewID");
-
-                    b.HasIndex("CustomerOrderID");
 
                     b.ToTable("Customer_Review");
                 });
@@ -1558,6 +1556,8 @@ namespace BOX.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Employee");
 
                     b.Navigation("User");
                 });

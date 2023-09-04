@@ -47,8 +47,8 @@ import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
 import { MessagesComponent } from './messages/messages.component';
-import{OrderDeliveryScheduleComponent} from './order-delivery-schedule/order-delivery-schedule.component';
-import{OrderDelCalendarComponent} from './order-del-calendar/order-del-calendar.component';
+import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
+import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
 
 
@@ -88,7 +88,7 @@ const routes: Routes = [
   { path: 'order-history', component: OrderHistoryComponent },
   { path: 'manage-orders', component: CustomerOrdersComponent },
   { path: 'custom-product', component: CustomProdComponent },
-  { path: 'confirm-email', component: ConfirmEmailComponent},
+  { path: 'confirm-email', component: ConfirmEmailComponent },
   { path: 'two-factor-auth', component: TwoFactorAuthComponent },
   { path: 'employees', component: EmployeesComponent },
   { path: 'profile-page', component: ProfilePageComponent },
@@ -103,8 +103,8 @@ const routes: Routes = [
   { path: 'write-off-report', component: WriteOffByProductCategoryComponent },
   { path: 'inventory-chart', component: InventoryChartComponent },
   { path: 'messages', component: MessagesComponent },
-  {path: 'order-schedule', component:OrderDeliveryScheduleComponent},
-  {path: 'order-calendar', component:OrderDelCalendarComponent},
+  { path: 'order-schedule', component: OrderDeliveryScheduleComponent },
+  { path: 'order-calendar', component: OrderDelCalendarComponent },
   { path: 'manage-quotes', component: QuotesComponent }
 ];
 

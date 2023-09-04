@@ -562,4 +562,9 @@ export class DataService {
   clearAllMessages(): Observable<string> {
     return this.httpClient.delete<string>(`${this.apiUrl}Authentication/ClearAllMessages`);
   }
+
+  //------------------------------------------------------- EMAIL -------------------------------------------------------
+  SendEmail(email: any): Observable<any> {
+    return this.httpClient.post<any>(`${this.apiUrl}Email/SendEmail`, email, this.httpOptions);
+  }
 }

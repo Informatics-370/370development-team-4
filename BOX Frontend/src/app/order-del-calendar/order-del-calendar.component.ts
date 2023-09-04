@@ -9,7 +9,7 @@ import { OrderService } from '../services/orders';
   templateUrl: './order-del-calendar.component.html',
   styleUrls: ['./order-del-calendar.component.css']
 })
-export class OrderDelCalendarComponent implements OnInit {
+export class OrderDelCalendarComponent {
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin],
     initialView: 'dayGridMonth',
