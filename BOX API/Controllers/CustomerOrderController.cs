@@ -67,7 +67,7 @@ namespace BOX.Controllers
                         CustomerId = order.UserId,
                         CustomerFullName = fullName,
                         DeliveryScheduleID = deliverySchedule.OrderDeliveryScheduleID,
-                        DeliveryDate = deliverySchedule.Date,
+                        DeliveryDate = (DateTime)order.Delivery_Date,
                         Date = order.Date,
                         DeliveryType = order.Delivery_Type,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
@@ -85,7 +85,6 @@ namespace BOX.Controllers
             }
 
         }
-
 
         //-------------------------------------------------- Get Order By ID ------------------------------------------------
         [HttpGet]
@@ -158,7 +157,7 @@ namespace BOX.Controllers
                     CustomerId = order.UserId,
                     CustomerFullName = fullName,
                     DeliveryScheduleID = deliverySchedule.OrderDeliveryScheduleID,
-                    DeliveryDate = deliverySchedule.Date,
+                    DeliveryDate = (DateTime)order.Delivery_Date,
                     DeliveryType = order.Delivery_Type,
                     DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
                     Date = order.Date,
@@ -225,7 +224,7 @@ namespace BOX.Controllers
                     }
 
                     string fullName = await _repository.GetUserFullNameAsync(order.UserId);
-                    var status = await _repository.GetQuoteStatusAsync(order.CustomerOrderStatusID);
+                    var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID);
                     var rejectReason = new Reject_Reason();
 
                     //get delivery schedule date
@@ -246,7 +245,7 @@ namespace BOX.Controllers
                         CustomerId = order.UserId,
                         CustomerFullName = fullName,
                         DeliveryScheduleID = deliverySchedule.OrderDeliveryScheduleID,
-                        DeliveryDate = deliverySchedule.Date,
+                        DeliveryDate = (DateTime)order.Delivery_Date,
                         Date = order.Date,
                         DeliveryType = order.Delivery_Type,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
@@ -265,7 +264,8 @@ namespace BOX.Controllers
 
         [HttpPost]
         [Route("AddCustomerOrder")]
-        public IActionResult AddCustomerOrder([FromBody] CustomerOrderViewModel customerOrderViewModel)
+		
+		public IActionResult AddCustomerOrder([FromBody] CustomerOrderViewModel customerOrderViewModel)
         {
             // Start a database transaction; because of this, nothing is fully saved until the end i.e. unless order and order lines are created successfully with no errors, the order isn't placed
             var transaction = _repository.BeginTransaction();
@@ -302,6 +302,7 @@ namespace BOX.Controllers
                     CustomerOrderStatusID = 1, //status of 'Placed'. Statuses can't be CRUDed so this can be hard coded
                     Delivery_Photo = Convert.FromBase64String(""),
                     Date = DateTime.Now,
+                    Delivery_Date = CalculateTwoDaysFromNowOnWeekday(),
                     Delivery_Type = customerOrderViewModel.DeliveryType
                 };
 
@@ -363,68 +364,26 @@ namespace BOX.Controllers
                 transaction.Rollback(); // Rollback the transaction if an exception occurs
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services. " + ex.Message + " has inner exception of " + ex.InnerException);
             }
-        }
+
+			//this is a function whch calcualtes the expected delivery date for when an order is initially placed:
+			 DateTime CalculateTwoDaysFromNowOnWeekday()
+			{
+				DateTime currentDate = DateTime.Now.Date;
+				DateTime futureDate = currentDate.AddDays(2); // Adding two days
+
+				// Check if the future date falls on a weekend (Saturday or Sunday)
+				while (futureDate.DayOfWeek == DayOfWeek.Saturday || futureDate.DayOfWeek == DayOfWeek.Sunday)
+				{
+					futureDate = futureDate.AddDays(1); // Move to the next day
+				}
+
+				return futureDate;
+			}
 
 
-        //[HttpPost]
-        /*[Route("AddCustomerOrder")]
-        public async Task<IActionResult> AddCustomerOrder([FromBody] CustomerOrderViewModel customerOrderViewModel)
-        {
-            // Create a new instance of Customer from the view model
-            var order = new Customer_Order
-            {
-                UserId = customerOrderViewModel.CustomerId,
-                QuoteID = customerOrderViewModel.QuoteID,
-                CustomerOrderStatusID = 1, //status of 'Placed'. Statuses can't be CRUDed so this can be hard coded
-                Delivery_Photo = Convert.FromBase64String(""),
-                Date = customerOrderViewModel.Date,
-                Delivery_Type = customerOrderViewModel.DeliveryType
-            };
 
-            try
-            {
-                _repository.Add(order); // Save the order in the repository
-                _repository.SaveChanges(); //save change to generate ID
+		}
 
-                //get all order lines from the VM and put in order_line entity
-                for (int i = 0; i < customerOrderViewModel.OrderLines.Count(); i++)
-                {
-                    var orderLineVM = customerOrderViewModel.OrderLines[i];
-                    bool fpOrdered = orderLineVM.FixedProductID == 0 ? false : true; //true if fixed product was ordered
-                    bool cpOrdered = orderLineVM.CustomProductID == 0 ? false : true; //true if custom product was ordered
-
-                    Customer_Order_Line orderLineRecord = new Customer_Order_Line
-                    {
-                        CustomerOrderID = order.CustomerOrderID, //it's NB to save the order 1st so SQL generates its ID to use in the order line
-                        Customer_Order = order,
-                        CustomProductID = cpOrdered ? null : orderLineVM.CustomProductID,
-                        FixedProductID = fpOrdered ? null : orderLineVM.FixedProductID,
-                        Quantity = orderLineVM.Quantity,
-                        Confirmed_Unit_Price = orderLineVM.ConfirmedUnitPrice
-                    };
-
-                    //decrease quantity on hand of fixed product
-                    if (fpOrdered) //fix prod was ordered
-                    {
-                        Fixed_Product fixedProd = await _repository.GetFixedProductAsync(orderLineVM.FixedProductID); //returns Task<Fixed_Product>
-                        fixedProd.Quantity_On_Hand -= orderLineVM.Quantity;
-                    }
-
-                    _repository.Add(orderLineRecord); //save estimate line in DB
-                }
-
-                // Save changes in the repository
-                _repository.SaveChanges();
-
-                return Ok(customerOrderViewModel);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services. " + ex.Message + " has inner exception of " + ex.InnerException);
-            }
-        }*/
-
-        //check if there is an order that has been placed from that quote; returns true if there is
         [HttpGet]
         [Route("CheckForExistingOrder/{quoteId}/{customerId}")]
         public IActionResult CheckForExistingOrder(int quoteId, string customerId)
@@ -465,5 +424,98 @@ namespace BOX.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
             }
         }
+
+		[HttpPut]
+		[Route("UpdateDeliveryDate/{customerOrderId}/{newDeliveryDate}")]
+		public async Task<IActionResult> UpdateDeliveryDate(int customerOrderId, DateTime newDeliveryDate)
+		{
+			try
+			{
+				var existingOrder = await _repository.GetCustomerOrderAsync(customerOrderId);
+
+				if (existingOrder == null)
+				{
+					return NotFound("The order does not exist on the B.O.X System");
+				}
+
+				existingOrder.Delivery_Date = newDeliveryDate;
+				await _repository.SaveChangesAsync();
+
+				return Ok(existingOrder);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+			}
+		}
+
+        [HttpGet]
+        [Route("GetAllCustomerOrders/{statusId}")]
+        public async Task<IActionResult> GetCustomerOrdersByStatus(int statusId)
+        {
+            try
+            {
+                var cusOrders = await _repository.GetCustomerOrdersByStatus(statusId);
+
+                List<CustomerOrderViewModel> customerOrderViewModels = new List<CustomerOrderViewModel>(); //create array of VMs
+                foreach (var order in cusOrders)
+                {
+                    //get all customer order lines associated with this order and create array from them
+                //    List<CustomerOrderLineViewModel> orderLineList = new List<CustomerOrderLineViewModel>();
+                //    var orderLines = await _repository.GetOrderLinesByOrderAsync(order.CustomerOrderID);
+
+                //    //put all order lines for this specific order in a list for the customer order VM
+                //    foreach (var ol in orderLines)
+                //    {
+                //        CustomerOrderLineViewModel colvm = new CustomerOrderLineViewModel
+                //        {
+                //            CustomerOrderLineID = ol.CustomerOrderLineID,
+                //            FixedProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
+                //            CustomProductID = ol.CustomProductID == null ? 0 : ol.CustomProductID.Value,
+                //            ConfirmedUnitPrice = ol.Confirmed_Unit_Price,
+                //            Quantity = ol.Quantity,
+                //            CustomerReturnID = ol.CustomerReturnID == null ? 0 : ol.CustomerReturnID.Value
+                //        };
+                //        orderLineList.Add(colvm);
+                //    }
+
+                //    var Status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
+                //    string fullName = await _repository.GetUserFullNameAsync(order.UserId);
+
+                //    var deliverySchedule = new Order_Delivery_Schedule();
+
+                //    if (order.OrderDeliveryScheduleID != null)
+                //    {
+                //        int deliveryScheduleID = order.OrderDeliveryScheduleID.Value;
+                //        deliverySchedule = await _repository.GetCustomerOrderDeliveryScheduleAsync(deliveryScheduleID);
+                //    }
+
+                    CustomerOrderViewModel coVM = new CustomerOrderViewModel()
+                    {
+                        CustomerOrderID = order.CustomerOrderID,
+                        QuoteID = order.QuoteID,
+                        OrderStatusID = order.CustomerOrderStatusID,
+                        //OrderStatusDescription = Status.Description,
+                        CustomerId = order.UserId,
+                        //CustomerFullName = fullName,
+                        //DeliveryScheduleID = deliverySchedule.OrderDeliveryScheduleID,
+                        DeliveryDate = (DateTime)order.Delivery_Date,
+                        Date = order.Date,
+                        DeliveryType = order.Delivery_Type,
+                        DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
+                        //OrderLines = orderLineList
+                    };
+                    customerOrderViewModels.Add(coVM);
+                }
+
+                return Ok(customerOrderViewModels);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ' ' + ex.InnerException);
+            }
+
+        }
+
     }
 }

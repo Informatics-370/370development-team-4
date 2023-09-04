@@ -1,9 +1,12 @@
-﻿using BOX.Models;
+﻿using BOX.Hub;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using QRCoder;
 using System.Drawing;
@@ -22,12 +25,14 @@ namespace BOX.Controllers
         private readonly AppDbContext _appDbContext;
         private readonly IRepository _repository;
         private readonly UserManager<User> _userManager;
+        private readonly IHubContext<InventoryHub> _hubContext;
 
-        public StockTakeController(AppDbContext appDbContext, IRepository repository, UserManager<User> userManager)
+        public StockTakeController(AppDbContext appDbContext, IRepository repository, UserManager<User> userManager, IHubContext<InventoryHub> hubContext)
         {
             _appDbContext = appDbContext;
             _repository = repository;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         //=============================== PERFORM STOCK TAKE =====================================
@@ -71,7 +76,8 @@ namespace BOX.Controllers
                         RawMaterialId = writeOffVM.RawMaterialId == 0 ? null : writeOffVM.RawMaterialId,
                         //store quantity written off not updated quantity of products
                         Quantity = fixedProductWrittenOff ? fixedProduct.Quantity_On_Hand - writeOffVM.Quantity : rawMaterial.Quantity_On_Hand - writeOffVM.Quantity
-                    };
+                        
+                };
 
                     _repository.Add(writeOffRecord);
 
@@ -83,6 +89,7 @@ namespace BOX.Controllers
                     else if (writeOffVM.FixedProductId != 0)
                     {
                         fixedProduct.Quantity_On_Hand = writeOffVM.Quantity;
+                        await _hubContext.Clients.All.SendAsync("ReceiveInventoryUpdate", writeOffVM.FixedProductDescription, fixedProduct.Quantity_On_Hand);
                     }
                 }
 

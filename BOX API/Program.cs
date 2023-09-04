@@ -17,6 +17,9 @@ using Microsoft.Extensions.ML;
 using Google.Api;
 using Microsoft.ML;
 using Microsoft.Extensions.DependencyInjection;
+using Twilio.Clients;
+using BOX.Hub;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,13 +28,17 @@ builder.Services.AddCors(options =>
 {
   options.AddDefaultPolicy(defaultPolicy =>
   {
-    defaultPolicy.WithOrigins("http://localhost:4200")
+    defaultPolicy.WithOrigins("http://localhost:4200", "http://localhost:8100")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
   });
 });
 
+//HANGFIRE
+builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+builder.Services.AddTransient<RecurringJobsService>(); //register recurring job service so I can call recurring jobs when app runs
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -122,6 +129,10 @@ var googleCloudSettings = builder.Configuration.GetSection("GoogleCloudSettings"
 var apiKey = googleCloudSettings["ApiKey"];
 builder.Services.AddSingleton<INlpService>(new GoogleNlpApiClient(apiKey));
 
+builder.Services.AddHttpClient<ITwilioRestClient, TwilioClient>();
+
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Data Seeding
@@ -145,11 +156,18 @@ app.UseRouting(); // Add this line to enable routing
 
 app.UseCors();
 app.UseHttpsRedirection();
+
+app.UseHangfireDashboard(); //use hangfire dashboard
+//run recurring jobs
+RecurringJob.AddOrUpdate<RecurringJobsService>("ExpireQuotes", c => c.ExpireQuotes(), Cron.Daily);
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
-  endpoints.MapControllers();
+    endpoints.MapControllers();
+    endpoints.MapHub<InventoryHub>("/inventoryHub");
+    endpoints.MapHub<RegistrationHub>("/registrationHub");
 });
 
 app.Run();

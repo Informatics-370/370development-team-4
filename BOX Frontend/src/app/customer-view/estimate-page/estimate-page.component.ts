@@ -181,14 +181,7 @@ export class EstimatePageComponent implements OnInit {
   }
 
   //DELETE ESTIMATE; We really shouldn't delete but I'll leave this method here for now
-  deleteEstimate(estimateId: number) {
-    this.dataService.DeleteEstimate(estimateId).subscribe(
-      (result) => {
-        console.log("Successfully deleted ", result);
-        this.getCustomerEstimatesPromise(); //refresh estimates
-      }
-    ); 
-  }
+  
 
   //Kuziwa: 16 July, since we are currently retrieving from local storage, I will ensure the Estimate page displays what is stored in the customer's localstorage history---- This will have to change once we implement db functionality
 

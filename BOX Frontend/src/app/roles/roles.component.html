@@ -75,15 +75,15 @@
                 <!--Role data from API-->
                 <tr *ngFor="let role of filteredRoles">
                     <td>
-                        <button title="Delete this role description" class="CRUD-icon" (click)="openDeleteModal(role.roleID)" >
+                        <button title="Delete this role description" class="CRUD-icon" (click)="openDeleteModal(role.id)" >
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button title="Update this role description" class="CRUD-icon" (click)="openUpdateModal(role.roleID)" >
+                        <button title="Update this role description" class="CRUD-icon" (click)="openUpdateModal(role.id)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
                     <td>
-                        {{role.description}}
+                        {{role.name}}
                     </td>
                 </tr>
             </tbody>

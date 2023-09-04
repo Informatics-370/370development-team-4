@@ -22,6 +22,7 @@ export class QuoteVMClass implements QuoteVM {
   //generic info
   customerId: string;
   customerFullName: string;
+  customerEmail: string;
   lines: any[];
   /*line = {
     lineID: 0,
@@ -64,6 +65,7 @@ export class QuoteVMClass implements QuoteVM {
     this.dateGenerated = new Date(quote.dateGenerated); //dates from the backend come as string so I must convert it to Date object
     this.customerId = quote.customerId;
     this.customerFullName = quote.customerFullName;
+    this.customerEmail = quote.customerEmail;
     this.totalBeforeVAT = this.getTotalBeforeVAT();
     this.totalVAT = this.getVATAmount();
     

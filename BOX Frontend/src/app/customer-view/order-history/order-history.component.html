@@ -81,7 +81,7 @@
             </table>
             <!-- status 1 = placed and 2 = in progress-->
             <div class="buttons" style="margin: auto;" *ngIf="order.orderStatusID == 1 || order.orderStatusID == 2">
-              <button class="btn btn-reject" (click)="cancelOrder(order.customerOrderID)">Cancel order</button>
+              <button class="btn btn-reject" (click)="warnCustomer(order.customerOrderID)">Cancel order</button>
             </div>
           </div>
         </div>

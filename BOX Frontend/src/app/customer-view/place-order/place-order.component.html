@@ -81,12 +81,16 @@
           </tbody>
           <tfoot id="tfoot">
             <tr>
+              <td colspan="3" class="text-right" style="width: 80%;">Deposit (20%):</td>
+              <td>{{quote.totalBeforeVAT * 0.2 | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+            <tr>
               <td colspan="3" class="text-right" style="width: 80%;">Subtotal:</td>
-              <td>{{quote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{quote.totalBeforeVAT * 0.8 | currency: 'ZAR':'symbol-narrow'}}</td>
             </tr>
             <tr>
               <td colspan="3" class="text-right">VAT:</td>
-              <td>{{quote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>+{{quote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
             </tr>
             <tr style="font-weight: bold;">
               <td colspan="3" class="text-right">Total:</td>
@@ -122,7 +126,7 @@
         <button *ngIf="tab == 1" class="btn btn-create btn-red" (click)="cancel()">Cancel</button>
         <button *ngIf="tab > 1" class="btn btn-create" (click)="changeTab('previous')">Previous</button>
         <button *ngIf="tab != 3" class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
-        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="placeOrder()">ORDER ></button>
+        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="placeOrder('Your credit balance has been updated')">{{orderBtnText}}</button>
       </div>
     </form>
   </div>

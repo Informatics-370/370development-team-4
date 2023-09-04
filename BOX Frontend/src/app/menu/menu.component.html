@@ -18,6 +18,7 @@
         <!-- Heading -->
         <div class="text-center">
             <h3 class="text-white">Menu</h3>
+            <!-- <small class="text-white-50">{{ email }}</small> -->
         </div>
 
         <!-- Menu Items -->
@@ -26,15 +27,19 @@
             <fa-icon class="fa-icon-large" [icon]="['fas', 'industry']"></fa-icon>
             Dashboard
           </a><pre></pre>
-          <a href="#" class="nav-link py-2 ripple">
+          <a [routerLink]="'/messages'" class="nav-link py-2 ripple">
+            <fa-icon class="fa-icon-large" [icon]="['fas', 'message']"></fa-icon>
+            Messages <span class="badge bg-secondary">{{ messages.length }}</span>
+          </a><pre></pre>
+          <a [routerLink]="'/order-schedule'" class="nav-link py-2 ripple">
             <fa-icon class="fa-icon-large" [icon]="['fas', 'clipboard-list']"></fa-icon>
             Delivery Schedule
           </a><pre></pre>
-          <a [routerLink]="'/customer-orders'" class="nav-link py-2 ripple">
+          <a [routerLink]="'/manage-orders'" class="nav-link py-2 ripple">
             <fa-icon class="fa-icon-large" [icon]="['fas', 'cart-flatbed']"></fa-icon>
             Customer Orders
           </a><pre></pre>
-          <a href="#" class="nav-link py-2 ripple">
+          <a [routerLink]="'/supplier-order'" class="nav-link py-2 ripple">
             <fa-icon class="fa-icon-large" [icon]="['fas', 'truck']"></fa-icon>
             Supplier Orders
           </a><pre></pre>
@@ -50,10 +55,7 @@
             <fa-icon class="fa-icon-large" [icon]="['fas', 'box']"></fa-icon>
             Product Item
           </a><pre></pre>
-          <a [routerLink]="'/write-off-reason'" class="nav-link py-2 ripple">
-            <fa-icon class="fa-icon-large" [icon]="['fas', 'trash-arrow-up']"></fa-icon>
-            Write Off Reasons
-          </a><pre></pre>
+
           <div class="btn-group dropup fixed-bottom">
             <!-- Use *ngIf to conditionally display the button based on login status -->
             <button id="log" *ngIf="isLoggedIn()" (click)="logout()" type="button" class="btn text-white  " data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">

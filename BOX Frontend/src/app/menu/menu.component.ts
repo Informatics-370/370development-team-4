@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { RegistrationHubService } from '../services/registration-hub.service';
+import { DataService } from '../services/data.services';
+import { Users } from '../shared/user';
 
 @Component({
   selector: '.app-menu',
@@ -8,10 +11,46 @@ import { Router } from '@angular/router';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
+  messages: string[] = [];
+  email!: string;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  @ViewChild('popoverContent', { static: true }) popoverContent!: ElementRef;
 
-  ngOnInit(): void {
+  newRegistrations: { messages: string }[] = [];
+
+  constructor(
+    private dataService: DataService,
+    private authService: AuthService,
+    private router: Router,
+    private registrationHubService: RegistrationHubService,
+  ) {}  
+
+  ngOnInit() {    
+    this.loadMessages();
+
+    const token = localStorage.getItem('access_token')!;
+    if (token) {
+      const role = this.authService.getUserRole(token);
+      console.log(role)
+      // Check role and subscribe to registration updates
+      if (role === 'Admin' || role === 'Employee') {
+        this.registrationHubService.registerAlert$.subscribe(registration => {
+          this.newRegistrations.push(registration);
+          this.messages.push(registration.messages);
+          console.log(this.newRegistrations);
+        });
+      }
+    }
+
+    const loggedInEmail = this.authService.getEmailFromToken(token)!;
+    this.email = loggedInEmail;
+  }
+
+  loadMessages(): void {
+    this.registrationHubService.getAllMessages()
+      .subscribe(messages => {
+        this.messages = messages;
+      });
   }
 
   isLoggedIn(): boolean {

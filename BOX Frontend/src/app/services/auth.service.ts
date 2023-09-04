@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DataService } from './data.services';
 import { AssignEmpDTO } from '../shared/assign-emp-dto';
+import { Users } from '../shared/user';
+import { take, lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -94,5 +96,26 @@ export class AuthService {
   assignEmployeeToCustomer(userId: string, assignEmpDTO: AssignEmpDTO): Observable<any> {
     const url = `${this.authUrl}AssignEmployee/${userId}`;
     return this.http.put(url, assignEmpDTO);
+  }
+
+  async getUserByEmail(email: string): Promise<Users> {
+    let user: Users = {
+      id: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      address: '',
+      title: '',
+      phoneNumber: ''
+    };
+
+    try {
+      let result: Users = await lastValueFrom(this.dataService.GetUser(email).pipe(take(1)));
+      user = result;
+    } catch (error) {
+      console.error('Could not retrieve user info for: ' + email);
+    }
+    
+    return user
   }
 }

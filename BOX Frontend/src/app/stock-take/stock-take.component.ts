@@ -110,6 +110,8 @@ export class StockTakeComponent implements OnInit {
   }
 
   saveChanges() {
+    const token = localStorage.getItem('access_token');
+    const userId = this.authService.getUserIdFromToken(token!);
     const stockTakeViewModel = {
       UserId: this.customerID,
       Date: new Date().toISOString(),

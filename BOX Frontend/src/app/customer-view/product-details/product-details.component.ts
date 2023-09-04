@@ -7,11 +7,12 @@ import { SizeVM } from '../../shared/size-vm';
 import { ProductVM } from '../../shared/customer-interfaces/product-vm';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Cart } from '../../shared/customer-interfaces/cart';
 import { CartService } from '../..//services/customer-services/cart.service';
 import { CustomProductVM } from '../../shared/custom-product-vm';
 import Swal from 'sweetalert2';
 declare var $: any; 
+import { Cart } from 'src/app/shared/customer-interfaces/cart';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-product-details',
@@ -120,7 +121,7 @@ export class ProductDetailsComponent {
   }
 
   constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, private cartService: CartService,
-    private formBuilder: FormBuilder, private renderer: Renderer2, private el: ElementRef) {
+      private formBuilder: FormBuilder, private renderer: Renderer2, private el: ElementRef, private http: HttpClient) {
     this.addToCartForm = this.formBuilder.group({
       sizeID: [{ value: '1' }, Validators.required],
       qty: [1, Validators.required]
@@ -392,9 +393,9 @@ export class ProductDetailsComponent {
       let selectedCustomisableItem = this.customisableItems.find(item => item.itemID == formData.itemID); //determine whether they want to customise a single or double wall box
 
       if (selectedCustomisableItem) {
-        //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input
+        //form data makes the file a string with a fake url which I can't convert to B64 so I must get the actual value of the file input
         const inputElement = document.getElementById('label') as HTMLInputElement;
-        const formImage = inputElement.files?.[0];
+        const formFile = inputElement.files?.[0];
 
         //put in VM
         //numeric data has already been truncated in updateBoxPreview function
@@ -406,8 +407,8 @@ export class ProductDetailsComponent {
           width: formData.width,
           height: formData.height,
           length: formData.length,
-          sides: formData.sides,
-          label: formImage ? await this.convertToBase64(formImage) : '' //convert to B64 if there's an image selected, otherwise, empty string
+          sides: formFile ? formData.sides : 0, //if a file is selected, get the sides; otherwise, 0
+          label: formFile ? await this.convertToBase64(formFile) : '' //convert to B64 if there's a file selected, otherwise, empty string
         }
         
         console.log(newCustomProduct);
@@ -616,15 +617,21 @@ export class ProductDetailsComponent {
     const chosenFile = inputElement.files?.[0];
     let imageName = document.getElementById('imageName') as HTMLSpanElement;
     const imageElements = this.el.nativeElement.querySelectorAll('.print');
-
-    console.log(imageElements);
+    //create button to remove an uploaded file
+    let removeBtn: HTMLButtonElement = document.createElement('button');
+    removeBtn.classList.add('remove-pic');
+    removeBtn.setAttribute('title', 'Remove file')
+    removeBtn.innerHTML = 'Remove';
+    removeBtn.addEventListener('click', this.removeFile.bind(this));
 
     if (chosenFile) { //if there is a file chosen
       //if chosen file is pdf/jpg
       if (chosenFile.type.includes('pdf') || chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) {
         imageName.innerHTML = chosenFile.name; //display file name
         imageName.style.display = 'inline-block';
+        imageName.appendChild(removeBtn);
         this.invalidFile = false;
+        this.sides = this.sides > 0 ? this.sides : 1; //if sides is 0 but they chose an image/file, make sides 1
 
         if (chosenFile.type.includes('jpeg') || chosenFile.type.includes('jpg')) { //if chosen file is an image
           const reader = new FileReader();
@@ -641,6 +648,17 @@ export class ProductDetailsComponent {
         this.invalidFile = true;
       }
     }
+  }
+
+  removeFile() {
+    //get file input and name span from reject quote form modal
+    let fileName: HTMLSpanElement = document.getElementById('imageName') as HTMLSpanElement;
+    let fileInput : HTMLInputElement = document.getElementById('label') as HTMLInputElement;
+
+    //remove file from file input
+    fileInput.value = '';
+    fileName.innerHTML = 'No file selected (pdf or jpg)';
+    this.sides = 0; //reset sides
   }
 
   //function to update custom box preview
@@ -744,6 +762,50 @@ export class ProductDetailsComponent {
       'max-width': (newLength * 0.8 / 10).toFixed(1) + 'em', /*box length times 0.8*/
       'max-height': (newHeight * 0.8 / 10).toFixed(1) + 'em' /*box height times 0.8*/
     }
+  }
+
+  openReviewModal() {
+    Swal.fire({
+      title: 'Write a Review',
+      html:
+        '<input id="productRating" type="number" class="swal2-input" placeholder="Product Rating (1-5)" min="1" max="5">' +
+        '<input id="reviewComments" class="swal2-input" placeholder="Comments">' +
+        '<select id="recommendation" class="swal2-input">' +
+        '  <option value="true">Recommend</option>' +
+        '  <option value="false">Do Not Recommend</option>' +
+        '</select>',
+      focusConfirm: false,
+      preConfirm: () => {
+        const productRatingInput = Swal.getPopup()!.querySelector('#productRating') as HTMLInputElement;
+        const reviewCommentsInput = Swal.getPopup()!.querySelector('#reviewComments') as HTMLInputElement;
+        const recommendationSelect = Swal.getPopup()!.querySelector('#recommendation') as HTMLSelectElement;
+
+        const product_Rating = productRatingInput?.value;
+        const comments = reviewCommentsInput?.value;
+        const recommendation = recommendationSelect?.value === 'true';
+
+        return { product_Rating, comments, recommendation };
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log(result)
+        this.addReview(result.value);
+      }
+    });
+  }
+  
+  addReview(reviewData: any) {
+    const apiUrl = 'http://localhost:5116/api/Review/AddCustomerReview'; // Replace with your actual API endpoint
+    this.http.post(apiUrl, reviewData).subscribe(
+      (response) => {
+        // Handle successful review submission
+        Swal.fire('Review Submitted', 'Thank you for your review!', 'success');
+      },
+      (error) => {
+        // Handle error
+        Swal.fire('Error', 'An error occurred while submitting your review.', 'error');
+      }
+    );
   }
   
   //--------------------------------------------------------VALIDATION ERRORS LOGIC--------------------------------------------------------

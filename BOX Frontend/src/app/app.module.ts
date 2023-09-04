@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { Chart } from 'chart.js';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -58,14 +59,22 @@ import { SalesByCategoryReportComponent } from './sales-by-category-report/sales
 import { ProductListReportComponent } from './product-list-report/product-list-report.component';
 import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
 import { SupplierListComponent } from './supplier-list/supplier-list.component';
+import { ReviewReportComponent } from './review-report/review-report.component';
+import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
+import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
+import { MessagesComponent } from './messages/messages.component';
+import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
+import { QuotesComponent } from './quotes/quotes.component';
 
 
 @NgModule({
   declarations: [ 
-    AppComponent,
-    DashboardComponent,
+        AppComponent,
+        DashboardComponent,
         RegisterComponent,
-       ProductItemTestComponent,
+        ProductItemTestComponent,
         ViewHelpInventoryComponent,
         ProductCategoryComponent,
         RefundReasonComponent,
@@ -113,9 +122,16 @@ import { SupplierListComponent } from './supplier-list/supplier-list.component';
         QouteRequestsComponent,
         GenerateQuoteComponent,
         SalesByCategoryReportComponent,
+        ReviewReportComponent,
+        WriteOffByProductCategoryComponent,
         ProductListReportComponent,
         InactiveCustomerListComponent,
-        SupplierListComponent
+        SupplierListComponent,
+        InventoryChartComponent,
+        MessagesComponent,
+        OrderDeliveryScheduleComponent,
+        OrderDelCalendarComponent,
+        QuotesComponent
         
   ],
   imports: [
@@ -125,7 +141,8 @@ import { SupplierListComponent } from './supplier-list/supplier-list.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-  ],
+    FullCalendarModule
+ ],
   providers: [],
   bootstrap: [AppComponent]
 })
