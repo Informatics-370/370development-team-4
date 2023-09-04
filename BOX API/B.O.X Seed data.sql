@@ -111,6 +111,17 @@ INSERT INTO [dbo].[Title]
            ('Dr')
 GO
 
+INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp])
+VALUES
+    (NEWID(), 'Administrators', 'ADMINISTRATORS', NEWID()),
+    (NEWID(), 'Employee', 'EMPLOYEE', NEWID()),
+    (NEWID(), 'Customer', 'CUSTOMER', NEWID()),
+    (NEWID(), 'Receptionist', 'RECEPTIONIST', NEWID()),
+    (NEWID(), 'Delivery Driver', 'DELIVERY DRIVER', NEWID()),
+    (NEWID(), 'Warehouse Staff', 'WAREHOUSE STAFF', NEWID()),
+    (NEWID(), 'Managers', 'MANAGERS', NEWID())
+GO
+
 SELECT name
 FROM sys.tables
 

@@ -82,7 +82,7 @@ export class PlaceOrderComponent implements OnDestroy {
   // Add ngOnDestroy method to handle component destruction.
   ngOnDestroy() {
     // Place your cleanup or trigger function here.
-    this.onPageCloseOrNavigation(null);
+    if (!this.isOrderPlaced) this.onPageCloseOrNavigation(null);
   }
 
   @HostListener('window:beforeunload', ['$event'])
