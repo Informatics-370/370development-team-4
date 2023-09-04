@@ -124,6 +124,7 @@ namespace BOX.Models
         Task<Customer_Order[]> GetOrdersByCustomerAsync(string customerId);
         Customer_Order GetOrdersByCustomer(string customerId, int quoteId); //get orders for this customer synchronously
         Task<Customer_Order[]> GetCustomerOrdersByDeliverySchedule(int orderDeliveryScheduleId);
+        Task<Customer_Order[]> GetCustomerOrdersByStatus(int statusId);
 
         //-----------------------------------------------Customer Order LINE---------------------------------------------
         Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);

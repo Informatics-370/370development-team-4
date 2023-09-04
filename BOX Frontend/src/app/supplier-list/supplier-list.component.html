@@ -25,7 +25,7 @@
       <div *ngIf="!loading && supplierCount > 0" id="pdf-content">
   
         <div style="max-width: 90%; margin: auto; margin-left: 25px;">
-            <h4>Supplier List Report</h4>
+            <h4>Supplier List Report for {{selectedProduct.description}}</h4>
             <div style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }} at {{now | date:'hh:mm:ss' }}</div>
         </div>
   
@@ -39,11 +39,15 @@
             </tr>
             <tr>
               <th scope="col">Supplier</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let supplier of supplierList">
               <td>{{supplier.name}}</td>
+              <td>{{supplier.email}}</td>
+              <td>{{supplier.contact_Number}}</td>
             </tr>
         </table>
       </div>

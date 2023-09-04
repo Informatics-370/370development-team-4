@@ -29,11 +29,15 @@
             </tr>
             <tr>
               <th scope="col">Customer</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let cus of inactiveCustomers">
+              <td>{{cus.firstName}}</td>
               <td>{{cus.emailaddress}}</td>
+              <td>{{cus.phoneNumber}}</td>
             </tr>
           </tbody>
         </table>

@@ -73,6 +73,15 @@ export class SupplierListComponent {
     this.loading = true;
     if (this.selectedProductID != 'NA') {
       let fixedProduct = this.selectedProductID.includes('f') ? 'true' : 'false';
+
+      //get product
+      if (fixedProduct == 'true') {
+        this.selectedProduct = this.fixedProducts.find(f => f.fixedProductID == parseInt(this.selectedProductID.substring(1)));
+      }
+      else {
+        this.selectedProduct = this.rawMaterials.find(f => f.rawMaterialID == parseInt(this.selectedProductID.substring(1)));
+      }
+
       this.dataService.GetSupplierListReport(parseInt(this.selectedProductID.substring(1)), fixedProduct).subscribe((result) => {
         this.supplierList = result;
         this.supplierCount = this.supplierList.length;

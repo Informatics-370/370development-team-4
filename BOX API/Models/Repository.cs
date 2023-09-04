@@ -524,6 +524,12 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
+        public async Task<Customer_Order[]> GetCustomerOrdersByStatus(int statusId)
+        {
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.CustomerOrderStatusID == statusId);
+            return await query.ToArrayAsync();
+        }
+
         //------------------------------------------------------ Customer Order LINE------------------------------------------------------------
         //gets all Customer Order lines for a specific order
         public async Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId)
