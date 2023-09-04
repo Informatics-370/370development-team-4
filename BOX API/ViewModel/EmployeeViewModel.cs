@@ -24,7 +24,6 @@ namespace BOX.ViewModel
         public string address { get; set; }
 
         [Required]
-        [StringLength(4)]
-        public string title { get; set; }
+        public int title { get; set; }
     }
 }

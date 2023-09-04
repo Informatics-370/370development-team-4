@@ -2,6 +2,8 @@ import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
+import { Title } from '../shared/title';
+import { MapsService } from '../services/maps.service';
 
 @Component({
   selector: 'app-register',
@@ -15,20 +17,31 @@ export class RegisterComponent implements OnInit {
   passwordsMatch = true;
   isBusiness: boolean = false;
   redirectURL = '';
+  selectedTitle: string = '';
+  titles: Title[] = [];
 
   @ViewChild('addressInput', { static: true }) addressInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute, private mapsService: MapsService) {}
   
     ngOnInit() {
         this.initAutocomplete();
-    this.handleCheckboxChange();    
-    //Retrieve the redirect URL from url
-    this.activatedRoute.paramMap.subscribe(params => {
-      //URL will come as 'redirect-' + url e.g. 'redirect-cart'
-      let url = params.get('redirectTo')?.split('-');
-      console.log(url ? url[1] : 'no redirect');
-      if (url) this.redirectURL = url[1];
+        this.handleCheckboxChange();    
+        //Retrieve the redirect URL from url
+        this.activatedRoute.paramMap.subscribe(params => {
+        //URL will come as 'redirect-' + url e.g. 'redirect-cart'
+        let url = params.get('redirectTo')?.split('-');
+        console.log(url ? url[1] : 'no redirect');
+        if (url) this.redirectURL = url[1];
+
+        this.authService.getAllTitles().subscribe(
+          (titles) => {
+            this.titles = titles;
+          },
+          (error) => {
+            console.error('Error fetching titles', error);
+          }
+        );
     });
 
     const passwordInput = document.getElementById('password') as HTMLInputElement;
@@ -44,21 +57,7 @@ export class RegisterComponent implements OnInit {
   }
 
   initAutocomplete() {
-    const inputElement = this.addressInput.nativeElement;
-
-    const autocompleteOptions = {
-      componentRestrictions: { country: 'ZA' } // Restrict to South Africa
-    };
-
-    const autocomplete = new google.maps.places.Autocomplete(inputElement, autocompleteOptions);
-    autocomplete.setFields(['formatted_address']);
-
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (place && place.formatted_address) {
-        console.log('Selected address:', place.formatted_address);
-      }
-    });
+    this.mapsService.initAutocomplete(this.addressInput);
   }
 
   // ========================================= Password Validation =============================================
@@ -69,23 +68,6 @@ export class RegisterComponent implements OnInit {
       this.confirmPasswordVisible = !this.confirmPasswordVisible;
     }
   }
-
-  // ========================================= All Fields Validation =====================================
-  // Validate all required fields are entered
-  // validateRequiredFields(): boolean {
-  //   const fields = ['firstName', 'lastName', 'email', 'cellNo', 'password', 'confirmPassword', 'addressInput'];
-  //   let isValid = true;
-
-  //   fields.forEach((field) => {
-  //     const fieldValue = (document.getElementById(field) as HTMLInputElement).value;
-  //     if (fieldValue.trim() === '') {
-  //       isValid = false;
-  //       this.displayErrorMessage(`Please fill in the ${field} field.`);
-  //     }
-  //   });
-
-  //   return isValid;
-  // }
 
   // ========================================= Contact No Validation =====================================
   // Validate contact number accepts only digits
@@ -326,12 +308,12 @@ submitForm() {
   const user = {
     emailaddress: (document.getElementById('email') as HTMLInputElement).value,
     password: (document.getElementById('confirmPassword') as HTMLInputElement).value,
-    //employeeId: "",
+    employeeId: "",
     phoneNumber: (document.getElementById('cellNo') as HTMLInputElement).value,
     firstName: (document.getElementById('firstName') as HTMLInputElement).value,
     lastName: this.isBusiness ? '' : (document.getElementById('lastName') as HTMLInputElement).value,
     address: (document.getElementById('addressInput') as HTMLInputElement).value,
-    //title: this.isBusiness ? '' : (document.getElementById('title') as HTMLInputElement).value,
+    title: this.isBusiness ? null : this.titles.find(title => title.description === this.selectedTitle)?.titleID,
     isBusiness: isBusiness,
     vatNo: !this.isBusiness ? '' : (document.getElementById('vatNo') as HTMLInputElement).value,
   };

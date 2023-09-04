@@ -7,5 +7,7 @@ namespace BOX.Models
         [Key]
         public int messageId { get; set; }
         public string message { get; set; }
+
+        public DateTime messageDate { get; set; }
     }
 }

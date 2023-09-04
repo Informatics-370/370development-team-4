@@ -8,17 +8,26 @@
     <div class="container mt-4">
         <h2 class="display-6">Messages</h2>
         <div>
-        <table class="table table-striped mt-4">
+        <table class="table table-striped table-hover table-borderless mt-4">
             <thead>
-            <tr>
-                <th>#</th>
-                <th>Message</th>
-            </tr>
+
             </thead>
             <tbody>
+                <tr>
+                    <td colspan="2">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn" (click)="clearMessages()">
+                                <fa-icon class="fa-icon-large" [icon]="['fas', 'trash']"></fa-icon>
+                            </button>
+                            <button type="button" class="btn" (click)="refreshMessages()">
+                                <fa-icon class="fa-icon-large" [icon]="['fas', 'refresh']"></fa-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
             <tr *ngFor="let message of messages; let i = index">
-                <td>{{ message.messageId }}</td>
-                <td>{{ message.message }}</td>
+                <td><small>{{ message.messageDate | date: 'hh:mm:ss a'}}</small></td>
+                <td><small>{{message.message}}</small></td>
             </tr>
             </tbody>
         </table>

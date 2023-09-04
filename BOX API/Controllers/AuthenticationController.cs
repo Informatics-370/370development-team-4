@@ -86,7 +86,7 @@ namespace BOX.Controllers
                         user_FirstName = uvm.firstName,
                         user_LastName = uvm.lastName,
                         user_Address = uvm.address,
-                        TitleID = 1,
+                        TitleID = uvm.title,
                         TwoFactorEnabled = false
                     };
 
@@ -154,6 +154,16 @@ namespace BOX.Controllers
             }
 
         }
+
+        [HttpGet]
+        [Route("GetAllTitles")]
+        public async Task<ActionResult<IEnumerable<Title>>> GetAllTitles()
+        {
+            var titles = await _dbContext.Title.ToListAsync();
+
+            return titles;
+        }
+
 
         [HttpPost("send-sms")]
         public IActionResult SendSms(string phoneNumber)
@@ -439,7 +449,7 @@ namespace BOX.Controllers
                     user_FirstName = uvm.firstName,
                     user_LastName = uvm.lastName,
                     user_Address = uvm.address,
-                    TitleID = 1,
+                    TitleID = uvm.title,
                     TwoFactorEnabled = false
                 };
 

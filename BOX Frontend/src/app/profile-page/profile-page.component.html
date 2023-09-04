@@ -18,7 +18,7 @@
             <div class="col-lg-8">
               <div class="card rounded-3 overflow-auto shadow">
                 <!-- Heading -->
-                <h4 class="text-black text-center pt-4 text-uppercase">Hello, {{ user.title }} {{ user.lastName }}</h4>
+                <h4 class="text-black text-center pt-4 text-uppercase">Hello, {{ titleMap[user.title] || 'Unknown Title' }} {{ user.lastName }}</h4>
                 <div class="card-body">
                   <form class="px-md-2" (submit)="updateProfile()">
                     <div class="row">

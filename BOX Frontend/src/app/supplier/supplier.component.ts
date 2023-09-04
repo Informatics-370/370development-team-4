@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Supplier } from '../shared/supplier';
 import { Category } from '../shared/category';
 import { SupplierVM } from '../shared/supplier-vm';
+import { MapsService } from '../services/maps.service';
 
 
 declare var $: any; 
@@ -25,16 +26,16 @@ export class SupplierComponent  {
   updateSupplierForm:FormGroup;
   categoryCount:number=-1 //Keep tracks of how many categories are in the DB
   categories:Category[]=[]//Used to store all categories
-//modals 
-@ViewChild('deleteModal') deleteModal: any;
-@ViewChild('updateModal') updateModal: any;
-//search functionality
-searchTerm: string = '';
-submitClicked = false; //keep track of when submit button is clicked in forms, for validation errors
-loading = true; //show loading message while data loads
+  //modals 
+  @ViewChild('deleteModal') deleteModal: any;
+  @ViewChild('updateModal') updateModal: any;
+  //search functionality
+  searchTerm: string = '';
+  submitClicked = false; //keep track of when submit button is clicked in forms, for validation errors
+  loading = true; //show loading message while data loads
 
 
-constructor(private dataService: DataService, private formBuilder: FormBuilder) {
+constructor(private dataService: DataService, private formBuilder: FormBuilder, private mapsService: MapsService ) {
   this.addSupplierForm = this.formBuilder.group({
     name:['', Validators.required],
     address:['', Validators.required],
@@ -51,7 +52,17 @@ constructor(private dataService: DataService, private formBuilder: FormBuilder) 
 ngOnInit(): void {
   this.getSuppliers();  
   this.getCategories();
+  this.initAutocomplete(this.addressInput);
 }
+
+
+  @ViewChild('address', { static: true })
+  addressInput!: ElementRef<HTMLInputElement>;
+
+initAutocomplete(addressInput: ElementRef<HTMLInputElement>) {
+  this.mapsService.initAutocomplete(addressInput);
+}
+
 
 getSuppliers() {
   this.dataService.GetAllSuppliers().subscribe((result: any[]) => {

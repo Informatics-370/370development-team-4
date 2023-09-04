@@ -36,14 +36,18 @@
                                     <!-- Details Input Row -->
                                     <div class="col-2" *ngIf="!isBusiness">
                                         <label class="form-label text-black" for="title">Title:</label>
-                                        <input type="text" id="title" class="form-control" />
+                                        <select id="title" name="title" [(ngModel)]="selectedTitle" class="form-control">   
+                                            <option *ngFor="let title of titles" [value]="title.description">{{ title.description }}</option>
+                                        </select>
                                     </div>
-    
+  
+                                    
+
                                     <div class="{{ isBusiness ? 'col-12' : 'col-5' }}">
                                         <!-- Name Input -->
                                         <div class="form-group">
                                             <label for="firstName" class="form-label text-black">{{ isBusiness ? 'Company Name:' : 'Name:' }}</label>
-                                            <input type="text" id="firstName" class="form-control" />
+                                            <input type="text" id="firstName" class="form-control" placeholder="{{ isBusiness ? 'e.g. Mega Pack' : 'e.g. John' }}"/>
                                         </div><pre></pre>
                                     </div>
     
@@ -51,7 +55,7 @@
                                         <!-- Last Name Input -->
                                         <div class="form-group">
                                             <label for="lastName" class="form-label text-black">Surname:</label>
-                                            <input type="text" id="lastName" class="form-control" />
+                                            <input type="text" id="lastName" class="form-control" placeholder="e.g. Doe"/>
                                         </div><pre></pre>
                                     </div>
                                 </div><!-- End Details Input Row -->
@@ -62,14 +66,14 @@
                                         <!-- Email  Input -->
                                         <div class="form-group">
                                             <label class="form-label text-black" for="email">Email:</label>
-                                            <input type="email" id="email" class="form-control" />
+                                            <input type="email" id="email" class="form-control" placeholder="e.g. johndoe@gmail.com"/>
                                         </div><pre></pre>
                                     </div>
                                     <div class="col-6">
                                         <!-- Cell Number Input -->
                                         <div class="form-group">
                                             <label for="cellNo" class="form-label text-black">Preferred Contact Number:</label>
-                                            <input type="tel" id="cellNo" class="form-control" maxlength="10"/>
+                                            <input type="tel" id="cellNo" class="form-control" maxlength="10" placeholder="e.g. 0123456789"/>
                                         </div><pre></pre>
                                     </div>
                                 </div><!-- End Contact Details Row -->
@@ -116,7 +120,7 @@
                                 <!-- Address Line 1 -->
                                 <div class="form-group">
                                     <label for="addressOne" class="form-label text-black">Address:</label>
-                                    <input type="text" id="addressInput" class="form-control" #addressInput />
+                                    <input type="text" id="addressInput" class="form-control" #addressInput placeholder="e.g. 146 Van Tonder St, Sunderland Ridge, Centurion, 0169"/>
                                 </div><pre></pre>
     
                                 <!-- Is Business -->
@@ -131,7 +135,7 @@
                                 <!-- VAT No -->
                                 <div class="form-group" *ngIf="isBusiness">
                                     <label for="vatNo" class="form-label text-black">VAT Number:</label>
-                                    <input type="text" id="vatNo" class="form-control" maxlength="10"/>
+                                    <input type="text" id="vatNo" class="form-control" maxlength="10" placeholder="e.g. 1234567890"/>
                                 </div><pre></pre>
 
                                 <pre></pre>

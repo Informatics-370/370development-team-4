@@ -18,7 +18,7 @@
             <tr *ngFor="let stockTake of stockTakes">
               <td>{{ stockTake.stockTakeID }}</td>
               <td>{{ stockTake.userId }}</td>
-              <td>{{ stockTake.date }}</td>
+              <td>{{ stockTake.date | date: 'hh:mm:ss a'}}</td>
             </tr>
           </tbody>
         </table>

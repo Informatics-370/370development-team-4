@@ -53,7 +53,7 @@ import{OrderDelCalendarComponent} from './order-del-calendar/order-del-calendar.
 
 
 const routes: Routes = [
-  { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
+  { path: "", redirectTo: 'register', pathMatch: 'full' },
   { path: "dashboard", component: DashboardComponent },
   { path: "register", component: RegisterComponent },
   { path: "register/:redirectTo", component: RegisterComponent },

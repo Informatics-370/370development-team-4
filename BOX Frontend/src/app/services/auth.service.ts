@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DataService } from './data.services';
 import { AssignEmpDTO } from '../shared/assign-emp-dto';
+import { Title } from '../shared/title';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,11 @@ export class AuthService {
   private authUrl = 'http://localhost:5116/api/Authentication/'
 
   constructor(private http: HttpClient, private dataService: DataService) { }
+
+  getAllTitles(): Observable<Title[]> {
+    const url = `${this.authUrl}GetAllTitles`;
+    return this.http.get<Title[]>(url);
+  }
 
   registerUser(user: any): Observable<any> {
     return this.http.post(`${this.authUrl}Register`, user);

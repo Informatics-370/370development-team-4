@@ -545,10 +545,10 @@ export class DataService {
     return this.httpClient.get<WriteOffItem[]>(`${this.apiUrl}WriteOffReason/GetWriteOffReport`);
   }
   
-  UpdateUserRoleAndNotifyAdmin(email: string, roleId: string): Observable<any> {
-    const url = `${this.apiUrl}User/UpdateUserRoleAndNotifyAdmin`;
-    const body = { email: email, roleId: roleId };
-    return this.httpClient.put(url, body);
+  updateUserRole(email: string, roleId: string): Observable<boolean> {
+    const encodedEmail = encodeURIComponent(email);
+    const url = `${this.apiUrl}User/UpdateUserRoleAndNotifyAdmin?email=${encodedEmail}&roleId=${roleId}`;
+    return this.httpClient.put<boolean>(url, null);
   }
 
   getAllMessages(): Observable<any[]> {
@@ -558,4 +558,10 @@ export class DataService {
   clearAllMessages(): Observable<string> {
     return this.httpClient.delete<string>(`${this.apiUrl}Authentication/ClearAllMessages`);
   }
+
+  updateCustomerCredit(email: string, creditLimit: number, creditBalance: number) {
+    const updateData = { Email: email, CreditLimit: creditLimit, CreditBalance: creditBalance };
+    return this.httpClient.put(`${this.apiUrl}User/UpdateCustomerCredit`, updateData);
+  }
+  
 }

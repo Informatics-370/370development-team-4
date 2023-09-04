@@ -14,10 +14,12 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col"></th>
                     <th scope="col">First Name</th>
                     <th scope="col">Last Name </th>
                     <th scope="col">Assigned Employee</th>
+                    <th scope="col">Credit Limit</th>
+                    <th scope="col">Credit Balance</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -33,10 +35,7 @@
                 <!--User data from API-->
                 <tr *ngFor="let customers of filteredCustomers">
                     <td>
-                      <button title="Delete this User" class="CRUD-icon" >
-                            <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
-                        </button>
-                        <button title="Update this User's Details" class="CRUD-icon">
+                        <button title="Update this customer's details" class="CRUD-icon" (click)="openUpdateCreditDialog(customers)">
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>
@@ -50,6 +49,12 @@
                         <b>Name: </b>{{customers.employee.title}} {{customers.employee.firstName}} {{customers.employee.lastName}} <br> 
                         <b>Email:</b> {{customers.employee.phoneNumber}} <br> 
                         <b>Phone Number:</b> {{customers.employee.email}}
+                    </td>
+                    <td>
+                        ZAR {{customers.creditLimit}}
+                    </td>
+                    <td>
+                        ZAR {{customers.creditBalance}}
                     </td>
                     <td>
                         <button type="button" (click)="openAssignEmployeeModal(customers)" class="btn btn-success text-uppercase text-white ripple shadow">Assign New Employee</button>

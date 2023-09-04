@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BOX.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class ITRN7Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -222,7 +222,8 @@ namespace BOX.Migrations
                 {
                     messageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    message = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    messageDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -637,7 +638,7 @@ namespace BOX.Migrations
                         column: x => x.SizeID,
                         principalTable: "Size_Units",
                         principalColumn: "SizeID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -921,6 +922,7 @@ namespace BOX.Migrations
                     CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TitleId = table.Column<int>(type: "int", nullable: false),
                     isBusiness = table.Column<bool>(type: "bit", nullable: false),
                     vatNo = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     creditLimit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
@@ -941,7 +943,13 @@ namespace BOX.Migrations
                         column: x => x.EmployeeId,
                         principalTable: "Employee",
                         principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Customer_Title_TitleId",
+                        column: x => x.TitleId,
+                        principalTable: "Title",
+                        principalColumn: "TitleID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -977,7 +985,7 @@ namespace BOX.Migrations
                         column: x => x.QuoteRequestID,
                         principalTable: "Quote_Request",
                         principalColumn: "QuoteRequestID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Quote_Quote_Status_QuoteStatusID",
                         column: x => x.QuoteStatusID,
@@ -1049,7 +1057,7 @@ namespace BOX.Migrations
                         column: x => x.RawMaterialId,
                         principalTable: "Raw_Material",
                         principalColumn: "RawMaterialID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Write_Off_Stock_Take_StockTakeID",
                         column: x => x.StockTakeID,
@@ -1075,6 +1083,7 @@ namespace BOX.Migrations
                     OrderDeliveryScheduleID = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Delivery_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Delivery_Photo = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     Delivery_Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -1103,7 +1112,7 @@ namespace BOX.Migrations
                         column: x => x.QuoteID,
                         principalTable: "Quote",
                         principalColumn: "QuoteID",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1284,6 +1293,11 @@ namespace BOX.Migrations
                 name: "IX_Customer_EmployeeId",
                 table: "Customer",
                 column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customer_TitleId",
+                table: "Customer",
+                column: "TitleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_UserId",

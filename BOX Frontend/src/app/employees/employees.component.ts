@@ -5,6 +5,17 @@ import { DataService } from '../services/data.services';
 import Swal from 'sweetalert2';
 import { AuthService } from '../services/auth.service';
 import { Role } from '../shared/role';
+import { Title } from '../shared/title';
+
+export interface EmployeeRoles {
+  id: string;
+  firstName :string;
+  lastName :string;
+  email:string;
+  address :string;
+  title: string;
+  phoneNumber :string;
+}
 
 @Component({
   selector: 'app-employees',
@@ -20,6 +31,8 @@ export class EmployeesComponent implements OnInit{
   loading = true; //show loading message while data loads
   createEmployeeForm: FormGroup;
   roleOptions: Role[] = [];
+  selectedTitle: string = '';
+  titles: Title[] = [];
 
   constructor(private dataService: DataService, private authService: AuthService, private formBuilder: FormBuilder) {  
     this.createEmployeeForm = this.formBuilder.group({
@@ -30,6 +43,15 @@ export class EmployeesComponent implements OnInit{
       address: ['', Validators.required],
       title: ['', Validators.required]
     });
+
+    this.authService.getAllTitles().subscribe(
+      (titles) => {
+        this.titles = titles;
+      },
+      (error) => {
+        console.error('Error fetching titles', error);
+      }
+    );
   }
   
   ngOnInit(): void {
@@ -51,6 +73,7 @@ export class EmployeesComponent implements OnInit{
       this.loading = false; //stop displaying loading message
     });
   }
+  
 
   //--------------------SEARCH BAR LOGIC----------------
   searchUser(event: Event) {
@@ -100,30 +123,34 @@ export class EmployeesComponent implements OnInit{
     Swal.fire({
       title: 'Employee Details',
       html:
+        '<select id="swal-input6" class="swal2-select">' +
+        '<option value="">Select Title</option>' +
+        this.titles.map((title) => `<option value="${title.titleID}">${title.description}</option>`).join('') +
+        '</select>' +
         '<input id="swal-input1" class="swal2-input" placeholder="First Name">' +
         '<input id="swal-input2" class="swal2-input" placeholder="Last Name">' +
         '<input id="swal-input3" class="swal2-input" placeholder="Email Address">' +
         '<input id="swal-input4" class="swal2-input" placeholder="Phone Number">' +
-        '<input id="swal-input5" class="swal2-input" placeholder="Address">' +
-        '<input id="swal-input6" class="swal2-input" placeholder="Title">',
+        '<input id="swal-input5" class="swal2-input" placeholder="Address">',
       confirmButtonText: 'Submit',
       confirmButtonColor: '#D6AD60',
       showCancelButton: true,
       cancelButtonColor: '#E33131',
-      progressSteps: ['1', '2', '3', '4', '5', '6'],
       preConfirm: () => {
+        const selectedTitleId = (document.getElementById('swal-input6') as HTMLSelectElement).value;
+  
         return [
           (document.getElementById('swal-input1') as HTMLInputElement).value,
           (document.getElementById('swal-input2') as HTMLInputElement).value,
           (document.getElementById('swal-input3') as HTMLInputElement).value,
           (document.getElementById('swal-input4') as HTMLInputElement).value,
           (document.getElementById('swal-input5') as HTMLInputElement).value,
-          (document.getElementById('swal-input6') as HTMLInputElement).value
+          selectedTitleId
         ];
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        const [firstName, lastName, emailaddress, phoneNumber, address, title] = result.value;
+        const [firstName, lastName, emailaddress, phoneNumber, address, selectedTitleId] = result.value;
   
         const employeeData = {
           firstName: firstName,
@@ -131,7 +158,7 @@ export class EmployeesComponent implements OnInit{
           emailaddress: emailaddress,
           phoneNumber: phoneNumber,
           address: address,
-          title: title
+          title: selectedTitleId // Use the extracted titleID directly
         };
   
         console.log(employeeData);
@@ -149,6 +176,9 @@ export class EmployeesComponent implements OnInit{
       }
     });
   }
+  
+  
+  
 
   updateEmployee(email: string): void {
     // Fetch the user's data based on the email
@@ -248,15 +278,15 @@ export class EmployeesComponent implements OnInit{
           this.dataService.GetUser(email).subscribe(
             (userData) => {
               // Destructure the user's data
-              const { firstName, lastName, email, phoneNumber, address, title } = userData;
+              const { firstName, lastName, email } = userData;
               console.log(email)
               // Update the user's role
-              this.dataService.UpdateUserRoleAndNotifyAdmin(email, roleId).subscribe(
+              this.dataService.updateUserRole(email, roleId).subscribe(
                 () => {
                   Swal.fire({
                     icon: 'success',
                     title: 'Role Updated',
-                    text: `The role for ${firstName} ${lastName} has been updated.`,
+                    text: `The role for has been updated.`,
                   });
                   this.getAllUsers(); // Refresh the user list
                 },

@@ -21,6 +21,12 @@ namespace BOX.Models
         public string? EmployeeId { get; set; } = string.Empty;
         public virtual Employee? Employee { get; set; }
 
+
+        [Required]
+        [ForeignKey("Title")]
+        public int TitleId { get; set; }
+        public virtual Title Title { get; set; } 
+
         [Required]
         public bool isBusiness { get; set; }
 

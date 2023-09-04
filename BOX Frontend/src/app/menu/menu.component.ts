@@ -2,6 +2,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { RegistrationHubService } from '../services/registration-hub.service';
+import { DataService } from '../services/data.services';
+import { Users } from '../shared/user';
 
 @Component({
   selector: '.app-menu',
@@ -10,12 +12,14 @@ import { RegistrationHubService } from '../services/registration-hub.service';
 })
 export class MenuComponent implements OnInit {
   messages: string[] = [];
+  email!: string;
 
   @ViewChild('popoverContent', { static: true }) popoverContent!: ElementRef;
 
   newRegistrations: { messages: string }[] = [];
 
   constructor(
+    private dataService: DataService,
     private authService: AuthService,
     private router: Router,
     private registrationHubService: RegistrationHubService,
@@ -24,7 +28,7 @@ export class MenuComponent implements OnInit {
   ngOnInit() {    
     this.loadMessages();
 
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('access_token')!;
     if (token) {
       const role = this.authService.getUserRole(token);
       console.log(role)
@@ -37,6 +41,9 @@ export class MenuComponent implements OnInit {
         });
       }
     }
+
+    const loggedInEmail = this.authService.getEmailFromToken(token)!;
+    this.email = loggedInEmail;
   }
 
   loadMessages(): void {
