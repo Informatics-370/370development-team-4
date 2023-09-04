@@ -85,11 +85,12 @@ GO
 
 INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp])
 VALUES
-    (NEWID(), 'Administrators', 'ADMINISTRATORS', NEWID()),
+    (NEWID(), 'Administrator', 'ADMINISTRATORS', NEWID()),
     (NEWID(), 'Employee', 'EMPLOYEE', NEWID()),
     (NEWID(), 'Customer', 'CUSTOMER', NEWID()),
     (NEWID(), 'Receptionist', 'RECEPTIONIST', NEWID()),
     (NEWID(), 'Delivery Driver', 'DELIVERY DRIVER', NEWID()),
     (NEWID(), 'Warehouse Staff', 'WAREHOUSE STAFF', NEWID()),
-    (NEWID(), 'Managers', 'MANAGERS', NEWID())
+    (NEWID(), 'Managers', 'MANAGERS', NEWID()),
+	(NEWID(), 'ADMIN', 'ADMIN', NEWID()),
 GO
