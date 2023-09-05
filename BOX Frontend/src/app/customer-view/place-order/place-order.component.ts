@@ -384,16 +384,29 @@ export class PlaceOrderComponent implements OnDestroy {
         formData.append(key, val);
       });
 
+      /* let formData = {
+        merchant_id: '10030872',
+        merchant_key : 'ommqhfbzaejj8',
+        email_address: this.customer.email,
+        amount: paymentAmount.toString(),
+        item_name: '#' + this.quoteID,
+        passphrase: 'MegapackByBox',
+        signature: signature
+      }
+      console.log(JSON.stringify(formData)) */
+
       console.log('formData', formData);
 
       let response = await fetch(environment.payfastOnsiteEndpoint, {
         method: 'POST',
         body: formData,
-        redirect: 'follow'
+        redirect: 'follow',
+        //mode: 'no-cors'
       });
 
       console.log('response', response);
       let respJson = await response.json();
+      //let respJson = JSON.stringify(response);
       console.log('respJson', respJson)
       let uuid = respJson['uuid'];
       
