@@ -16,7 +16,7 @@ import { Users } from '../../shared/user';
 import { Md5 } from 'ts-md5';
 import { UntypedFormBuilder } from '@angular/forms'
 import { environment } from 'src/environments/environment';
-declare function payfast_do_onsite_payment(param1: any, callback: any): any;
+declare function payfast_do_onsite_payment(param1 : any, callback: any): any;
 declare var $: any;
 
 @Component({
@@ -58,7 +58,7 @@ export class PlaceOrderComponent implements OnDestroy {
       shippingAddress: ['123 Fake Road, Pretoria North', Validators.required],
       paymentType: ['Pay immediately', Validators.required],
     });
-    console.log(environment.production);
+    console.log('production ' + environment.production);
   }
 
   ngOnInit() {
@@ -82,7 +82,7 @@ export class PlaceOrderComponent implements OnDestroy {
   // Add ngOnDestroy method to handle component destruction.
   ngOnDestroy() {
     // Place your cleanup or trigger function here.
-    if (!this.isOrderPlaced) this.onPageCloseOrNavigation(null);
+    //if (!this.isOrderPlaced) this.onPageCloseOrNavigation(null);
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -93,7 +93,6 @@ export class PlaceOrderComponent implements OnDestroy {
     //undo acceptance of quote
     //statusID 1 = 'Generated'
     this.dataService.UpdateQuoteStatus(this.quoteID, 1).subscribe((result) => {
-      console.log("Result", result);
       //email customer to ignore previous invoice email
       let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
       let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
@@ -360,103 +359,17 @@ export class PlaceOrderComponent implements OnDestroy {
     return sig;
   }
 
-  async doOnSitePayment(paymentAmount: number) {
-    try {
-      let onSiteUserData = new Map<string, string>();
-      onSiteUserData.set("merchant_id", "10030872")
-      onSiteUserData.set("merchant_key", "ommqhfbzaejj8")
-
-      //onSiteUserData.set('return_url', window.location.origin + '/order-history')
-      //onSiteUserData.set('cancel_url', window.location.origin + '/my-quotes')
-
-      onSiteUserData.set("email_address", this.customer.email);
-
-      onSiteUserData.set("amount", paymentAmount.toString());
-      onSiteUserData.set("item_name", '#' + this.quoteID);
-
-      onSiteUserData.set('passphrase', 'MegapackByBox');
-
-      let signature = this.getSignature(onSiteUserData);
-      onSiteUserData.set('signature', signature);
-
-      let formData = new FormData();
-      onSiteUserData.forEach((val, key) => {
-        formData.append(key, val);
-      });
-
-      /* let formData = {
-        merchant_id: '10030872',
-        merchant_key : 'ommqhfbzaejj8',
-        email_address: this.customer.email,
-        amount: paymentAmount.toString(),
-        item_name: '#' + this.quoteID,
-        passphrase: 'MegapackByBox',
-        signature: signature
-      }
-      console.log(JSON.stringify(formData)) */
-
-      console.log('formData', formData);
-
-      let response = await fetch(environment.payfastOnsiteEndpoint, {
-        method: 'POST',
-        body: formData,
-        redirect: 'follow',
-        //mode: 'no-cors'
-      });
-
-      console.log('response', response);
-      let respJson = await response.json();
-      //let respJson = JSON.stringify(response);
-      console.log('respJson', respJson)
-      let uuid = respJson['uuid'];
-      
-      console.log('uuid', uuid, 'not undefined')
-      payfast_do_onsite_payment({ 'uuid': uuid }, (res: any) => {
-        if (res == true) {
-          //successful payment
-          console.log('Successful payment')
-          /* Swal.fire({
-            icon: 'success',
-            title: "Success!",
-            html: 'Payment successful!',
-            timer: 3000,
-            timerProgressBar: true,
-            confirmButtonColor: '#32AF99'
-          }).then((result) => {
-            console.log(result);
-          }); */
-        }
-        else {
-          //failed payment
-          console.log('Failed payment')
-          /* Swal.fire({
-            icon: 'error',
-            title: "Oops...",
-            html: "Something went wrong and your payment could not be processed.",
-            timer: 3000,
-            timerProgressBar: true,
-            confirmButtonColor: '#32AF99'
-          }).then((result) => {
-            console.log(result);
-          }); */
-        }
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  doFormPayment(paymentAmount: number) {
+  async doOnSitePayment(amount: number) {
     let onSiteUserData = new Map<string, string>();
     onSiteUserData.set("merchant_id", "10030872")
     onSiteUserData.set("merchant_key", "ommqhfbzaejj8")
 
-    //onSiteUserData.set('return_url', window.location.origin)
+    //onSiteUserData.set('return_url', window.location.origin + '/success')
     //onSiteUserData.set('cancel_url', window.location.origin + '/cancel')
 
     onSiteUserData.set("email_address", this.customer.email);
-
-    onSiteUserData.set("amount", paymentAmount.toString());
+    
+    onSiteUserData.set("amount", amount.toString());
     onSiteUserData.set("item_name", '#' + this.quoteID);
 
     onSiteUserData.set('passphrase', 'MegapackByBox');
@@ -464,10 +377,31 @@ export class PlaceOrderComponent implements OnDestroy {
     let signature = this.getSignature(onSiteUserData);
     onSiteUserData.set('signature', signature);
 
-    let autoPaymentForm = this.buildForm.group(onSiteUserData);
+    let formData = new FormData();
+    onSiteUserData.forEach((val, key) => {
+      formData.append(key, val);
+    }); 
     
-    this.httpComms.post('https://sandbox.payfast.co.za/eng/process', onSiteUserData).subscribe(resp => {
-      console.log(resp);
+    let response = await fetch(environment.payfastOnsiteEndpoint, {
+      method: 'POST',
+      body: formData,
+      redirect: 'follow',
+      //mode: 'no-cors'
+    });
+    
+    console.log('response', response)
+    let respJson = await response.json();
+    console.log('respJson', respJson)
+    let uuid = respJson['uuid'];
+    console.log('uuid', uuid)
+    payfast_do_onsite_payment({'uuid': uuid},  (res: any) => {
+      console.log('got a response', res)
+      if (res == true) {
+        console.log('successful payment')
+      }
+      else {
+        console.log('failed payment')
+      }
     });
   }
 

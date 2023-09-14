@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
 {
   options.AddDefaultPolicy(defaultPolicy =>
   {
-    defaultPolicy.WithOrigins("http://localhost:4200", "http://localhost:8100", "https://d5c5-102-165-194-97.ngrok-free.app")
+    defaultPolicy.WithOrigins("http://localhost:4200", "http://localhost:8100")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
