@@ -2,18 +2,17 @@
     width: 100vw;
     height: 100vh;
     padding: 2rem;
-    background-color: #D9D9D7;
 }
 
-#notFoundImgContainer {
+#forbiddenImgContainer {
     width: 60%;
     max-height: 100%;
     margin: auto;
 }
 
-#notFoundImg { width: 100%; }
+#forbiddenImg { width: 100%; }
 
-#poem {
+#title {
     font-size: 1.8em;
     width: fit-content;
     margin: auto;
@@ -24,11 +23,3 @@
     width: fit-content;
     margin: auto;
 }
-
-.link {
-    color: black;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-.link:hover, .link:active { color: #D6AD60;}

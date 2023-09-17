@@ -68,6 +68,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { ForbiddenComponent } from './forbidden/forbidden.component';
 
 
 @NgModule({
@@ -133,7 +134,8 @@ import { NotFoundComponent } from './not-found/not-found.component';
         OrderDeliveryScheduleComponent,
         OrderDelCalendarComponent,
         QuotesComponent,
-        NotFoundComponent
+        NotFoundComponent,
+        ForbiddenComponent
         
   ],
   imports: [
