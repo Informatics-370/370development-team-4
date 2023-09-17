@@ -6,3 +6,7 @@
 .menu-card {
     box-shadow:inset;
 }
+
+.card:hover {
+    cursor: pointer;
+}

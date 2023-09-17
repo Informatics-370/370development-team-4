@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row page-row">
     <!--SIDE NAVBAR-->
     <div class="col-md-2"><div class="app-menu"></div></div>
     <!--Right Side-->
@@ -31,10 +31,10 @@
                 <!--Reason data from API-->
                 <tr *ngFor="let reason of filteredReasons">
                     <td>
-                        <button title="Delete this customer return reason" class="CRUD-icon" (click)="openDeleteModal(reason.customerRefundReasonID)">
+                        <button title="Delete this customer return reason" class="CRUD-icon" (click)="openDeleteModal(reason.customerReturnReasonID)">
                             <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
                         </button>
-                        <button title="Update this customer return reason" class="CRUD-icon" (click)="openUpdateModal(reason.customerRefundReasonID)" >
+                        <button title="Update this customer return reason" class="CRUD-icon" (click)="openUpdateModal(reason.customerReturnReasonID)" >
                             <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
                         </button>                                              
                     </td>

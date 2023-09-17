@@ -1,16 +1,13 @@
 import { Component } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
-import { take, lastValueFrom } from 'rxjs';
-import { FixedProductVM } from '../../shared/fixed-product-vm';
-import { Cart } from '../../shared/customer-interfaces/cart';
-import { Discount } from '../../shared/discount';
-import { HttpClient } from '@angular/common/http';
-//This is causing the code to break----import { MatSnackBar } from '@angular/material/snack-bar';
-import { EstimateVM } from '../../shared/estimate-vm';
-import { EstimateLineVM } from '../../shared/estimate-line-vm';
 import { CartService } from '../../services/customer-services/cart.service';
-import { VAT } from '../../shared/vat';
+import { AuthService } from '../../services/auth.service';
+import { Cart } from '../../shared/customer-interfaces/cart';
+import { QuoteVM } from '../../shared/quote-vm';
+import { QuoteLineVM } from '../../shared/quote-line-vm';
+import { Customer } from '../../shared/customer';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-cart-page',
@@ -18,61 +15,229 @@ import { VAT } from '../../shared/vat';
   styleUrls: ['./cart-page.component.css']
 })
 
-/*  Kuziwa: Dealing with Estimates- There shall be three main parts to the cart's functionality regarding estimates:*/
-
-//In this section I will be retrieving from Local storage and dynamically displaying what is stored in local storage in cards to the customer. 
-
 export class CartPageComponent {
   loading = true;
-  products: Cart[] = [];
-  discountList: Discount[] = []; //hold all bulk discounts
+  products: Cart[] = []; //holds all items in cart
   totalQuantity: number = 0;
+  productCount = -1;
+  cannotRequest = false; //disables or enables request quote button
+  cannotRequestReason = ''; //reason the customer is being prevented from requesting a quote
+  customer!: Customer;
+  customerID: string | null = '';
+  /* discountList: Discount[] = []; //hold all bulk discounts
   applicableDiscount = 0; //bulk discount
   randomdiscount = 0; //customer discount
   totalPrice = 0;
   modal: any = document.getElementById('contactModal');
   firstName: string = '';
   lastName: string = '';
-  cartTotal = 0;
-  customerId = 1; // Hardcoded Customer ID, replace with your desired value
-  estimateId = 3; // You may choose to hardcode this or generate it as needed
+  cartTotal = 0; */
 
-  constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService) { }
+  constructor(private router: Router, private dataService: DataService, private cartService: CartService,
+    private authService: AuthService) { }
 
-  //showNotification(message: string): void {
-  //  this.snackBar.open(message, 'Dismiss', {
-  //    duration: 5000, // Duration in milliseconds
-  //    verticalPosition: 'top', // Display the notification at the top of the screen
-  //  });
-  //}
-
+  //---------------------------- LOAD CART PAGE ----------------------------
   ngOnInit(): void {
-    this.getDataFromDB();
-    this.products = this.cartService.getCartItems(); //get items from cart using cart service
+    //get customer info
+    const token = localStorage.getItem('access_token')!;
+    this.customerID = this.authService.getUserIdFromToken(token);
+    console.log(this.customerID);
 
-    this.loading = false;
+    /*NB!!! BEFORE USING ANY CART SERVICE FUNCTIONS, PLEASE SUBSCRIBE TO THE GET PRODUCTS FUNCTION (like in the code below) 
+    OR THE CART SERVICE WILL BREAK!!!*/
+    this.cartService.getProducts().subscribe(() => {
+      //only called after products have been retrieved.
+      this.products = this.cartService.getCartItems(); //get items from cart using cart service
+      this.checkCartStock(); //this notifies user if any product they initially wanted has now gone out of stock or if the qty on hand has reduced so much that they can't buy the original quanitity they wanted
+      this.totalQuantity = this.cartService.getCartQuantity();
+      this.productCount = this.cartService.getCartProductCount();
+      this.checkIfAllowedToRequest();
+      this.loading = false;
+    });
+    //this.modal = document.getElementById('contactModal');
+  }
 
-    if (this.products.length > 0) {
-      const firstProductDescription = this.products[0].fixedProduct.description;
-      console.log('First product description:', firstProductDescription);
+  //check if user has an active quote request or active quote
+  checkIfAllowedToRequest() {
+    if (this.customerID != null && this.customerID != '') {  
+      try {
+        //if they have an active qr (a quote request that hasn't been attended to), don't let them request a new quote
+        this.dataService.CheckForActiveQuoteRequest(this.customerID).subscribe((result) => {
+          if (result != null) {
+            this.cannotRequest = true;
+            this.cannotRequestReason = 'Already requested';
+          }
+        });
+  
+        //if they already can't request due to already having an active QR, there's no point in checking for an quote
+        if (!this.cannotRequest) {
+          //if they have an active quote, quote with status that is 1 (Generated), or 4 (Rejected and will renegotiate)
+          this.dataService.GetCustomerMostRecentQuote(this.customerID).subscribe((result) => {
+            if (result.quoteStatusID == 1 || result.quoteStatusID == 4) {
+              this.cannotRequest = true;
+              this.cannotRequestReason = 'Already requested';          
+            }
+          });
+        }  
+      } catch (error) {
+        console.error(error);
+      }      
     }
-    this.calculateTotalQuantity();
-    this.generateRandomDiscount();
-    this.modal = document.getElementById('contactModal');
+  }
 
-    this.cartTotal = this.cartService.getCartTotal(this.randomdiscount);
-    this.applicableDiscount = this.cartService.determineApplicableDiscount();
+  //notify user of items that are out of stock or above quantity on hand when the cart page loads
+  checkCartStock() {
+    this.products.forEach(cartItem => {
+      //only check fixed products
+      if (cartItem.isFixedProduct) {
+        //cart service below qty on hand function returns true if the cart item has a qty below qty on hand
+        //so if it returns false, don't allow them to request quotee
+        if (!this.cartService.belowQuantityOnHand(cartItem.productID, cartItem.quantity)) {
+          this.cannotRequest = true;
+          this.cannotRequestReason = 'Invalid quantity';
+        }
+      }
+    });
+  }
+
+  //format whole numbers to have spaces e.g. turn 12345678 to 12 345 678
+  getFormattedNumber(num: number): string {
+    let arr = Array.from(num.toString());
+
+    for (let i = arr.length; i >= 0; i -= 3) {
+      arr.splice(i, 0, ' ');      
+    }
+
+    return arr.join('');
+  }
+
+  //---------------------------- MANIPULATE CART ----------------------------
+  //update quantity of an item in cart
+  updateCartItemQuantity(cartItem: Cart) {
+    if (cartItem.quantity > 0) { //if quantity is above 0, update quantity
+      //cart service update quantity method updates the qty and returns true if the new quantity is below or equal to qty on hand (for fixed products)
+      if (this.cartService.updateProductQuantity(cartItem.productID, cartItem.isFixedProduct, cartItem.quantity)) {
+        this.totalQuantity = this.cartService.getCartQuantity();
+        this.cannotRequest = false;
+      }
+      else { //this means they want to order more than qty on hand
+        this.cannotRequest = true;
+        this.cannotRequestReason = 'Invalid quantity';
+      }
+    }
+    else {
+      //remove from cart
+      this.removeFromCart(cartItem);
+    }
+  }
+
+  //remove item from cart
+  removeFromCart(cartItem: Cart) {
+    this.cartService.removeFromCart(cartItem);
+
+    //delete custom products that are removed from cart
+    if (!cartItem.isFixedProduct) {
+      this.dataService.DeleteCustomProduct(cartItem.productID).subscribe((result) => {
+        console.log('Successfully deleted', result);
+      });
+    }
+
+    this.refreshCart();
+  }
+
+  //clear cart
+  clearCart() {
+    this.cartService.emptyCart();
+    this.refreshCart();
+  }  
+
+  //---------------------------- REQUEST QUOTE ----------------------------
+  //create quote request
+  requestQuote() {
+    //redirect user to login if they're not logged in yet
+    if (this.customerID == null || this.customerID == '') {
+      //url is expecting redirectTo variable as 'redirect-' + 'url to redirect to' i.e 'redirect-cart'
+      this.router.navigate(['login', 'redirect-cart']);
+    }
+    else {
+      //create quote request
+      let newQR: QuoteVM = {
+        quoteRequestID: 0,
+        dateRequested: new Date(Date.now()),
+        quoteID: 0,
+        dateGenerated: new Date(Date.now()),
+        quoteStatusID: 0,
+        quoteStatusDescription: '',
+        quoteDurationID: 0,
+        quoteDuration: 0,
+        rejectReasonID: 0,
+        rejectReasonDescription: '',
+        priceMatchFileB64: '',
+        customerId: this.customerID ? this.customerID : '',
+        customerFullName: '',
+        customerEmail: '',
+        lines: []
+      }
+
+      //create QR lines
+      this.products.forEach(cartItem => {
+        let qrLine: QuoteLineVM = {
+          quoteRequestLineID: 0,
+          suggestedUnitPrice: 0,
+          quoteLineID: 0,
+          confirmedUnitPrice: 0,
+          fixedProductID: cartItem.isFixedProduct ? cartItem.productID : 0,
+          fixedProductDescription: '',
+          customProductID: !cartItem.isFixedProduct ? cartItem.productID : 0,
+          customProductDescription: '',
+          quantity: cartItem.quantity
+        }
+
+        newQR.lines.push(qrLine); //put quote request line in QR
+      });
+
+      //post to backend
+      try {
+        this.dataService.AddQuoteRequest(newQR).subscribe((result) => {
+          console.log('New QR: ', result);
+          this.cartService.emptyCart(); //clear cart
+          this.refreshCart();
+
+          //notify user
+          Swal.fire({
+            icon: 'success',
+            title: "Requested",
+            html: "You've successfully requested a quote. Your dedicated salesperson will contact you soon.",
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonColor: '#32AF99'
+          }).then((result) => {
+          });
+
+          this.router.navigate(['/my-quotes']); //redirect to quotes page
+        });
+      } catch (error) {
+        console.error('Error submitting quote: ', error);
+      }
+    }
+  }
+  
+  //-------------------------- REFRESH PAGE VARIABLES WHENEVER THERE IS A CHANGE TO THE CART --------------------------
+  refreshCart() {
+    this.totalQuantity = this.cartService.getCartQuantity();
+    this.productCount = this.cartService.getCartProductCount();
+    this.products = this.cartService.getCartItems();
   }
 
   //function to get data from DB asynchronously (and simultaneously)
-  async getDataFromDB() {
+  /* async getDataFromDB() {
     try {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
       const getDiscountPromise = lastValueFrom(this.dataService.GetDiscounts().pipe(take(1)));
 
-      /*The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
-      That's what the Promise.all method is supposed to be doing.*/
+      //The idea is to execute all promises at the same time, but wait until all of them are done before calling format products method
+      //That's what the Promise.all method is supposed to be doing.
       const [allVAT, allDiscounts] = await Promise.all([
         getVATPromise,
         getDiscountPromise
@@ -88,17 +253,17 @@ export class CartPageComponent {
     } catch (error) {
       console.error('An error occurred:', error);
     }
-  }
+  } */
 
   //This calculates the number of items that exist in the cart so that we can calculate the total price
-  calculateTotalQuantity() {
+  /* calculateTotalQuantity() {
     this.totalQuantity = 0;
     this.totalPrice = 0;
 
     for (const product of this.products) {
       const quantity = +product.quantity;
       this.totalQuantity += quantity;
-      this.totalPrice += quantity * +product.fixedProduct.price; // Multiply quantity by the price and add it to the total price
+      //this.totalPrice += quantity * +product.fixedProduct.price; // Multiply quantity by the price and add it to the total price
     }
 
 
@@ -180,43 +345,24 @@ export class CartPageComponent {
 
   }
 
+  calculateTotalPrice() {
+    let totalPrice = 0;
 
-
-
-
-
-  //
-  // calculateTotalPrice() {
-  //   let totalPrice = 0;
-
-  //   for (const product of this.products) {
-  //     totalPrice += +product.fixedProduct.price; // Convert quantity from string to number and add it to the total
-  //   console.log("Number of products in cart:",totalQuantity)
-  //   }
-  //   //This gets the id of the span to show the quantity in the cart
-  //   const quantityElement = document.getElementById('quantity');
-  //   if (quantityElement) {
-  //     quantityElement.innerText = totalQuantity.toString();
-  //   }
-  // }
-
-
+    for (const product of this.products) {
+    totalPrice += +product.fixedProduct.price; // Convert quantity from string to number and add it to the total
+    console.log("Number of products in cart:",totalQuantity)
+    }
+    //This gets the id of the span to show the quantity in the cart
+    const quantityElement = document.getElementById('quantity');
+    if (quantityElement) {
+      quantityElement.innerText = totalQuantity.toString();
+    }
+  } */
 
   /*---------------------------------Section 2--------------------------------- */
   //In this section I will work on the user being able to update the quantity of goods in their cart, this should allow a change in the price of what is in the cart.
 
-
-
-
-
-
-
-
-
-
-
-
-  /*------------------------------Section 3------------------------------*/
+  /* //------------------------------Section 3------------------------------
   //This section deals with the Get-in contact with us Modal, It can be further subdivided into 2 main sections
 
   //In the following lines, I will be dealing with some of the smaller details of functionality, e.g closing a modal when the X button is clicked and also when the user clicks outside the modal
@@ -248,8 +394,6 @@ export class CartPageComponent {
     }
   }
 
-
-
   //Section 3.1:
   //This deals with the actual frontend representation of the modal with user input fields for negotiation of the price charged.
 
@@ -258,23 +402,11 @@ export class CartPageComponent {
     return this.firstName + ' ' + this.lastName;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
   //Section 3.2 :
   //This deals with sending an email to the Employee responsible for the customer once the submit button is pressed. As of 13 July 2023, for now it will be sent to the admin. employee-customer assignment will be finalised at a later stage
 
-  /*CREATE ESTIMATE */
-  /* submitEstimateLine() {
+  //CREATE ESTIMATE
+  submitEstimateLine() {
       // Prepare the data for creating a new Estimate Line.
       const estimateLineData = {
         customerID: this.customerId,
@@ -300,9 +432,6 @@ export class CartPageComponent {
   
         }
       );
-  
-   
-  
   
    // Add the code to send the email here
    const toEmail = 'recipient@example.com'; // Replace with the email address of the recipient
@@ -345,47 +474,4 @@ export class CartPageComponent {
   
       this.router.navigate(['/estimate']);
     } */
-
-  createEstimate() {
-    //create estimate
-    let newEstimate: EstimateVM = {
-      estimateID: 0,
-      estimateStatusID: 0,
-      estimateStatusDescription: '',
-      estimateDurationID: 0,
-      userId: '943c47a4-add7-456e-9812-9f2f238deea9',
-      customerFullName: '',
-      confirmedTotal: this.cartService.getCartTotal(this.randomdiscount),
-      estimate_Lines: []
-    }
-
-    //create estimate lines from cart
-    this.products.forEach(cartItem => {
-      let estimateLine: EstimateLineVM = {
-        estimateLineID: 0,
-        estimateID: 0,
-        fixedProductID: cartItem.fixedProduct.fixedProductID,
-        fixedProductDescription: '',
-        fixedProductUnitPrice: 0,
-        customProductID: 0,
-        customProductDescription: '',
-        customProductUnitPrice: 0,
-        quantity: cartItem.quantity
-      }
-
-      newEstimate.estimate_Lines.push(estimateLine);
-    });
-    console.log('Estimate before posting: ', newEstimate);
-
-    try {
-      //post to backend
-      this.dataService.AddEstimate(newEstimate).subscribe((result) => {
-        console.log('New estimate: ', result)
-        this.cartService.emptyCart(); //clear cart
-        this.router.navigate(['/quotes']); //redirect to estimate page
-      });
-    } catch (error) {
-      console.error('Error submitting estimate: ', error);
-    }
-  }
 }

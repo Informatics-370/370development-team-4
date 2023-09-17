@@ -76,7 +76,6 @@ getAllUsers() { //get all Users
         console.log('User to update: ', result);        
         this.updateUserForm.setValue({
           uEmail: result.email,
-          uTitle: result.title,   
           uFirstName: result.firstName,
           uLastName: result.lastName,       
           uPhoneNumber: result.phoneNumber,
@@ -161,12 +160,13 @@ updateUser() {
     //get form data
     const formValues = this.updateUserForm.value;
     let updatedUser: Users = {
+      id: userId,
       firstName: formValues.uFirstName,
       lastName: formValues.uLastName,
       email: formValues.uEmail,
       address: formValues.uAddress,
-      title: formValues.uTitle,
-      phoneNumber: formValues.uPhoneNumber    
+      phoneNumber: formValues.uPhoneNumber,
+      title: ''   
     };
 
     console.log(updatedUser);

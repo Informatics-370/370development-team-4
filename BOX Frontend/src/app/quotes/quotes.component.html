@@ -1,0 +1,176 @@
+<div class="row page-row">
+  <!--Menu bar-->
+  <div class="col-md-3">
+    <div class="app-menu"></div>
+  </div>
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 page-content">
+    <h3 class="p-3" style="color: black;">Customer Quotes</h3>
+    <!--Search bar-->
+    <div id="searchbar">
+      <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
+        placeholder="e.g. Search by ID, customer, status" (keyup)="searchQuotes($event)" (change)="searchQuotes($event)" />
+      <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+    </div>
+    
+    <div class="duration-container">
+      Once created, every quote expires within
+      <input id="duration" type="number" class="form-control modal-form-text table-input" required min="1" 
+       value="{{quoteDuration ? quoteDuration.duration : 0}}"> 
+      days. <button class="btn btn-create btn-duration" (click)="updateQuoteDuration()">Update</button>
+    </div>
+
+    <hr class="hr hr-blurry m-3" />
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 55px;" scope="col"></th>
+          <th style="width: 120px;" scope="col">Quote ID</th>
+          <th scope="col">Customer</th>
+          <th scope="col">Status</th>
+          <th scope="col">Total incl. VAT</th>
+          <th class="new-quote-col" scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!--Messages to the user-->
+        <tr>
+          <!--Message if there's no quotes in the DB-->
+          <td *ngIf="quoteCount == 0" colspan="6">No customers have requested quotes.</td>
+          <!--Loading message while data is still being retrieved from the DB-->
+          <td *ngIf="loading" colspan="6">Please wait while we load all quotes...</td>
+          <!--Error message-->
+          <td *ngIf="error" colspan="6">Error loading data from the database. Please contact support services.</td>
+        </tr>
+        <!--Data from API-->
+        <tr *ngFor="let quote of filteredQuotes">
+          <td style="text-align: center;">
+              <button title="View quote details" class="CRUD-icon" (click)="openviewQuote(quote.quoteID)" >
+                  <fa-icon [icon]="['fas', 'circle-info']"></fa-icon>
+              </button>
+          </td>
+          <td>QUO{{quote.quoteID}}</td>
+          <td>{{quote.customerFullName}}</td>
+          <td>{{quote.quoteStatusDescription}}</td>
+          <td>{{quote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+          <td class="text-center">
+            <button title="Create new quote" class="btn btn-create btn-new-quote" *ngIf="quote.quoteStatusID == 4" 
+              (click)="openGenerateQuoteModal(quote.quoteRequestID, quote.quoteID)" > <!--status 4 = Rejected and will renegotiate-->
+              New quote
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!--VIEW QUOTE MODAL-->
+<div class="modal fade" id="viewQuote" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content" *ngIf="selectedQuote != null">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">Quote #{{selectedQuote.quoteID}}</h4>
+        <button class="close-modal" data-bs-dismiss="modal">
+          <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+        </button>
+      </div>
+
+      <!--BODY-->
+      <div class="modal-body">
+        <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
+        <div style="font-size: 0.95em; color: grey;">
+          Date: {{selectedQuote.dateGenerated | date:'d MMM yyyy HH:mm' }}<br />
+          Status: {{selectedQuote.quoteStatusDescription}} <br />
+          <span *ngIf="selectedQuote.quoteStatusID == 1"> <!--status 1 = Generated-->
+            Expires:  {{selectedQuote.dateExpiring | date:'d MMM yyyy HH:mm' }}<br /><br />
+          </span>
+          <span *ngIf="selectedQuote.quoteStatusID == 5"> <!--status 5 = Expired-->
+            Expired on:  {{selectedQuote.dateExpiring | date:'d MMM yyyy HH:mm' }}<br /><br />
+          </span>
+          <span *ngIf="selectedQuote.quoteStatusID == 3 || selectedQuote.quoteStatusID == 4 || selectedQuote.quoteStatusID == 7"> <!--status 4 = Rejected and will renegotiate-->
+            Rejection reason: {{selectedQuote.rejectReasonDescription}}<br />
+            
+            <span *ngIf="selectedQuote.quoteStatusID == 4 || selectedQuote.quoteStatusID == 7"> <!--change 7 to 6-->
+              Quote from competitor:               
+              <a class="download" title="Download quote from competitor" style="margin-left: 0.5rem;"
+               (click)="downloadFile(selectedQuote.priceMatchFileB64, 'Quote #' + selectedQuote.quoteID + ' price match file')" >
+                <fa-icon style="margin-right: 0.5rem;" [icon]="['fas', 'download']"></fa-icon>Download price match file
+              </a> <br /><br />
+            </span>
+          </span>
+        </div>
+
+        <table id="quote-details-table" class="table">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Price</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody id="quote-details-tbody">
+            <tr *ngFor="let line of selectedQuote.lines">
+              <td *ngIf="line.productFileB64 == ''">{{line.productDescription}}</td>
+              <!--Allow them to download custom product file if there is-->
+              <td *ngIf="line.productFileB64 != ''">
+                <a class="download" title="Download quote from competitor"
+                 (click)="downloadFile(line.productFileB64, line.productDescription)">
+                  {{line.productDescription}}
+                </a>
+              </td>
+              <td>{{line.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{line.quantity}}</td>
+              <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!--Footer-->
+        <table class="totals">
+          <tr>
+            <td class="totals-label" style="padding-top: 0.5rem;">Subtotal:</td>
+            <td class="totals-qty">{{selectedQuote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+          <tr class="light-bold">
+            <td class="totals-label" style="padding-top: 0.5rem;">VAT:</td>
+            <td class="totals-qty">+{{selectedQuote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+          <tr class="total-divider">
+            <td colspan="2"></td>
+          </tr>
+          <tr class="bold">
+            <td class="totals-label">Total:</td>
+            <td class="totals-qty">{{selectedQuote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+        </table>
+        
+        <div class="form-submit-div">
+          <button class="btn btn-create modal-form-submit" data-bs-toggle="modal" data-bs-target="#confirmEdit">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!--GENERATE QUOTE MODAL-->
+<div class="modal fade" id="generateQuote" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">Create quote</h4>
+        <button class="close-modal" data-bs-dismiss="modal">
+          <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+        </button>
+      </div>
+
+      <app-generate-quote [quoteRequestID]="newQuoteQRID" (resultEvent)="closedGenerateQuoteModal($event)" *ngIf="newQuoteQRID > 0"></app-generate-quote>
+    </div>
+  </div>
+</div>

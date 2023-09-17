@@ -1,0 +1,53 @@
+@import "../dashboard/dashboard.component.css";
+@import "../product-category/product-category.component.css";
+
+.modal {
+  display: none; /* This hides the modal by default */
+}
+
+.show {
+  display: block; /* This shows the modal when .show class is applied */
+}
+.close{
+  display:none;
+}
+.viewCalendar{
+  background-color: #D6AD60;
+    color: #FFF;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 25px;
+    width: fit-content;
+}
+
+/* The Code Below deals with when full calwndar was being used */
+
+/* .external-events {
+    float: right;
+    position: sticky;
+    width: 20%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #EFE7D7;
+  }
+  
+  .fc-event {
+    margin: 0 0 5px;
+    cursor: pointer;
+    padding: 3px 5px;
+    background-color: #D6AD60;
+    color: #fff;
+  }
+  
+  
+  .fc-today-button {
+    background-color: #4CAF50;
+  }
+  .fc-toolbar {
+    background-color: #f0f0f0;
+  }
+  
+  /* Change weekend background color */
+  /* .fc-sat, .fc-sun {
+    background-color: #ffe6e6;
+  } */ 

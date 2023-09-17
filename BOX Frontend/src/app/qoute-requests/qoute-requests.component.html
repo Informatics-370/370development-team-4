@@ -1,0 +1,69 @@
+<div class="row page-row">
+  <!--Menu bar-->
+  <div class="col-md-3">
+    <div class="app-menu"></div>
+  </div>
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 page-content">
+    <h3 class="p-3" style="color: black;">Customer Quote Requests</h3>
+    <!--Search bar-->
+    <div id="searchbar">
+      <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. Search by ID, customer" 
+        (keyup)="searchQuoteRequests($event)" (change)="searchQuoteRequests($event)" />
+      <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
+    </div>
+
+    <hr class="hr hr-blurry m-3" />
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Request ID</th>
+          <th scope="col">Customer</th>
+          <th scope="col">Requested</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!--Messages to the user-->
+        <tr>
+          <!--Message if there's no quoteRequests in the DB-->
+          <td *ngIf="quoteRequestCount == 0" colspan="4">No customers have requested quotes.</td>
+          <!--Loading message while data is still being retrieved from the DB-->
+          <td *ngIf="loading" colspan="4">Please wait while we load all quote requests...</td>
+          <!--Error message-->
+          <td *ngIf="error" colspan="4">Error loading data from the database. Please contact support services.</td>
+        </tr>
+        <!--Requests from API-->
+        <tr *ngFor="let qr of filteredQuoteRequests">
+          <td>QR{{qr.quoteRequestID}}</td>
+          <td>{{ qr.customerFullName }}</td>
+          <td> {{getTimeSince(qr.dateRequested)}}</td>
+          <td class="text-center">
+            <button title="Generate quote for {{qr.customerFullName}}" class="btn btn-create btn-generate"
+              (click)="openGenerateQuoteModal(qr.quoteRequestID)" >
+              Create quote
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!--GENERATE QUOTE MODAL-->
+<div class="modal fade" id="generateQuote" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+
+      <!--HEADER-->
+      <div class="modal-header">
+        <h4 class="modal-title">Create quote</h4>
+        <button class="close-modal" data-bs-dismiss="modal">
+          <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+        </button>
+      </div>
+
+      <app-generate-quote [quoteRequestID]="selectedQRID" (resultEvent)="closedGenerateQuoteModal($event)" *ngIf="selectedQRID > 0"></app-generate-quote>
+    </div>
+  </div>
+</div>

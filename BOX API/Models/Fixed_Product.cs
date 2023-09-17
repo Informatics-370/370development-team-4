@@ -7,7 +7,7 @@ namespace BOX.Models
 	public class Fixed_Product
 	{
         [Key]
-        public int? FixedProductID { get; set; }
+        public int FixedProductID { get; set; }
 
         [ForeignKey("QR_Code")]
         public int QRCodeID { get; set; }
@@ -24,9 +24,6 @@ namespace BOX.Models
         [Required]
         [MaxLength(100)]
         public string Description { get; set; } = string.Empty;
-
-        [Required]
-        public decimal Price { get; set; }
 
         [Required]
         public byte[] Product_Photo { get; set; }

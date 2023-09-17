@@ -76,13 +76,13 @@ export class EstimateLineComponent {
   //get estimates separately so I can update only estimates list when estimate is updated to save time
   async getEstimatesPromise(): Promise<any> {
     try {
-      let allEstimates: EstimateVM[] = await lastValueFrom(this.dataService.GetAllEstimates().pipe(take(1)));
+      /* let allEstimates: EstimateVM[] = await lastValueFrom(this.dataService.GetAllEstimates().pipe(take(1)));
       this.filteredEstimates = [];
 
       allEstimates.forEach((currentEst: EstimateVM) => {
         let newEstimate: VATInclusiveEstimate = new VATInclusiveEstimate(currentEst, this.vat.percentage);
         this.filteredEstimates.push(newEstimate);
-      });
+      }); */
 
       this.estimates = this.filteredEstimates; //store all the estimates someplace before I search below
       this.estimateCount = this.filteredEstimates.length; //update the number of estimates
@@ -120,8 +120,8 @@ export class EstimateLineComponent {
   //-------------------UPDATE ESTIMATE DETAILS TABLE LOGIC-------------------
   async openUpdateEstimateModal(id: number) {
     //get estimate to show details of
-    let theEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));
-    this.selectedEstimate = new VATInclusiveEstimate(theEstimate, this.vat.percentage);
+    //let theEstimate = await lastValueFrom(this.dataService.GetEstimate(id).pipe(take(1)));
+    //this.selectedEstimate = new VATInclusiveEstimate(theEstimate, this.vat.percentage);
     console.log('Estimate before adding', this.selectedEstimate);
 
     //set global negotiated total value
@@ -159,15 +159,6 @@ export class EstimateLineComponent {
     let priceInclVAT = amount * (1 + this.vat.percentage / 100);
     return priceInclVAT;
   }
-
-  /* getVATInclusiveTotal(est: EstimateVM): number {
-    let totalInclVAT = 0;
-    est.estimate_Lines.forEach(estimateLine => {
-      totalInclVAT += estimateLine.fixedProductUnitPrice * (1 + this.vat.percentage / 100) * estimateLine.quantity;
-    });
-
-    return totalInclVAT;
-  } */
 
   //changing product using dropdown should change the max value of the qty input field to be whatever is the product's qty on hand
   //this method handles that
@@ -242,7 +233,7 @@ export class EstimateLineComponent {
 
         console.log('Updated estimate: ', updatedEstimate);
 
-        this.dataService.UpdateEstimate(this.selectedEstimate.estimateID, updatedEstimate).subscribe(
+        /* this.dataService.UpdateEstimate(this.selectedEstimate.estimateID, updatedEstimate).subscribe(
           (result: any) => {
             console.log('Successfully updated estimate! ', result);
             this.getEstimatesPromise(); //refresh estimate list
@@ -250,7 +241,7 @@ export class EstimateLineComponent {
             $('#confirmEdit').modal('hide');
             $('#editPrice').modal('hide');
           }
-        );
+        ); */
       }
       catch (error) {
         console.log('Error submitting form', error)

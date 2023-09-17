@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../services/data.services';
+import { AuthService } from '../services/auth.service';
 import { RawMaterialVM } from '../shared/rawMaterialVM';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { HttpClient } from '@angular/common/http';
@@ -26,10 +27,18 @@ export class StockTakeComponent implements OnInit {
   writeOffReasons: WriteOffReason[] = [];
   isWriteOffClicked = false;
   isCancelClicked = false;
+  
+  //customer
+  customerID = '';
 
-  constructor(private dataService: DataService, private http: HttpClient) {}
+  constructor(private dataService: DataService, private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit(): void {
+    //get customer ID
+    const token = localStorage.getItem('access_token')!;
+    let id = this.authService.getUserIdFromToken(token);
+    if (id) this.customerID = id;
+
     this.fetchInventoryItems();
     this.fetchWriteOffReasons();
   }
@@ -101,8 +110,10 @@ export class StockTakeComponent implements OnInit {
   }
 
   saveChanges() {
+    const token = localStorage.getItem('access_token');
+    const userId = this.authService.getUserIdFromToken(token!);
     const stockTakeViewModel = {
-      UserId: localStorage.getItem('user_id'),
+      UserId: this.customerID,
       Date: new Date().toISOString(),
       WriteOffs: this.inventory
         .filter(item => item.saveItem) // Only include items with saveItem set to true

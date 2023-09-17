@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row page-row">
     <div class="col-2">
       <div class="app-menu"></div>
     </div>
@@ -21,6 +21,7 @@
                     [(ngModel)]="item.quantity"
                     [disabled]="!showWriteOffSection || !item.saveItem"
                     class="form-control"
+                    max="item.quantity"
                   >
                 </td>
                 <td>

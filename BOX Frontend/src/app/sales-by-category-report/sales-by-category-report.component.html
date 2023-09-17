@@ -1,0 +1,78 @@
+<div class="row page-row">
+  <!--SIDE NAVBAR-->
+  <div class="col-md-2">
+    <div class="app-menu"></div>
+  </div>
+  <!--Right Side-->
+  <div class="col-md-10">
+    <h3 class="p-3" style="color: black;">Generate Sales by Category Report</h3>
+
+    <form [formGroup]="datesForm">
+      <div class="form-group">
+        <label for="startDate" class="bold">Start date:</label>
+        <input id="startDate" type="date" formControlName="startDate" required class="date-form">
+      </div>
+
+      <div class="form-group">
+        <label for="endDate" class="bold">End date:</label>
+        <input id="endDate" type="date" formControlName="endDate" required class="date-form" [min]="startDate?.value">
+      </div>
+
+      <button type="submit" class="btn btn-create" [disabled]="loading" (click)="generateReport()">Generate</button>
+      <button type="button" class="btn btn-create" [disabled]="loading" [disabled]="!generateClicked"
+        (click)="generatePDFReport()">Download PDF</button>
+
+      <div *ngIf="invalid">Please choose valid dates.</div>
+
+    </form>
+
+    <hr class="hr hr-blurry m-3" />
+    <div *ngIf="loading">Generating report for you...</div>
+    <div *ngIf="itemsCount == 0">No orders found within that range</div>
+    <div *ngIf="!loading && itemsCount > 0">
+
+      <div id="pdf-content">
+        <div style="max-width: 90%; margin: auto; margin-left: 25px;">
+          <h4>Sales By Product Category Report</h4>
+          <div style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }} at {{now | date:'hh:mm:ss' }}
+          </div>
+        </div>
+
+
+        <table class="table" style="max-width: 90%;">
+          <thead>
+            <tr>
+              <td colspan="3">
+                <img src="../../assets/mega-pack-header.png" alt="MegaPack header" class="header" />
+              </td>
+            </tr>
+            <tr>
+              <th scope="col">Product Item</th>
+              <th scope="col">Total Sales (ZAR)</th>
+              <th scope="col">% of Total Sales</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let cat of salesByCategoryTableVMs">
+            <tr *ngFor="let item of cat.salesByItem">
+              <td> {{item.itemDescription}} </td>
+              <td> {{item.sales | currency: 'ZAR':'symbol-narrow'}} </td>
+              <td> {{ (item.sales / grandTotal * 100).toFixed(2) }}% </td>
+            </tr>
+            <tr class="bold" style="font-style: italic;">
+              <td>Subtotal for {{cat.description}}</td>
+              <td>{{cat.total | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{ (cat.total / grandTotal * 100).toFixed(2) }}</td>
+            </tr>
+          </tbody>
+          <tfoot class="bold">
+            <tr>
+              <td>Total</td>
+              <td>{{ grandTotal | currency: 'ZAR':'symbol-narrow' }}</td>
+              <td>100%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

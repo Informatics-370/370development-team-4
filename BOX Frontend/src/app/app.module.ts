@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { Chart } from 'chart.js';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,7 +21,6 @@ import { MenuComponent } from './menu/menu.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { StartupDivComponent } from './startup-div/startup-div.component';
 import { FixedProductComponent } from './fixed-product/fixed-product.component';
-import { EstimateDurationComponent } from './estimate-duration/estimate-duration.component';
 import { RawMaterialComponent } from './raw-material/raw-material.component';
 import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
@@ -46,15 +46,35 @@ import { PlaceOrderComponent } from './customer-view/place-order/place-order.com
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
 import { CustomProdComponent } from './custom-prod/custom-prod.component';
-import { SupplierOrderlistReportComponent } from './supplier-orderlist-report/supplier-orderlist-report.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
+import { FooterComponent } from './footer/footer.component';
+import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
+import { EmployeesComponent } from './employees/employees.component';
+import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { AssignEmployeeComponent } from './assign-employee/assign-employee.component';
+import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
+import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
+import { GenerateQuoteComponent } from './generate-quote/generate-quote.component';
+import { SalesByCategoryReportComponent } from './sales-by-category-report/sales-by-category-report.component';
+import { ProductListReportComponent } from './product-list-report/product-list-report.component';
+import { InactiveCustomerListComponent } from './inactive-customer-list/inactive-customer-list.component';
+import { SupplierListComponent } from './supplier-list/supplier-list.component';
+import { ReviewReportComponent } from './review-report/review-report.component';
+import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
+import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
+import { MessagesComponent } from './messages/messages.component';
+import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
+import { QuotesComponent } from './quotes/quotes.component';
 
 
 @NgModule({
   declarations: [ 
-    AppComponent,
-    DashboardComponent,
+        AppComponent,
+        DashboardComponent,
         RegisterComponent,
-       ProductItemTestComponent,
+        ProductItemTestComponent,
         ViewHelpInventoryComponent,
         ProductCategoryComponent,
         RefundReasonComponent,
@@ -66,7 +86,6 @@ import { SupplierOrderlistReportComponent } from './supplier-orderlist-report/su
         SupplierComponent,
         StartupDivComponent,
         FixedProductComponent,
-        EstimateDurationComponent,
         RawMaterialComponent,
         ProductsComponent,
         CategoriesMenuComponent,
@@ -93,7 +112,26 @@ import { SupplierOrderlistReportComponent } from './supplier-orderlist-report/su
         CustomerOrdersComponent,
         RegistrationSuccessPopupComponent,
         CustomProdComponent,
-        SupplierOrderlistReportComponent
+        ConfirmEmailComponent,
+        FooterComponent,
+        TwoFactorAuthComponent,
+        EmployeesComponent,
+        ProfilePageComponent,
+        AssignEmployeeComponent,
+        MyQuotesComponent,
+        QouteRequestsComponent,
+        GenerateQuoteComponent,
+        SalesByCategoryReportComponent,
+        ReviewReportComponent,
+        WriteOffByProductCategoryComponent,
+        ProductListReportComponent,
+        InactiveCustomerListComponent,
+        SupplierListComponent,
+        InventoryChartComponent,
+        MessagesComponent,
+        OrderDeliveryScheduleComponent,
+        OrderDelCalendarComponent,
+        QuotesComponent
         
   ],
   imports: [
@@ -103,7 +141,8 @@ import { SupplierOrderlistReportComponent } from './supplier-orderlist-report/su
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-  ],
+    FullCalendarModule
+ ],
   providers: [],
   bootstrap: [AppComponent]
 })

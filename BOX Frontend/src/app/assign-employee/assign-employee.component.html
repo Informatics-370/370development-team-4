@@ -1,0 +1,61 @@
+<div class="row page-row">
+    <!--SIDE NAVBAR-->
+    <div class="col-md-2"><div class="app-menu"></div></div>    
+    <!--Right Side-->
+    <div class="col-md-10">
+        <h3 class="p-3" style="color: black;">Customers</h3>
+        <!--Search bar-->
+        <div id="searchbar" >
+            <input (keyup)="searchUser($event)" type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text" placeholder="e.g. John Doe" />
+            <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
+        </div>
+
+        <hr class="hr hr-blurry m-3" />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 110px;" scope="col"></th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name </th>
+                    <th scope="col">Assigned Employee</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>                
+                <!--Error message if there's no users in the DB-->
+                <tr *ngIf="customerCount==0">
+                    <td colspan="2">No Users have been created on the System.</td>
+                </tr>
+                <!--Loading message while data is still being retrieved from the DB-->
+                <tr *ngIf="loading">
+                    <td colspan="2">Please wait while we load all User entries...</td>
+                </tr>
+                <!--User data from API-->
+                <tr *ngFor="let customers of filteredCustomers">
+                    <td>
+                      <button title="Delete this User" class="CRUD-icon" >
+                            <fa-icon class="m-3" [icon]="['fas', 'trash']" ></fa-icon>
+                        </button>
+                        <button title="Update this User's Details" class="CRUD-icon">
+                            <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                        </button>                                              
+                    </td>
+                    <td>
+                        {{customers.user.firstName}}
+                    </td>
+                    <td>
+                        {{customers.user.lastName}}
+                    </td>
+                    <td>
+                        <b>Name: </b>{{customers.employee.title}} {{customers.employee.firstName}} {{customers.employee.lastName}} <br> 
+                        <b>Email:</b> {{customers.employee.phoneNumber}} <br> 
+                        <b>Phone Number:</b> {{customers.employee.email}}
+                    </td>
+                    <td>
+                        <button type="button" (click)="openAssignEmployeeModal(customers)" class="btn btn-success text-uppercase text-white ripple shadow">Assign New Employee</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

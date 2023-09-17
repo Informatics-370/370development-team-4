@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row page-row">
 	<!--Menu bar-->
 	<div class="col-md-2">
 		<div class="app-menu"></div>
@@ -39,7 +39,7 @@
 						{{formulaVariables[0].description}}
 					</td>
 					<td>
-						2 &times; <em>(l + b)</em> + 0.04 &times; <em>(b + h)</em> + 0.01 &times; Box Factor ({{formulaVariables[0].box_Factor}}) &times; Rate Per Ton [{{formulaVariables[0].rate_Per_Ton}}]
+						2 &times; <em>(l + b)</em> + 0.04 &times; <em>(b + h)</em> + 0.01 &times; Box Factor [{{formulaVariables[0].box_Factor}}] &times; Rate Per Ton [{{formulaVariables[0].rate_Per_Ton}}]
 					</td>
 				</tr>
 				<tr *ngIf="!loading && !loadingError"> <!--Double wall box formula-->

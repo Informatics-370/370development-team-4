@@ -21,19 +21,19 @@
 
         <div class="form-group">
           <label for="pickUp" class="form-label modal-form-label">
-            <input id="pickUp" type="radio" formControlName="deliveryType" value="Pick up">Pick up
+            <input id="pickUp" type="radio" name="deliveryType" formControlName="deliveryType" value="Pick up">Pick up
           </label><br />
 
           <label for="delivery" class="form-label modal-form-label">
-            <input id="delivery" type="radio" formControlName="deliveryType" value="Delivery">Delivery
+            <input id="delivery" type="radio" name="deliveryType" formControlName="deliveryType" value="Delivery">Delivery
           </label><br />
-          Deliveries are free. We try to deliver within 24 hours of order placement.
-        </div><br />
 
-        <div class="form-group" *ngIf="deliveryType?.value == 'Delivery'">
-          <label for="address" class="form-label modal-form-label bold">Is this the correct shipping address?</label>
-          <input id="address" type="text" formControlName="shippingAddress"
-            class="form-control modal-form-input modal-form-text" required>
+          <div style="margin-bottom: 0.5em;" class="form-group" *ngIf="deliveryType?.value == 'Delivery'">
+            <label for="address" class="form-label modal-form-label bold">Is this the correct shipping address?</label>
+            <input id="address" type="text" formControlName="shippingAddress" class="form-control modal-form-input modal-form-text" required>
+          </div>
+          
+          Deliveries are free. We try to deliver within 24 hours of order placement.
         </div>
       </div>
 
@@ -41,75 +41,80 @@
         <h6>Choose payment type</h6>
 
         <div class="form-group">
-          <label for="paymentType" class="form-label modal-form-label">
-            <input id="paymentType" type="radio" formControlName="paymentType" value="Pay immediately">Pay immediately
+          <label for="immediate" class="form-label modal-form-label">
+            <input id="immediate" type="radio" name="paymentType" formControlName="paymentType" value="Pay immediately">Pay immediately
           </label><br />
 
-          <label for="paymentType" class="form-label modal-form-label">
-            <input id="paymentType" type="radio" formControlName="paymentType" value="Cash on delivery">Cash on delivery
+          <label for="cash" class="form-label modal-form-label">
+            <input id="cash" type="radio" name="paymentType" formControlName="paymentType" value="Cash on delivery">Cash on delivery
           </label><br />
 
-          <label for="paymentType" class="form-label modal-form-label">
-            <input id="paymentType" type="radio" formControlName="paymentType" value="Credit" >Credit
+          <label for="credit" class="form-label modal-form-label">
+            <input id="credit" type="radio" name="paymentType" formControlName="paymentType" value="Credit" [attr.disabled]="!creditAllowed ? 'disabled' : null">Credit
           </label><br />
-          <span *ngIf="!creditAllowed">We're sorry but your credit balance is insufficient / you haven't been approved
-            for credit. You can <a>apply for credit</a>.</span>
+          <span *ngIf="!creditAllowed">Your credit balance is insufficient / you aren't approved for credit.
+            You can <a>apply for credit</a>.</span>
         </div><br />
       </div>
 
       <div class="row tab" *ngIf="tab == 3">
+        <h6>Confirm</h6>
+
+        You are ordering:<br/><br/>
+
+        <table id="quote-details-table" class="table">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Price</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody id="quote-details-tbody">
+            <tr *ngFor="let line of quote.lines">
+              <td>{{line.productDescription}}</td>
+              <td>{{line.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{line.quantity}}</td>
+              <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+          </tbody>
+          <tfoot id="tfoot">
+            <tr>
+              <td colspan="3" class="text-right" style="width: 80%;">Deposit (20%):</td>
+              <td>{{quote.totalBeforeVAT * 0.2 | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-right" style="width: 80%;">Subtotal:</td>
+              <td>{{quote.totalBeforeVAT * 0.8 | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-right">VAT:</td>
+              <td>+{{quote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+            <tr style="font-weight: bold;">
+              <td colspan="3" class="text-right">Total:</td>
+              <td>{{quote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+            </tr>
+          </tfoot>
+        </table><br />
+
+        <!-- <table id="total-table">
+          <tr>
+            <td class="text-right" style="width: 80%;">Subtotal:</td>
+            <td>{{quote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+          <tr>
+            <td class="text-right">VAT:</td>
+            <td>{{quote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+          <tr style="font-weight: bold;">
+            <td class="text-right">Total:</td>
+            <td>{{quote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+          </tr>
+        </table><br /> -->
         <div *ngIf="paymentType?.value == 'Credit'">
-          <h6>Confirm</h6>
-
-          You are ordering:
-
-          <table id="estimate-details-table" class="table">
-            <thead>
-              <tr>
-                <th scope="col">Product</th>
-                <th scope="col">Price</th>
-                <th scope="col">Qty</th>
-                <th scope="col">Total</th>
-              </tr>
-            </thead>
-            <tbody id="estimate-details-tbody">
-              <tr *ngFor="let cartItem of cart">
-                <td>{{cartItem.fixedProduct.description}}</td>
-                <td>{{cartItem.fixedProduct.price | currency: 'ZAR':'symbol-narrow'}}</td>
-                <td>{{cartItem.quantity}}</td>
-                <td>{{cartItem.fixedProduct.price * cartItem.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
-              </tr>
-            </tbody>
-          </table><br />
-
-          <table id="total-table">
-            <tr>
-              <td class="text-right" style="width: 80%;">Subtotal:</td>
-              <td>{{totalBeforeDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
-            </tr>
-            <tr>
-              <td class="text-right">Discount:</td>
-              <td>{{cartTotal - totalBeforeDiscount | currency: 'ZAR':'symbol-narrow'}}</td>
-            </tr>
-            <tr>
-              <td class="text-right"><strong>Total:</strong></td>
-              <td>{{cartTotal | currency: 'ZAR':'symbol-narrow'}}</td>
-            </tr>
-            <!-- <tr>
-              <td class="text-right"><strong>Discount after negotiations: </strong></td>
-              <td>-{{selectedEstimate.confirmedTotal - negotiatedTotal | currency: 'ZAR':'symbol-narrow'}}</td>
-            </tr>
-            <tr>
-              <td class="text-right"><strong>Confirmed total:</strong></td>
-              <td>
-                R <input [(ngModel)]="negotiatedTotal" type="number"
-                  class="form-control modal-form-input modal-form-text table-input" placeholder="0.00"
-                  name="negotiatedTotal" required min="0" step="0.01" max="{{selectedEstimate.confirmedTotal}}">
-              </td>
-            </tr> -->
-          </table><br />
-
-          This order is payable on {{creditBalanceDue}}
+          This order is payable on {{creditBalanceDue | date:'ccc, d MMM yyyy' }}
         </div>
 
         <div *ngIf="paymentType?.value != 'Credit'">
@@ -117,11 +122,14 @@
         </div>
       </div>
 
-      <div  class="form-progress-div">
+      <div class="form-progress-div">
+        <button *ngIf="tab == 1" class="btn btn-create btn-red" (click)="cancel()">Cancel</button>
         <button *ngIf="tab > 1" class="btn btn-create" (click)="changeTab('previous')">Previous</button>
         <button *ngIf="tab != 3" class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
-        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="placeOrder()">ORDER ></button>
+        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="placeOrder('Your credit balance has been updated')">{{orderBtnText}}</button>
       </div>
     </form>
   </div>
 </div>
+
+<div class="app-footer"></div>

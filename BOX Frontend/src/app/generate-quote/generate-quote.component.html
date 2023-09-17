@@ -1,0 +1,91 @@
+<!-- GENERATE QUOTE MODAL BODY-->
+<div class="modal-body">
+  <div *ngIf="loading">
+    Retrieving the quote request..
+  </div>
+  <div *ngIf="error">
+    There was an error retrieving data. Try refreshing. If the problem persists, contact B.O.X support.
+  </div>
+  <div *ngIf="selectedQuote != null && !loading">
+    <span class="bold" style="font-size: 1.05em;">{{selectedQuote.customerFullName}}</span><br />
+  <div style="font-size: 0.95em; color: grey;">
+    Requested: {{selectedQuote.dateRequested | date:'d MMM yyyy HH:mm' }}<br />
+  </div>
+
+  <table id="quote-details-table" class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Product</th>
+        <th scope="col">Qty</th>
+        <th scope="col">Suggested Price</th>
+        <th scope="col">Confirmed Price</th>
+        <th scope="col">Total</th>
+      </tr>
+    </thead>
+    <tbody id="quote-details-tbody">
+      <tr *ngFor="let line of selectedQuote.lines">
+        <td>{{ line.productDescription }}</td>
+        <td>{{ line.quantity }}</td>
+        <td>{{ line.suggestedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
+        <td>R<input [(ngModel)]="line.confirmedUnitPrice" type="number" class="form-control modal-form-input modal-form-text table-input" placeholder="0.00" name="negotiatedTotal"
+          required min="1" step="0.01" (keyup)="selectedQuote.refreshTotals()"></td>
+        <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+      </tr>
+      <tr style="color: #E33131; font-size: 80%;" *ngIf="invalidPrices">
+        <td colspan="5">Every product must have a valid price.</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5" class="form-heading">Add new product to quote</td>
+      </tr>
+      <tr [formGroup]="addQuoteLineForm">
+        <td>
+          <select id="productID" [(ngModel)]="selectedProductID" formControlName="productID" name="productID"
+            class="form-select modal-form-input modal-form-text table-input quote-form-select" (change)="changedProduct()" >
+            <option disabled value="NA">Select product</option>
+            <option *ngFor="let fp of filteredFixedProducts" value={{fp.fixedProductID}}>{{fp.description}}</option>
+          </select>
+        </td>
+        <td>
+          <input id="quantity" type="number" formControlName="quantity"
+            class="form-control modal-form-input modal-form-text table-input" placeholder="1" required
+            min="0" step="1" max="{{selectedProduct ? selectedProduct.quantityOnHand : 1}}">
+        </td>
+        <td>
+          {{ selectedProduct ? selectedProduct.price : 0 | currency: 'ZAR':'symbol-narrow' }}
+        </td>
+        <td>
+          R <input id="confirmed-price" type="number" formControlName="price"
+            class="form-control modal-form-input modal-form-text table-input" placeholder="1" required
+            min="1" step="1">
+        </td>
+        <td class="text-center">
+          <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()" [disabled]="outOfStock">Add</button>
+        </td>
+      </tr>
+      <tr style="color: #E33131; font-size: 80%;" *ngIf="outOfStock">
+        <td colspan="5">This product is out of stock</td>
+      </tr>
+    </tfoot>
+  </table><br />
+
+  <table id="total-table" class="text-right">
+    <tr>
+      <td style="width: 87%;">Subtotal:</td>
+      <td>{{selectedQuote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+    </tr>    
+    <tr>
+      <td>VAT:</td>
+      <td>+{{selectedQuote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+    </tr>
+    <tr style="font-weight: bold;">
+      <td>Total:</td>
+      <td>{{selectedQuote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+    </tr>
+  </table>
+  <div class="form-submit-div" style="width: 100%;">
+    <button class="btn btn-create modal-form-submit" (click)="generateQuote()">Generate Quote</button>
+  </div>
+  </div>
+</div>

@@ -12,6 +12,14 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json.Serialization;
 using BOX.Services;
+using Microsoft.ML.Data;
+using Microsoft.Extensions.ML;
+using Google.Api;
+using Microsoft.ML;
+using Microsoft.Extensions.DependencyInjection;
+using Twilio.Clients;
+using BOX.Hub;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,13 +28,17 @@ builder.Services.AddCors(options =>
 {
   options.AddDefaultPolicy(defaultPolicy =>
   {
-    defaultPolicy.WithOrigins("http://localhost:4200")
+    defaultPolicy.WithOrigins("http://localhost:4200", "http://localhost:8100")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
   });
 });
 
+//HANGFIRE
+builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+builder.Services.AddTransient<RecurringJobsService>(); //register recurring job service so I can call recurring jobs when app runs
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -62,16 +74,24 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add configuration for required password
+
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    options.Password.RequireUppercase = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireDigit = true;
-    options.User.RequireUniqueEmail = true;
+    options.Password.RequireUppercase = true; // Must have an uppercase letter
+    options.Password.RequireLowercase = true; // Must have a lowercase letter
+    options.Password.RequireNonAlphanumeric = false; // Don't need a special character
+    options.Password.RequireDigit = true; // Must have a digit
+    options.Password.RequiredLength = 8; // Password must have a minmum of 8 characters
+    options.User.RequireUniqueEmail = true; // Requires a unique email
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+// Add configuration for required emails
+builder.Services.Configure<IdentityOptions>(
+    options => options.SignIn.RequireConfirmedEmail = true
+    );
 
 builder.Services.AddAuthentication()
                 .AddCookie()
@@ -104,6 +124,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IRepository, Repository>();
 
+// Add Google Cloud NLP API service registration
+var googleCloudSettings = builder.Configuration.GetSection("GoogleCloudSettings");
+var apiKey = googleCloudSettings["ApiKey"];
+builder.Services.AddSingleton<INlpService>(new GoogleNlpApiClient(apiKey));
+
+builder.Services.AddHttpClient<ITwilioRestClient, TwilioClient>();
+
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Data Seeding
@@ -127,11 +156,18 @@ app.UseRouting(); // Add this line to enable routing
 
 app.UseCors();
 app.UseHttpsRedirection();
+
+app.UseHangfireDashboard(); //use hangfire dashboard
+//run recurring jobs
+RecurringJob.AddOrUpdate<RecurringJobsService>("ExpireQuotes", c => c.ExpireQuotes(), Cron.Daily);
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
-  endpoints.MapControllers();
+    endpoints.MapControllers();
+    endpoints.MapHub<InventoryHub>("/inventoryHub");
+    endpoints.MapHub<RegistrationHub>("/registrationHub");
 });
 
 app.Run();

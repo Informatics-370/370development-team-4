@@ -5,6 +5,7 @@ import { take, lastValueFrom } from 'rxjs';
 declare var $: any;
 import { OrderVM } from "../shared/order-vm";
 import { OrderLineVM } from '../shared/order-line-vm';
+import { OrderVMClass } from '../shared/order-vm-class';
 import { VAT } from '../shared/vat';
 
 @Component({
@@ -13,19 +14,26 @@ import { VAT } from '../shared/vat';
   styleUrls: ['./customer-orders.component.css']
 })
 export class CustomerOrdersComponent {
-  orders: VATInclusiveOrder[] = []; //hold all orders
-  filteredOrders: VATInclusiveOrder[] = []; //orders to show user
-  selectedOrder!: VATInclusiveOrder; //specific order to show user
-  vat!: VAT;
+  orders: OrderVMClass[] = []; //hold all orders
+  filteredOrders: OrderVMClass[] = []; //orders to show user
+  selectedOrder!: OrderVMClass; //specific order to show user
+  allVATs: VAT[] = [];
   searchTerm: string = '';
   //display messages to user
   orderCount = -1;
   loading = true;
   error: boolean = false;
-  //forms logic
-  //processOrdersForm: FormGroup;
+  isAnyCheckboxChecked = false; //is true if 1 of the process order checkboxes is ticked
+  /*Statuses:
+  1 Placed
+  2 In progress
+  3 Cancelled
+  4 Ready for delivery
+  5 Out for delivery
+  6 Completed
+  */
 
-  constructor(private dataService: DataService, private formBuilder: FormBuilder) { }
+  constructor(private dataService: DataService) { }
 
   ngOnInit() {
     this.getDataFromDB();
@@ -35,110 +43,108 @@ export class CustomerOrdersComponent {
     try {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+      const getOrdersPromise = lastValueFrom(this.dataService.GetAllCustomerOrders().pipe(take(1)));
 
-      const [allVAT] = await Promise.all([
-        getVATPromise
+      const [allVAT, allOrders] = await Promise.all([
+        getVATPromise,
+        getOrdersPromise
       ]);
 
       //put results from DB in global arrays
-      this.vat = allVAT[0];
+      this.allVATs = allVAT;
 
-      await this.getOrdersPromise();
+      //put orders in order class
+      this.filteredOrders = []; //empty array
+      allOrders.forEach((order: OrderVM) => {
+        let applicableVAT = this.getApplicableVAT(order.date); //get vat applicable to that date
+        let orderClassObj = new OrderVMClass(order, order.orderLines, applicableVAT);
+        this.filteredOrders.push(orderClassObj);
+      });
+
+      //sort orders by ID so later orders are first
+      this.filteredOrders.sort((current, next) => {
+        return next.customerOrderID - current.customerOrderID;
+      });
+  
+      this.orders = this.filteredOrders; //store all the quote someplace before I search below
+      this.orderCount = this.filteredOrders.length; //update the number of quotes
+      this.loading = false;
+
     } catch (error) {
       this.orderCount = -1;
       this.loading = false;
       this.error = true;
+      console.error('Error retrieving data:', error);
     }
   }
 
-  async getOrdersPromise(): Promise<any> {
+  getApplicableVAT(date: Date): VAT {
+    for (let i = this.allVATs.length - 1; i >= 0; i--) {
+      if (date >= this.allVATs[i].date) {
+        return this.allVATs[i];
+      }
+    }
+
+    return this.allVATs[this.allVATs.length - 1]; // Fallback to the latest VAT if no applicable VAT is found
+  }
+
+  /*------------------SEARCH ORDERS----------------------*/
+  searchOrders(event: Event) {
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.filteredOrders = []; //clear array
+    for (let i = 0; i < this.orders.length; i++) {
+      //concatenate all the order info in one variable so user can search using any of them
+      let ordInformation: string = String('CUSORDR' + this.orders[i].customerOrderID + ' ' +
+        this.orders[i].customerFullName + ' ' +
+        this.orders[i].orderStatusDescription).toLowerCase();
+
+      if (ordInformation.includes(this.searchTerm.toLowerCase())) {
+        this.filteredOrders.push(this.orders[i]);
+      }
+    }
+
+    this.orderCount = this.filteredOrders.length; //update order count
+    console.log('Search results:', this.filteredOrders);
+  }
+
+  /*--------------------PROCESS ORDERS----------------------------*/
+  //disable/enable process button if one of the process order checkboxes was ticked/unticked
+  checkboxChanged() {
+    this.isAnyCheckboxChecked = this.filteredOrders.some(ord => ord.checked);
+  }
+
+  processOrders() {
+    let ordersToProcess: number[] = []; //store IDs of all orders that will be processed
+
+    this.filteredOrders.forEach(order => {
+      //if the checkbox associated with that order is ticked, get the order ID so I can process the order
+      if (order.checked) {
+        ordersToProcess.push(order.customerOrderID);
+      }
+    });
+
+    console.log('ordersToProcess', ordersToProcess);
+    //process orders aka update status to In progress
     try {
-      let allOrders: OrderVM[] = await lastValueFrom(this.dataService.GetAllCustomerOrders().pipe(take(1)));
-      console.log(allOrders);
-      this.filteredOrders = [];
-
-      allOrders.forEach((ord: OrderVM) => {
-        let theOrder: VATInclusiveOrder = new VATInclusiveOrder(ord, this.vat.percentage);
-        this.filteredOrders.push(theOrder);
+      ordersToProcess.forEach(orderID => {
+        //statusID 2 = 'In progress'
+        this.dataService.UpdateOrderStatus(orderID, 2).subscribe((result) => {
+          console.log("Result", result);
+          this.getDataFromDB(); //refresh list
+        });
       });
-
-      this.orders = this.filteredOrders; //store all the orders someplace before I search below
-      this.orderCount = this.filteredOrders.length; //update the number of orders
-
-      console.log('All order array: ', this.filteredOrders);
-      this.loading = false;
-
-      return 'Successfully retrieved orders from the database';
     } catch (error) {
-      console.error('An error occurred while retrieving orders: ' + error);
-      throw new Error('An error occurred while retrieving orders: ' + error);
+      console.error('Error updating status: ', error);
     }
   }
-}
 
-class VATInclusiveOrder implements OrderVM {
-  customerOrderID: number;
-  customerStatusID: number;
-  userId: string;
-  orderDeliveryScheduleID: number;
-  date: string;
-  deliveryPhoto: string;
-  customerFullName: string;
-  orderStatusDescription: string;
-  customerOrders: OrderLineVM[];
-  vatPercentage: number; //whole number e.g. 25 for 25%
-  total: number; //total before negotiations after discount
-  totalDiscount: number; //total discount in rands before negotiations; customer loyalty discount + bulk discount
-  negotiatedDiscount: number; //discount agreed on during negotiations
-
-  constructor(order: OrderVM, vatPercentage: number, negotiatedDiscount?: number) {
-    this.customerOrders = this.makePriceVATInclusive(order.customerOrders);
-    this.vatPercentage = vatPercentage;
-    this.customerOrderID = order.customerOrderID;
-    this.customerStatusID = order.customerStatusID;
-    this.orderStatusDescription = order.orderStatusDescription;
-    this.orderDeliveryScheduleID = order.orderDeliveryScheduleID;
-    this.date = order.date;
-    this.deliveryPhoto = order.deliveryPhoto;
-    this.userId = order.userId;
-    this.customerFullName = order.customerFullName;
-    this.negotiatedDiscount = negotiatedDiscount ? negotiatedDiscount : 0; //includes VAT
-    this.total = this.getTotalBeforeDiscount();
-    this.totalDiscount = this.getDiscount();
-  }
-
-  //this function takes the estimate lines and makes the product price vat inclusive
-  makePriceVATInclusive(orderLines: OrderLineVM[]): OrderLineVM[] {
-    let lines: OrderLineVM[] = [];
-
-    orderLines.forEach(ordL => {
-      ordL.fixedProductUnitPrice = this.getVATInclusiveAmount(ordL.fixedProductUnitPrice);
-      ordL.customProductUnitPrice = this.getVATInclusiveAmount(ordL.customProductUnitPrice);
-      console.log(ordL.fixedProductUnitPrice, ordL.customProductUnitPrice)
-
-      lines.push(ordL);
-    });
-
-    return lines;
-  }
-
-  getVATInclusiveAmount(amount: number): number {
-    let priceInclVAT = amount * (1 + this.vatPercentage / 100);
-    return priceInclVAT;
-  }
-
-  getTotalBeforeDiscount(): number {
-    let total = 0;
-    this.customerOrders.forEach(line => {
-      total += line.fixedProductUnitPrice * line.quantity;
-    });
-
-    return total;
-  }
-
-  getDiscount(): number {
-    let totalBeforeDiscount = this.getTotalBeforeDiscount();
-    let discount = totalBeforeDiscount - this.total;
-    return discount;
+  /*-------------------OPEN ORDER DETAILS MODAL--------------------*/
+  async openViewOrderModal(id: number) {
+    //get order to show details of
+    let theOrder = await lastValueFrom(this.dataService.GetOrder(id).pipe(take(1)));
+    let applicableVAT = this.getApplicableVAT(theOrder.date); //get vat applicable to that date
+    this.selectedOrder = new OrderVMClass(theOrder, theOrder.orderLines, applicableVAT);
+    console.log('Order before showing', this.selectedOrder);
+    $('#viewOrder').modal('show');
   }
 }
