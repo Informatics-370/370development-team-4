@@ -50,6 +50,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 
 const routes: Routes = [
@@ -105,7 +106,8 @@ const routes: Routes = [
   { path: 'messages', component: MessagesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrators', 'Employee']} },
   { path: 'order-schedule', component: OrderDeliveryScheduleComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrators', 'Employee']} },
   { path: 'order-calendar', component: OrderDelCalendarComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrators', 'Employee']} },
-  { path: 'manage-quotes', component: QuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrators', 'Employee']} }
+  { path: 'manage-quotes', component: QuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrators', 'Employee']} },
+  {path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({

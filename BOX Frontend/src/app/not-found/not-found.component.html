@@ -1,0 +1,12 @@
+<div id="body">
+    <img id="notFoundImg" src="../../assets/404 screen.png" alt="404" />
+    <div id="poem">
+        Roses are red<br/>
+        Boxes are brown<br/>
+        The page you want could not be found
+    </div>
+    <div id="help-text">
+        Try <a class="link" (click)="goBack()">going back</a> or going to <a class="link" [routerLink]="['/customer-homepage']">our homepage</a>. 
+        If you're looking for our products, you'll find them <a class="link" [routerLink]="['/products']">here</a>.
+    </div>
+</div>

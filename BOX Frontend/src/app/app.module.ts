@@ -67,6 +67,7 @@ import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 
 @NgModule({
@@ -131,7 +132,8 @@ import { QuotesComponent } from './quotes/quotes.component';
         MessagesComponent,
         OrderDeliveryScheduleComponent,
         OrderDelCalendarComponent,
-        QuotesComponent
+        QuotesComponent,
+        NotFoundComponent
         
   ],
   imports: [
