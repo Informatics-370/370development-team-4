@@ -417,16 +417,9 @@ export class MyQuotesComponent {
     document.body.style.overflowY = 'scroll';
 
     //send email
-    let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
-                        <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
-                          <h3>Hi ${this.invoice.customer},</h3>
-                          <p>We hope you're well. Please see attached your invoice for Quote ${quoteNo}. 
-                          Thank you for shopping with us. We really appreciate your business! </p>
-                          <p>Please don't hesitate to reach out if you have any questions.</p>
-                          Kind regards<br />
-                          MegaPack
-                        </div>
-                      </div>`;
+    let emailBody = `<p>We hope you're well. Please see attached your invoice for Quote ${quoteNo}. 
+                      Thank you for shopping with us. We really appreciate your business! </p>
+                    <p>Please don't hesitate to reach out if you have any questions.</p>`;
 
     let pdfData = this.pdf.output("datauristring");
     var base64String = pdfData.split(',')[1];
@@ -436,7 +429,7 @@ export class MyQuotesComponent {
       fileBase64: base64String
     }
 
-    this.emailService.sendEmail(this.customer.email, 'Invoice', emailBody, [attachment]);
+    this.emailService.sendEmail(this.customer.email, 'Invoice', this.invoice.customer, emailBody, [attachment]);
 
     //Save the combined PDF
     //this.pdf.save(pdfName + '.pdf');

@@ -95,18 +95,11 @@ export class PlaceOrderComponent implements OnDestroy {
     this.dataService.UpdateQuoteStatus(this.quoteID, 1).subscribe((result) => {
       //email customer to ignore previous invoice email
       let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
-      let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
-                        <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
-                          <h3>Hi ${customerName},</h3>
-                          <p>We hope you're well. Please ignore the previous email which contained your Invoice for Quotation #
+        let emailBody = `<p>We hope you're well. Please ignore the previous email which contained your Invoice for Quotation #
                           ${this.quoteID}. Since you cancelled the order before you could finish paying the deposit, that invoice is no longer valid.</p>
-                          <p>If you cancelled by mistake, just accept the quote again to restart the process.</p>
-                          Kind regards<br />
-                          MegaPack
-                        </div>
-                      </div>`;
+                        <p>If you cancelled by mistake, just accept the quote again to restart the process.</p>`;
 
-      this.emailService.sendEmail(this.customer.email, 'Order not placed', emailBody);
+        this.emailService.sendEmail(this.customer.email, 'Order not placed', customerName, emailBody);
     });
   }
 
@@ -232,18 +225,11 @@ export class PlaceOrderComponent implements OnDestroy {
         console.log("Result", result);
         //email customer to ignore previous invoice email
         let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
-        let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
-                          <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
-                            <h3>Hi ${customerName},</h3>
-                            <p>We hope you're well. Please ignore the previous email which contained your Invoice for Quotation #
+        let emailBody = `<p>We hope you're well. Please ignore the previous email which contained your Invoice for Quotation #
                             ${this.quoteID}. Since you cancelled the order before you could finish paying the deposit, that invoice is no longer valid.</p>
-                            <p>If you cancelled by mistake, just accept the quote again to restart the process.</p>
-                            Kind regards<br />
-                            MegaPack
-                          </div>
-                        </div>`;
+                            <p>If you cancelled by mistake, just accept the quote again to restart the process.</p>`;
 
-        this.emailService.sendEmail(this.customer.email, 'Order not placed', emailBody);
+        this.emailService.sendEmail(this.customer.email, 'Order not placed', customerName, emailBody);
 
         //Navigate to 'My quotes' page and send quote ID encoded in URL:
         this.router.navigate(['my-quotes']);

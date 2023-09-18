@@ -249,18 +249,14 @@ export class QuotesComponent {
       let expiryDate = new Date(Date.now());
       expiryDate.setDate(expiryDate.getDate() + this.quoteDuration.duration);
 
-      let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
-                        <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
-                          <h3>Hi ${this.oldQuote.customerFullName},</h3>
-                          <p>After reviewing the competitor's quote you provided, we have created a new
-                          quotation to hopefully beat that price. You can view it on your quotes page. Hurry, because it expires on
-                          ${this.datePipe.transform(expiryDate, 'EEEE, d MMMM')}. </p><br />
-                          Kind regards<br />
-                          MegaPack
-                        </div>
-                      </div>`;
+      let emailBody = `<p>After reviewing the competitor's quote you provided, we have created a new
+                          quotation to hopefully beat that price. You can view it on your
+                          <a style='font-weight: 600; text-decoration: underline; cursor: pointer; color: black;' href='http://localhost:4200/my-quotes'>
+                            Quotes page</a>. 
+                          Hurry, because it expires on
+                          ${this.datePipe.transform(expiryDate, 'EEEE, d MMMM')}. </p>`;
 
-      this.emailService.sendEmail(this.oldQuote.customerEmail, 'New quotation!', emailBody);
+      this.emailService.sendEmail(this.oldQuote.customerEmail, 'New quotation!', this.oldQuote.customerFullName, emailBody);
 
       //notify user
       Swal.fire({
