@@ -53,7 +53,7 @@ import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 
-
+// THE ROUTE TO THE NOT FOUND COMPONENT MUST ALWAYS BE LAST or things might not work as expected
 const routes: Routes = [
   { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
   { path: "dashboard", component: DashboardComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
