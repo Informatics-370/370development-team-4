@@ -187,6 +187,9 @@ namespace BOX.Models
         Task<Employee> GetEmployeeByUserId(string userId);
         Task<Admin> GetAdminByUserId(string userId);
         Task<Customer> GetCustomerByUserId(string userId);
+
+        //--------------------------- DELIVERY TYPE --------------------------
+        Task<Delivery_Type> GetDeliveryTypeAsync(int deliveryTypeId);
     }
 
 }

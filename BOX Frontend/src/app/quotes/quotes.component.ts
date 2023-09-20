@@ -303,8 +303,8 @@ export class QuotesComponent {
 
   updateQuoteStatus(quoteId: number) {
     try {
-      //statusID 6 = 'Rejected; Successfully renegotiated'; //should be 6
-      this.dataService.UpdateQuoteStatus(quoteId, 7).subscribe((result) => {
+      //statusID 6 = 'Rejected; Successfully renegotiated';
+      this.dataService.UpdateQuoteStatus(quoteId, 6).subscribe((result) => {
         console.log("Successfully updated quote status!");
       });
     } catch (error) {

@@ -90,10 +90,10 @@
           <span *ngIf="selectedQuote.quoteStatusID == 5"> <!--status 5 = Expired-->
             Expired on:  {{selectedQuote.dateExpiring | date:'d MMM yyyy HH:mm' }}<br /><br />
           </span>
-          <span *ngIf="selectedQuote.quoteStatusID == 3 || selectedQuote.quoteStatusID == 4 || selectedQuote.quoteStatusID == 7"> <!--status 4 = Rejected and will renegotiate-->
+          <span *ngIf="selectedQuote.quoteStatusID == 3 || selectedQuote.quoteStatusID == 4 || selectedQuote.quoteStatusID == 6"> <!--status 4 = Rejected and will renegotiate-->
             Rejection reason: {{selectedQuote.rejectReasonDescription}}<br />
             
-            <span *ngIf="selectedQuote.quoteStatusID == 4 || selectedQuote.quoteStatusID == 7"> <!--change 7 to 6-->
+            <span *ngIf="selectedQuote.quoteStatusID == 4 || selectedQuote.quoteStatusID == 6">
               Quote from competitor:               
               <a class="download" title="Download quote from competitor" style="margin-left: 0.5rem;"
                (click)="downloadFile(selectedQuote.priceMatchFileB64, 'Quote #' + selectedQuote.quoteID + ' price match file')" >

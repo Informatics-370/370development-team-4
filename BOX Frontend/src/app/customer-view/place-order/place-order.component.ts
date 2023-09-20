@@ -272,6 +272,7 @@ export class PlaceOrderComponent implements OnDestroy {
       date: new Date(),
       deliveryScheduleID: 0,
       deliveryDate: new Date(),
+      deliveryTypeID: 1,
       deliveryType: this.deliveryType?.value,
       deliveryPhoto: '',
       customerId: this.customerID,

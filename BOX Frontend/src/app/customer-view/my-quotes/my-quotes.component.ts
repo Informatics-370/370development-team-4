@@ -69,7 +69,8 @@ export class MyQuotesComponent {
   2 Accepted
   3 Rejected
   4 Rejected and will renegotiate
-  5 Expired */
+  5 Expired
+  6 Rejected; Successfully renegotiated */
 
   constructor(private dataService: DataService, private router: Router, private authService: AuthService, 
     private formBuilder: FormBuilder, private emailService: EmailService) {

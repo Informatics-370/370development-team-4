@@ -769,6 +769,13 @@ namespace BOX.Models
             return await _appDbContext.Admin.FirstOrDefaultAsync(e => e.UserId == userId);
         }
 
+        //------------------------------------------------------ DELIVERY TYPE ------------------------------------------------------------
+        public async Task<Delivery_Type> GetDeliveryTypeAsync(int deliveryTypeId)
+        {
+            IQueryable<Delivery_Type> query = _appDbContext.Delivery_Type.Where(c => c.DeliveryTypeID == deliveryTypeId);
+            return await query.FirstOrDefaultAsync();
+        }
+
         //--------------------------------- TRANSACTIONS --------------------------------
         public IDbContextTransaction BeginTransaction()
         {

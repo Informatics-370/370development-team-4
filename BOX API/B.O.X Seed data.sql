@@ -111,6 +111,21 @@ INSERT INTO [dbo].[Title]
            ('Dr')
 GO
 
+INSERT INTO [dbo].[Delivery_Type]
+           ([Description])
+     VALUES
+           ('Delivery'),
+           ('Pick up')
+GO
+
+INSERT INTO [dbo].[Payment_Type]
+           ([Description])
+     VALUES
+           ('Pay immediately'),
+           ('Cash on delivery / collection'),
+           ('Credit')
+GO
+
 INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp])
 VALUES
     (NEWID(), 'Administrator', 'ADMINISTRATOR', NEWID()),
@@ -135,3 +150,4 @@ select * from customer_order_status
 select * from credit_application_status
 select * from cost_price_formula_variables
 select * from bulk_discount
+select * from delivery_type
