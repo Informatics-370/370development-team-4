@@ -133,3 +133,128 @@
 </div>
 
 <div class="app-footer"></div>
+
+
+
+<!--INVOICE to email-->
+<div id="invoice-container" *ngIf="invoice != null">
+  <div id="invoice">
+    <img id="invoice-img" src="../../../assets/mega-pack-header.jpg" alt="Mega Pack Letterhead" style="width: 100%; height: auto;" />
+
+    <div id="header-left" class="invoice-block small-block">
+
+      <div style="margin-bottom: 1rem; display: flex; justify-content: end;" class="full">
+        <table style="display: inline-block;" class="fit">
+          <tr>
+            <td class="fit">Tel:</td>
+            <td class="fit text-left">(012) 666 8025/8540</td>
+          </tr>
+          <tr>
+            <td class="fit">Fax:</td>
+            <td class="fit text-left">(012) 666 9643</td>
+          </tr>
+          <tr>
+            <td class="fit">VAT No:</td>
+            <td class="fit text-left">4120 199635</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="line-height: 1.2em;">
+        Mega Pack<br />
+        PO Box 14673<br />
+        Laudium<br />
+        0037
+      </div>
+    </div>
+
+    <div id="header-right" class="invoice-block right text-right small-block">
+      <h3>TAX INVOICE</h3>
+      <div style="display: flex; justify-content: end;" class="full">
+        <table style="display: inline-block;" class="fit text-left">
+          <tr>
+            <td class="fit" style="padding-right: 0.75em; padding-bottom: 0.5em;">Date:</td>
+            <td class="fit" style="padding-bottom: 0.5em;">{{invoice.date | date:'dd/MM/yyyy' }}</td>
+          </tr>
+          <tr>
+            <td rowspan="4" style="padding-right: 0.75em; vertical-align: top;">Bill To:</td>
+            <td>{{invoice.customer}}</td>
+          </tr>
+          <tr>
+            <td class="fit">{{invoice.addressLine1}}</td>
+          </tr>
+          <tr>
+            <td class="fit">{{invoice.addressLine2}}</td>
+          </tr>
+          <tr>
+            <td class="fit">{{invoice.addressLine3}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="invoice-body" class="invoice-block full">
+      <table id="invoice-lines" class="text-left">
+        <thead>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let line of invoice.lines">
+            <td>{{line.productDescription}}</td>
+            <td>{{line.quantity | currency: 'ZAR':'symbol-narrow' }}</td>
+            <td>{{line.confirmedUnitPrice}}</td>
+            <td>{{line.total | currency: 'ZAR':'symbol-narrow' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="footer-left" class="invoice-block footer-block">
+      <div style="margin-bottom: 1rem; display: flex; justify-content: end;" class="full">
+        <table class="text-left footer-table">
+          <tr>
+            <td>Bank:</td>
+            <td>ABSA</td>
+          </tr>
+          <tr>
+            <td>Branch Code:</td>
+            <td>632 - 005</td>
+          </tr>
+          <tr>
+            <td>Account No:</td>
+            <td>4055 277 664</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="footer-right" class="invoice-block footer-block right">
+      <table id="invoice-totals">
+        <tr>
+          <td style="width: 70%;">Deposit* (20%)</td>
+          <td>{{invoice.deposit | currency: 'ZAR':'symbol-narrow' }}</td>
+        </tr>
+        <tr>
+          <td>Subtotal</td>
+          <td>{{invoice.totalExlcudingDeposit | currency: 'ZAR':'symbol-narrow' }}</td>
+        </tr>
+        <tr>
+          <td>Tax</td>
+          <td>{{invoice.totalVAT | currency: 'ZAR':'symbol-narrow' }}</td>
+        </tr>
+        <tr class="total-divider">
+          <td colspan="2" style="border-right: none;"></td>
+        </tr>
+        <tr style="font-weight: bold;">
+          <td>Total</td>
+          <td>{{invoice.total | currency: 'ZAR':'symbol-narrow' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <span id="disclaimer" style="font-size: 80%;">*Note that every order contains a deposit of 20% and without this down payment, your order cannot be processed.</span>
+  </div>
+</div>
