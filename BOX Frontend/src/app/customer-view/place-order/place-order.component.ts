@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { DataService } from '../../services/data.services';
 import { AuthService } from '../../services/auth.service';
 import { EmailService } from '../../services/email.service';
+import { OrderService } from 'src/app/services/orders';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Route, Router, ActivatedRoute } from '@angular/router';
@@ -17,11 +18,11 @@ import { Users } from '../../shared/user';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { Md5 } from 'ts-md5';
+declare var $: any;
+/* import { Md5 } from 'ts-md5';
 import { UntypedFormBuilder } from '@angular/forms'
 import { environment } from 'src/environments/environment';
-declare function payfast_do_onsite_payment(param1 : any, callback: any): any;
-declare var $: any;
+declare function payfast_do_onsite_payment(param1 : any, callback: any): any; */
 
 @Component({
   selector: 'app-place-order',
@@ -63,21 +64,29 @@ export class PlaceOrderComponent {
     format: 'a4',
   });
 
-  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder, private httpComms: HttpClient,
+  /*Payment types list as in database
+  1	Pay immediately
+  2	Cash on delivery / collection
+  3	Credit */
+
+  /* Delivery types as in database
+  1	Delivery
+  2	Pick up */
+
+  constructor(private router: Router, private dataService: DataService, private formBuilder: FormBuilder,
     private activatedRoute: ActivatedRoute, private authService: AuthService, private emailService: EmailService,
-    private buildForm: UntypedFormBuilder) {
+    private orderService: OrderService) {
     this.placeOrderForm = this.formBuilder.group({
       deliveryType: ['Pick up', Validators.required],
-      shippingAddress: ['123 Fake Road, Pretoria North', Validators.required],
+      shippingAddress: ['123 Fake Road, Pretoria', Validators.required],
       paymentType: ['Pay immediately', Validators.required],
     });
-    console.log('production ' + environment.production);
   }
 
   ngOnInit() {
     //Retrieve the quote ID that leads to this order from url
     this.activatedRoute.paramMap.subscribe(params => {
-      //product with id 2 and description 'product description' will come as '2-product-description' so split it into array that is ['2', 'product-description']
+      //get quote ID from url
       let id = params.get('quoteID');
       if (id) this.quoteID = this.decodeQuoteID(id);
     });
@@ -97,6 +106,11 @@ export class PlaceOrderComponent {
     let email = this.authService.getEmailFromToken(token);
     if (email) {
       this.customer = await this.authService.getUserByEmail(email);
+
+      //set shipping address
+      this.placeOrderForm.patchValue({
+        shippingAddress: this.customer.address
+      })
     }
   }
 
@@ -259,23 +273,97 @@ export class PlaceOrderComponent {
   }
 
   //---------------------------------------- PLACE ORDER ----------------------------------------
-  async choosePaymentMethod() {
+  async initiateOrder() {
     let amount = 0;
-    //decrease credit balance for credit customers
-    if (this.paymentType?.value == "Credit") {
+    let deliveryTypeId = -1;
+    let paymentTypeId = -1;
 
-      let successMessage = "Your credit balance has been updated!";
-      this.placeOrder(successMessage)
-    }
-    else if (this.paymentType?.value == "Cash on delivery") {
-      amount = this.quote.totalBeforeVAT * 0.2;
-      console.log(amount);
-      await this.doOnSitePayment(amount);
-    }
-    else if (this.paymentType?.value == "Pay immediately") {
-      amount = this.quote.getTotalAfterVAT();
-      console.log(amount);
-      await this.doOnSitePayment(amount);
+    try {
+      switch (this.paymentType?.value) {
+        case "Pay immediately":
+          amount = this.quote.getTotalAfterVAT();
+          paymentTypeId = 1;
+          break;
+      
+        case "Cash on delivery":
+          amount = this.quote.totalBeforeVAT * 0.2;
+          paymentTypeId = 2;
+          break;
+
+        case "Credit":
+          amount = this.quote.getTotalAfterVAT();
+          paymentTypeId = 3;
+          break;
+
+        default:
+          throw 'Invalid payment type chosen';
+      }
+      
+      switch (this.deliveryType?.value) {
+        case "Delivery":
+          deliveryTypeId = 1;
+          break;
+      
+        case "Pick up":
+          deliveryTypeId = 2;
+          break;
+
+        default:
+          throw 'Invalid delivery type chosen';
+      }
+
+      let orderDetails = {
+        customerID: this.customer.id,
+        customerEmail: this.customer.email,
+        customerPhoneNo: this.customer.phoneNumber,
+        quoteID: this.quoteID,
+        amount: amount,
+        paymentTypeID: paymentTypeId,
+        deliveryTypeID: deliveryTypeId
+      }
+  
+      //return payment request VM object to post to payfast
+      this.orderService.initiatePlaceOrder(orderDetails).subscribe((payfastRequest: any) => { 
+        if (payfastRequest === null) {
+          throw 'Invalid payment type';
+        }
+        else {
+          // Create and submit the payment form 
+          const form = document.createElement('form'); 
+          form.method = 'POST'; 
+          form.action = 'https://sandbox.payfast.co.za/eng/process'; //change this URL for live payments
+          form.target = '_self';
+    
+          for (const key in payfastRequest) { 
+            if (payfastRequest.hasOwnProperty(key)) { 
+              const hiddenField = document.createElement('input'); 
+              hiddenField.type = 'hidden'; 
+              hiddenField.name = key; 
+              hiddenField.value = payfastRequest[key]; 
+              form.appendChild(hiddenField); 
+            } 
+          } 
+          document.body.appendChild(form); 
+          form.submit(); 
+          // Chain the next calls 
+          let result = this.orderService.completePayment(paymentTypeId, payfastRequest);
+          console.log(result);
+        }
+      });
+    } catch (error) {
+      //error message
+      Swal.fire({
+        icon: 'error',
+        title: "Oops...",
+        html: "Something went wrong and we could not process your order.",
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        console.log(result);
+      });
+
+      console.error('Error submitting order: ', error);      
     }
   }
 
@@ -355,9 +443,8 @@ export class PlaceOrderComponent {
       console.error('Error submitting order: ', error);
     }
   }
-
-  //Make payment methods from PayFast
-  getSignature(data: Map<string, string>): string {
+  
+  /* getSignature(data: Map<string, string>): string {
     let tmp = new URLSearchParams();
     data.forEach((v, k) => {
       tmp.append(k, v)
@@ -411,7 +498,7 @@ export class PlaceOrderComponent {
         console.log('failed payment')
       }
     });
-  }
+  } */
 
   //------------------------- SEND INVOICE VIA EMAIL -------------------------
   //create invoice PDF

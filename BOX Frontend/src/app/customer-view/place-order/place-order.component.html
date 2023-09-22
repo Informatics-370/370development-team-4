@@ -46,7 +46,7 @@
           </label><br />
 
           <label for="cash" class="form-label modal-form-label">
-            <input id="cash" type="radio" name="paymentType" formControlName="paymentType" value="Cash on delivery">Cash on delivery
+            <input id="cash" type="radio" name="paymentType" formControlName="paymentType" value="Cash on delivery">Cash on delivery / collection
           </label><br />
 
           <label for="credit" class="form-label modal-form-label">
@@ -126,9 +126,22 @@
         <button *ngIf="tab == 1" class="btn btn-create btn-red" (click)="cancel()">Cancel</button>
         <button *ngIf="tab > 1" class="btn btn-create" (click)="changeTab('previous')">Previous</button>
         <button *ngIf="tab != 3" class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
-        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="choosePaymentMethod()">{{orderBtnText}}</button>
+        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="initiateOrder()">{{orderBtnText}}</button>
       </div>
     </form>
+    
+    <hr class="hr hr-blurry">
+    <span class="p-3" style="font-size: 90%;">
+      <strong>Order info and tips:</strong>
+      <ul>
+        <li>20% of the order total is a deposit and must be paid before an order can be placed regardless of the payment type you choose. <strong>This amount is not refundable under any circumstances.</strong></li>
+        <li>Buying on credit will cause the order total to be deducted from your credit balance.</li>
+        <li>You still need to pay the deposit if you choose cash on collection / delivery as your payment type. You'll be required to pay the 20% deposit using our payment gateway and the remaining 80% when you receive your order.</li>
+        <li>Pay immediately means paying for the order completely right now.</li>
+        <li>Cash on collection / delivery is not available for orders that must be delivered outside Pretoria.</li>
+        <li><strong>Do not change your address until after your order is delivered</strong> because deliveries are always made to your account address. Changing the shipping address on this page will, thus, change your address.</li>
+      </ul>
+    </span>
   </div>
 </div>
 
