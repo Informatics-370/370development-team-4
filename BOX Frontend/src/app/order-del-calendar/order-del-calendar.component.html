@@ -1,13 +1,57 @@
-<h1 class="heading">
-    Scheduled Order Calendar
-</h1>
-
-<button routerLink="/order-schedule" class="backArrow">
-    <i class="fas fa-arrow-left"></i>
-    <span class="hover-text">Return to previous page</span>
-  </button>
-  
-<div class="calendar-container">
-    <full-calendar [options]="calendarOptions"></full-calendar>
-  </div> 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<div class="row page-row">
+  <!-- Menu bar -->
+  <div class="col-md-2"> <!-- Adjust the width as needed -->
+    <div class="app-menu"></div>
+  </div>
+  <div class="col-md-10"> <!-- Use the remaining space for the calendar and Unscheduled Orders -->
+    <div class="calendar-wrapper">
+      <div class="calendar">
+        <div class="calendar-header">
+          <h2 class="monthHeading" contenteditable="true" (blur)="updateMonthYear($event)">{{ currentMonth | date: 'MMMM y' }}</h2>
+        </div>
+        
+        <div>
+          <button (click)="previousMonth()" class="previousMonth">Previous Month</button>
+        </div>
+        <div>
+          <button (click)="nextMonth()" class="nextMonth">Next Month</button>
+        </div>
+        <div class="calendar-table-wrapper">
+          <table class="calendar-table">
+            <thead class="fixed-header">
+              <tr>
+                <th *ngFor="let day of daysOfWeek">{{ day }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let week of weeks">
+                <td *ngFor="let day of week" class="calendar-cell" [ngClass]="{'current-day': isCurrentDay(day?.date || 0), 'inactive-day': !day.isActive}">
+                  {{ day?.date }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="unscheduled-orders">
+        <h2>Unscheduled Orders</h2>
+        <div class="event" draggable="true" (dragstart)="onDragStart($event)" (dragend)="onDragEnd($event)">
+          <!-- Event content -->
+       
+        <div class="event">
+          <h3>Event 1</h3>
+          <p>Date: September 25, 2023</p>
+          <p>Time: 2:00 PM - 4:00 PM</p>
+        </div>
+    
+        <!-- Dummy Event 2 -->
+        <div class="event">
+          <h3>Event 2</h3>
+          <p>Date: September 27, 2023</p>
+          <p>Time: 10:00 AM - 12:00 PM</p>
+        </div>  
+      </div>   
+       </div>
+    </div>
+  </div>
+</div>
