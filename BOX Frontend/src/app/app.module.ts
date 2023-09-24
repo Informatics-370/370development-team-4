@@ -67,6 +67,8 @@ import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 
 
 @NgModule({
@@ -131,7 +133,7 @@ import { QuotesComponent } from './quotes/quotes.component';
         MessagesComponent,
         OrderDeliveryScheduleComponent,
         OrderDelCalendarComponent,
-        QuotesComponent
+        QuotesComponent,
         
   ],
   imports: [
@@ -141,7 +143,8 @@ import { QuotesComponent } from './quotes/quotes.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    FullCalendarModule
+    FullCalendarModule,
+    DragDropModule
  ],
   providers: [],
   bootstrap: [AppComponent]
