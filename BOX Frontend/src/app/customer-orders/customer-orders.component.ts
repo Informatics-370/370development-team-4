@@ -5,8 +5,8 @@ import { take, lastValueFrom } from 'rxjs';
 declare var $: any;
 import { OrderVM } from "../shared/order-vm";
 import { OrderLineVM } from '../shared/order-line-vm';
+import { OrderVMClass } from '../shared/order-vm-class';
 import { VAT } from '../shared/vat';
-import { event } from 'jquery';
 
 @Component({
   selector: 'app-customer-orders',
@@ -14,10 +14,10 @@ import { event } from 'jquery';
   styleUrls: ['./customer-orders.component.css']
 })
 export class CustomerOrdersComponent {
-  orders: VATInclusiveOrder[] = []; //hold all orders
-  filteredOrders: VATInclusiveOrder[] = []; //orders to show user
-  selectedOrder!: VATInclusiveOrder; //specific order to show user
-  vat!: VAT;
+  orders: OrderVMClass[] = []; //hold all orders
+  filteredOrders: OrderVMClass[] = []; //orders to show user
+  selectedOrder!: OrderVMClass; //specific order to show user
+  allVATs: VAT[] = [];
   searchTerm: string = '';
   //display messages to user
   orderCount = -1;
@@ -33,7 +33,6 @@ export class CustomerOrdersComponent {
   6 Completed
   */
 
-
   constructor(private dataService: DataService) { }
 
   ngOnInit() {
@@ -44,43 +43,49 @@ export class CustomerOrdersComponent {
     try {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetAllVAT().pipe(take(1)));
+      const getOrdersPromise = lastValueFrom(this.dataService.GetAllCustomerOrders().pipe(take(1)));
 
-      const [allVAT] = await Promise.all([
-        getVATPromise
+      const [allVAT, allOrders] = await Promise.all([
+        getVATPromise,
+        getOrdersPromise
       ]);
 
       //put results from DB in global arrays
-      this.vat = allVAT[0];
+      this.allVATs = allVAT;
 
-      await this.getOrdersPromise();
+      //put orders in order class
+      this.filteredOrders = []; //empty array
+      allOrders.forEach((order: OrderVM) => {
+        let applicableVAT = this.getApplicableVAT(order.date); //get vat applicable to that date
+        let orderClassObj = new OrderVMClass(order, order.orderLines, applicableVAT);
+        this.filteredOrders.push(orderClassObj);
+      });
+
+      //sort orders by ID so later orders are first
+      this.filteredOrders.sort((current, next) => {
+        return next.customerOrderID - current.customerOrderID;
+      });
+  
+      this.orders = this.filteredOrders; //store all the quote someplace before I search below
+      this.orderCount = this.filteredOrders.length; //update the number of quotes
+      this.loading = false;
+
     } catch (error) {
       this.orderCount = -1;
       this.loading = false;
       this.error = true;
+      console.error('Error retrieving data:', error);
     }
   }
 
-  async getOrdersPromise(): Promise<any> {
-    try {
-      let allOrders: OrderVM[] = await lastValueFrom(this.dataService.GetAllCustomerOrders().pipe(take(1)));
-      this.filteredOrders = [];
-
-      allOrders.forEach((ord: OrderVM) => {
-        let theOrder: VATInclusiveOrder = new VATInclusiveOrder(ord, this.vat.percentage);
-        this.filteredOrders.push(theOrder);
-      });
-
-      this.orders = this.filteredOrders; //store all the orders someplace before I search below
-      this.orderCount = this.filteredOrders.length; //update the number of orders
-
-      console.log('All order array: ', this.filteredOrders);
-      this.loading = false; //stop showing loading message
-
-      return 'Successfully retrieved orders from the database';
-    } catch (error) {
-      console.error('An error occurred while retrieving orders: ' + error);
-      throw new Error('An error occurred while retrieving orders: ' + error);
+  getApplicableVAT(date: Date): VAT {
+    for (let i = this.allVATs.length - 1; i >= 0; i--) {
+      if (date >= this.allVATs[i].date) {
+        return this.allVATs[i];
+      }
     }
+
+    return this.allVATs[this.allVATs.length - 1]; // Fallback to the latest VAT if no applicable VAT is found
   }
 
   /*------------------SEARCH ORDERS----------------------*/
@@ -91,7 +96,6 @@ export class CustomerOrdersComponent {
       //concatenate all the order info in one variable so user can search using any of them
       let ordInformation: string = String('CUSORDR' + this.orders[i].customerOrderID + ' ' +
         this.orders[i].customerFullName + ' ' +
-        this.orders[i].total + ' ' +
         this.orders[i].orderStatusDescription).toLowerCase();
 
       if (ordInformation.includes(this.searchTerm.toLowerCase())) {
@@ -126,7 +130,7 @@ export class CustomerOrdersComponent {
         //statusID 2 = 'In progress'
         this.dataService.UpdateOrderStatus(orderID, 2).subscribe((result) => {
           console.log("Result", result);
-          this.getOrdersPromise(); //refresh list
+          this.getDataFromDB(); //refresh list
         });
       });
     } catch (error) {
@@ -138,58 +142,9 @@ export class CustomerOrdersComponent {
   async openViewOrderModal(id: number) {
     //get order to show details of
     let theOrder = await lastValueFrom(this.dataService.GetOrder(id).pipe(take(1)));
-    this.selectedOrder = new VATInclusiveOrder(theOrder, this.vat.percentage);
-    console.log('Order before adding', this.selectedOrder);
+    let applicableVAT = this.getApplicableVAT(theOrder.date); //get vat applicable to that date
+    this.selectedOrder = new OrderVMClass(theOrder, theOrder.orderLines, applicableVAT);
+    console.log('Order before showing', this.selectedOrder);
     $('#viewOrder').modal('show');
-  }
-}
-
-class VATInclusiveOrder {
-  customerOrderID: number;
-  userId: string;
-  orderDeliveryScheduleID: number;
-  date: Date;
-  deliveryPhoto: string;
-  customerFullName: string;
-  orderStatusID: number;
-  orderStatusDescription: string;
-  orderTotalExcludingVAT: number; //total before negotiations or discount
-  customerOrders: OrderLineVM[];
-  vatPercentage: number; //whole number e.g. 25 for 25%
-  totalVAT: number; //total VAT on this order
-  total: number; //order total including VAT
-  checked!: boolean; //keep track of process order checkbox value
-
-  constructor(order: OrderVM, vatPercentage: number) {
-    this.customerOrders = order.orderLines;
-    this.orderTotalExcludingVAT = 0;
-    this.vatPercentage = vatPercentage;
-    this.customerOrderID = order.customerOrderID;
-    this.orderStatusID = order.orderStatusID;
-    this.orderStatusDescription = order.orderStatusDescription;
-    this.orderDeliveryScheduleID = order.deliveryScheduleID;
-    this.date = order.date;
-    this.deliveryPhoto = order.deliveryPhoto;
-    this.userId = order.customerId
-    this.customerFullName = order.customerFullName;
-    this.total = this.orderTotalExcludingVAT * (1 + vatPercentage/100);
-    this.totalVAT = this.getTotalVAT();
-
-    if (this.orderStatusID == 1) { //if order has status of Placed, then it can be changed to In progress
-      this.checked = false; //set checkbox value
-    }
-  }
-
-  getOrderTotalExcludingVAT(): number {
-    let totalBeforeVAT = 0;
-    this.customerOrders.forEach(ordLine => {
-      totalBeforeVAT += ordLine.confirmedUnitPrice * ordLine.quantity;
-    });
-
-    return totalBeforeVAT;
-  }
-  
-  getTotalVAT(): number {
-    return this.orderTotalExcludingVAT * this.vatPercentage / 100;
   }
 }

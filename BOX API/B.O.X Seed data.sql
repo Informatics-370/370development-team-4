@@ -1,6 +1,34 @@
 USE [BOX]
 GO
 
+--Step 1:
+DROP INDEX IX_Customer_EmployeeId ON [BOX].[dbo].[Customer];
+
+--Step 2:
+ALTER TABLE [BOX].[dbo].[Customer]
+DROP CONSTRAINT FK_Customer_Employee_EmployeeId;
+
+--Step 3:
+ALTER TABLE [BOX].[dbo].[Customer]
+ALTER COLUMN [EmployeeId] NVARCHAR(50) NULL;
+
+--Step 4:
+CREATE INDEX IX_Customer_EmployeeId ON [BOX].[dbo].[Customer] ([EmployeeId]);
+
+--Step 1:
+DROP INDEX IX_Customer_TitleId ON [BOX].[dbo].[Customer];
+
+--Step 2:
+ALTER TABLE [BOX].[dbo].[Customer]
+DROP CONSTRAINT FK_Customer_Title_TitleId;
+
+--Step 3:
+ALTER TABLE [BOX].[dbo].[Customer]
+ALTER COLUMN [TitleId] NVARCHAR(50) NULL;
+
+--Step 4:
+CREATE INDEX IX_Customer_TitleId ON [BOX].[dbo].[Customer] ([TitleId]);
+
 INSERT INTO [dbo].[Customer_Order_Status]
            ([Description])
      VALUES
@@ -15,7 +43,7 @@ GO
 INSERT INTO [dbo].[Quote_Duration]
            ([Duration])
      VALUES
-           (7)
+           (30)
 GO
 
 INSERT INTO [dbo].[Quote_Status]
@@ -25,7 +53,8 @@ INSERT INTO [dbo].[Quote_Status]
            ('Accepted'),
            ('Rejected'),
            ('Rejected and will renegotiate'),
-           ('Expired')
+           ('Expired'),
+		   ('Rejected; Successfully renegotiated')
 GO
 
 INSERT INTO [dbo].[Quote_Request_Status]
@@ -64,13 +93,12 @@ INSERT INTO [dbo].[cost_Price_Formula_Variables]
 GO
 
 INSERT INTO [dbo].[Reject_Reason]
-           ([PriceMatchFileID]
-           ,[Description])
+           ([Description])
      VALUES
-           (null,  'I got a better price elsewhere. Can you beat that price?'),
-           (null, 'I got a better price elsewhere.'),
-           (null, 'I don''t want these products anymore.'),
-           (null, 'Other')
+           ('I got a better price elsewhere. Can you beat it?'),
+           ('I got a better price elsewhere.'),
+           ('I don''t want these products anymore.'),
+           ('Other')
 GO
 
 INSERT INTO [dbo].[Title]
@@ -85,12 +113,25 @@ GO
 
 INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp])
 VALUES
-    (NEWID(), 'Administrator', 'ADMINISTRATORS', NEWID()),
+    (NEWID(), 'Administrators', 'ADMINISTRATORS', NEWID()),
     (NEWID(), 'Employee', 'EMPLOYEE', NEWID()),
     (NEWID(), 'Customer', 'CUSTOMER', NEWID()),
     (NEWID(), 'Receptionist', 'RECEPTIONIST', NEWID()),
     (NEWID(), 'Delivery Driver', 'DELIVERY DRIVER', NEWID()),
     (NEWID(), 'Warehouse Staff', 'WAREHOUSE STAFF', NEWID()),
-    (NEWID(), 'Managers', 'MANAGERS', NEWID()),
-	(NEWID(), 'ADMIN', 'ADMIN', NEWID()),
+    (NEWID(), 'Managers', 'MANAGERS', NEWID())
 GO
+
+SELECT name
+FROM sys.tables
+
+select * from vat
+select * from title
+select * from reject_reason
+select * from quote_status
+select * from quote_duration
+select * from payment_type
+select * from customer_order_status
+select * from credit_application_status
+select * from cost_price_formula_variables
+select * from bulk_discount

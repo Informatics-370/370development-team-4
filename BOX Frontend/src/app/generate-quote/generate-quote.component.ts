@@ -7,7 +7,6 @@ import { QuoteLineVM } from '../shared/quote-line-vm';
 import { QuoteVMClass } from '../shared/quote-vm-class';
 import { VAT } from '../shared/vat';
 import { FixedProductVM } from '../shared/fixed-product-vm';
-import { Customer } from '../shared/customer';
 declare var $: any;
 
 @Component({
@@ -24,11 +23,12 @@ export class GenerateQuoteComponent implements OnChanges {
   fixedProducts: FixedProductVM[] = [];
   filteredFixedProducts: FixedProductVM[] = [];
   vat!: VAT;
-  customer!: Customer;
 
   //messages to user
   loading = true; //is true when data is successfully retrieved from backend
   error: boolean = false;
+  outOfStock = false;
+  invalidPrices = false;
 
   //forms logic
   addQuoteLineForm: FormGroup;
@@ -52,12 +52,9 @@ export class GenerateQuoteComponent implements OnChanges {
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['quoteRequestID']) {
       // The quoteRequestID input property has changed; Perform actions based on the change
-      console.log('quoteRequestID changed');
-
       //however, when the modal opens for the first time, the ngOnChanges considers this a change too. That will cause getQuoteRequest to fire twice. We don't want that
       const previousQuoteRequestID = changes['quoteRequestID'].previousValue;
       if (previousQuoteRequestID != 0) { //if it's 0, this modal is opening for the first time
-        console.log('previousQuoteRequestID', previousQuoteRequestID);
         this.error = false;
         this.loading = true;
         await this.getQuoteRequest();
@@ -82,7 +79,6 @@ export class GenerateQuoteComponent implements OnChanges {
       this.vat = currentVAT;
       this.filteredFixedProducts = allProducts;
       this.fixedProducts = this.filteredFixedProducts; //store all products someplace before I filter below
-      console.log('All products: ', this.fixedProducts, 'and current VAT: ', this.vat);
 
       await this.getQuoteRequest();
     } catch (error) {
@@ -159,6 +155,8 @@ export class GenerateQuoteComponent implements OnChanges {
     this.selectedProduct = this.fixedProducts.find(fp => fp.fixedProductID == parseInt(this.selectedProductID));
 
     //display out of stock message for products that are out of stock
+    if (this.selectedProduct && this.selectedProduct.quantityOnHand > 0) this.outOfStock = false;
+    else this.outOfStock = true;
   }
 
   addQuoteLine() {
@@ -181,7 +179,6 @@ export class GenerateQuoteComponent implements OnChanges {
       };
 
       this.selectedQuote.addNewQuoteLine(newQuoteLine);
-      console.log('Quote after adding', this.selectedQuote);
 
       //reset form
       this.selectedProductID = 'NA'; //reset product dropdown
@@ -192,8 +189,6 @@ export class GenerateQuoteComponent implements OnChanges {
   
   //-------------------CREATE QUOTE LOGIC-------------------
   generateQuote() {
-    //check that no confirmed unit price is 0
-
     try {
       //put quote data in VM
       let newQuote: QuoteVM = {
@@ -210,11 +205,18 @@ export class GenerateQuoteComponent implements OnChanges {
         priceMatchFileB64: '',
         customerId: this.selectedQuote.customerId,
         customerFullName: '',
+        customerEmail: '',
         lines: []
       };
 
       //put quote line data in VM
       this.selectedQuote.lines.forEach(line => {
+        //check that no confirmed unit price is 0
+        if (line.confirmedUnitPrice < 1) {
+          this.invalidPrices = true;
+          throw 'price is 0';
+        }
+
         let newQuoteLine: QuoteLineVM = {
           quoteRequestLineID: 0,
           quoteLineID: 0,
@@ -230,20 +232,19 @@ export class GenerateQuoteComponent implements OnChanges {
         newQuote.lines.push(newQuoteLine);
       });
 
-      console.log('New quote: ', newQuote);
-
       this.dataService.AddQuote(newQuote).subscribe(
         (result: any) => {
-          console.log('Successfully updated quote! ', result);
+          console.log('Successfully added quote! ', result);
           //send result back
           this.resultEvent.emit(true); // Emit the boolean parameter
         }
       );
     }
     catch (error) {
+      if (error != 'price is 0')
+        this.resultEvent.emit(false); //send result back
+      
       console.error('Error creating quote', error);
-      //send result back
-      this.resultEvent.emit(false);
     }
   }
 }

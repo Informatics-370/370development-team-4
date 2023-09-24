@@ -19,6 +19,7 @@ using Microsoft.ML;
 using Microsoft.Extensions.DependencyInjection;
 using Twilio.Clients;
 using BOX.Hub;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,10 @@ builder.Services.AddCors(options =>
   });
 });
 
+//HANGFIRE
+builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+builder.Services.AddTransient<RecurringJobsService>(); //register recurring job service so I can call recurring jobs when app runs
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -151,6 +156,11 @@ app.UseRouting(); // Add this line to enable routing
 
 app.UseCors();
 app.UseHttpsRedirection();
+
+app.UseHangfireDashboard(); //use hangfire dashboard
+//run recurring jobs
+RecurringJob.AddOrUpdate<RecurringJobsService>("ExpireQuotes", c => c.ExpireQuotes(), Cron.Daily);
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>

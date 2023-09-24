@@ -31,11 +31,11 @@
             <fa-icon class="fa-icon-large" [icon]="['fas', 'message']"></fa-icon>
             Messages <span class="badge bg-secondary">{{ messages.length }}</span>
           </a><pre></pre>
-          <a href="#" class="nav-link py-2 ripple">
+          <a [routerLink]="'/order-schedule'" class="nav-link py-2 ripple">
             <fa-icon class="fa-icon-large" [icon]="['fas', 'clipboard-list']"></fa-icon>
             Delivery Schedule
           </a><pre></pre>
-          <a [routerLink]="'/customer-orders'" class="nav-link py-2 ripple">
+          <a [routerLink]="'/manage-orders'" class="nav-link py-2 ripple">
             <fa-icon class="fa-icon-large" [icon]="['fas', 'cart-flatbed']"></fa-icon>
             Customer Orders
           </a><pre></pre>

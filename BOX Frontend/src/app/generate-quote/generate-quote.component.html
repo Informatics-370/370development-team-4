@@ -31,10 +31,13 @@
           required min="1" step="0.01" (keyup)="selectedQuote.refreshTotals()"></td>
         <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
       </tr>
+      <tr style="color: #E33131; font-size: 80%;" *ngIf="invalidPrices">
+        <td colspan="5">Every product must have a valid price.</td>
+      </tr>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="4" class="form-heading">Add new product to quote</td>
+        <td colspan="5" class="form-heading">Add new product to quote</td>
       </tr>
       <tr [formGroup]="addQuoteLineForm">
         <td>
@@ -58,8 +61,11 @@
             min="1" step="1">
         </td>
         <td class="text-center">
-          <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()">Add</button>
+          <button class="btn btn-create quote-form-submit" (click)="addQuoteLine()" [disabled]="outOfStock">Add</button>
         </td>
+      </tr>
+      <tr style="color: #E33131; font-size: 80%;" *ngIf="outOfStock">
+        <td colspan="5">This product is out of stock</td>
       </tr>
     </tfoot>
   </table><br />
@@ -79,7 +85,7 @@
     </tr>
   </table>
   <div class="form-submit-div" style="width: 100%;">
-    <button class="btn btn-create modal-form-submit" data-bs-dismiss="modal" (click)="generateQuote()">Generate Quote</button>
+    <button class="btn btn-create modal-form-submit" (click)="generateQuote()">Generate Quote</button>
   </div>
   </div>
 </div>

@@ -66,6 +66,9 @@ import { MessagesComponent } from './messages/messages.component';
 import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
+import { QuotesComponent } from './quotes/quotes.component';
+
+
 @NgModule({
   declarations: [ 
         AppComponent,
@@ -128,6 +131,8 @@ import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calend
         MessagesComponent,
         OrderDeliveryScheduleComponent,
         OrderDelCalendarComponent,
+        QuotesComponent
+        
   ],
   imports: [
     BrowserModule,
@@ -136,7 +141,7 @@ import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calend
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    FullCalendarModule,
+    FullCalendarModule
  ],
   providers: [],
   bootstrap: [AppComponent]

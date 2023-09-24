@@ -29,7 +29,8 @@
     height: calc(100vh - 48px);
     padding-top: 0.5rem;
     overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    overflow-y: auto;
+    /* Scrollable contents if viewport is shorter than content. */
 }
 
 /* ---------------------------------------- Menu Items ------------------------------------------ */
@@ -45,7 +46,7 @@ a {
 
 a:hover {
     /*Navigation Item Color*/
-    background: rgba(221,221,221, 0.38);
+    background: rgba(221, 221, 221, 0.38);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10.2px);
     -webkit-backdrop-filter: blur(10.2px);
@@ -58,6 +59,7 @@ a:hover {
 .item-active {
     background: #00F2C8;
     color: #373435;
+
     .fa-icon-large {
         color: #373435;
     }

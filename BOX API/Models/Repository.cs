@@ -317,6 +317,12 @@ namespace BOX.Models
             }
         }
 
+        public async Task<Quote[]> GetQuotesByStatus(int statusId)
+        {
+            IQueryable<Quote> query = _appDbContext.Quote.Where(c => c.QuoteStatusID == statusId);
+            return await query.ToArrayAsync();
+        }
+
         public async Task UpdateQuoteAsync(Quote quote)
         {
             // Update the Quote entity in the data storage
@@ -518,6 +524,12 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
+        public async Task<Customer_Order[]> GetCustomerOrdersByStatus(int statusId)
+        {
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.CustomerOrderStatusID == statusId);
+            return await query.ToArrayAsync();
+        }
+
         //------------------------------------------------------ Customer Order LINE------------------------------------------------------------
         //gets all Customer Order lines for a specific order
         public async Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId)
@@ -687,19 +699,24 @@ namespace BOX.Models
         }
 
         //----------------------------------------------- REJECT REASON -----------------------------------------------
+        public Task<Reject_Reason[]> GetAllRejectReasonsAsync()
+        {
+            IQueryable<Reject_Reason> query = _appDbContext.Reject_Reason;
+            return query.ToArrayAsync();
+        }
+
         public async Task<Reject_Reason> GetRejectReasonAsync(int rejectReasonId)
         {
-            var query = _appDbContext.Reject_Reason.Where(c => c.RejectReasonID == rejectReasonId).ToArray();
-            Reject_Reason rejectReason = query[0];
+            IQueryable<Reject_Reason> query = _appDbContext.Reject_Reason.Where(c => c.RejectReasonID == rejectReasonId);
+            return await query.FirstOrDefaultAsync();
+        }
 
-            //get price match file if there is
-            if (rejectReason.PriceMatchFileID != null) //if there is a price match file
-            {
-                var priceMatchFile = _appDbContext.Price_Match_File.Where(c => c.PriceMatchFileID == rejectReason.PriceMatchFileID).FirstOrDefault();
-                rejectReason.Price_Match_File = priceMatchFile;
-            }
 
-            return rejectReason;
+        //----------------------------------------------- PRICE MATCH FILE -----------------------------------------------
+        public async Task<Price_Match_File> GetPriceMatchFileByQuoteAsync(int quoteId)
+        {
+            IQueryable<Price_Match_File> query = _appDbContext.Price_Match_File.Where(c => c.QuoteID == quoteId);
+            return await query.FirstOrDefaultAsync();
         }
 
         //----------------------------------- CUSTOMER -----------------------------------

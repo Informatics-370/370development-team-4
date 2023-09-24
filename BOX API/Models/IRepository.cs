@@ -82,6 +82,7 @@ namespace BOX.Models
         Task<Quote> GetQuoteAsync(int quoteId);
         Task<Quote[]> GetQuotesByCustomerAsync(string customerId);
         Quote GetCustomerMostRecentQuote(string customerId); //get quote customer is using to place an order synchronously because it's used in create order function
+        Task<Quote[]> GetQuotesByStatus(int statusId);
         Task UpdateQuoteAsync(Quote quote);
 
         //-----------------------------------------------QUOTE LINE---------------------------------------------
@@ -123,6 +124,7 @@ namespace BOX.Models
         Task<Customer_Order[]> GetOrdersByCustomerAsync(string customerId);
         Customer_Order GetOrdersByCustomer(string customerId, int quoteId); //get orders for this customer synchronously
         Task<Customer_Order[]> GetCustomerOrdersByDeliverySchedule(int orderDeliveryScheduleId);
+        Task<Customer_Order[]> GetCustomerOrdersByStatus(int statusId);
 
         //-----------------------------------------------Customer Order LINE---------------------------------------------
         Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
@@ -167,7 +169,11 @@ namespace BOX.Models
         Task<string>GetUserFullNameAsync(string userId);
 
         //----------------------------------------------- REJECT REASON -----------------------------------------------
+        Task<Reject_Reason[]> GetAllRejectReasonsAsync();
         Task<Reject_Reason> GetRejectReasonAsync(int rejectReasonId);
+
+        //----------------------------------------------- PRICE MATCH FILE -----------------------------------------------
+        Task<Price_Match_File> GetPriceMatchFileByQuoteAsync(int quoteId);
 
         //----------------------------------------------- REPORTS -----------------------------------------------
         Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate);

@@ -4,7 +4,6 @@ import { DataService } from '../../services/data.services';
 import { CartService } from '../../services/customer-services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { Cart } from '../../shared/customer-interfaces/cart';
-import { HttpClient } from '@angular/common/http';
 import { QuoteVM } from '../../shared/quote-vm';
 import { QuoteLineVM } from '../../shared/quote-line-vm';
 import { Customer } from '../../shared/customer';
@@ -34,7 +33,7 @@ export class CartPageComponent {
   lastName: string = '';
   cartTotal = 0; */
 
-  constructor(private router: Router, private dataService: DataService, private http: HttpClient, private cartService: CartService,
+  constructor(private router: Router, private dataService: DataService, private cartService: CartService,
     private authService: AuthService) { }
 
   //---------------------------- LOAD CART PAGE ----------------------------
@@ -64,7 +63,6 @@ export class CartPageComponent {
       try {
         //if they have an active qr (a quote request that hasn't been attended to), don't let them request a new quote
         this.dataService.CheckForActiveQuoteRequest(this.customerID).subscribe((result) => {
-          console.log('active quote request', result);
           if (result != null) {
             this.cannotRequest = true;
             this.cannotRequestReason = 'Already requested';
@@ -72,16 +70,15 @@ export class CartPageComponent {
         });
   
         //if they already can't request due to already having an active QR, there's no point in checking for an quote
-        if (this.cannotRequest == true) {
-          //if they have an active quote, quote with status that isn't 2 (Accepted), or 5 (Expired)
+        if (!this.cannotRequest) {
+          //if they have an active quote, quote with status that is 1 (Generated), or 4 (Rejected and will renegotiate)
           this.dataService.GetCustomerMostRecentQuote(this.customerID).subscribe((result) => {
-            if (result.quoteStatusID == 2 || result.quoteStatusID == 5) {
+            if (result.quoteStatusID == 1 || result.quoteStatusID == 4) {
               this.cannotRequest = true;
               this.cannotRequestReason = 'Already requested';          
             }
           });
-        }
-  
+        }  
       } catch (error) {
         console.error(error);
       }      
@@ -137,6 +134,14 @@ export class CartPageComponent {
   //remove item from cart
   removeFromCart(cartItem: Cart) {
     this.cartService.removeFromCart(cartItem);
+
+    //delete custom products that are removed from cart
+    if (!cartItem.isFixedProduct) {
+      this.dataService.DeleteCustomProduct(cartItem.productID).subscribe((result) => {
+        console.log('Successfully deleted', result);
+      });
+    }
+
     this.refreshCart();
   }
 
@@ -170,6 +175,7 @@ export class CartPageComponent {
         priceMatchFileB64: '',
         customerId: this.customerID ? this.customerID : '',
         customerFullName: '',
+        customerEmail: '',
         lines: []
       }
 
@@ -190,8 +196,6 @@ export class CartPageComponent {
         newQR.lines.push(qrLine); //put quote request line in QR
       });
 
-      console.log('new quote request before posting', newQR);
-
       //post to backend
       try {
         this.dataService.AddQuoteRequest(newQR).subscribe((result) => {
@@ -203,12 +207,11 @@ export class CartPageComponent {
           Swal.fire({
             icon: 'success',
             title: "Requested",
-            html: "You've successfully requested a quote! An employee from MegaPack will contact you soon.",
+            html: "You've successfully requested a quote. Your dedicated salesperson will contact you soon.",
             timer: 3000,
             timerProgressBar: true,
             confirmButtonColor: '#32AF99'
           }).then((result) => {
-            console.log(result);
           });
 
           this.router.navigate(['/my-quotes']); //redirect to quotes page

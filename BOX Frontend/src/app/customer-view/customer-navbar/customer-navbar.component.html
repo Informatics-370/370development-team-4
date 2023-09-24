@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Mega Pack</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
@@ -10,15 +11,18 @@
           <a class="nav-link active" aria-current="page" [routerLink]="['/customer-homepage']">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" [routerLink]="['/products']">Product</a>
+          <a class="nav-link active" aria-current="page" [routerLink]="['/products']">Products</a>
         </li>
         <li class="cart">
           <div class="cart-icon">
             <a class="nav-link active" aria-current="page" [routerLink]="['/cart']">Cart</a>
           </div>
         </li>
-        <li class="nav-item" (click)="testSwal()">
-          alert test buttn
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" [routerLink]="['/my-quotes']">My Quotes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" [routerLink]="['/order-history']">Order history</a>
         </li>
       </ul>
       <ul class="navbar-nav ml-auto">

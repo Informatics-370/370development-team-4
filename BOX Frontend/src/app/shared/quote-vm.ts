@@ -20,5 +20,6 @@ export interface QuoteVM {
   //generic info
   customerId: string;
   customerFullName: string;
+  customerEmail: string;
   lines: QuoteLineVM[];
 }

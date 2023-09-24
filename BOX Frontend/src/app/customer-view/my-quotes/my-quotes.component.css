@@ -29,6 +29,13 @@
   color: black;
 }
 
+.quote-status {
+  font-weight: 600;
+  color: black;
+  line-height: 0.9em;
+  text-align: right;
+}
+
 .title {
   font-size: 110%;
 }
@@ -49,14 +56,48 @@
   margin: 10px 0 5px 0;
 }
 
-.product-img-container { text-align: center;}
+.product-img-container { text-align: center; position: relative; }
 
-.product-img {
-  width: fit-content;
+.product-img { 
   max-width: 100%;
-  max-height: 80px;
-  margin: auto;
+  max-height: 99%;
 }
+
+/*STYLING FOR DOWNLOAD CUSTOM PROD FILE BTN*/
+.download-img {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: auto;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  opacity: 1;
+  display: block;
+  transition: .5s ease;
+  backface-visibility: hidden;
+}
+
+.download-overlay {
+  cursor: pointer;
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+.download-container:hover .download-img {
+  opacity: 0.2;
+}
+
+.download-container:hover .download-overlay {
+  opacity: 1;
+}
+
+.download-btn { color: black; }
 
 .quote-line-footer {
   margin-top: 0.65em;
@@ -135,4 +176,110 @@ td {
   margin-top: -5px;
   cursor: pointer;
   font-weight: normal;
+} */
+
+.download {
+  background-color: white;
+  border: 1px solid #32AF99;
+  color: #32AF99;
+  /* color: #373435; */
+  margin-left: 0;
+  padding: 2px 1rem;
+  margin-bottom: 1rem;
+}
+
+.download:hover {
+  background-color: #32AF99;
+  color: white;
+}
+
+.imageName { margin-left: 0.75em; font-size: 85%; }
+
+#invoice-container {
+  width: 90%; 
+  padding: 1rem; 
+  margin: auto; 
+  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+}
+
+.invoice-block {
+  width: 48%;
+  display: inline-block;
+  margin: 1rem;
+  margin-left: 0;
+  padding: 1rem 0.5rem;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.small-block { height: 25vh; }
+
+.right { float: right; margin: 1rem 0; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+.full { width: 100%; }
+.half { width: 40%; display: inline-block; }
+.fit { width: fit-content;}
+
+#invoice-lines thead th {
+  border-bottom: 1px solid black;
+}
+
+#invoice-lines tbody tr td {
+  padding: 0.25em 0.5em;
+}
+
+.footer-block { height: 20vh; }
+
+.footer-table { display: inline-block; }
+
+.footer-table tr td {
+  padding-right: 0.75rem;
+  padding-bottom: 0.5em;
+  width: fit-content;
+}
+
+#invoice-totals { width: 100%; text-align: right; }
+
+#invoice-totals tr td {
+  padding: 0.25em 0.75rem;
+}
+
+#invoice-totals tr td:first-child {
+  border-right: 1px solid black;
+}
+
+#pleaseWait {
+  background-color: black; 
+  opacity: 0.7; 
+  width: 100vw; 
+  height: 200vh; 
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#pleaseWaitText {
+  z-index: 100;
+  color: white;
+  opacity: 1;
+  font-size: 1.2em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* .red-outline {
+  background-color: white;
+  border: 1px solid #E33131;
+  color: #E33131;
+}
+
+.red-outline:hover {
+  background-color: #E33131;
+  color: white;
 } */

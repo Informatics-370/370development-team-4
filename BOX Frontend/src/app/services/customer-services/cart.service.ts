@@ -5,21 +5,14 @@ import { Observable, forkJoin } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { CustomProductVM } from 'src/app/shared/custom-product-vm';
-/* import { Discount } from '../../shared/discount';
-import { VAT } from '../../shared/vat';
- */
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  //!!PRICES IN CART ARE VAT INCLUSIVE!!
   cart: Cart[] = [];
   fixedProducts: FixedProductVM[] = [];
   customProducts: CustomProductVM[] = [];
-  /* discountList: Discount[] = []; //list of all discounts
-  applicableDiscount: Discount | null = null;
-  vat!: VAT; */
 
   constructor(private dataService: DataService) {
     this.loadCartItems();
@@ -37,9 +30,6 @@ export class CartService {
       tap(([allFixed, allCustom]) => {
         this.fixedProducts = allFixed;
         this.customProducts = allCustom;
-  
-        console.log('All fixed products from cart service: ', this.fixedProducts);
-        console.log('All custom products from cart service: ', this.customProducts);
       }),
       //map each value emitted to a constant value- void 0 (aka undefined). Since getProducts doesn't return any values, this ensures that the resulting observable emits nothing but still completes successfully.
       map(() => void 0)
@@ -73,7 +63,6 @@ export class CartService {
   loadCartItems() {
     //Retrieve cart list from local storage; if there's nothing in cart, return empty array
     this.cart = JSON.parse(localStorage.getItem("MegaPack-cart") || "[]");
-    console.log('cart from load cart items function', this.cart);
   }
 
   saveCart() {
@@ -233,12 +222,7 @@ export class CartService {
   }
 
   //function to get data from DB asynchronously (and simultaneously)
-  /* setGlobalVariables(allDiscounts: Discount[], vat: VAT) {
-    this.discountList = allDiscounts;
-    this.vat = vat;
-  }
-
-  getCartTotalBeforeDiscount() {
+  /* getCartTotalBeforeDiscount() {
 
   }
 

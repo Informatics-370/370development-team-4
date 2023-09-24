@@ -11,12 +11,9 @@ import { DataService } from '../services/data.services';
 })
 export class DashboardComponent {
   user!: Users;
-  
-  constructor(
-    private dataService: DataService,
-    private authService: AuthService,
-    private registrationHubService: RegistrationHubService
-  ) {}
+
+  constructor(private dataService: DataService, private authService: AuthService, 
+    private registrationHubService: RegistrationHubService) { }
 
   ngOnInit(): void {
     const token = localStorage.getItem('access_token')!;

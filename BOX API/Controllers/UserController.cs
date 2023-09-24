@@ -1,3 +1,4 @@
+//using BOX.Migrations;
 using BOX.Models;
 using BOX.Services;
 using BOX.ViewModel;
@@ -65,6 +66,7 @@ namespace BOX.Controllers
                 .Where(u => u.Email == email)
                 .Select(u => new UserDTO
                 {
+                    Id = u.Id,
                     FirstName = u.user_FirstName,
                     LastName = u.user_LastName,
                     Email = u.Email,

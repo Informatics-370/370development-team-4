@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row page-row">
     <!--SIDE NAVBAR-->
     <div class="col-md-2">
       <div class="app-menu"></div>
@@ -7,7 +7,8 @@
     <div class="col-md-10">
       <h3 class="p-3" style="color: black;">Generate Inactive Customer List</h3>
 
-      <button type="submit" class="btn btn-create" [disabled]="loading" (click)="generateReport()">Generate</button>
+      <button type="submit" class="btn btn-create" [disabled]="loading" (click)="generateReport()">Generate</button>      
+      <button type="button" class="btn btn-create" [disabled]="loading"  [disabled]="!generateClicked" (click)="generatePDFReport()">Generate PDF</button>
       <hr class="hr hr-blurry m-3" />
       <div *ngIf="loading">Generating report for you...</div>
       <div *ngIf="userCount == 0">No customers were inactive in the past 90 days.</div>
@@ -28,11 +29,15 @@
             </tr>
             <tr>
               <th scope="col">Customer</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let cus of inactiveCustomers">
+              <td>{{cus.firstName}}</td>
               <td>{{cus.emailaddress}}</td>
+              <td>{{cus.phoneNumber}}</td>
             </tr>
           </tbody>
         </table>
