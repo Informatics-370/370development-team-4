@@ -120,7 +120,8 @@ namespace BOX.Controllers
 
                         // Store the registration message in the database
                         var registrationMessage = $"New registration: {uvm.firstName} {uvm.lastName} has signed up to Mega Pack using this email address. ({uvm.emailaddress}) \n\n Please assign {uvm.firstName} {uvm.lastName} to a sales consultant as soon as possible";
-                        _dbContext.RegisterMessages.Add(new RegisterMessages { message = registrationMessage });
+                        var registrationDate = DateTime.Now;
+                        _dbContext.RegisterMessages.Add(new RegisterMessages { message = registrationMessage, messageDate = registrationDate });
                         await _dbContext.SaveChangesAsync();
 
                         await _hubContext.Clients.All.SendAsync("SendRegistrationAlert", registrationMessage);
