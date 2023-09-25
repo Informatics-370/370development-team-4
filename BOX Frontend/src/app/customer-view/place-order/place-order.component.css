@@ -4,7 +4,7 @@
 
 /*Progress bar styling*/
 #progress-container {
-    width: 100%;
+    width: 90%;
     display: flex;
     margin-top: 20px;
 }
@@ -14,14 +14,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 10px;
     color: #32AF99;
     width: 33.3%;
+    position: relative;
 }
 
 .progress-icon {
-    font-size: 1.5em;
+    font-size: 24px;
     color: #32AF99;
+    margin: 0 20px;
 }
 
 .progress-label {
@@ -35,7 +36,7 @@
     height: 30px;
     border-radius: 50%;
     background-color: #a7a7a7;
-    margin: 0.8em 0;
+    margin: 13px 0;
     display: grid;
     place-items: center;
     color: white;
@@ -49,27 +50,44 @@
 }
 
 .step-after {
-    content: '';
     position: absolute;
-    width: 30%;
-    height: 10px;
+    width: 100%;
+    height: 7px;
     background-color: #a7a7a7;
+    align-self: flex-start;
     z-index: -1;
+    left: 50%;
+    top: 60px;
 }
 
 .progress-check {
     display: none;
 }
 
-.progress {
-    height: 10px;
-    margin-top: 1em;
-    width: 95%;
-    margin: auto;
-    border-radius: 15px;
+/*Current progress bar step*/
+.active-step { box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; }
+
+.active-step .progress-counter { font-weight: 600; font-size: 1em; }
+
+/*Completed progress bar step */
+.complete { background-color: #32AF99; }
+
+.complete .progress-counter { display: none; }
+
+.complete .progress-check { display: flex; }
+
+.step-complete {
+    width: 0%;
+    height: 100%;
+    background-color: #32AF99;
+    animation: progressBar 1500ms ease-in-out;
+    animation-fill-mode: both;
 }
 
-.progress-bar { width: 0%; background-color: #32AF99; }
+@keyframes progressBar {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
 
 .tab {
     padding: 1.5em;
@@ -112,3 +130,10 @@ input[type='radio'] {
 .light-bold {font-weight: 600;}
 
 #tfoot tr td { border: none; }
+
+/*Responsive progress bar*/
+@media (max-width: 768px) {
+    #progress-container { width: 100%; }
+
+    .progress-label {font-size: 0.9em;}
+}

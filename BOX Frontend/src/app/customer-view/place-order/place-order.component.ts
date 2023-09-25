@@ -215,37 +215,10 @@ export class PlaceOrderComponent {
     if (direction == 'next') this.tab++;
     else this.tab--;
 
-
-    switch (this.tab) {
-      case 0 || 1:
-        this.tab = 1;
-        this.progress = 0;
-        break;
-
-      case 2:
-        this.progress = 33;
-        break;
-
-      case 3 || 4:
-        this.progress = 66;
-        break;
-
-      /* case 4 || 5:
-        this.tab = 4;
-        this.progress = 100;
-        break; */
-
-      default:
-        this.tab = 1;
-        this.progress = 0;
-        break;
-    }
+    if (this.tab == 0) this.tab = 1;
 
     if (this.paymentType?.value == 'Credit') this.orderBtnText = 'Order >';
     else this.orderBtnText = 'Make payment >';
-
-    //update progress bar
-    $('#bar').css('width', this.progress + '%');
   }
 
   //cancel placing of order (not the same as cancel order UC; this is an alt step in place order)
@@ -443,62 +416,6 @@ export class PlaceOrderComponent {
       console.error('Error submitting order: ', error);
     }
   }
-  
-  /* getSignature(data: Map<string, string>): string {
-    let tmp = new URLSearchParams();
-    data.forEach((v, k) => {
-      tmp.append(k, v)
-    });
-    let queryString = tmp.toString();
-    let sig = Md5.hashStr(queryString);
-    return sig;
-  }
-
-  async doOnSitePayment(amount: number) {
-    let onSiteUserData = new Map<string, string>();
-    onSiteUserData.set("merchant_id", "10030872")
-    onSiteUserData.set("merchant_key", "ommqhfbzaejj8")
-
-    //onSiteUserData.set('return_url', window.location.origin + '/success')
-    //onSiteUserData.set('cancel_url', window.location.origin + '/cancel')
-
-    onSiteUserData.set("email_address", this.customer.email);
-    
-    onSiteUserData.set("amount", amount.toString());
-    onSiteUserData.set("item_name", '#' + this.quoteID);
-
-    onSiteUserData.set('passphrase', 'MegapackByBox');
-
-    let signature = this.getSignature(onSiteUserData);
-    onSiteUserData.set('signature', signature);
-
-    let formData = new FormData();
-    onSiteUserData.forEach((val, key) => {
-      formData.append(key, val);
-    }); 
-    
-    let response = await fetch(environment.payfastOnsiteEndpoint, {
-      method: 'POST',
-      body: formData,
-      redirect: 'follow',
-      //mode: 'no-cors'
-    });
-    
-    console.log('response', response)
-    let respJson = await response.json();
-    console.log('respJson', respJson)
-    let uuid = respJson['uuid'];
-    console.log('uuid', uuid)
-    payfast_do_onsite_payment({'uuid': uuid},  (res: any) => {
-      console.log('got a response', res)
-      if (res == true) {
-        console.log('successful payment')
-      }
-      else {
-        console.log('failed payment')
-      }
-    });
-  } */
 
   //------------------------- SEND INVOICE VIA EMAIL -------------------------
   //create invoice PDF

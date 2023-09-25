@@ -4,7 +4,7 @@
   margin-left: 260px;
 }
 
-.page-row { max-width: 100%; }
+.page-row { max-width: 100% !important; }
 
 /*If I don't declare these classes globally, they won't be applied*/
 .remove-pic {

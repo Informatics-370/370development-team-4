@@ -1,6 +1,6 @@
 <div class="app-customer-navbar" style="max-width: 100%;"></div>
 
-<div class="row page-row page-content">
+<div class="row page-row">
   <div class="col-md-3 col-sm-12 all-categories-menu">
     <app-categories-menu></app-categories-menu>
   </div>
@@ -15,64 +15,39 @@
       <!--Confirm shipping-->
       <li>
         <fa-icon class="progress-icon" [icon]="['fas', 'truck']" ></fa-icon>
-        <div class="step one">
+        <div class="step one" [ngClass]="{'active-step': tab == 1, 'complete': tab > 1}">
           <p class="progress-counter">1</p>
           <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
         </div>
-        <div class="step-after"></div>
+        <div class="step-after">
+          <div [ngClass]="{'step-complete': tab > 1}"></div>
+        </div>
         <p class="progress-label">Shipping</p>
       </li>
 
       <!--Choose payment type-->
       <li>
         <fa-icon class="progress-icon" [icon]="['fas', 'wallet']" ></fa-icon>
-        <div class="step two">
+        <div class="step two" [ngClass]="{'active-step': tab == 2, 'complete': tab > 2}">
           <p class="progress-counter">2</p>
           <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
         </div>
-        <div class="step-after"></div>
+        <div class="step-after">
+          <div [ngClass]="{'step-complete': tab > 2}"></div>
+        </div>
         <p class="progress-label">Payment type</p>
       </li>
 
       <!--Choose payment type-->
       <li>
         <fa-icon class="progress-icon" [icon]="['fas', 'credit-card']" ></fa-icon>
-        <div class="step three">
+        <div class="step three" [ngClass]="{'active-step': tab == 3, 'complete': tab > 3}">
           <p class="progress-counter">3</p>
           <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
         </div>
-        <div class="step-after"></div>
         <p class="progress-label">Payment</p>
       </li>
     </ul>
-
-    <!-- <div>
-      <div class="icon-container">
-        
-        <div class="progress-circle active-circle" style="left: 0;">
-          <fa-icon class="progress-icon active-icon" [icon]="['fas', 'truck']" ></fa-icon>
-        </div>
-        
-        <div id="bar-1" class="progress custom-progress">
-          <div id="bar" class="progress-bar custom-bar active-bar"></div>
-        </div>
-
-        
-        <div class="progress-circle" style="left: 0;">
-          <fa-icon class="progress-icon" [icon]="['fas', 'wallet']" ></fa-icon>
-        </div>
-        
-        <div id="bar-1" class="progress custom-progress">
-          <div id="bar" class="progress-bar custom-bar"></div>
-        </div>
-      </div>      
-      <span class="icon-text">Shipping</span>
-    </div> -->
-
-    <!--Progress bar-->
-    <div class="progress">
-      <div id="bar" class="progress-bar"></div>
-    </div>
 
     <!--Tabs-->
     <form [formGroup]="placeOrderForm">
