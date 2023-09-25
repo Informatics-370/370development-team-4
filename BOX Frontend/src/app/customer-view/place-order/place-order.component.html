@@ -1,6 +1,6 @@
 <div class="app-customer-navbar" style="max-width: 100%;"></div>
 
-<div class="row page-row">
+<div class="row page-row page-content">
   <div class="col-md-3 col-sm-12 all-categories-menu">
     <app-categories-menu></app-categories-menu>
   </div>
@@ -9,9 +9,69 @@
   <div class="col-md-9 col-sm-9 p-2">
     <h3 class="p-3" style="color: black;">Place Order</h3>
     <h5 class="p-3">Orders are as easy as 1, 2 3!</h5>
+
+    <!--Custom progress bar-->
+    <ul id="progress-container">
+      <!--Confirm shipping-->
+      <li>
+        <fa-icon class="progress-icon" [icon]="['fas', 'truck']" ></fa-icon>
+        <div class="step one">
+          <p class="progress-counter">1</p>
+          <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
+        </div>
+        <div class="step-after"></div>
+        <p class="progress-label">Shipping</p>
+      </li>
+
+      <!--Choose payment type-->
+      <li>
+        <fa-icon class="progress-icon" [icon]="['fas', 'wallet']" ></fa-icon>
+        <div class="step two">
+          <p class="progress-counter">2</p>
+          <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
+        </div>
+        <div class="step-after"></div>
+        <p class="progress-label">Payment type</p>
+      </li>
+
+      <!--Choose payment type-->
+      <li>
+        <fa-icon class="progress-icon" [icon]="['fas', 'credit-card']" ></fa-icon>
+        <div class="step three">
+          <p class="progress-counter">3</p>
+          <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
+        </div>
+        <div class="step-after"></div>
+        <p class="progress-label">Payment</p>
+      </li>
+    </ul>
+
+    <!-- <div>
+      <div class="icon-container">
+        
+        <div class="progress-circle active-circle" style="left: 0;">
+          <fa-icon class="progress-icon active-icon" [icon]="['fas', 'truck']" ></fa-icon>
+        </div>
+        
+        <div id="bar-1" class="progress custom-progress">
+          <div id="bar" class="progress-bar custom-bar active-bar"></div>
+        </div>
+
+        
+        <div class="progress-circle" style="left: 0;">
+          <fa-icon class="progress-icon" [icon]="['fas', 'wallet']" ></fa-icon>
+        </div>
+        
+        <div id="bar-1" class="progress custom-progress">
+          <div id="bar" class="progress-bar custom-bar"></div>
+        </div>
+      </div>      
+      <span class="icon-text">Shipping</span>
+    </div> -->
+
     <!--Progress bar-->
     <div class="progress">
-      <div id="bar" class="progress-bar" style="width: 0%; background-color: #32AF99;"></div>
+      <div id="bar" class="progress-bar"></div>
     </div>
 
     <!--Tabs-->
@@ -140,6 +200,8 @@
         <li>Pay immediately means paying for the order completely right now.</li>
         <li>Cash on collection / delivery is not available for orders that must be delivered outside Pretoria.</li>
         <li><strong>Do not change your address until after your order is delivered</strong> because deliveries are always made to your account address. Changing the shipping address on this page will, thus, change your address.</li>
+        <li>Within 7 days of order delivery / collection, you can request a return on any item in your order. Mega Pack will contact you to ensure the item is in good condition and determine how to refund you. Credit refunds cannot be redeemed as cash.</li>
+        <li>No refunds on custom products.</li>
       </ul>
     </span>
   </div>
