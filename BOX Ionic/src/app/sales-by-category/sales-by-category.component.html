@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title style="text-transform: capitalize;">Reports</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="row">
+    <div class="col-md-10">
+      <h3 class="p-3" style="color: white;">Generate Sales by Category Report</h3>
+  
+      <form>
+        <div class="form-group">
+          <label for="startDate" class="bold">Start date:</label>
+          <input id="startDate" type="date" formControlName="startDate" required class="date-form">
+        </div>
+  
+        <div class="form-group">
+          <label for="endDate" class="bold">End date:</label>
+          <input id="endDate" type="date" formControlName="endDate" required class="date-form" [min]="startDate?.value">
+        </div>
+  
+        <button type="submit" class="btn btn-success ml-4" [disabled]="loading" (click)="generateReport()">Generate</button>
+        <div *ngIf="invalid">Please choose valid dates.</div>
+      </form>
+  
+      <hr class="hr hr-blurry m-3" />
+      <div *ngIf="loading">Generating report for you...</div>
+      <div *ngIf="itemsCount == 0">No orders found within that range</div>
+      <div *ngIf="!loading && itemsCount > 0">
+  
+        <table class="table table-bordered text-white ml-4" style="max-width: 90%;">
+          <thead>
+            <tr>
+              <td colspan="3">
+                <img src="../../assets/mega-pack-header.png" alt="MegaPack header"
+                  class="header" />
+              </td>
+            </tr>
+            <tr>
+              <th scope="col">Product Item</th>
+              <th scope="col">Total Sales (ZAR)</th>
+              <th scope="col">% of Total Sales</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let cat of salesByCategoryTableVMs">
+            <tr *ngFor="let item of cat.salesByItem">
+              <td> {{item.itemDescription}} </td>
+              <td> {{item.sales | currency: 'ZAR':'symbol-narrow'}} </td>
+              <td> {{ (item.sales / grandTotal * 100).toFixed(2) }}% </td>
+            </tr>
+            <tr class="bold" style="font-style: italic;">
+              <td>Subtotal for {{cat.description}}</td>
+              <td>{{cat.total | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td>{{ (cat.total / grandTotal * 100).toFixed(2) }}</td>
+            </tr>
+          </tbody>
+          <tfoot class="bold">
+            <tr>
+              <td>Total</td>
+              <td>{{ grandTotal | currency: 'ZAR':'symbol-narrow' }}</td>
+              <td>100%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 50px;"></div>
+</ion-content>

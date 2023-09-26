@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title style="text-transform: capitalize;">Reports</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="row">
+    <div class="col-md-10">
+      <h3 class="p-3" style="color: white;">Generate Product List Report</h3>
+
+      <button type="submit" class="btn btn-success ml-4" [disabled]="loading" (click)="generateReport()">Generate</button>
+
+      <hr class="hr hr-blurry m-3" />
+      <div *ngIf="loading">Generating report for you...</div>
+      <div *ngIf="productCount == 0">No products found</div>
+      <div *ngIf="!loading && productCount > 0" id="pdf-content">
+  
+        <div style="max-width: 90%; margin: auto; margin-left: 25px;">
+            <h4>Product List Report</h4>
+            <div style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }} at {{now | date:'hh:mm:ss' }}</div>
+        </div>
+  
+        <table class="table table-bordered text-white ml-4" style="max-width: 90%;">
+          <thead>
+            <tr>
+              <td colspan="3">
+                <img src="../../assets/mega-pack-header.png" alt="MegaPack header"
+                  class="header" />
+              </td>
+            </tr>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Quantity on Hand</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let prod of fixedProducts">
+              <td>{{prod.description}}</td>
+              <td>{{ prod.quantityOnHand }}</td>
+            </tr>
+            <tr *ngFor="let mat of rawMaterials">
+              <td>{{mat.description}}</td>
+              <td>{{ mat.quantityOnHand }}</td>
+            </tr>
+          </tbody>
+          <tfoot class="bold">
+            <tr>
+              <td>Total</td>
+              <td>{{ totalQuantity }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div style="height: 50px;"></div>
+</ion-content>

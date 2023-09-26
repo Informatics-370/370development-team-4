@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Welcome Back</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-label>Email:</ion-label>
+        <ion-item>
+          <ion-input type="text" placeholder="e.g. johndoe@gmail.com" id="email"></ion-input>
+        </ion-item>
+        <ion-label>Password:</ion-label>
+        <ion-item>
+          <ion-input type="password" id="password"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="full" (click)="submitForm()">Login</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

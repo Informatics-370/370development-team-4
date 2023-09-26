@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Access Denied</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="access-denied">
+    <ion-icon name="close-circle-outline" class="denied-icon"></ion-icon>
+    <h2>Access Denied</h2>
+    <p>This app is intended for administrators and employees only. Customers are not allowed to use this app.</p>
+    <ion-button expand="full" color="primary" (click)="redirectToLogin()">Return to Login</ion-button>
+  </div>
+</ion-content>

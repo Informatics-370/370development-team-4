@@ -1,0 +1,41 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title style="text-transform: capitalize;">{{ folder }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="customer-service">
+      <ion-icon name="happy"></ion-icon>
+      Customer Service Level Report
+    </ion-tab-button>
+    <ion-tab-button tab="employee-performance">
+      <ion-icon name="thumbs-up"></ion-icon>
+      Employee Performance
+    </ion-tab-button>
+    <ion-tab-button tab="inactive-customer">
+      <ion-icon name="person-remove"></ion-icon>
+      Inactive Customer
+    </ion-tab-button>
+    <ion-tab-button tab="delivery-schedule">
+      <ion-icon name="calendar"></ion-icon>
+      Delivery Schedule
+    </ion-tab-button>
+    <ion-tab-button tab="supplier-list">
+      <ion-icon name="document-text"></ion-icon>
+      Supplier List
+    </ion-tab-button>
+    <ion-tab-button tab="sales-by-category">
+      <ion-icon name="wallet"></ion-icon>
+      Sales By Category
+    </ion-tab-button>
+    <ion-tab-button tab="product-list">
+      <ion-icon name="reader"></ion-icon>
+      Product List
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

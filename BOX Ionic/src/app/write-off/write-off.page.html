@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Stock Take</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-grid>
+  <ion-row>
+    <ion-col size="12">
+      <div class="mt-4">
+        <ion-button class="ion-margin-top" [disabled]="isWriteOffClicked" (click)="toggleWriteOff()">Write Off</ion-button>
+        <ion-button class="ion-margin-top" (click)="goStockTakeTrail()">Check Trail</ion-button>
+        <div>
+          <ion-list class="ion-margin-top" *ngFor="let item of inventory">
+            <ion-item>
+              <ion-checkbox slot="start" [(ngModel)]="item.saveItem" [disabled]="!showWriteOffSection"></ion-checkbox>
+              <ion-text class="ion-text-bold">{{ item.rawMaterialDescription || item.fixedProductDescription }}</ion-text>
+            </ion-item>
+            <ion-item>
+              <ion-label for="quantity" class="ion-text-bold">Quantity:</ion-label>
+              <ion-input id="quantity" 
+              type="number" 
+              class="ion-input"
+              [(ngModel)]="item.quantity"
+              [disabled]="!showWriteOffSection || !item.saveItem"
+              ></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-text class="ion-text-bold">Reason:</ion-text>
+              <ion-select [(ngModel)]="item.WriteOffReasonID" [disabled]="!showWriteOffSection || !item.saveItem">
+                <ion-select-option *ngFor="let reason of writeOffReasons" [value]="reason.writeOffReasonID">
+                  {{ reason.description }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item-divider></ion-item-divider>
+          </ion-list>
+          <ion-button expand="full" [disabled]="!showWriteOffSection || isCancelClicked" (click)="saveChanges()">Save Changes</ion-button>
+          <ion-button expand="full" color="danger" *ngIf="showWriteOffSection && !isCancelClicked" (click)="cancelWriteOff()">Cancel</ion-button>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>

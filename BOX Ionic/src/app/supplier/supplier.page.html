@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Suppliers</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-button id="create-supplier-modal" expand="full" color="primary">Create Supplier</ion-button>
+  <ion-modal trigger="create-supplier-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="dismissModal()">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Create Supplier</ion-title>
+          <ion-buttons slot="end">
+            <ion-button [strong]="true" (click)="createSupplier()">Submit</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-label position="stacked">Supplier Name:</ion-label>
+          <ion-input type="text" placeholder="e.g. Mega Boxes" [(ngModel)]="name"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Address:</ion-label>
+          <ion-input type="text" placeholder="e.g. 1 Box Street, Boxburg" [(ngModel)]="address"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Phone Number:</ion-label>
+          <ion-input type="text" placeholder="e.g. 0123456789" [(ngModel)]="phone_Number"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Email Address</ion-label>
+          <ion-input type="text" placeholder="e.g. megaboxes@gmail.com" [(ngModel)]="email"></ion-input>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-list>
+    <ion-item *ngFor="let supplier of suppliers">
+      <ion-label>{{ supplier.name }}</ion-label>
+      <ion-buttons slot="end">
+        
+        <ion-button id="update-supplier-modal" fill="clear" color="primary">Edit</ion-button>
+        <ion-button fill="clear" color="danger">Delete</ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  
+</ion-content>
