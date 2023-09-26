@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
 {
   options.AddDefaultPolicy(defaultPolicy =>
   {
-    defaultPolicy.WithOrigins("http://localhost:4200", "http://localhost:8100")
+    defaultPolicy.WithOrigins("http://localhost:4200", "http://localhost:8100", "https://www.payfast.co.za", "https://w1w.payfast.co.za", "https://w2w.payfast.co.za", "https://sandbox.payfast.co.za")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();

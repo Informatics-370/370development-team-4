@@ -1,6 +1,10 @@
 using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 
 namespace BOX.Controllers
@@ -9,10 +13,16 @@ namespace BOX.Controllers
     [ApiController]
     public class CustomerOrderController : ControllerBase
     {
+        private readonly IHttpClientFactory _clientFactory;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<PaymentController> _logger;
         private readonly IRepository _repository;
 
-        public CustomerOrderController(IRepository repository)
+        public CustomerOrderController(IHttpClientFactory clientFactory, IConfiguration configuration, ILogger<PaymentController> logger, IRepository repository)
         {
+            _clientFactory = clientFactory;
+            _configuration = configuration;
+            _logger = logger;
             _repository = repository;
         }
 
@@ -268,9 +278,10 @@ namespace BOX.Controllers
             }
         }
 
+        //-------------------------------------------------- PLACE ORDER ------------------------------------------------
+
         [HttpPost]
         [Route("AddCustomerOrder")]
-
         public IActionResult AddCustomerOrder([FromBody] CustomerOrderViewModel customerOrderViewModel)
         {
             // Start a database transaction; because of this, nothing is fully saved until the end i.e. unless order and order lines are created successfully with no errors, the order isn't placed
@@ -363,6 +374,9 @@ namespace BOX.Controllers
 
                 transaction.Commit(); // Commit the transaction; everything is fully saved now
 
+                //attach payment to order
+                //AttachPaymentToOrder(order.CustomerOrderID, customerOrderViewModel.PaymentID);
+
                 return Ok(customerOrderViewModel);
             }
             catch (Exception ex)
@@ -404,6 +418,113 @@ namespace BOX.Controllers
             }
         }
 
+        //[HttpPut]
+        //[Route("AttachPaymentToOrder")]
+        //public IActionResult AttachPaymentToOrder(int customerOrderId, int paymentId)
+        //{
+        //    try
+        //    {
+        //        var existingCustomerOrder = _repository.GetCustomerOrderAsync(customerOrderId); make sure the order exists on the system
+        //        var existingPayment = _repository.GetPayment(paymentId);
+
+        //        if (existingCustomerOrder == null) return NotFound($"The order does not exist on the B.O.X System");
+        //        if (existingPayment == null) return NotFound($"The payment does not exist on the B.O.X System");
+
+        //        existingPayment.CustomerOrderID = customerOrderId;
+
+        //        _repository.SaveChanges();
+
+        //        return Ok(existingPayment);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+        //    }
+        //}
+
+
+        //-------------------- verify payment --------------------
+        private string UrlEncode(string value)
+        {
+            return WebUtility.UrlEncode(value)?.Replace("%20", "+");
+        }
+
+        [HttpGet("ReceivePayFastNotification", Name = "ReceivePayFastNotification")]
+        public IActionResult ReceivePayFastNotification(string jsonPayload)
+        {
+            Console.WriteLine("Got this far");
+            try
+            {
+                // Deserialize the JSON string into a C# object
+                var payFastNotification = JsonConvert.DeserializeObject(jsonPayload);
+
+                // Process the notification here
+                // You can access payFastNotification.Name, payFastNotification.Amount, etc.
+
+                // Perform necessary actions based on the notification (e.g., update payment status)
+
+                return Ok("Notification received and processed successfully.");
+            }
+            catch (JsonException ex)
+            {
+                // Handle JSON deserialization error
+                Console.WriteLine("Notification isn't valid JSON" + ex.InnerException + " with message " + ex.Message);
+                return BadRequest("Notification isn't valid JSON" + ex.InnerException + " with message " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                return StatusCode(500, "Internal Server Error. Please contact B.O.X support services. " + ex.Message + " has inner exception of " + ex.InnerException);
+            }
+        }
+
+        [HttpPost("HandlePaymentResult/{paymentTypeId}")]
+        public async Task<IActionResult> HandlePaymentResult(int paymentTypeId, [FromBody] PayFastRequestViewModel payment)
+        {
+            if (payment == null)
+            {
+                return BadRequest();
+            }
+
+            // Get your passphrase from configuration
+            var passphrase = _configuration["PayFast:Passphrase"];
+
+            // Generate a signature from the incoming payment data
+            var propertyValues = payment.GetType().GetProperties()
+                .Where(p => p.GetValue(payment) != null && p.Name != "signature")
+                .Select(p => $"{p.Name}={UrlEncode(p.GetValue(payment).ToString())}");
+            var rawData = string.Join("&", propertyValues) + $"&passphrase={passphrase}";
+
+            using (var md5 = MD5.Create())
+            {
+                var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+                var generatedSignature = BitConverter.ToString(hash).Replace("-", "").ToLower();
+
+                // Compare the generated signature with the one in the request
+                if (payment.signature != generatedSignature)
+                {
+                    //_logger.LogError("Payment signature verification failed."); // Log an error, the signatures do not match
+                    //return BadRequest("Payment signature verification failed.");
+                }
+            }
+
+            // If the signatures match, continue with saving the payment to the database
+            Payment newPayment = new Payment
+            {
+                PaymentTypeID = paymentTypeId,
+                Date_And_Time = DateTime.Now,
+                Amount = payment.amount,
+                Signature = payment.signature
+            };
+
+            _repository.Add(newPayment); //add payment
+            await _repository.SaveChangesAsync(); //save
+
+            // After saving the payment to the database, return a successful response
+            return Ok(newPayment);
+        }
+
+        //-------------------------------------------------- UPDATE ORDER ------------------------------------------------
         [HttpPut]
         [Route("UpdateCustomerOrderStatus/{customerOrderId}/{customerOrderStatusId}")]
         public async Task<IActionResult> UpdateCustomerOrderStatus(int customerOrderId, int customerOrderStatusId)

@@ -9,6 +9,8 @@ import { OrderVM } from '../shared/order-vm.js';
 })
 export class OrderService {
   private apiUrl = 'http://localhost:5116/api/';
+  //change this to receive PayFast notification
+  //private notifyURL = "https://gradually-striking-rhino.ngrok-free.app/api/";
   httpOptions = {
     headers: new HttpHeaders({
       ContentType: 'application/json'
@@ -57,9 +59,14 @@ export class OrderService {
         .put<any>(`${this.apiUrl}User/UpdateUser/${orderDetails.customerEmail}`, orderDetails, this.httpOptions);
     } 
     else if (orderDetails.paymentTypeID == 1 || orderDetails.paymentTypeID == 2) { //pay immediately or cash on collection / delivery
+      let url = location.href.substring(0, location.href.length - 1) + '4';
+
       let payment = {
         merchant_id: 0,
         merchant_key: '',
+        return_url: url,
+        cancel_url: url,
+        //notify_url: `${this.notifyURL}CustomerOrder/ReceivePayFastNotification`,
         amount: orderDetails.amount,
         item_name: 'Quote #' + orderDetails.quoteID,
         signature: '',
@@ -79,22 +86,20 @@ export class OrderService {
 
   }
 
-  completePayment(paymentTypeId: number, payment: any): boolean {
-    let outcome = false;
-
+  completePayment(paymentTypeId: number, payment: any): any {
     try {
       this.httpClient
         .post<any>(`${this.apiUrl}Payment/HandlePaymentResult/${paymentTypeId}`, payment, this.httpOptions)
         .subscribe((result) => {
           console.log(result);
-          outcome = true;
+          return result; //a payment object from the DB
         });
     } catch (error) {
       console.error(error);
-      outcome = false;
+      return false;
     }
-    
-    return outcome;
+
+    return false;
   }
 
 }

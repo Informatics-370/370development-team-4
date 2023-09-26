@@ -32,7 +32,6 @@ declare function payfast_do_onsite_payment(param1 : any, callback: any): any; */
 export class PlaceOrderComponent {
   //tabs
   tab = 1;
-  progress = 0;
 
   //handle credit customers
   creditAllowed = true;
@@ -47,11 +46,10 @@ export class PlaceOrderComponent {
   currentVAT!: VAT;
   quoteID = 0;
   quote!: QuoteVMClass;
-  placedOrder!: OrderVM;
+  orderToPlace!: OrderVM;
 
   //forms logic
   placeOrderForm: FormGroup;
-
   orderBtnText = 'Order >';
 
   //invoice info
@@ -78,7 +76,7 @@ export class PlaceOrderComponent {
     private orderService: OrderService) {
     this.placeOrderForm = this.formBuilder.group({
       deliveryType: ['Pick up', Validators.required],
-      shippingAddress: ['123 Fake Road, Pretoria', Validators.required],
+      shippingAddress: ['', Validators.required],
       paymentType: ['Pay immediately', Validators.required],
     });
   }
@@ -89,6 +87,11 @@ export class PlaceOrderComponent {
       //get quote ID from url
       let id = params.get('quoteID');
       if (id) this.quoteID = this.decodeQuoteID(id);
+      //get tab number from url
+      let tabNo = params.get('tab');
+      if (tabNo && parseInt(tabNo) == 4) { //if this is tab 4 then the payment has succeeded/failed
+        this.tab = 3;
+      }
     });
 
     //get customer ID
@@ -108,9 +111,7 @@ export class PlaceOrderComponent {
       this.customer = await this.authService.getUserByEmail(email);
 
       //set shipping address
-      this.placeOrderForm.patchValue({
-        shippingAddress: this.customer.address
-      })
+      this.shippingAddress?.setValue(this.customer.address);
     }
   }
 
@@ -137,7 +138,6 @@ export class PlaceOrderComponent {
 
       //put results from DB in global attributes
       this.currentVAT = currentVAT;
-      console.log('Applicable VAT', this.currentVAT);
 
       this.checkForCheating(quote);
 
@@ -160,7 +160,7 @@ export class PlaceOrderComponent {
       });
 
       this.quote = new QuoteVMClass(quote, quoteLines, this.currentVAT);
-      console.log('Quote to order from: ', this.quote);
+
       //check if customer can buy on credit
       this.creditAllowed = this.checkCredit();
     } catch (error) {
@@ -187,7 +187,6 @@ export class PlaceOrderComponent {
       });
     }
     else {
-      console.log('Right user with ID: ' + this.customer.id);
       return true;
     }
 
@@ -216,9 +215,10 @@ export class PlaceOrderComponent {
     else this.tab--;
 
     if (this.tab == 0) this.tab = 1;
+    window.history.pushState("stateObj", "new page", location.href.substring(0, location.href.length - 1) + this.tab);
 
     if (this.paymentType?.value == 'Credit') this.orderBtnText = 'Order >';
-    else this.orderBtnText = 'Make payment >';
+    else this.orderBtnText = 'Pay with PayFast';
   }
 
   //cancel placing of order (not the same as cancel order UC; this is an alt step in place order)
@@ -252,6 +252,7 @@ export class PlaceOrderComponent {
     let paymentTypeId = -1;
 
     try {
+      //get payment type ID
       switch (this.paymentType?.value) {
         case "Pay immediately":
           amount = this.quote.getTotalAfterVAT();
@@ -272,6 +273,7 @@ export class PlaceOrderComponent {
           throw 'Invalid payment type chosen';
       }
       
+      //get delivery type ID
       switch (this.deliveryType?.value) {
         case "Delivery":
           deliveryTypeId = 1;
@@ -284,6 +286,9 @@ export class PlaceOrderComponent {
         default:
           throw 'Invalid delivery type chosen';
       }
+
+      //create order VM now to save time
+      this.createOrderVM();
 
       let orderDetails = {
         customerID: this.customer.id,
@@ -319,8 +324,14 @@ export class PlaceOrderComponent {
           document.body.appendChild(form); 
           form.submit(); 
           // Chain the next calls 
-          let result = this.orderService.completePayment(paymentTypeId, payfastRequest);
-          console.log(result);
+          /* let result = this.orderService.completePayment(paymentTypeId, payfastRequest);
+
+          //result is either false or a payment object
+          if (result != false) {
+            this.orderToPlace.paymentID = result.paymentID;
+          }
+
+          console.log(result, this.orderToPlace); */
         }
       });
     } catch (error) {
@@ -340,11 +351,9 @@ export class PlaceOrderComponent {
     }
   }
 
-  async placeOrder(successMessage: string) {
-    //update user address with shipping address
-
+  createOrderVM() {
     //create order vm for order
-    let newOrder: OrderVM = {
+    this.orderToPlace = {
       customerOrderID: 0,
       quoteID: this.quoteID,
       orderStatusID: 0,
@@ -357,6 +366,7 @@ export class PlaceOrderComponent {
       deliveryPhoto: '',
       customerId: this.customerID,
       customerFullName: '',
+      paymentID: 0,
       orderLines: []
     };
 
@@ -374,9 +384,11 @@ export class PlaceOrderComponent {
         customerReturnID: 0
       }
 
-      newOrder.orderLines.push(ol);
+      this.orderToPlace.orderLines.push(ol);
     });
+  }
 
+  async placeOrder(successMessage: string, newOrder: OrderVM) {
     console.log('Order before posting', newOrder);
 
     try {
@@ -397,7 +409,6 @@ export class PlaceOrderComponent {
           console.log(result);
         });
 
-        this.placedOrder = result;
         this.router.navigate(['/order-history']); //redirect to order history page        
       });
     } catch (error) {
@@ -568,7 +579,6 @@ export class PlaceOrderComponent {
   // Function to add a canvas to the PDF with specified position and dimensions
   addCanvasToPDF(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, i: number) {
     const imageData = canvas.toDataURL("image/png");
-    //console.log(i, imageData);
     this.pdf.addImage(imageData, 'PNG', x, y, width, height, 'alias' + i, 'FAST');
   }
 
@@ -579,4 +589,5 @@ export class PlaceOrderComponent {
 
   get deliveryType() { return this.placeOrderForm.get('deliveryType'); }
   get paymentType() { return this.placeOrderForm.get('paymentType'); }
+  get shippingAddress() { return this.placeOrderForm.get('shippingAddress'); }
 }

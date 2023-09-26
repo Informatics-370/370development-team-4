@@ -87,6 +87,7 @@ const routes: Routes = [
   { path: 'stock-take-trail', component: StockTakeTrailComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
   { path: 'users', component: UsersViewComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
   { path: 'place-order/:quoteID', component: PlaceOrderComponent },
+  { path: 'place-order/:quoteID/:tab', component: PlaceOrderComponent },
   { path: 'order-history', component: OrderHistoryComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Customer', 'Administrator', 'Employee']} },
   { path: 'manage-orders', component: CustomerOrdersComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
   { path: 'custom-product', component: CustomProdComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },

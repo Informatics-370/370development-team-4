@@ -268,7 +268,7 @@ export class MyQuotesComponent {
       if (result.isConfirmed) {
         //Navigate to PLACE ORDER page and send quote ID encoded in URL:
         let gibberish = this.encodeQuoteID(quote.quoteID);
-        this.router.navigate(['place-order', gibberish]);
+        this.router.navigate(['place-order', gibberish, '1']);
       }
     });
 

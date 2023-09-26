@@ -190,6 +190,8 @@ namespace BOX.Models
 
         //--------------------------- DELIVERY TYPE --------------------------
         Task<Delivery_Type> GetDeliveryTypeAsync(int deliveryTypeId);
-    }
 
+        //-------------------------------------------------------- PAYMENT -----------------------------------------------------------
+        Payment GetPayment(int paymentId);
+    }
 }

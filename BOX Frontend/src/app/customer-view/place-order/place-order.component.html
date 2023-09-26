@@ -38,7 +38,7 @@
         <p class="progress-label">Payment type</p>
       </li>
 
-      <!--Choose payment type-->
+      <!--Pay-->
       <li>
         <fa-icon class="progress-icon" [icon]="['fas', 'credit-card']" ></fa-icon>
         <div class="step three" [ngClass]="{'active-step': tab == 3, 'complete': tab > 3}">
@@ -66,6 +66,9 @@
           <div style="margin-bottom: 0.5em;" class="form-group" *ngIf="deliveryType?.value == 'Delivery'">
             <label for="address" class="form-label modal-form-label bold">Is this the correct shipping address?</label>
             <input id="address" type="text" formControlName="shippingAddress" class="form-control modal-form-input modal-form-text" required>
+            <div class="error-msg" *ngIf="shippingAddress?.dirty">
+              This will also update your address.
+            </div>
           </div>
           
           Deliveries are free. We try to deliver within 24 hours of order placement.
@@ -94,6 +97,10 @@
 
       <div class="row tab" *ngIf="tab == 3">
         <h6>Confirm</h6>
+        
+        <div *ngIf="paymentType?.value == 'Credit'">
+          This order is payable on {{creditBalanceDue | date:'ccc, d MMM yyyy' }}
+        </div>
 
         You are ordering:<br/><br/>
 
@@ -133,28 +140,6 @@
             </tr>
           </tfoot>
         </table><br />
-
-        <!-- <table id="total-table">
-          <tr>
-            <td class="text-right" style="width: 80%;">Subtotal:</td>
-            <td>{{quote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
-          </tr>
-          <tr>
-            <td class="text-right">VAT:</td>
-            <td>{{quote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
-          </tr>
-          <tr style="font-weight: bold;">
-            <td class="text-right">Total:</td>
-            <td>{{quote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
-          </tr>
-        </table><br /> -->
-        <div *ngIf="paymentType?.value == 'Credit'">
-          This order is payable on {{creditBalanceDue | date:'ccc, d MMM yyyy' }}
-        </div>
-
-        <div *ngIf="paymentType?.value != 'Credit'">
-          <h6>PayFast</h6>
-        </div>
       </div>
 
       <div class="form-progress-div">
@@ -173,7 +158,7 @@
         <li>Buying on credit will cause the order total to be deducted from your credit balance.</li>
         <li>You still need to pay the deposit if you choose cash on collection / delivery as your payment type. You'll be required to pay the 20% deposit using our payment gateway and the remaining 80% when you receive your order.</li>
         <li>Pay immediately means paying for the order completely right now.</li>
-        <li>Cash on collection / delivery is not available for orders that must be delivered outside Pretoria.</li>
+        <li>Cash on collection / delivery is not available for orders that must be delivered outside Gauteng.</li>
         <li><strong>Do not change your address until after your order is delivered</strong> because deliveries are always made to your account address. Changing the shipping address on this page will, thus, change your address.</li>
         <li>Within 7 days of order delivery / collection, you can request a return on any item in your order. Mega Pack will contact you to ensure the item is in good condition and determine how to refund you. Credit refunds cannot be redeemed as cash.</li>
         <li>No refunds on custom products.</li>

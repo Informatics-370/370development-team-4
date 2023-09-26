@@ -16,6 +16,7 @@ namespace BOX.ViewModel
         public int DeliveryTypeID { get; set; }
         public string DeliveryType { get; set; } //delivery or pick up
 		public string DeliveryPhoto { get; set; }
+        public int PaymentTypeID { get; set; } //ID of payment to attach order to
         public List<CustomerOrderLineViewModel> OrderLines { get; set; }
 	}
 }

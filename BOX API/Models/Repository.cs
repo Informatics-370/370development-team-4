@@ -776,6 +776,13 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
+        //------------------------------------------------------ PAYMENT ------------------------------------------------------------
+        public Payment GetPayment(int paymentId)
+        {
+            var query = _appDbContext.Payment.Where(c => c.PaymentID == paymentId);
+            return query.FirstOrDefault();
+        }        
+
         //--------------------------------- TRANSACTIONS --------------------------------
         public IDbContextTransaction BeginTransaction()
         {

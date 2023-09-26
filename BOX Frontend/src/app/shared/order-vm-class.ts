@@ -14,6 +14,7 @@ export class OrderVMClass implements OrderVM {
   deliveryTypeID: number;
   deliveryType: string; //delivery or pick up
   deliveryPhoto: string;
+  paymentID: number = 0;
   orderLines: any[];
 
   /*line = {

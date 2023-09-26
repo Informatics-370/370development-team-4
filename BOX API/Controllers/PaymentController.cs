@@ -2,6 +2,7 @@
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Protocol.Core.Types;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,16 +15,14 @@ namespace BOX.Controllers
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly IConfiguration _configuration;
-        private readonly IRepository _repository;
         private readonly ILogger<PaymentController> _logger;
         // Change this line to use the live PayFast URL
         string url = "https://sandbox.payfast.co.za/eng/process";
 
-        public PaymentController(IHttpClientFactory clientFactory, IConfiguration configuration, IRepository repository, ILogger<PaymentController> logger)
+        public PaymentController(IHttpClientFactory clientFactory, IConfiguration configuration, ILogger<PaymentController> logger)
         {
             _clientFactory = clientFactory;
             _configuration = configuration;
-            _repository = repository;
             _logger = logger;
         }
 
@@ -49,11 +48,11 @@ namespace BOX.Controllers
             var passphrase = _configuration["PayFast:Passphrase"];
             var propertyValues = payment.GetType().GetProperties()
                 .Where(p => p.GetValue(payment) != null && p.Name != "signature")
-                .OrderBy(p => p.Name)
                 .Select(p => $"{p.Name}={UrlEncode(p.GetValue(payment).ToString())}");
 
             // Now the return_url and notify_url are included in the raw data for the MD5 hash:
             var rawData = string.Join("&", propertyValues) + $"&passphrase={passphrase}";
+
             using (var md5 = MD5.Create())
             {
                 var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(rawData));
@@ -71,10 +70,11 @@ namespace BOX.Controllers
             {
                 payFastResponse = JsonConvert.DeserializeObject(responseContent);
             }
-            catch (JsonReaderException)
+            catch (JsonReaderException ex)
             {
                 // The response content isn't valid JSON
                 // Log the error and/or handle it appropriately
+                Console.WriteLine("Response content isn't valid JSON" + ex.InnerException + " with message " + ex.Message + " " + responseContent.ToString());
             }
             if (response.IsSuccessStatusCode)
             {
@@ -92,53 +92,6 @@ namespace BOX.Controllers
         private string UrlEncode(string value)
         {
             return WebUtility.UrlEncode(value)?.Replace("%20", "+");
-        }
-
-        [HttpPost("HandlePaymentResult/{paymentTypeId}")]
-        public async Task<IActionResult> HandlePaymentResult(int paymentTypeId , [FromBody] PayFastRequestViewModel payment)
-        {
-            if (payment == null)
-            {
-                return BadRequest();
-            }
-
-            // Get your passphrase from configuration
-            var passphrase = _configuration["PayFast:Passphrase"];
-
-            // Generate a signature from the incoming payment data
-            var propertyValues = payment.GetType().GetProperties()
-                .Where(p => p.GetValue(payment) != null && p.Name != "signature")
-                .OrderBy(p => p.Name)
-                .Select(p => $"{p.Name}={UrlEncode(p.GetValue(payment).ToString())}");
-            var rawData = string.Join("&", propertyValues) + $"&passphrase={passphrase}";
-            
-            using (var md5 = MD5.Create())
-            {
-                var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-                var generatedSignature = BitConverter.ToString(hash).Replace("-", "").ToLower();
-
-                // Compare the generated signature with the one in the request
-                if (payment.signature != generatedSignature)
-                {
-                    _logger.LogError("Payment signature verification failed."); // Log an error, the signatures do not match
-                    return BadRequest("Payment signature verification failed.");
-                }
-            }
-
-            // If the signatures match, continue with saving the payment to the database
-            Payment newPayment = new Payment
-            {
-                PaymentTypeID = paymentTypeId,
-                Date_And_Time = DateTime.Now,
-                Amount = payment.amount,
-                Signature = payment.signature
-            };
-
-            _repository.Add(newPayment); //add payment
-            await _repository.SaveChangesAsync(); //save
-
-            // After saving the payment to the database, return a successful response
-            return Ok();
         }
     }
 }
