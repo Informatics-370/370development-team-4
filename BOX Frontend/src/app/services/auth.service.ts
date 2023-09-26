@@ -5,6 +5,7 @@ import { DataService } from './data.services';
 import { AssignEmpDTO } from '../shared/assign-emp-dto';
 import { Users } from '../shared/user';
 import { take, lastValueFrom } from 'rxjs';
+import { Title } from '../shared/title';
 
 @Injectable({
   providedIn: 'root'
