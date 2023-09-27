@@ -9,8 +9,6 @@ import { OrderVM } from '../shared/order-vm.js';
 })
 export class OrderService {
   private apiUrl = 'http://localhost:5116/api/';
-  //change this to receive PayFast notification
-  private notifyURL = "https://gradually-striking-rhino.ngrok-free.app/api/";
   httpOptions = {
     headers: new HttpHeaders({
       ContentType: 'application/json'
@@ -61,11 +59,8 @@ export class OrderService {
       let payment = {
         merchant_id: 0,
         merchant_key: '',
-        /* return_url: location.href.substring(0, location.href.length - 1) + '4',
-        cancel_url: location.href.substring(0, location.href.length - 1) + '4', */
         return_url: this.encodeURL(orderDetails.paymentTypeID, orderDetails.amount, 'success'),
         cancel_url: this.encodeURL(orderDetails.paymentTypeID, orderDetails.amount, 'fail'),
-        notify_url: `${this.notifyURL}CustomerOrder/ReceivePayFastNotification`,
         amount: orderDetails.amount,
         item_name: 'Quote #' + orderDetails.quoteID,
         signature: '',
@@ -93,7 +88,6 @@ export class OrderService {
         merchant_key: '',
         return_url: 'success',
         cancel_url: 'fail',
-        notify_url: `${this.notifyURL}CustomerOrder/ReceivePayFastNotification`,
         amount: amount,
         item_name: '',
         signature: '',
