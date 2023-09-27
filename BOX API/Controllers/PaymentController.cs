@@ -74,8 +74,10 @@ namespace BOX.Controllers
             {
                 // The response content isn't valid JSON
                 // Log the error and/or handle it appropriately
-                Console.WriteLine("Response content isn't valid JSON" + ex.InnerException + " with message " + ex.Message + " " + responseContent.ToString());
+                Console.WriteLine("Response content isn't valid JSON" + ex.InnerException + " with message " + ex.Message + " " + responseContent);
+                //return BadRequest("Response content isn't valid JSON" + ex.InnerException + " with message " + ex.Message + " " + responseContent);
             }
+
             if (response.IsSuccessStatusCode)
             {
                 // Instead of trying to read and process the response content, just return the URL.

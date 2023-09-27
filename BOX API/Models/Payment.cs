@@ -15,6 +15,5 @@ namespace BOX.Models
 
 		[Required] public DateTime Date_And_Time { get; set;}
 		[Required] public decimal Amount { get; set; }
-        [Required] public string Signature { get; set; }
     }
 }

@@ -1,5 +1,9 @@
 @import "node_modules/bootstrap/dist/css/bootstrap.css";
 
+.no-scroll {
+  overflow-y: hidden;
+}
+
 .page-content {
   margin-left: 260px;
 }

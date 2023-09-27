@@ -548,10 +548,6 @@ namespace BOX.Migrations
                     b.Property<int>("PaymentTypeID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Signature")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("PaymentID");
 
                     b.HasIndex("CustomerOrderID");

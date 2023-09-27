@@ -5,6 +5,10 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
 
 
 namespace BOX.Controllers
@@ -377,7 +381,7 @@ namespace BOX.Controllers
                 //attach payment to order
                 //AttachPaymentToOrder(order.CustomerOrderID, customerOrderViewModel.PaymentID);
 
-                return Ok(customerOrderViewModel);
+                return Ok(order);
             }
             catch (Exception ex)
             {
@@ -449,34 +453,43 @@ namespace BOX.Controllers
             return WebUtility.UrlEncode(value)?.Replace("%20", "+");
         }
 
-        [HttpGet("ReceivePayFastNotification", Name = "ReceivePayFastNotification")]
-        public IActionResult ReceivePayFastNotification(string jsonPayload)
+        [HttpPost("ReceivePayFastNotification")]
+        public IActionResult ReceivePayFastNotification()
         {
-            Console.WriteLine("Got this far");
             try
             {
-                // Deserialize the JSON string into a C# object
-                var payFastNotification = JsonConvert.DeserializeObject(jsonPayload);
+                //This method is only hit when payment is successful
+                // Read the request body
+                var requestBody = string.Empty;
+                using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+                {
+                    requestBody = reader.ReadToEnd();
+                }
 
-                // Process the notification here
-                // You can access payFastNotification.Name, payFastNotification.Amount, etc.
+                Console.WriteLine($"from PayFast: {requestBody}");
 
-                // Perform necessary actions based on the notification (e.g., update payment status)
+                // Parse the posted data
+                var formData = HttpUtility.ParseQueryString(requestBody);
+                var pfData = new Dictionary<string, string>();
 
+                foreach (string key in formData.AllKeys)
+                {
+                    pfData[key] = formData[key];
+                }
+
+                // Verify signature and other processing
+                // Note: You should implement your own verification logic here
+
+                // Respond with a 200 OK status
                 return Ok("Notification received and processed successfully.");
-            }
-            catch (JsonException ex)
-            {
-                // Handle JSON deserialization error
-                Console.WriteLine("Notification isn't valid JSON" + ex.InnerException + " with message " + ex.Message);
-                return BadRequest("Notification isn't valid JSON" + ex.InnerException + " with message " + ex.Message);
             }
             catch (Exception ex)
             {
-                // Handle other exceptions
-                return StatusCode(500, "Internal Server Error. Please contact B.O.X support services. " + ex.Message + " has inner exception of " + ex.InnerException);
+                // Handle exceptions
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
 
         [HttpPost("HandlePaymentResult/{paymentTypeId}")]
         public async Task<IActionResult> HandlePaymentResult(int paymentTypeId, [FromBody] PayFastRequestViewModel payment)
@@ -513,8 +526,7 @@ namespace BOX.Controllers
             {
                 PaymentTypeID = paymentTypeId,
                 Date_And_Time = DateTime.Now,
-                Amount = payment.amount,
-                Signature = payment.signature
+                Amount = payment.amount
             };
 
             _repository.Add(newPayment); //add payment

@@ -104,7 +104,7 @@
 
         You are ordering:<br/><br/>
 
-        <table id="quote-details-table" class="table">
+        <table id="quote-details-table" class="table" *ngIf="quote != null">
           <thead>
             <tr>
               <th scope="col">Product</th>
@@ -146,7 +146,7 @@
         <button *ngIf="tab == 1" class="btn btn-create btn-red" (click)="cancel()">Cancel</button>
         <button *ngIf="tab > 1" class="btn btn-create" (click)="changeTab('previous')">Previous</button>
         <button *ngIf="tab != 3" class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
-        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="initiateOrder()">{{orderBtnText}}</button>
+        <button *ngIf="tab == 3" class="btn btn-create btn-order" [disabled]="submitted" (click)="initiateOrder()">{{orderBtnText}}</button>
       </div>
     </form>
     
@@ -154,7 +154,7 @@
     <span class="p-3" style="font-size: 90%;">
       <strong>Order info and tips:</strong>
       <ul>
-        <li>20% of the order total is a deposit and must be paid before an order can be placed regardless of the payment type you choose. <strong>This amount is not refundable under any circumstances.</strong></li>
+        <li><b>20% of the order total is a deposit</b> and must be paid before an order can be placed regardless of the payment type you choose. <strong>This amount is not refundable under any circumstances.</strong></li>
         <li>Buying on credit will cause the order total to be deducted from your credit balance.</li>
         <li>You still need to pay the deposit if you choose cash on collection / delivery as your payment type. You'll be required to pay the 20% deposit using our payment gateway and the remaining 80% when you receive your order.</li>
         <li>Pay immediately means paying for the order completely right now.</li>
@@ -169,7 +169,18 @@
 
 <div class="app-footer"></div>
 
+<!--PROCESSING MODAL-->
+<div class="modal fade" id="processing" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
 
+      <!--BODY-->
+      <div class="modal-body" style="margin: 12vh 0;">
+        <h5 class="text-center">Processing order... <br/> Please don't close this window</h5>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!--INVOICE to email-->
 <div id="invoice-container" *ngIf="invoice != null">
@@ -204,9 +215,13 @@
     </div>
 
     <div id="header-right" class="invoice-block right text-right small-block">
-      <h3>TAX INVOICE</h3>
+      <h3>TAX INVOICE #{{invoice.number}}</h3>
       <div style="display: flex; justify-content: end;" class="full">
         <table style="display: inline-block;" class="fit text-left">
+          <tr>
+            <td class="fit" style="padding-right: 0.75em; padding-bottom: 0.5em;">Payment type:</td>
+            <td class="fit" style="padding-bottom: 0.5em;">{{invoice.paymentType }}</td>
+          </tr>
           <tr>
             <td class="fit" style="padding-right: 0.75em; padding-bottom: 0.5em;">Date:</td>
             <td class="fit" style="padding-bottom: 0.5em;">{{invoice.date | date:'dd/MM/yyyy' }}</td>

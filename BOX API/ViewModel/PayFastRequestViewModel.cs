@@ -6,7 +6,7 @@
         public string merchant_key { get; set; }
         public string return_url { get; set; }
         public string cancel_url { get; set; }
-        //public string notify_url { get; set; }
+        public string notify_url { get; set; }
         public string signature { get; set; }
         public string email_address { get; set; }
         public string cell_number { get; set; }

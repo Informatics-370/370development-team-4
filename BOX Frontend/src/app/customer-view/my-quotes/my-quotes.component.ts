@@ -270,27 +270,7 @@ export class MyQuotesComponent {
         let gibberish = this.encodeQuoteID(quote.quoteID);
         this.router.navigate(['place-order', gibberish, '1']);
       }
-    });
-
-    //<li>There are 3 payment options- credit, cash on delivery, pay immediately- which will be explained in more detail on the order page. To buy on credit, </li>
-
-    /* try {
-      //statusID 2 = 'Accepted'
-      this.dataService.UpdateQuoteStatus(quote.quoteID, 2).subscribe((result) => {
-        console.log("Result", result);
-        //email customer their invoice; this can take a while so let them know, we're on it.
-        this.pleaseWait = true;
-        document.body.style.overflowY = 'none';
-
-        //Navigate to PLACE ORDER page and send quote ID encoded in URL:
-        let gibberish = this.encodeQuoteID(quote.quoteID);
-        this.router.navigate(['place-order', gibberish]);
-      });
-    } catch (error) {
-      this.pleaseWait = true;
-      document.body.style.overflowY = 'scroll';
-      console.error('Error updating status: ', error);
-    } */
+    });    
   }
 
   //I want to send quote ID in url to order page but don't want to send the ID as is

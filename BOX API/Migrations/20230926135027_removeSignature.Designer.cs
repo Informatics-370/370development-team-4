@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230922175642_Add signature to payment")]
-    partial class Addsignaturetopayment
+    [Migration("20230926135027_removeSignature")]
+    partial class removeSignature
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -549,10 +549,6 @@ namespace BOX.Migrations
 
                     b.Property<int>("PaymentTypeID")
                         .HasColumnType("int");
-
-                    b.Property<string>("Signature")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PaymentID");
 

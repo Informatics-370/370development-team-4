@@ -17,12 +17,8 @@ import Swal from 'sweetalert2';
 import { Users } from '../../shared/user';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable'
 declare var $: any;
-/* import { Md5 } from 'ts-md5';
-import { UntypedFormBuilder } from '@angular/forms'
-import { environment } from 'src/environments/environment';
-declare function payfast_do_onsite_payment(param1 : any, callback: any): any; */
 
 @Component({
   selector: 'app-place-order',
@@ -46,11 +42,13 @@ export class PlaceOrderComponent {
   currentVAT!: VAT;
   quoteID = 0;
   quote!: QuoteVMClass;
-  orderToPlace!: OrderVM;
 
   //forms logic
   placeOrderForm: FormGroup;
   orderBtnText = 'Order >';
+
+  paymentResult: any;
+  submitted = false;
 
   //invoice info
   invoice: any = null;
@@ -84,13 +82,50 @@ export class PlaceOrderComponent {
   ngOnInit() {
     //Retrieve the quote ID that leads to this order from url
     this.activatedRoute.paramMap.subscribe(params => {
-      //get quote ID from url
+      //get parameters from url
       let id = params.get('quoteID');
       if (id) this.quoteID = this.decodeQuoteID(id);
-      //get tab number from url
+
       let tabNo = params.get('tab');
+      let response = params.get('result');
       if (tabNo && parseInt(tabNo) == 4) { //if this is tab 4 then the payment has succeeded/failed
         this.tab = 3;
+
+        //determine whether it was a success or failure
+        if (response) {
+          this.orderService.checkPaymentResult(response).subscribe((result: any) => {
+
+            this.paymentResult = result;
+            console.log('paymentResult', this.paymentResult);
+
+            //resulted in payment object with an ID
+            if (this.paymentResult.paymentID > 0) { //payment succeeded
+              console.log('Got this far');
+              this.tab = 4;
+              Swal.fire({
+                icon: 'success',
+                title: "Success",
+                html: "Your payment has been successfully processed",
+                timer: 3000,
+                timerProgressBar: true,
+                confirmButtonColor: '#32AF99'
+              }).then((result) => {
+                this.placeOrder(this.paymentResult.paymentTypeID);
+              });
+            }
+            else { //payment failed
+              Swal.fire({
+                icon: 'error',
+                title: "Oh no",
+                html: "Your payment has not been processed.",
+                timer: 3000,
+                timerProgressBar: true,
+                confirmButtonColor: '#32AF99'
+              }).then((result) => {
+              });
+            }
+          });
+        }
       }
     });
 
@@ -225,28 +260,11 @@ export class PlaceOrderComponent {
   cancel() {
     //Navigate to 'My quotes' page
     this.router.navigate(['my-quotes']);
-    /* try {
-      //statusID 1 = 'Generated'
-      this.dataService.UpdateQuoteStatus(this.quoteID, 1).subscribe((result) => {
-        console.log("Result", result);
-        //email customer to ignore previous invoice email
-        let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
-        let emailBody = `<p>We hope you're well. Please ignore the previous email which contained your Invoice for Quotation #
-                            ${this.quoteID}. Since you cancelled the order before you could finish paying the deposit, that invoice is no longer valid.</p>
-                            <p>If you cancelled by mistake, just accept the quote again to restart the process.</p>`;
-
-        this.emailService.sendEmail(this.customer.email, 'Order not placed', customerName, emailBody);
-
-        //Navigate to 'My quotes' page
-        this.router.navigate(['my-quotes']);
-      });
-    } catch (error) {
-      console.error('Error updating status: ', error);
-    } */
   }
 
   //---------------------------------------- PLACE ORDER ----------------------------------------
   async initiateOrder() {
+    this.submitted = true;
     let amount = 0;
     let deliveryTypeId = -1;
     let paymentTypeId = -1;
@@ -258,7 +276,7 @@ export class PlaceOrderComponent {
           amount = this.quote.getTotalAfterVAT();
           paymentTypeId = 1;
           break;
-      
+
         case "Cash on delivery":
           amount = this.quote.totalBeforeVAT * 0.2;
           paymentTypeId = 2;
@@ -272,13 +290,13 @@ export class PlaceOrderComponent {
         default:
           throw 'Invalid payment type chosen';
       }
-      
+
       //get delivery type ID
       switch (this.deliveryType?.value) {
         case "Delivery":
           deliveryTypeId = 1;
           break;
-      
+
         case "Pick up":
           deliveryTypeId = 2;
           break;
@@ -286,9 +304,6 @@ export class PlaceOrderComponent {
         default:
           throw 'Invalid delivery type chosen';
       }
-
-      //create order VM now to save time
-      this.createOrderVM();
 
       let orderDetails = {
         customerID: this.customer.id,
@@ -299,117 +314,32 @@ export class PlaceOrderComponent {
         paymentTypeID: paymentTypeId,
         deliveryTypeID: deliveryTypeId
       }
-  
+
       //return payment request VM object to post to payfast
-      this.orderService.initiatePlaceOrder(orderDetails).subscribe((payfastRequest: any) => { 
+      this.orderService.initiatePlaceOrder(orderDetails).subscribe((payfastRequest: any) => {
         if (payfastRequest === null) {
           throw 'Invalid payment type';
         }
         else {
           // Create and submit the payment form 
-          const form = document.createElement('form'); 
-          form.method = 'POST'; 
+          const form = document.createElement('form');
+          form.method = 'POST';
           form.action = 'https://sandbox.payfast.co.za/eng/process'; //change this URL for live payments
           form.target = '_self';
-    
-          for (const key in payfastRequest) { 
-            if (payfastRequest.hasOwnProperty(key)) { 
-              const hiddenField = document.createElement('input'); 
-              hiddenField.type = 'hidden'; 
-              hiddenField.name = key; 
-              hiddenField.value = payfastRequest[key]; 
-              form.appendChild(hiddenField); 
-            } 
-          } 
-          document.body.appendChild(form); 
-          form.submit(); 
-          // Chain the next calls 
-          /* let result = this.orderService.completePayment(paymentTypeId, payfastRequest);
 
-          //result is either false or a payment object
-          if (result != false) {
-            this.orderToPlace.paymentID = result.paymentID;
+          for (const key in payfastRequest) {
+            if (payfastRequest.hasOwnProperty(key)) {
+              const hiddenField = document.createElement('input');
+              hiddenField.type = 'hidden';
+              hiddenField.name = key;
+              hiddenField.value = payfastRequest[key];
+              form.appendChild(hiddenField);
+            }
           }
-
-          console.log(result, this.orderToPlace); */
+          document.body.appendChild(form);
+          form.submit();
+          this.submitted = false;
         }
-      });
-    } catch (error) {
-      //error message
-      Swal.fire({
-        icon: 'error',
-        title: "Oops...",
-        html: "Something went wrong and we could not process your order.",
-        timer: 3000,
-        timerProgressBar: true,
-        confirmButtonColor: '#32AF99'
-      }).then((result) => {
-        console.log(result);
-      });
-
-      console.error('Error submitting order: ', error);      
-    }
-  }
-
-  createOrderVM() {
-    //create order vm for order
-    this.orderToPlace = {
-      customerOrderID: 0,
-      quoteID: this.quoteID,
-      orderStatusID: 0,
-      orderStatusDescription: '',
-      date: new Date(),
-      deliveryScheduleID: 0,
-      deliveryDate: new Date(),
-      deliveryTypeID: 1,
-      deliveryType: this.deliveryType?.value,
-      deliveryPhoto: '',
-      customerId: this.customerID,
-      customerFullName: '',
-      paymentID: 0,
-      orderLines: []
-    };
-
-    //create order lines for each cart item
-    this.quote.lines.forEach(line => {
-      let ol: OrderLineVM = {
-        customerOrderLineID: 0,
-        customerOrderID: 0,
-        fixedProductID: line.isFixedProduct ? line.productID : 0,
-        fixedProductDescription: '',
-        customProductID: !line.isFixedProduct ? line.productID : 0,
-        customProductDescription: '',
-        confirmedUnitPrice: line.confirmedUnitPrice,
-        quantity: line.quantity,
-        customerReturnID: 0
-      }
-
-      this.orderToPlace.orderLines.push(ol);
-    });
-  }
-
-  async placeOrder(successMessage: string, newOrder: OrderVM) {
-    console.log('Order before posting', newOrder);
-
-    try {
-      //post to backend
-      this.dataService.AddCustomerOrder(newOrder).subscribe(async (result) => {
-        //Send invoice via email
-        await this.createInvoice(this.quote);
-
-        //success message
-        Swal.fire({
-          icon: 'success',
-          title: "Order placed successfully!",
-          html: successMessage,
-          timer: 3000,
-          timerProgressBar: true,
-          confirmButtonColor: '#32AF99'
-        }).then((result) => {
-          console.log(result);
-        });
-
-        this.router.navigate(['/order-history']); //redirect to order history page        
       });
     } catch (error) {
       //error message
@@ -428,12 +358,98 @@ export class PlaceOrderComponent {
     }
   }
 
+  async placeOrder(paymentID: number) {
+    //display loading message
+    document.body.classList.add('no-scroll');
+    $('#processing').modal('show');
+
+    //create order vm for order
+    let newOrder: OrderVM = {
+      customerOrderID: 0,
+      quoteID: this.quoteID,
+      orderStatusID: 0,
+      orderStatusDescription: '',
+      date: new Date(),
+      deliveryScheduleID: 0,
+      deliveryDate: new Date(),
+      deliveryTypeID: 1,
+      deliveryType: this.deliveryType?.value,
+      deliveryPhoto: '',
+      customerId: this.customerID,
+      customerFullName: '',
+      paymentID: paymentID,
+      orderLines: []
+    };
+
+    //create order lines for each cart item
+    this.quote.lines.forEach(line => {
+      let ol: OrderLineVM = {
+        customerOrderLineID: 0,
+        customerOrderID: 0,
+        fixedProductID: line.isFixedProduct ? line.productID : 0,
+        fixedProductDescription: '',
+        customProductID: !line.isFixedProduct ? line.productID : 0,
+        customProductDescription: '',
+        confirmedUnitPrice: line.confirmedUnitPrice,
+        quantity: line.quantity,
+        customerReturnID: 0
+      }
+
+      newOrder.orderLines.push(ol);
+    });
+
+    console.log('Order before posting', newOrder);
+
+    try {
+      //update quote status
+      //statusID 2 = 'Accepted'
+      this.dataService.UpdateQuoteStatus(this.quoteID, 2).subscribe((result) => {
+        console.log("Result", result);
+
+        //create new order in DB
+        this.dataService.AddCustomerOrder(newOrder).subscribe(async (result) => {
+          //Send invoice via email
+          await this.createInvoice(this.quote, newOrder.paymentID, result.customerOrderID);
+          $('#processing').modal('hide');
+          document.body.classList.remove('no-scroll');
+
+          //success message
+          Swal.fire({
+            icon: 'success',
+            title: "Order placed successfully!",
+            html: "Thank you for doing business with us.",
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonColor: '#32AF99'
+          }).then((result) => {
+            console.log(result);
+          });
+
+          this.router.navigate(['/order-history']); //redirect to order history page
+        });
+      });
+    }
+    catch (error) {
+      //error message
+      Swal.fire({
+        icon: 'error',
+        title: "Oops...",
+        html: "Payment was successful but something went wrong with processing this order. Please contact Mega Pack support.",
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        this.router.navigate(['/order-history']); //redirect to order history page
+      });
+      console.error('Error in updating status, placing order or sending email', error);
+    }
+  }
+
   //------------------------- SEND INVOICE VIA EMAIL -------------------------
   //create invoice PDF
-  async createInvoice(quote: QuoteVMClass) {
+  async createInvoice(quote: QuoteVMClass, paymentTypeId: number, orderNo: number) {
     let address = this.customer.address.split(', ');
     let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
     let restOfAddress = '';
+    let paymentTypes = ['Pay immediately', 'Cash on delivery / collection', 'Credit'];
 
     for (let i = 2; i < address.length; i++) {
       restOfAddress += address[i] + ', ';
@@ -461,11 +477,15 @@ export class PlaceOrderComponent {
       totalExlcudingDeposit: quote.totalBeforeVAT * 0.8,
       totalVAT: quote.totalVAT,
       total: quote.getTotalAfterVAT(),
+      paymentType: paymentTypes[paymentTypeId - 1],
+      number: orderNo,
       lines: invoiceLines
     }
 
-    // Wait 100 millisec to ensure the invoice is rendered and the data displayed before trying to screenshot and all that
-    await this.delay(10);
+    console.log('invoice', this.invoice);
+
+    // Wait 1000 millisec to ensure the invoice is rendered and the data displayed before trying to screenshot and all that
+    await this.delay(1000);
 
     let invoiceImg = document.getElementById("invoice-img") as HTMLImageElement;
     //add mega pack header to the pdf manually cos trying to html2canvas it is giving errors
@@ -474,106 +494,114 @@ export class PlaceOrderComponent {
     //get other parts of invoice for html2canvas
     let invoiceHdLeft = document.getElementById("header-left") as HTMLElement;
     let invoiceHdRight = document.getElementById("header-right") as HTMLElement;
-    let invoiceBod = document.getElementById("invoice-body") as HTMLElement;
     let invoiceFtLeft = document.getElementById("footer-left") as HTMLElement;
     let invoiceFtRight = document.getElementById("footer-right") as HTMLElement;
-    //let disclaimer = document.getElementById("disclaimer") as HTMLElement;
     let invoiceParts: HTMLElement[] = [];
 
-    invoiceParts.push(invoiceHdLeft, invoiceHdRight, invoiceBod, invoiceFtLeft, invoiceFtRight);
+    invoiceParts.push(invoiceHdLeft, invoiceHdRight, invoiceFtLeft, invoiceFtRight);
 
     // Call the html2canvas function and pass the elements as an argument also use Promise.all to wait for all calls to complete
     const invoiceCanvases = await Promise.all(invoiceParts.map(async (part) => {
       const canvas = await html2canvas(part);
+      document.body.appendChild(canvas);
       return canvas; // Return the canvas directly
     }));
 
     console.log(invoiceCanvases);
-    this.createPDF(invoiceCanvases, quote.quoteID);
+    this.createPDF(invoiceCanvases, orderNo);
   }
 
-  createPDF(canvases: HTMLCanvasElement[], quoteNo: number) {
+  createPDF(canvases: HTMLCanvasElement[], orderNo: number) {
     // dimensions and positions for each part of the PDF
     const fullWidth = this.pdf.internal.pageSize.getWidth();
-    const pageHeight = this.pdf.internal.pageSize.getHeight() - 20;
-    const pageWidth = this.pdf.internal.pageSize.getWidth() - 20; //add margin of 20mm
     const halfPageWidth = (fullWidth / 2) - 11.5; //account for 20mm margin and 3mm space between half page blocks. Therefore, 10 + 1.5
     const margin = 10; //margin of the page
     let yOffset = 20 + 62.301845; //used to recalculate starting y position
-    
-    // Add the canvases to the PDF
-    canvases.forEach((canvas, index) => {
-      let x = 10; //give 10mm margin between left paper edge and doc content
-      let y = yOffset; //give 10mm margin between top paper edge and doc content
-      let width = halfPageWidth;
-      let height = pageHeight / 8; //calculate height
+    let ratio = 0;
+    //calculate ratio to determine height
+    if (canvases[0].height > canvases[1].height ) ratio = canvases[0].height / canvases[0].width;
+    else { ratio = canvases[1].height / canvases[1].width; }
 
-      // Adjust x coordinates for each canvas as needed
-      if (index === 1) {
-        x = fullWidth - width - margin; //calculate x from the right margin not the left
-      } else if (index === 2) {
-        height = 8 + (this.invoice.lines.length * 8); //for each invoice line, add 8mm. And add 8mm at the start for the table headings
-        width = pageWidth;
-      } else if (index === 3) {
-        height = pageHeight / 10;
-      } else if (index === 4) {
-        height = pageHeight / 10;
-        x = fullWidth - width - margin; //calculate x from the right margin not the left
-      }
-      
-      /* if (index === 0) {
-        width = pageWidth;
-      }
-      else if (index === 1) {
-        //x = margin;
-        //y = fullPageHeight;
-      } else if (index === 2) {
-        x = fullWidth - width - margin; //calculate x from the right margin not the left
-        //y = fullPageHeight;
-      } else if (index === 3) {
-        //y = fullPageHeight / 2;
-        width = pageWidth;
-      } else if (index === 4) {
-        //x = margin;
-        //y = fullPageHeight / 3;
-      } else if (index === 5) {
-        x = fullWidth - halfPageWidth - margin; //calculate x from the right margin not the left
-      }
-      else if (index == 6) {
-        width = pageWidth * 0.8;
-      } */
+    this.addCanvasToPDF(canvases[0], 10, 82.301845, halfPageWidth, halfPageWidth * ratio, 0);
+    console.log(`index: 0; x: 10; y: 82.301845; width: ${halfPageWidth} height: ${halfPageWidth * ratio}`);
+    this.addCanvasToPDF(canvases[1], fullWidth - halfPageWidth - margin, 82.301845, halfPageWidth, halfPageWidth * ratio, 1);
+    console.log(`index: 1; x: ${fullWidth - halfPageWidth - margin}; y: 82.301845; width: ${halfPageWidth} height: ${halfPageWidth * ratio}`);
+    yOffset += (halfPageWidth * ratio) + margin; //adjust y offset
 
-      console.log(index, x, y, width, height);
-      this.addCanvasToPDF(canvas, x, y, width, height, index);
-
-      // Update the yOffset for the next canvas; unless it's a half block that should have the same y position as the previous half block
-      if (index === 1 || index === 2|| index === 4) yOffset = y + height + margin;
+    //add table
+    const headings = [["Description", "Quantity", "Unit price", "Total"]];
+    const rows: string[][] = []
+    this.invoice.lines.forEach(line => {
+      rows.push([line.productDescription, line.quantity, line.confirmedUnitPrice, line.total]);
     });
+
+    (this.pdf as any).autoTable({
+      startY: yOffset,
+      startX: 10,
+      theme: 'plain',      
+      head: headings,
+      body: rows,
+      didDrawPage: (d) => yOffset = d.cursor.y,
+    });
+
+    //adjust ratio
+    if (canvases[2].height > canvases[3].height ) ratio = canvases[2].height / canvases[2].width;
+    else { ratio = canvases[3].height / canvases[3].width; }
+
+    this.addCanvasToPDF(canvases[2], 10, yOffset + margin, halfPageWidth, halfPageWidth * ratio, 2);
+    console.log(`index: 2; x: 10; y: ${yOffset + margin}; width: ${halfPageWidth} height: ${halfPageWidth * ratio}`);
+    this.addCanvasToPDF(canvases[3], fullWidth - halfPageWidth - margin, yOffset + margin, halfPageWidth, halfPageWidth * ratio, 3);
+    console.log(`index: 3; x: ${fullWidth - halfPageWidth - margin}; y: ${yOffset + margin}; width: ${halfPageWidth} height: ${halfPageWidth * ratio}`);
+    yOffset += (halfPageWidth * ratio) + (margin * 2);
+
+
+    // Add the canvases to the PDF
+    // canvases.forEach((canvas, index) => {
+    //   let x = 10; //give 10mm margin between left paper edge and doc content
+    //   let y = yOffset; //give 10mm margin between top paper edge and doc content
+    //   let width = halfPageWidth;
+    //   let height = pageHeight / 8; //calculate height
+
+    //   // Adjust x coordinates for each canvas as needed
+    //   if (index === 1) {
+    //     x = fullWidth - width - margin; //calculate x from the right margin not the left
+    //   } else if (index === 2) {
+    //     height = 8 + (this.invoice.lines.length * 8); //for each invoice line, add 8mm. And add 8mm at the start for the table headings
+    //     width = pageWidth;
+    //   } else if (index === 3) {
+    //     height = pageHeight / 10;
+    //   } else if (index === 4) {
+    //     height = pageHeight / 10;
+    //     x = fullWidth - width - margin; //calculate x from the right margin not the left
+    //   }
+
+    //   console.log(index, x, y, width, height);
+    //   this.addCanvasToPDF(canvas, x, y, width, height, index);
+
+    //   // Update the yOffset for the next canvas; unless it's a half block that should have the same y position as the previous half block
+    //   if (index === 1 || index === 2 || index === 4) yOffset = y + height + margin;
+    // });
 
     //add disclaimer text to pdf
     this.pdf.setFontSize(9); // Set the font size to be less than normal
     // Add the text
     this.pdf.text('*Note that every order contains a deposit of 20% and without this down payment, your order cannot be processed.', 10, yOffset);
 
-    document.body.style.overflowY = 'scroll';
-
     //send email
-    let emailBody = `<p>We hope you're well. Please see attached your invoice for Quote ${quoteNo}. 
-                      Thank you for shopping with us. We really appreciate your business! </p>
-                    <p>Please don't hesitate to reach out if you have any questions.</p>`;
+    let emailBody = `<p>We are delighted that you found something you like.
+                     Please see attached your invoice for Order #${orderNo}. 
+                     Thank you for shopping with us. We really appreciate your business! </p>
+                     <p>Please don't hesitate to reach out if you have any questions.</p>`;
 
     let pdfData = this.pdf.output("datauristring");
     var base64String = pdfData.split(',')[1];
-    
+
     let attachment: EmailAttachmentVM = {
-      fileName: 'Invoice for Quotation #' + quoteNo + '.pdf',
-      fileBase64: base64String
+    fileName: 'Invoice #' + orderNo + '.pdf',
+    fileBase64: base64String
     }
 
-    this.emailService.sendEmail(this.customer.email, 'Invoice', this.invoice.customer, emailBody, [attachment]);
-
-    //Save the combined PDF
-    //this.pdf.save(pdfName + '.pdf');
+    this.emailService.sendEmail(this.customer.email, 'Thanks for your order!', this.invoice.customer, emailBody, [attachment]);
   }
 
   // Function to add a canvas to the PDF with specified position and dimensions
