@@ -51,13 +51,12 @@ export class OrderService {
   }
 
   initiatePlaceOrder(orderDetails: OrderDetails): Observable<any> {
-    if (orderDetails.paymentTypeID == 3) { //credit
-      this.deductCreditBalance(orderDetails.amount);
-  
+    if (orderDetails.paymentTypeID == 3) { //credit  
       //update credit balance
+      let updatedBalance = orderDetails.creditBalance - orderDetails.amount;
       return this.httpClient
-        .put<any>(`${this.apiUrl}User/UpdateUser/${orderDetails.customerEmail}`, orderDetails, this.httpOptions);
-    } 
+        .put<any>(`${this.apiUrl}User/UpdateCustomerCreditBalance/${orderDetails.customerID}/${updatedBalance}`, this.httpOptions);
+    }
     else if (orderDetails.paymentTypeID == 1 || orderDetails.paymentTypeID == 2) { //pay immediately or cash on collection / delivery
       let payment = {
         merchant_id: 0,
@@ -80,10 +79,6 @@ export class OrderService {
       // If neither of the conditions is met, return null as an observable
       return of(null);
     }
-  }
-
-  deductCreditBalance(amount: number) {
-
   }
 
   checkPaymentResult(gibberish: string): Observable<any> {
@@ -145,4 +140,5 @@ interface OrderDetails {
   amount: number;
   paymentTypeID: number;
   deliveryTypeID: number;
+  creditBalance: number;
 }

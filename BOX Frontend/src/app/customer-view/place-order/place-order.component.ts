@@ -85,6 +85,8 @@ export class PlaceOrderComponent {
       let id = params.get('quoteID');
       if (id) this.quoteID = this.decodeQuoteID(id);
 
+      this.getDataFromDB();
+
       let tabNo = params.get('tab');
       let response = params.get('result');
       if (tabNo && parseInt(tabNo) == 4) { //if this is tab 4 then the payment has succeeded/failed
@@ -128,10 +130,6 @@ export class PlaceOrderComponent {
       }
     });
 
-    //get customer
-    this.getCustomerData();
-
-    this.getDataFromDB();
     this.getCreditDueDate();
   }
 
@@ -167,6 +165,9 @@ export class PlaceOrderComponent {
 
       //put results from DB in global attributes
       this.currentVAT = currentVAT;
+      
+      //get customer
+      await this.getCustomerData();
 
       this.checkForCheating(quote);
 
@@ -224,11 +225,14 @@ export class PlaceOrderComponent {
 
   //check if user is approved for credit and sufficient credit left to place this order
   checkCredit(): boolean {
-    //check for sufficient credit balance
-    let creditBalance = this.customer.creditBalance;
-    if (this.quote.getTotalAfterVAT() > creditBalance) return false;
+    if (this.customer.creditLimit > 0) { //check if they're approved for credit
+      //check for sufficient credit balance
+      let creditBalance = this.customer.creditBalance;
+      if (this.quote.getTotalAfterVAT() > creditBalance) return false;
 
-    return true;
+      return true;
+    }
+    return false;    
   }
 
   getCreditDueDate() {
@@ -304,7 +308,8 @@ export class PlaceOrderComponent {
         quoteID: this.quoteID,
         amount: amount,
         paymentTypeID: paymentTypeId,
-        deliveryTypeID: deliveryTypeId
+        deliveryTypeID: deliveryTypeId,
+        creditBalance: this.customer.creditBalance
       }
 
       //return payment request VM object to post to payfast
@@ -312,7 +317,24 @@ export class PlaceOrderComponent {
         if (payfastRequest === null) {
           throw 'Invalid payment type';
         }
-        else {
+        else if (paymentTypeId == 3 && typeof payfastRequest == 'number') { //credit purchase returns new credit balance
+          let payment = {
+            paymentTypeId: paymentTypeId,
+            paymentID: 0
+          }
+
+          Swal.fire({
+            icon: 'success',
+            title: "Success",
+            html: "Your credit balance was successfully updated.",
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonColor: '#32AF99'
+          }).then((result) => {
+            this.placeOrder(payment);
+          });
+        }
+        else { //result is payfast request
           // Create and submit the payment form 
           const form = document.createElement('form');
           form.method = 'POST';
