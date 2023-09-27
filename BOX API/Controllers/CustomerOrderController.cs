@@ -379,7 +379,7 @@ namespace BOX.Controllers
                 transaction.Commit(); // Commit the transaction; everything is fully saved now
 
                 //attach payment to order
-                //AttachPaymentToOrder(order.CustomerOrderID, customerOrderViewModel.PaymentID);
+                AttachPaymentToOrder(order.CustomerOrderID, customerOrderViewModel.PaymentID);
 
                 return Ok(order);
             }
@@ -422,29 +422,29 @@ namespace BOX.Controllers
             }
         }
 
-        //[HttpPut]
-        //[Route("AttachPaymentToOrder")]
-        //public IActionResult AttachPaymentToOrder(int customerOrderId, int paymentId)
-        //{
-        //    try
-        //    {
-        //        var existingCustomerOrder = _repository.GetCustomerOrderAsync(customerOrderId); make sure the order exists on the system
-        //        var existingPayment = _repository.GetPayment(paymentId);
+        [HttpPut]
+        [Route("AttachPaymentToOrder")]
+        public IActionResult AttachPaymentToOrder(int customerOrderId, int paymentId)
+        {
+            try
+            {
+                var existingCustomerOrder = _repository.GetCustomerOrderAsync(customerOrderId); //make sure the order exists on the system
+                var existingPayment = _repository.GetPayment(paymentId);
 
-        //        if (existingCustomerOrder == null) return NotFound($"The order does not exist on the B.O.X System");
-        //        if (existingPayment == null) return NotFound($"The payment does not exist on the B.O.X System");
+                if (existingCustomerOrder == null) return NotFound($"The order does not exist on the B.O.X System");
+                if (existingPayment == null) return NotFound($"The payment does not exist on the B.O.X System");
 
-        //        existingPayment.CustomerOrderID = customerOrderId;
+                existingPayment.CustomerOrderID = customerOrderId;
 
-        //        _repository.SaveChanges();
+                _repository.SaveChanges();
 
-        //        return Ok(existingPayment);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
-        //    }
-        //}
+                return Ok(existingPayment);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
 
 
         //-------------------- verify payment --------------------
@@ -452,44 +452,6 @@ namespace BOX.Controllers
         {
             return WebUtility.UrlEncode(value)?.Replace("%20", "+");
         }
-
-        [HttpPost("ReceivePayFastNotification")]
-        public IActionResult ReceivePayFastNotification()
-        {
-            try
-            {
-                //This method is only hit when payment is successful
-                // Read the request body
-                var requestBody = string.Empty;
-                using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
-                {
-                    requestBody = reader.ReadToEnd();
-                }
-
-                Console.WriteLine($"from PayFast: {requestBody}");
-
-                // Parse the posted data
-                var formData = HttpUtility.ParseQueryString(requestBody);
-                var pfData = new Dictionary<string, string>();
-
-                foreach (string key in formData.AllKeys)
-                {
-                    pfData[key] = formData[key];
-                }
-
-                // Verify signature and other processing
-                // Note: You should implement your own verification logic here
-
-                // Respond with a 200 OK status
-                return Ok("Notification received and processed successfully.");
-            }
-            catch (Exception ex)
-            {
-                // Handle exceptions
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
 
         [HttpPost("HandlePaymentResult/{paymentTypeId}")]
         public async Task<IActionResult> HandlePaymentResult(int paymentTypeId, [FromBody] PayFastRequestViewModel payment)

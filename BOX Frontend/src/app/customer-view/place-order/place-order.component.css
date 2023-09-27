@@ -89,6 +89,8 @@
     100% { width: 100%; }
 }
 
+.text-red { color: #E33131;}
+
 .tab {
     padding: 1.5em;
 }

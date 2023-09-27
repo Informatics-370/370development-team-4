@@ -5,6 +5,7 @@ import { DataService } from './data.services';
 import { AssignEmpDTO } from '../shared/assign-emp-dto';
 import { Users } from '../shared/user';
 import { take, lastValueFrom } from 'rxjs';
+import { AllCustomerDetailsVM } from '../shared/all-customer-details-vm';
 
 @Injectable({
   providedIn: 'root'
@@ -117,5 +118,41 @@ export class AuthService {
     }
     
     return user
+  }
+
+  async getCustomer(): Promise<AllCustomerDetailsVM> {
+    let customer: AllCustomerDetailsVM = {
+      userId: '',
+      customerId: '',
+      title: '',
+      fullName: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      address: '',
+      employeeId: '',
+      isBusiness: false,
+      vatNo: '',
+      creditBalance: 0,
+      creditLimit: 0
+    };
+
+    const token = localStorage.getItem('access_token')!;
+    let userId = this.getUserIdFromToken(token);
+
+    try {
+      if (userId) {
+        let result: AllCustomerDetailsVM = await lastValueFrom(this.dataService.GetCustomerByUserId(userId).pipe(take(1)));
+        customer = result;
+      }
+      else {
+        throw 'Could not get user ID from token';
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    
+    return customer
   }
 }

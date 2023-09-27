@@ -87,10 +87,11 @@
             <input id="cash" type="radio" name="paymentType" formControlName="paymentType" value="Cash on delivery">Cash on delivery / collection
           </label><br />
 
-          <label for="credit" class="form-label modal-form-label">
-            <input id="credit" type="radio" name="paymentType" formControlName="paymentType" value="Credit" [attr.disabled]="!creditAllowed ? 'disabled' : null">Credit
+          <label for="credit" class="form-label modal-form-label" [ngClass]="{'text-red': !creditAllowed}">
+            <input id="credit" type="radio" name="paymentType" formControlName="paymentType" value="Credit" 
+              [attr.disabled]="!creditAllowed ? 'disabled' : null">Credit
           </label><br />
-          <span *ngIf="!creditAllowed">Your credit balance is insufficient / you aren't approved for credit.
+          <span class="error-msg" *ngIf="!creditAllowed">Your credit balance is insufficient / you aren't approved for credit.
             You can <a>apply for credit</a>.</span>
         </div><br />
       </div>

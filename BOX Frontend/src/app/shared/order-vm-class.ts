@@ -15,6 +15,7 @@ export class OrderVMClass implements OrderVM {
   deliveryType: string; //delivery or pick up
   deliveryPhoto: string;
   paymentID: number = 0;
+  paymentTypeID: number;
   orderLines: any[];
 
   /*line = {
@@ -58,6 +59,7 @@ export class OrderVMClass implements OrderVM {
     this.deliveryTypeID = order.deliveryTypeID;
     this.deliveryType = order.deliveryType;
     this.deliveryPhoto = order.deliveryPhoto;
+    this.paymentTypeID = order.paymentTypeID;
     this.totalBeforeVAT = this.getTotalBeforeVAT();
     this.totalVAT = this.getVATAmount();
 

@@ -14,7 +14,7 @@ import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { VAT } from '../../shared/vat';
 import { EmailAttachmentVM } from '../../shared/email-attachment-vm';
 import Swal from 'sweetalert2';
-import { Users } from '../../shared/user';
+import { AllCustomerDetailsVM } from '../../shared/all-customer-details-vm';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'
@@ -35,8 +35,7 @@ export class PlaceOrderComponent {
   creditBalanceDue: Date = new Date();
 
   //customer
-  customerID = '';
-  customer!: Users;
+  customer!: AllCustomerDetailsVM;
 
   //quote and order
   currentVAT!: VAT;
@@ -110,7 +109,7 @@ export class PlaceOrderComponent {
                 timerProgressBar: true,
                 confirmButtonColor: '#32AF99'
               }).then((result) => {
-                this.placeOrder(this.paymentResult.paymentTypeID);
+                this.placeOrder(this.paymentResult);
               });
             }
             else { //payment failed
@@ -129,10 +128,7 @@ export class PlaceOrderComponent {
       }
     });
 
-    //get customer ID
-    const token = localStorage.getItem('access_token')!;
-    let id = this.authService.getUserIdFromToken(token);
-    if (id) this.customerID = id;
+    //get customer
     this.getCustomerData();
 
     this.getDataFromDB();
@@ -140,11 +136,9 @@ export class PlaceOrderComponent {
   }
 
   async getCustomerData() {
-    const token = localStorage.getItem('access_token')!;
-    let email = this.authService.getEmailFromToken(token);
-    if (email) {
-      this.customer = await this.authService.getUserByEmail(email);
-
+    this.customer = await this.authService.getCustomer();
+    console.log('customer', this.customer);
+    if (this.customer) {
       //set shipping address
       this.shippingAddress?.setValue(this.customer.address);
     }
@@ -208,7 +202,7 @@ export class PlaceOrderComponent {
  - quote belongs to the customer currently logged in. If not, then the customer is trying to order off someone else's quote
   */
   checkForCheating(quote: QuoteVM): boolean {
-    if (quote.quoteStatusID != 1 || this.customer.id != quote.customerId) { //doesn't have status of generated or not right customer
+    if (quote.quoteStatusID != 1 || this.customer.userId != quote.customerId) { //doesn't have status of generated or not right customer
       //error message
       Swal.fire({
         icon: 'error',
@@ -230,10 +224,8 @@ export class PlaceOrderComponent {
 
   //check if user is approved for credit and sufficient credit left to place this order
   checkCredit(): boolean {
-    //check if user is approved for credit
-
     //check for sufficient credit balance
-    let creditBalance = 2000000;
+    let creditBalance = this.customer.creditBalance;
     if (this.quote.getTotalAfterVAT() > creditBalance) return false;
 
     return true;
@@ -306,7 +298,7 @@ export class PlaceOrderComponent {
       }
 
       let orderDetails = {
-        customerID: this.customer.id,
+        customerID: this.customer.userId,
         customerEmail: this.customer.email,
         customerPhoneNo: this.customer.phoneNumber,
         quoteID: this.quoteID,
@@ -358,7 +350,7 @@ export class PlaceOrderComponent {
     }
   }
 
-  async placeOrder(paymentID: number) {
+  async placeOrder(payment: any) {
     //display loading message
     document.body.classList.add('no-scroll');
     $('#processing').modal('show');
@@ -375,9 +367,10 @@ export class PlaceOrderComponent {
       deliveryTypeID: 1,
       deliveryType: this.deliveryType?.value,
       deliveryPhoto: '',
-      customerId: this.customerID,
+      customerId: this.customer.userId,
       customerFullName: '',
-      paymentID: paymentID,
+      paymentID: payment.paymentID,
+      paymentTypeID: payment.paymentTypeID,
       orderLines: []
     };
 
@@ -409,7 +402,7 @@ export class PlaceOrderComponent {
         //create new order in DB
         this.dataService.AddCustomerOrder(newOrder).subscribe(async (result) => {
           //Send invoice via email
-          await this.createInvoice(this.quote, newOrder.paymentID, result.customerOrderID);
+          await this.createInvoice(this.quote, newOrder.paymentTypeID, result.customerOrderID);
           $('#processing').modal('hide');
           document.body.classList.remove('no-scroll');
 
@@ -447,7 +440,6 @@ export class PlaceOrderComponent {
   //create invoice PDF
   async createInvoice(quote: QuoteVMClass, paymentTypeId: number, orderNo: number) {
     let address = this.customer.address.split(', ');
-    let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
     let restOfAddress = '';
     let paymentTypes = ['Pay immediately', 'Cash on delivery / collection', 'Credit'];
 
@@ -469,7 +461,7 @@ export class PlaceOrderComponent {
 
     this.invoice = {
       date: new Date(Date.now()),
-      customer: customerName,
+      customer: this.customer.fullName,
       addressLine1: address[0],
       addressLine2: address[1],
       addressLine3: restOfAddress.substring(0, restOfAddress.length - 2),
