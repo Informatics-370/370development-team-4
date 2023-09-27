@@ -145,7 +145,7 @@
 
       <div class="form-progress-div">
         <button *ngIf="tab == 1" class="btn btn-create btn-red" (click)="cancel()">Cancel</button>
-        <button *ngIf="tab > 1" class="btn btn-create" (click)="changeTab('previous')">Previous</button>
+        <button *ngIf="tab > 1" class="btn btn-create" [disabled]="submitted" (click)="changeTab('previous')">Previous</button>
         <button *ngIf="tab != 3" class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
         <button *ngIf="tab == 3" class="btn btn-create btn-order" [disabled]="submitted" (click)="initiateOrder()">{{orderBtnText}}</button>
       </div>

@@ -13,11 +13,11 @@ import { QuoteVM } from '../../shared/quote-vm';
 import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { VAT } from '../../shared/vat';
 import { EmailAttachmentVM } from '../../shared/email-attachment-vm';
-import Swal from 'sweetalert2';
 import { AllCustomerDetailsVM } from '../../shared/all-customer-details-vm';
+import { Users } from '../../shared/user';
+import Swal from 'sweetalert2';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable'
 declare var $: any;
 
 @Component({
@@ -264,6 +264,35 @@ export class PlaceOrderComponent {
     let amount = 0;
     let deliveryTypeId = -1;
     let paymentTypeId = -1;
+
+    try {
+      //update customer's address
+      if (this.shippingAddress?.value != this.customer.address) {
+        this.customer.address = this.shippingAddress?.value;
+        let user: Users = {
+          id: this.customer.userId,
+          firstName: this.customer.firstName,
+          lastName: this.customer.lastName,
+          address: this.customer.address,
+          email: this.customer.email,
+          title: "",
+          phoneNumber: this.customer.phoneNumber
+        };
+
+        this.dataService.UpdateUser(this.customer.email, user);
+      }
+    } catch (error) {
+      //error message
+      Swal.fire({
+        icon: 'error',
+        title: "Oh no",
+        html: "Something went wrong and we could not update your shipping address. Try updating it from your profile page.",
+        timer: 8000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+      });
+    }
 
     try {
       //get payment type ID
