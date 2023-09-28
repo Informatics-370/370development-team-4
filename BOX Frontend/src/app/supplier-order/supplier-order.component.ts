@@ -35,9 +35,10 @@ export class SupplierOrderComponent {
     supplierOrders: []
 
   };
+  test!: SupplierOrderLineVM;
   viewsupplierorder!: SupplierOrderVM;
   supplierorderCount: number = -1;
-
+ 
   todayString: string = new Date().toDateString();
   //forms
   captureSupplierOrderForm: FormGroup;
@@ -255,6 +256,48 @@ export class SupplierOrderComponent {
   }
 
 
+  //view specific supplier order modal
+
+openViewSupplierOrder (order: SupplierOrderVM) {
+  this.viewsupplierorder = order;  //this.supplierOrders[order.supplierOrderID];
+ // try {
+
+    // this.dataService.GetSupplierOrder(this.viewsupplierorder.supplierOrderID).subscribe((result: any) => {
+
+    //   //this.GetSupplierOrders();
+
+    //   console.log('Supplier Orders', result);
+
+    //   //this.submitClicked = false; //reset submission status
+
+      $('#viewsupplierorder').modal('show');
+      
+      console.log(this.test.rawMaterialDescription)
+
+    //});
+
+  // }
+
+  // catch (error) {
+
+  //   console.error('Error updating: ' + error);
+
+  // }    
+
+  // $('#viewSupplierOrder').modal('show');
+
+}
+
+
+
+displayStyle = "none";
+openPopup() {
+  this.displayStyle = "block";
+}
+closePopup() {
+  this.displayStyle = "none";
+  this.viewsupplierorder;
+}
   /*  onProductItemChange() {
      this.selectedProductItemID = this.orderForm.value.prodItemID;
    } */

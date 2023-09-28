@@ -10,6 +10,12 @@
             <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']" ></fa-icon>
         </div>
 
+        <div>
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept=".pdf" />
+            <button type="button" (click)="uploadCreditApplication()">Upload Credit Application</button>
+        </div>
+
+
         <hr class="hr hr-blurry m-3" />
         <table class="table">
             <thead>

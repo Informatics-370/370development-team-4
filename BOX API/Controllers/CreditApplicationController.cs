@@ -157,24 +157,26 @@ namespace BOX.Controllers
         {
             try
             {
-                if (!string.IsNullOrEmpty(creditAppVM.Application_Pdf64))
+                var file = creditAppVM.Application_Pdf64; // Get the uploaded file directly
+
+                if (file != null && file.Length > 0)
                 {
                     // Read the uploaded PDF file as a byte array
                     using (var memoryStream = new MemoryStream())
                     {
-                        byte[] pdfBytes = Convert.FromBase64String(creditAppVM.Application_Pdf64);
+                        await file.CopyToAsync(memoryStream);
+                        byte[] pdfBytes = memoryStream.ToArray();
 
                         // Create a new credit application for a user
                         var creditApplication = new Credit_Application
                         {
-                            creditApplicationID = creditAppVM.CreditApplicationID,
                             CreditApplicationStatusID = creditAppVM.CreditApplicationStatusID,
                             UserId = creditAppVM.UserId,
                             Application_Pdf = pdfBytes
                         };
+
                         // Save the credit application to the repository using the Add method
                         _repository.Add(creditApplication);
-
                         await _repository.SaveChangesAsync();
 
                         // Return the created credit application
@@ -183,7 +185,7 @@ namespace BOX.Controllers
                             CreditApplicationID = creditApplication.creditApplicationID,
                             CreditApplicationStatusID = creditApplication.CreditApplicationStatusID,
                             UserId = creditApplication.UserId,
-                            Application_Pdf64 = Convert.ToBase64String(creditApplication.Application_Pdf)
+                            // You can omit Application_Pdf64 as you are storing it in the database
                         };
 
                         return Ok(CreditAppViewModel);
@@ -199,10 +201,8 @@ namespace BOX.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
             }
         }
-        
-
         //---------------------------------- UPLOAD APPLICATION (ADMIN) ------------------------------
-        private readonly string _fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "370development-team4");
+        private readonly string _fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "CreditApplicationForm");
 
         [HttpPost]
         [Route("UploadApplication")]

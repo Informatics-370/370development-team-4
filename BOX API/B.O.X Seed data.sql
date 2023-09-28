@@ -82,3 +82,11 @@ INSERT INTO [dbo].[Title]
            ('Prof'),
            ('Dr')
 GO
+
+INSERT INTO [dbo].[Credit_Application_Status]
+           ([Description])
+     VALUES
+           ('Submitted'),
+		   ('Accepted'),
+		   ('Rejected')
+GO

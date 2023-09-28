@@ -215,6 +215,10 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}FixedProduct/UpdateFixedProduct/${fixedProductId}`, fixedProductViewModel, this.httpOptions);
   }
 
+  UpdateFixedProductQuantity(fixedProductId: number, fixedProductQuantityOnHand: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}FixedProduct/EditFixedProductQuantity/${fixedProductId}/${fixedProductQuantityOnHand}`, this.httpOptions);
+  }
+
   DeleteFixedProduct(fixedProductId: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
   }
@@ -254,8 +258,8 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
   }
 
-  UpdateRawMaterialQuantity(rawId: number, rawQuantity: number): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}EditRawMaterialQuantity/{rawmaterialId}/{rawMaterialQuantityOnHand}`, this.httpOptions);
+  UpdateRawMaterialQuantity(rawmaterialId: number, rawMaterialQuantityOnHand: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterialQuantity/${rawmaterialId}/${rawMaterialQuantityOnHand}`, this.httpOptions);
   }
 
 
@@ -381,6 +385,12 @@ export class DataService {
   GetAllSupplierOrders(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}SupplierOrder/GetAllSupplierOrders`)
       .pipe(map(result => result))
+  }
+
+  GetSupplierOrder(supplierOrderID : number) : Observable<any>
+  {
+    return this.httpClient.get<SupplierOrderVM>(`${this.apiUrl}SupplierOrder/GetSupplierOrder/${supplierOrderID}`)
+      .pipe(map(result => result));
   }
 
 
@@ -565,8 +575,8 @@ export class DataService {
   }
 
   uploadApplication(formData: FormData): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}CreditApplication/UploadApplication`)
-    .pipe(map(result => result))
+    return this.httpClient.post(`${this.apiUrl}CreditApplication/UploadApplication`, formData, {
+      responseType: 'text'});
   }
 
   downloadApplication(formData: FormData): Observable<any> {

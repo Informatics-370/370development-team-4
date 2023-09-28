@@ -67,6 +67,7 @@ import { CreditApplicationComponent } from './credit-application/credit-applicat
 import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 
 
+
 @NgModule({
   declarations: [ 
         AppComponent,
@@ -128,7 +129,8 @@ import { AdminCreditApplicationComponent } from './admin-credit-application/admi
         MessagesComponent,        
         RegistrationSuccessPopupComponent,
         CreditApplicationComponent,
-        AdminCreditApplicationComponent
+        AdminCreditApplicationComponent,
+        
         
   ],
   imports: [
@@ -137,7 +139,7 @@ import { AdminCreditApplicationComponent } from './admin-credit-application/admi
     FontAwesomeModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
