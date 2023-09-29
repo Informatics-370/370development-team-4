@@ -8,4 +8,6 @@ export interface OrderLineVM {
   quantity: number;
   confirmedUnitPrice: number;
   customerReturnID: number;
+  orderLineStatusID: number;
+  orderLineStatusDescription: string;
 }

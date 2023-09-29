@@ -138,6 +138,8 @@ namespace BOX.Controllers
                         fixedProduct = await _repository.GetFixedProductAsync(fpID);
                     }
 
+                    var lineStatus = await _repository.GetOrderLineStatusAsync(ol.OrderLineStatusID);
+
                     CustomerOrderLineViewModel olvm = new CustomerOrderLineViewModel()
                     {
                         CustomerOrderLineID = ol.CustomerOrderLineID,
@@ -147,7 +149,9 @@ namespace BOX.Controllers
                         CustomProductDescription = customProdDescription,
                         Quantity = ol.Quantity,
                         ConfirmedUnitPrice = ol.Confirmed_Unit_Price,
-                        CustomerReturnID = ol.CustomerReturnID == null ? 0 : ol.CustomerReturnID.Value
+                        CustomerReturnID = ol.CustomerReturnID == null ? 0 : ol.CustomerReturnID.Value,
+                        OrderLineStatusID = ol.OrderLineStatusID,
+                        OrderLineStatusDescription = lineStatus.Description
                     };
                     orderLineList.Add(olvm);
                 }
@@ -227,6 +231,8 @@ namespace BOX.Controllers
                             fixedProduct = await _repository.GetFixedProductAsync(fpID);
                         }
 
+                        var lineStatus = await _repository.GetOrderLineStatusAsync(ol.OrderLineStatusID);
+
                         CustomerOrderLineViewModel olVM = new CustomerOrderLineViewModel
                         {
                             CustomerOrderLineID = ol.CustomerOrderLineID,
@@ -236,7 +242,9 @@ namespace BOX.Controllers
                             CustomProductDescription = customProdDescription,
                             ConfirmedUnitPrice = ol.Confirmed_Unit_Price,
                             Quantity = ol.Quantity,
-                            CustomerReturnID = ol.CustomerReturnID == null ? 0 : ol.CustomerReturnID.Value
+                            CustomerReturnID = ol.CustomerReturnID == null ? 0 : ol.CustomerReturnID.Value,
+                            OrderLineStatusID = ol.OrderLineStatusID,
+                            OrderLineStatusDescription = lineStatus.Description
                         };
                         olList.Add(olVM);
                     }
@@ -347,7 +355,8 @@ namespace BOX.Controllers
                             CustomProductID = fpOrdered ? null : line.CustomProductID,
                             FixedProductID = !fpOrdered ? null : line.FixedProductID,
                             Quantity = line.Quantity,
-                            Confirmed_Unit_Price = line.ConfirmedUnitPrice
+                            Confirmed_Unit_Price = line.ConfirmedUnitPrice,
+                            OrderLineStatusID = 1 //set status to 1 - Placed
                         };
 
                         //decrease qty on hand for fixed products
@@ -516,6 +525,47 @@ namespace BOX.Controllers
                 await _repository.SaveChangesAsync();
 
                 return Ok(existingCustomerOrder);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
+        [HttpPut]
+        [Route("ProcessOrderLine/{orderLineId}/{customerOrderStatusId}")]
+        public async Task<IActionResult> ProcessOrderLine(int orderLineId, int customerOrderStatusId)
+        {
+            try
+            {
+                var existingCustomerOrderLine = await _repository.GetOrderLineAsync(orderLineId); //make sure the status exists
+                if (existingCustomerOrderLine == null) return NotFound($"The order line does not exist on the B.O.X System");
+
+                var existingCustomerOrder = await _repository.GetCustomerOrderAsync(existingCustomerOrderLine.CustomerOrderID); //get order
+                var existingOrderLines = await _repository.GetOrderLinesByOrderAsync(existingCustomerOrder.CustomerOrderID); //get all order order lines
+                if (existingCustomerOrder == null || existingOrderLines == null) return NotFound($"The order does not exist on the B.O.X System");
+
+                existingCustomerOrderLine.OrderLineStatusID = 2; //update status to 2 - In progress
+
+                //when 1 order line is in progress, whole order status is changed to in progress
+                existingCustomerOrder.CustomerOrderStatusID = 2; //2 - In progress
+
+                //if all order lines are in progress, change order status
+                bool allLinesInProgress = true;
+
+                foreach (var line in existingOrderLines)
+                {
+                    if (line.OrderLineStatusID == 1) //if the line isn't in progress
+                    {
+                        allLinesInProgress = false;
+                    }
+                }
+
+                if (allLinesInProgress) existingCustomerOrder.CustomerOrderStatusID = 4; //mark order as "Ready for delivery / collection"
+
+                await _repository.SaveChangesAsync();
+
+                return Ok(existingCustomerOrderLine);
             }
             catch (Exception)
             {

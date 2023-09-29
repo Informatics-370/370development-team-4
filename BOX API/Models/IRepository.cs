@@ -128,6 +128,10 @@ namespace BOX.Models
 
         //-----------------------------------------------Customer Order LINE---------------------------------------------
         Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
+        Task<Customer_Order_Line> GetOrderLineAsync(int orderLineId);
+
+        //----------------------------------------------- Customer Order Line Status ---------------------------------------------
+        Task<Order_Line_Status> GetOrderLineStatusAsync(int statusId);
 
         //------------------------------------------------------------- Supplier Return -------------------------------------------------------------------
         Task<Supplier_Return[]> GetAllSupplierReturnsAsync();

@@ -538,6 +538,12 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
+        public async Task<Customer_Order_Line> GetOrderLineAsync(int orderLineId)
+        {
+            IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerOrderLineID == orderLineId);
+            return await query.FirstOrDefaultAsync();
+        }
+
         //------------------------------------------------------------- Supplier Return  -------------------------------------------------------------------
 
         //Get Al VAT
@@ -781,7 +787,14 @@ namespace BOX.Models
         {
             var query = _appDbContext.Payment.Where(c => c.PaymentID == paymentId);
             return query.FirstOrDefault();
-        }        
+        }
+
+        //------------------------------------------------------ CUSTOMER ORDER LINE STATUS ------------------------------------------------------------
+        public async Task<Order_Line_Status> GetOrderLineStatusAsync(int statusId)
+        {
+            IQueryable<Order_Line_Status> query = _appDbContext.Order_Line_Status.Where(c => c.OrderLineStatusID == statusId);
+            return await query.FirstOrDefaultAsync();
+        }
 
         //--------------------------------- TRANSACTIONS --------------------------------
         public IDbContextTransaction BeginTransaction()

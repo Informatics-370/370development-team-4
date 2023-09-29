@@ -436,7 +436,9 @@ export class PlaceOrderComponent {
         customProductDescription: '',
         confirmedUnitPrice: line.confirmedUnitPrice,
         quantity: line.quantity,
-        customerReturnID: 0
+        customerReturnID: 0,
+        orderLineStatusID: 0,
+        orderLineStatusDescription: ''
       }
 
       newOrder.orderLines.push(ol);

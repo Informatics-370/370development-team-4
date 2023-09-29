@@ -47,6 +47,7 @@ namespace BOX.Models
         public DbSet<Fixed_Product> Fixed_Product { get; set; }
 
         public DbSet<Order_Delivery_Schedule> Order_Delivery_Schedule { get; set; }
+        public DbSet<Order_Line_Status> Order_Line_Status { get; set; }
 
         public DbSet<Payment> Payment { get; set; }
 

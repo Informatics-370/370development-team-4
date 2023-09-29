@@ -35,7 +35,8 @@ INSERT INTO [dbo].[Customer_Order_Status]
            ('Placed'),
            ('In progress'),
            ('Cancelled'),
-           ('Ready for delivery'),
+           ('Ready for delivery / collection'),
+           ('Scheduled for delivery'),
            ('Out for delivery'),
            ('Completed')
 GO
