@@ -75,6 +75,9 @@ export class OrderHistoryComponent {
 
       await this.getCustomerOrdersPromise();
     } catch (error) {
+      this.loading = false;
+      this.orderCount = -1;
+      this.error = true;
       console.error('An error occurred:', error);
     }
   }
@@ -121,6 +124,8 @@ export class OrderHistoryComponent {
           productFileB64: isFixedProduct ? fixedProduct?.productPhotoB64 : customProduct?.label,
           confirmedUnitPrice: line.confirmedUnitPrice,
           quantity: line.quantity,
+          statusID: line.orderLineStatusID,
+          statusDescription: line.orderLineStatusDescription
         }
 
         orderLines.push(orderLine);

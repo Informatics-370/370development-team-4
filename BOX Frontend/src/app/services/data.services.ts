@@ -462,6 +462,10 @@ export class DataService {
     );
   }
 
+  ProcessOrderLine(orderLineId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/ProcessOrderLine/${orderLineId}`, this.httpOptions);
+  }
+
   UpdateOrderStatus(customerOrderId: number, customerOrderStatusId: number): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }

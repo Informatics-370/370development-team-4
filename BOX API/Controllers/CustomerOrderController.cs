@@ -532,9 +532,10 @@ namespace BOX.Controllers
             }
         }
 
+        //------------------ Process order ------------------
         [HttpPut]
-        [Route("ProcessOrderLine/{orderLineId}/{customerOrderStatusId}")]
-        public async Task<IActionResult> ProcessOrderLine(int orderLineId, int customerOrderStatusId)
+        [Route("ProcessOrderLine/{orderLineId}")]
+        public async Task<IActionResult> ProcessOrderLine(int orderLineId)
         {
             try
             {
@@ -558,6 +559,7 @@ namespace BOX.Controllers
                     if (line.OrderLineStatusID == 1) //if the line isn't in progress
                     {
                         allLinesInProgress = false;
+                        break;
                     }
                 }
 
@@ -598,7 +600,7 @@ namespace BOX.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllCustomerOrders/{statusId}")]
+        [Route("GetCustomerOrdersByStatus/{statusId}")]
         public async Task<IActionResult> GetCustomerOrdersByStatus(int statusId)
         {
             try

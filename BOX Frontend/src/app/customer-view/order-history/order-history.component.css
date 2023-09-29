@@ -1,3 +1,12 @@
 @import "../../dashboard/dashboard.component.css";
 @import "../../product-category/product-category.component.css";
 @import "../my-quotes/my-quotes.component.css";
+
+#track-order {
+    width: 100%;
+    margin: 1em 0;
+}
+
+.placed { color: #32AF99; }
+
+.in-progress { color: #e7a427;}

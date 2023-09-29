@@ -24,13 +24,18 @@ export class CustomerOrdersComponent {
   loading = true;
   error: boolean = false;
   isAnyCheckboxChecked = false; //is true if 1 of the process order checkboxes is ticked
-  /*Statuses:
-  1 Placed
-  2 In progress
-  3 Cancelled
-  4 Ready for delivery
-  5 Out for delivery
-  6 Completed
+  /*Order Statuses:
+  1	Placed
+  2	In progress
+  3	Cancelled
+  4	Ready for delivery / collection
+  5	Scheduled for delivery
+  6	Out for delivery
+  7	Completed
+
+  Order Line Statuses
+  1	Placed
+  2	In progress
   */
 
   constructor(private dataService: DataService) { }
@@ -107,31 +112,32 @@ export class CustomerOrdersComponent {
     console.log('Search results:', this.filteredOrders);
   }
 
-  /*--------------------PROCESS ORDERS----------------------------*/
-  //disable/enable process button if one of the process order checkboxes was ticked/unticked
+  /*--------------------PROCESS ORDER LINES----------------------------*/
+  //disable/enable process button if one of the process order line checkboxes was ticked/unticked
   checkboxChanged() {
-    this.isAnyCheckboxChecked = this.filteredOrders.some(ord => ord.checked);
+    this.isAnyCheckboxChecked = this.selectedOrder.orderLines.some(line => line.orderLineStatusID == 1 && line.checked);
   }
 
-  processOrders() {
-    let ordersToProcess: number[] = []; //store IDs of all orders that will be processed
+  processOrderLines() {
+    let orderLinesToProcess: number[] = []; //store IDs of all lines that will be processed
 
-    this.filteredOrders.forEach(order => {
-      //if the checkbox associated with that order is ticked, get the order ID so I can process the order
-      if (order.checked) {
-        ordersToProcess.push(order.customerOrderID);
+    this.selectedOrder.orderLines.forEach(line => {
+      //if the checkbox associated with that order is ticked, get the line ID so I can process the order
+      if (line.checked && line.orderLineStatusID == 1) {
+        orderLinesToProcess.push(line.customerOrderLineID);
       }
     });
 
-    console.log('ordersToProcess', ordersToProcess);
-    //process orders aka update status to In progress
+    console.log('order lines to process', orderLinesToProcess);
+    //process order lines aka update status to In progress
     try {
-      ordersToProcess.forEach(orderID => {
-        //statusID 2 = 'In progress'
-        this.dataService.UpdateOrderStatus(orderID, 2).subscribe((result) => {
+      orderLinesToProcess.forEach(lineID => {
+        this.dataService.ProcessOrderLine(lineID).subscribe((result) => {
           console.log("Result", result);
+          this.loading = false;
           this.getDataFromDB(); //refresh list
           this.isAnyCheckboxChecked = false;
+          $('#viewOrder').modal('hide');
         });
       });
     } catch (error) {
@@ -143,9 +149,33 @@ export class CustomerOrdersComponent {
   async openViewOrderModal(id: number) {
     //get order to show details of
     let theOrder = await lastValueFrom(this.dataService.GetOrder(id).pipe(take(1)));
-    let applicableVAT = this.getApplicableVAT(theOrder.date); //get vat applicable to that date
-    this.selectedOrder = new OrderVMClass(theOrder, theOrder.orderLines, applicableVAT);
-    console.log('Order before showing', this.selectedOrder);
+    this.displaySpecificOrder(theOrder);
     $('#viewOrder').modal('show');
+  }
+
+  displaySpecificOrder(order: OrderVM) {
+    let orderlinesClass: any[] = [];
+    order.orderLines.forEach(line => {
+      let lineClass = {
+        customerOrderLineID: line.customerOrderLineID,
+        customerOrderID: line.customerOrderID,
+        orderLineStatusID: line.orderLineStatusID,
+        orderLineStatusDescription: line.orderLineStatusDescription,
+        customerReturnID: line.customerReturnID,
+        fixedProductID: line.fixedProductID,
+        fixedProductDescription: line.fixedProductDescription,
+        customProductID: line.customProductID,
+        customProductDescription: line.customProductDescription,
+        quantity: line.quantity,
+        confirmedUnitPrice: line.confirmedUnitPrice,
+        checked: line.orderLineStatusID == 1 ? false : true //keep track of process order checkbox value
+      }
+
+      orderlinesClass.push(lineClass);
+    });
+    
+    let applicableVAT = this.getApplicableVAT(order.date); //get vat applicable to that date
+    this.selectedOrder = new OrderVMClass(order, orderlinesClass, applicableVAT);
+    console.log('Order before showing', this.selectedOrder);
   }
 }

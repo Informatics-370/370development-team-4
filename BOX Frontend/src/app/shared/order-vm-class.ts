@@ -42,7 +42,6 @@ export class OrderVMClass implements OrderVM {
   applicableVAT: VAT;
   totalBeforeVAT = 0;
   totalVAT = 0;
-  checked!: boolean; //keep track of process order checkbox value
 
   constructor(order: OrderVM, lines: any[], applicableVAT: VAT) {
     this.applicableVAT = applicableVAT;
@@ -62,10 +61,6 @@ export class OrderVMClass implements OrderVM {
     this.paymentTypeID = order.paymentTypeID;
     this.totalBeforeVAT = this.getTotalBeforeVAT();
     this.totalVAT = this.getVATAmount();
-
-    if (this.orderStatusID == 1) { //if order has status of Placed, then it can be changed to In progress
-      this.checked = false; //set checkbox value
-    }
   }
 
   getTotalBeforeVAT(): number {
