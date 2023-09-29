@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230926135027_removeSignature")]
-    partial class removeSignature
+    [Migration("20230929101900_Adding payment data")]
+    partial class Addingpaymentdata
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

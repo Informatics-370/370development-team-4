@@ -133,7 +133,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         OrderDelCalendarComponent,
         QuotesComponent,
         NotFoundComponent,
-        ForbiddenComponent
+        ForbiddenComponent,
         QuotesComponent,
         
   ],
