@@ -3,6 +3,8 @@ import { CreditApplication } from '../shared/creditApplication';
 import { DataService } from '../services/data.services';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import Swal from 'sweetalert2';
+
 declare var $: any; 
 
 @Component({
@@ -56,16 +58,37 @@ uploadCreditApplication() {
 
     this.dataService.uploadApplication(formData).subscribe(
       (result) => {
-        // Handle the response, e.g., show a success message
+        // Handle the response, e.g., show a success message using SweetAlert
+        Swal.fire({
+          title: 'Success!',
+          text: 'Credit application uploaded successfully.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
+
         console.log('File upload successful:', result);
       },
       (error) => {
-        // Handle the error, e.g., display an error message
+        // Handle the error, e.g., display an error message using SweetAlert
+        Swal.fire({
+          title: 'Error!',
+          text: 'File upload failed. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+
         console.error('File upload failed:', error);
       }
     );
   } else {
-    // Handle the case where no file is selected, e.g., show an error message
+    // Handle the case where no file is selected, e.g., show an error message using SweetAlert
+    Swal.fire({
+      title: 'No File Selected',
+      text: 'Please select a file for upload.',
+      icon: 'warning',
+      confirmButtonText: 'OK',
+    });
+
     console.error('No file selected for upload.');
   }
 }

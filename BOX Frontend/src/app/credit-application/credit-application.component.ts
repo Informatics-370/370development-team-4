@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router'
 import { AuthService } from '../services/auth.service';
 import { Users } from '../shared/user';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-credit-application',
@@ -85,33 +87,52 @@ export class CreditApplicationComponent {
   }
 
   async onSubmitApplication() {
-
     if (this.selectedFile) {
       const CrAppVM: CreditApplication = {
         creditApplicationID: 0,
         creditApplicationStatusID: 0,
         userId: this.customer.id,
-        application_Pdf64: await this.convertToBase64(this.selectedFile)
+        application_Pdf64: await this.convertToBase64(this.selectedFile),
       };
-      //formData.append('file', this.selectedFile);
-      console.log(this.selectedFile);
-      console.log(CrAppVM);
-      this.dataService
-        .submitApplication(CrAppVM)
-        .subscribe(
-          (result) => {
-            // Application successfully submitted, handle accordingly
-            console.log('Application submitted:', result);
-            // Reset form or perform any other actions after successful submission
-          },
-          (error) => {
-            // Error occurred during submission, handle accordingly
-            console.log(this.selectedFile, CrAppVM);
-            console.error('Error submitting application:', error);
-            // Display an error message or perform any other actions on error
-          }
-        );
+  
+      this.dataService.submitApplication(CrAppVM).subscribe(
+        (result) => {
+          // Application successfully submitted, show a success notification
+          Swal.fire({
+            title: 'Success!',
+            text: 'Credit application submitted successfully.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+          });
+  
+          // Reset form or perform any other actions after successful submission
+          console.log('Application submitted:', result);
+        },
+        (error) => {
+          // Error occurred during submission, show an error notification
+          Swal.fire({
+            title: 'Error!',
+            text: 'Error submitting credit application. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
+  
+          console.error('Error submitting application:', error);
+          // Display an error message or perform any other actions on error
+        }
+      );
+    } else {
+      // Handle the case where no file is selected, e.g., show an error message
+      Swal.fire({
+        title: 'No File Selected',
+        text: 'Please select a file for the credit application.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+  
+      console.error('No file selected for the credit application.');
     }
+  }
 
 
 
@@ -133,7 +154,7 @@ export class CreditApplicationComponent {
     //   anchor.click();
     // }
 
-  }
+  
 
   //convert image to B64
   convertToBase64(pdf: File): Promise<string> {
