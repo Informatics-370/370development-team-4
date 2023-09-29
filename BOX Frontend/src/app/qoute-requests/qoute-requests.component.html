@@ -1,4 +1,4 @@
-<div class="row" style="max-width: 100%;">
+<div class="row page-row">
   <!--Menu bar-->
   <div class="col-md-3">
     <div class="app-menu"></div>
@@ -41,7 +41,7 @@
           <td class="text-center">
             <button title="Generate quote for {{qr.customerFullName}}" class="btn btn-create btn-generate"
               (click)="openGenerateQuoteModal(qr.quoteRequestID)" >
-              Generate quote
+              Create quote
             </button>
           </td>
         </tr>
@@ -57,7 +57,7 @@
 
       <!--HEADER-->
       <div class="modal-header">
-        <h4 class="modal-title">Generate quote</h4>
+        <h4 class="modal-title">Create quote</h4>
         <button class="close-modal" data-bs-dismiss="modal">
           <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
         </button>

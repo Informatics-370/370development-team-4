@@ -1,4 +1,4 @@
-<div class="row" style="max-width: 100%;">
+<div class="row page-row">
   <!--Menu bar-->
   <div class="col-md-3">
     <div class="app-menu"></div>
@@ -22,7 +22,7 @@
           <th style="width: 120px;" scope="col">Order ID</th>
           <th scope="col">Customer</th>
           <th scope="col">Status</th>
-          <th scope="col">Price</th>
+          <th scope="col">Date</th>
           <th scope="col" style="width: 120px;">Process order</th>
         </tr>
       </thead>
@@ -30,11 +30,11 @@
         <!--Messages to the user-->
         <tr>
           <!--Message if there's no orders in the DB-->
-          <td *ngIf="orderCount == 0" colspan="6">No customers have placed orders.</td>
+          <td *ngIf="orderCount == 0" colspan="5">No customers have placed orders.</td>
           <!--Loading message while data is still being retrieved from the DB-->
-          <td *ngIf="loading" colspan="6">Please wait while we load all orders...</td>
+          <td *ngIf="loading" colspan="5">Please wait while we load all orders...</td>
           <!--Error message-->
-          <td *ngIf="error" colspan="6">Error loading data from the database. Please contact support services.</td>
+          <td *ngIf="error" colspan="5">Error loading data from the database. Please contact support services.</td>
         </tr>
         <!--Category data from API-->
         <tr *ngFor="let order of filteredOrders">
@@ -44,9 +44,9 @@
             </button>
           </td>
           <td>CUSORDR{{order.customerOrderID}}</td>
-          <td>{{order.customerFullName == null ? 'John LongSurname' : order.customerFullName}}</td>
+          <td>{{order.customerFullName}}</td>
           <td>{{order.orderStatusDescription}}</td>
-          <td>{{order.total | currency: 'ZAR':'symbol-narrow'}} incl. VAT</td>
+          <td>{{order.date | date:'d MMM yyyy HH:mm' }}</td>
           <td class="text-center">
             <label class="form-check-label modal-form-label">
               <input *ngIf="order.orderStatusID == 1" [(ngModel)]="order.checked"
@@ -77,14 +77,16 @@
       <div class="modal-body">
         <span class="bold">Customer: </span>{{selectedOrder.customerFullName}}<br />
         <span class="bold">Status: </span>{{selectedOrder.orderStatusDescription}}<br />
-        <span class="bold">Date: </span>{{selectedOrder.date}}<br />
-        <span class="bold">Delivery date: </span>2023-09-07<br />
-        <span class="bold">Photo of delivery: </span>
+        <span class="bold">Date: </span>{{selectedOrder.date | date:'d MMM yyyy HH:mm' }}<br />
+        <span class="bold">Delivery date: </span>{{selectedOrder.orderStatusID != 4 ? 'Not yet scheduled for delivery' : selectedOrder.deliveryDate.toDateString() }} <br />
+        <div *ngIf="selectedOrder.deliveryScheduleID > 0">
+          <span class="bold">Photo of delivery: </span>
         <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{selectedOrder.deliveryPhoto}}"
           alt='Not yet delivered' />
+        </div>
 
         <!--Order details-->
-        <table id="estimate-details-table" class="table table-hover">
+        <table id="quote-details-table" class="table table-hover mt-4">
           <thead>
             <tr>
               <th scope="col">Product</th>
@@ -93,9 +95,10 @@
               <th scope="col">Total</th>
             </tr>
           </thead>
-          <tbody id="estimate-details-tbody">
-            <tr *ngFor="let orderLine of selectedOrder.customerOrders">
-              <td>{{orderLine.fixedProductDescription}}</td>
+          <tbody id="quote-details-tbody">
+            <tr *ngFor="let orderLine of selectedOrder.orderLines">
+              <td>{{orderLine.fixedProductID == 0 ? orderLine.customProductDescription :
+                orderLine.fixedProductDescription }}</td>
               <td>{{orderLine.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
               <td>{{orderLine.quantity}}</td>
               <td>{{orderLine.confirmedUnitPrice * orderLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
@@ -103,18 +106,21 @@
           </tbody>
         </table><br />
 
-        <table id="total-table">
+        <table class="totals">
           <tr>
-            <td class="text-right" style="width: 80%;">Subtotal:</td>
-            <td>{{selectedOrder.orderTotalExcludingVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+            <td class="totals-label" style="padding-top: 0.5rem;">Subtotal:</td>
+            <td class="totals-qty">{{selectedOrder.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
-          <tr>
-            <td class="text-right">VAT:</td>
-            <td>{{selectedOrder.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+          <tr class="light-bold">
+            <td class="totals-label" style="padding-top: 0.5rem;">VAT:</td>
+            <td class="totals-qty">+{{selectedOrder.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
-          <tr>
-            <td class="text-right"><strong>Total:</strong></td>
-            <td>{{selectedOrder.total | currency: 'ZAR':'symbol-narrow'}}</td>
+          <tr class="total-divider">
+            <td colspan="2"></td>
+          </tr>
+          <tr class="bold">
+            <td class="totals-label">Total:</td>
+            <td class="totals-qty">{{selectedOrder.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
         </table>
       </div>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230831044646_Del Date added to Cus Order")]
-    partial class DelDateaddedtoCusOrder
+    [Migration("20230926135027_removeSignature")]
+    partial class removeSignature
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -275,17 +275,15 @@ namespace BOX.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("Delivery_Date")
-                        .IsRequired()
+                    b.Property<int>("DeliveryTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Delivery_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Delivery_Photo")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Delivery_Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OrderDeliveryScheduleID")
                         .HasColumnType("int");
@@ -300,6 +298,8 @@ namespace BOX.Migrations
                     b.HasKey("CustomerOrderID");
 
                     b.HasIndex("CustomerOrderStatusID");
+
+                    b.HasIndex("DeliveryTypeID");
 
                     b.HasIndex("OrderDeliveryScheduleID");
 
@@ -434,6 +434,24 @@ namespace BOX.Migrations
                     b.ToTable("Customer_Review");
                 });
 
+            modelBuilder.Entity("BOX.Models.Delivery_Type", b =>
+                {
+                    b.Property<int>("DeliveryTypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryTypeID"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("DeliveryTypeID");
+
+                    b.ToTable("Delivery_Type");
+                });
+
             modelBuilder.Entity("BOX.Models.Employee", b =>
                 {
                     b.Property<string>("EmployeeId")
@@ -523,7 +541,7 @@ namespace BOX.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CustomerOrderID")
+                    b.Property<int?>("CustomerOrderID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date_And_Time")
@@ -595,7 +613,17 @@ namespace BOX.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<int>("QuoteID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RejectReasonID")
+                        .HasColumnType("int");
+
                     b.HasKey("PriceMatchFileID");
+
+                    b.HasIndex("QuoteID");
+
+                    b.HasIndex("RejectReasonID");
 
                     b.ToTable("Price_Match_File");
                 });
@@ -838,8 +866,8 @@ namespace BOX.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("QuoteStatusID");
 
@@ -901,12 +929,7 @@ namespace BOX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PriceMatchFileID")
-                        .HasColumnType("int");
-
                     b.HasKey("RejectReasonID");
-
-                    b.HasIndex("PriceMatchFileID");
 
                     b.ToTable("Reject_Reason");
                 });
@@ -1568,6 +1591,12 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BOX.Models.Delivery_Type", "Delivery_Type")
+                        .WithMany()
+                        .HasForeignKey("DeliveryTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Order_Delivery_Schedule", "Order_Delivery_Schedule")
                         .WithMany()
                         .HasForeignKey("OrderDeliveryScheduleID");
@@ -1585,6 +1614,8 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer_Order_Status");
+
+                    b.Navigation("Delivery_Type");
 
                     b.Navigation("Order_Delivery_Schedule");
 
@@ -1686,9 +1717,7 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
                         .WithMany()
-                        .HasForeignKey("CustomerOrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerOrderID");
 
                     b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
                         .WithMany()
@@ -1710,6 +1739,25 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Fixed_Product");
+                });
+
+            modelBuilder.Entity("BOX.Models.Price_Match_File", b =>
+                {
+                    b.HasOne("BOX.Models.Quote", "Quote")
+                        .WithMany()
+                        .HasForeignKey("QuoteID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BOX.Models.Reject_Reason", "Reject_Reason")
+                        .WithMany()
+                        .HasForeignKey("RejectReasonID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quote");
+
+                    b.Navigation("Reject_Reason");
                 });
 
             modelBuilder.Entity("BOX.Models.Product_Item", b =>
@@ -1838,15 +1886,6 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("QR_Code");
-                });
-
-            modelBuilder.Entity("BOX.Models.Reject_Reason", b =>
-                {
-                    b.HasOne("BOX.Models.Price_Match_File", "Price_Match_File")
-                        .WithMany()
-                        .HasForeignKey("PriceMatchFileID");
-
-                    b.Navigation("Price_Match_File");
                 });
 
             modelBuilder.Entity("BOX.Models.Size_Units", b =>

@@ -10,7 +10,10 @@ export interface OrderVM {
   date: Date; //date ordered
   deliveryScheduleID: number;
   deliveryDate: Date;
+  deliveryTypeID: number;
   deliveryType: string; //delivery or pick up
   deliveryPhoto: string;
+  paymentTypeID: number;
+  paymentID: number;
   orderLines: OrderLineVM[];
 }

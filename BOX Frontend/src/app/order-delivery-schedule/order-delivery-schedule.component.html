@@ -1,25 +1,25 @@
 <!-- <div class="external-events">
     <h2>Unscheduled Orders</h2>
     <div id="external-events-list"> -->
-      <!-- Loop through the fetched orders and display them as external events -->
-      <!-- <div *ngFor="let order of unscheduledOrders" class="fc-event" >
+<!-- Loop through the fetched orders and display them as external events -->
+<!-- <div *ngFor="let order of unscheduledOrders" class="fc-event" >
         <div class="order-details">
           <h3>Order ID: {{ order.customerOrderID }}</h3>
           <p>Customer: {{ order.customerFullName }}</p>
           <p>Status: {{ order.orderStatusDescription }}</p>
           <button class="btn btn-info" (click)="showModal = true">Schedule</button>
    -->
-        <!-- </div>
+<!-- </div>
       </div>
     </div>
   </div> -->
-  
-  <!-- <div class="calendar-container">
+
+<!-- <div class="calendar-container">
     <full-calendar [options]="calendarOptions"></full-calendar>
   </div> -->
 
-  <!---Modal for scheduling an order-->
-  <!-- <div class="modal" [ngClass]="{'show': showModal}">
+<!---Modal for scheduling an order-->
+<!-- <div class="modal" [ngClass]="{'show': showModal}">
     <div class="modal-content">
       <span class="close" [ngClass]="{'close':closeModal}"></span>
       <label for="datePicker">Select Date and Time:</label>
@@ -33,85 +33,93 @@
       </div>
   </div> -->
 
-  <h1 class="schedulingHeader">
-    Order Scheduling 
-  </h1>
-  
-  <button class="viewCalendar" (click)="navigateToCalendar()">View Order Calendar</button>
-  
-  <table class="table">
+<div class="row page-row">
+  <!--Menu bar-->
+  <div class="col-md-3">
+    <div class="app-menu"></div>
+  </div>
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 page-content">
+    <h1 class="schedulingHeader">
+      Order Scheduling
+    </h1>
+
+    <button class="viewCalendar" (click)="navigateToCalendar()">View Order Calendar</button>
+
+    <table class="table">
       <thead>
-          <tr>
-              <th style="width: 110px;" scope="col"></th>
-              <th scope="col">Order ID </th>
-              <th scope="col">Customer Name</th>
-              <th scope="col">Order Status</th>
-          </tr>
+        <tr>
+          <th style="width: 110px;" scope="col"></th>
+          <th scope="col">Order ID </th>
+          <th scope="col">Customer Name</th>
+          <th scope="col">Order Status</th>
+        </tr>
       </thead>
-      <tbody>                
+      <tbody>
         <!--Error message if there's no orders to schedule in the DB-->
         <tr *ngIf="unscheduledOrdersCount==0">
           <td colspan="3">There are no customer orders to schedule for delivery</td>
-      </tr>
-      <!--Loading message while data is still being retrieved from the DB-->
-      <tr *ngIf="loading">
+        </tr>
+        <!--Loading message while data is still being retrieved from the DB-->
+        <tr *ngIf="loading">
           <td colspan="3">Please wait while we load all Unscheduled Orders...</td>
-      </tr>
-          <!--Item data from API-->
-          <tr *ngFor="let order of unscheduledOrders">
-              <td>
-                &nbsp;
-              </td>
-              <td >
-                  {{order.customerOrderID}}
-              </td>
-              <td>
-                  {{order.customerFullName}}
-              </td>
-               <td>
-                  {{order.orderStatusDescription}}
-              </td>
-              <td>
-                <button title="Schedule Order" (click)="openScheduleModal(order)">Schedule Order</button>
-              </td>
-          </tr>
+        </tr>
+        <!--Item data from API-->
+        <tr *ngFor="let order of unscheduledOrders">
+          <td>
+            &nbsp;
+          </td>
+          <td>
+            {{order.customerOrderID}}
+          </td>
+          <td>
+            {{order.customerFullName}}
+          </td>
+          <td>
+            {{order.orderStatusDescription}}
+          </td>
+          <td>
+            <button title="Schedule Order" (click)="openScheduleModal(order)">Schedule Order</button>
+          </td>
+        </tr>
       </tbody>
-  </table>
- 
-  
-  
- <!-- Schedule Order MODAL -->
-<div class="modal fade" id="scheduleOrder" tabindex="-1" [ngClass]="{'show': showModal}">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <!-- HEADER -->
-      <div class="modal-header">
-        <h4 class="modal-title">Schedule Order</h4>
-        <button class="close-modal" (click)="closeScheduleModal()">
-          <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
-        </button>
-      </div>
+    </table>
 
-      <!-- BODY -->
-      <div class="modal-body">
-        <form [formGroup]="scheduleOrderForm">
-          <div class="form-group">
-            <label for="scheduleDate" class="form-label modal-form-label bold">Schedule Date</label>
-            <input type="datetime-local" formControlName="scheduleDate" id="scheduleDate">
-          </div>
-          <div class="form-group">
-            <label for="driverName" class="form-label modal-form-label bold">Assigned Driver:</label>
-            <select formControlName="driverName" id="driverName">
-              <option value="driver1">Driver 1</option>
-              <option value="driver2">Driver 2</option>
-              <option value="driver3">Driver 3</option>
-            </select>
+    <!-- Schedule Order MODAL -->
+    <div class="modal fade" id="scheduleOrder" tabindex="-1" [ngClass]="{'show': showModal}">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <!-- HEADER -->
+          <div class="modal-header">
+            <h4 class="modal-title">Schedule Order</h4>
+            <button class="close-modal" (click)="closeScheduleModal()">
+              <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
+            </button>
           </div>
 
-          <div class="form-submit-div">
-            <button type="button" data-bs-dismiss="modal" class="btn btn-create modal-form-submit" (click)="scheduleOrder()">Schedule</button>
+          <!-- BODY -->
+          <div class="modal-body">
+            <form [formGroup]="scheduleOrderForm">
+              <div class="form-group">
+                <label for="scheduleDate" class="form-label modal-form-label bold">Schedule Date</label>
+                <input type="datetime-local" formControlName="scheduleDate" id="scheduleDate">
+              </div>
+              <div class="form-group">
+                <label for="driverName" class="form-label modal-form-label bold">Assigned Driver:</label>
+                <select formControlName="driverName" id="driverName">
+                  <option value="driver1">Driver 1</option>
+                  <option value="driver2">Driver 2</option>
+                  <option value="driver3">Driver 3</option>
+                </select>
+              </div>
+
+              <div class="form-submit-div">
+                <button type="button" data-bs-dismiss="modal" class="btn btn-create modal-form-submit"
+                  (click)="scheduleOrder()">Schedule</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>

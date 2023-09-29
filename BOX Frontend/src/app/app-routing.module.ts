@@ -21,7 +21,6 @@ import { CustomerHomepageComponent } from './customer-view/customer-homepage/cus
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RolesComponent } from './roles/roles.component';
-import { EstimateLineComponent } from './estimate/estimate-line.component';
 import { SupplierOrderComponent } from './supplier-order/supplier-order.component';
 import { SupplierReturnComponent } from './supplier-return/supplier-return.component';
 import { DiscountComponent } from './discount/discount.component';
@@ -48,65 +47,71 @@ import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
 import { MessagesComponent } from './messages/messages.component';
-import{OrderDeliveryScheduleComponent} from './order-delivery-schedule/order-delivery-schedule.component';
-import{OrderDelCalendarComponent} from './order-del-calendar/order-del-calendar.component';
+import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
+import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
+import { QuotesComponent } from './quotes/quotes.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { ForbiddenComponent } from './forbidden/forbidden.component';
 
-
+// THE ROUTE TO THE NOT FOUND COMPONENT MUST ALWAYS BE LAST or things might not work as expected
 const routes: Routes = [
   { path: "", redirectTo: 'customer-homepage', pathMatch: 'full' },
-  { path: "dashboard", component: DashboardComponent },
+  { path: "dashboard", component: DashboardComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
   { path: "register", component: RegisterComponent },
   { path: "register/:redirectTo", component: RegisterComponent },
-  { path: "product-item", component: ProductItemTestComponent },
-  { path: "help", component: ViewHelpInventoryComponent },
-  { path: "product-category", component: ProductCategoryComponent },
-  { path: "return-reason", component: RefundReasonComponent },
-  { path: "write-off-reason", component: WriteOffReasonComponent },
-  { path: 'size-units', component: SizeUnitsComponent },
-  { path: 'vat', component: VatComponent },
-  { path: "supplier", component: SupplierComponent },
-  { path: "fixed-product", component: FixedProductComponent },
-  { path: 'raw-material', component: RawMaterialComponent },
+  { path: "product-item", component: ProductItemTestComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: "help", component: ViewHelpInventoryComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: "product-category", component: ProductCategoryComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: "return-reason", component: RefundReasonComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: "write-off-reason", component: WriteOffReasonComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'size-units', component: SizeUnitsComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'vat', component: VatComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: "supplier", component: SupplierComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: "fixed-product", component: FixedProductComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'raw-material', component: RawMaterialComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
   { path: 'products', component: ProductsComponent },
   { path: 'products/:category', component: ProductsComponent },
   { path: 'product-details/:id', component: ProductDetailsComponent },
   { path: 'cart', component: CartPageComponent },
-  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent },
+  { path: 'cost-price-formula-variables', component: CostPriceFormulaComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
   { path: 'login', component: LoginComponent },
   { path: 'login/:redirectTo', component: LoginComponent },
   { path: 'customer-homepage', component: CustomerHomepageComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
-  { path: 'supplier-order', component: SupplierOrderComponent },
-  { path: 'supplier-return', component: SupplierReturnComponent },
-  { path: 'roles', component: RolesComponent },
-  { path: 'discount', component: DiscountComponent },
-  { path: 'stock-take', component: StockTakeComponent },
-  { path: 'stock-take-trail', component: StockTakeTrailComponent },
-  { path: 'users', component: UsersViewComponent },
+  { path: 'supplier-order', component: SupplierOrderComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'supplier-return', component: SupplierReturnComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'roles', component: RolesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'discount', component: DiscountComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'stock-take', component: StockTakeComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'stock-take-trail', component: StockTakeTrailComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'users', component: UsersViewComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
   { path: 'place-order/:quoteID', component: PlaceOrderComponent },
-  { path: 'order-history', component: OrderHistoryComponent },
-  { path: 'customer-orders', component: CustomerOrdersComponent },
-  { path: 'custom-product', component: CustomProdComponent },
-  { path: 'confirm-email', component: ConfirmEmailComponent},
+  { path: 'place-order/:quoteID/:tab', component: PlaceOrderComponent },
+  { path: 'place-order/:quoteID/:tab/:result', component: PlaceOrderComponent },
+  { path: 'order-history', component: OrderHistoryComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Customer', 'Administrator', 'Employee']} },
+  { path: 'manage-orders', component: CustomerOrdersComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'custom-product', component: CustomProdComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'confirm-email', component: ConfirmEmailComponent },
   { path: 'two-factor-auth', component: TwoFactorAuthComponent },
-  { path: 'employees', component: EmployeesComponent },
+  { path: 'employees', component: EmployeesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
   { path: 'profile-page', component: ProfilePageComponent },
-  { path: 'my-quotes', component: MyQuotesComponent },
-  { path: 'quote-requests', component: QouteRequestsComponent },
-  { path: 'sales-by-category', component: SalesByCategoryReportComponent },
-  { path: 'product-list', component: ProductListReportComponent },
-  { path: 'inactive-customers', component: InactiveCustomerListComponent },
-  { path: 'assign-employee', component: AssignEmployeeComponent },
-  { path: 'supplier-list', component: SupplierListComponent },
-  { path: 'review-report', component: ReviewReportComponent },
-  { path: 'write-off-report', component: WriteOffByProductCategoryComponent },
-  { path: 'inventory-chart', component: InventoryChartComponent },
-  { path: 'messages', component: MessagesComponent },
-  {path: 'order-schedule', component:OrderDeliveryScheduleComponent},
-  {path: 'order-calendar', component:OrderDelCalendarComponent},
-
-  
+  { path: 'my-quotes', component: MyQuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Customer', 'Administrator', 'Employee']} },
+  { path: 'quote-requests', component: QouteRequestsComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'sales-by-category', component: SalesByCategoryReportComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'product-list', component: ProductListReportComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'inactive-customers', component: InactiveCustomerListComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'assign-employee', component: AssignEmployeeComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'supplier-list', component: SupplierListComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'review-report', component: ReviewReportComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'write-off-report', component: WriteOffByProductCategoryComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'inventory-chart', component: InventoryChartComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'messages', component: MessagesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'order-schedule', component: OrderDeliveryScheduleComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'order-calendar', component: OrderDelCalendarComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  { path: 'manage-quotes', component: QuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Administrator', 'Employee']} },
+  {path: 'forbidden', component: ForbiddenComponent },
+  {path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({

@@ -1,7 +1,7 @@
 @import "../dashboard/dashboard.component.css";
 @import "../product-category/product-category.component.css";
 
-#quote-details-table { margin: 0; }
+#quote-details-table { margin: 0; margin-top: 1em; }
 
 #quote-details-table>:not(caption)>*>* { padding: 0.25em; }
 
