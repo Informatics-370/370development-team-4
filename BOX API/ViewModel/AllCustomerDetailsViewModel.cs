@@ -4,6 +4,7 @@
     {
         public string CustomerId { get; set; }
         public string UserId { get; set; }
+        public bool EmailConfirmed { get; set; }
         public string Title { get; set; }
         public string FullName { get; set; }
         public string FirstName { get; set; }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230926135027_removeSignature")]
-    partial class removeSignature
+    [Migration("20230929102909_LengthenOrderStatus")]
+    partial class LengthenOrderStatus
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -333,6 +333,9 @@ namespace BOX.Migrations
                     b.Property<int?>("FixedProductID")
                         .HasColumnType("int");
 
+                    b.Property<int>("OrderLineStatusID")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -345,6 +348,8 @@ namespace BOX.Migrations
                     b.HasIndex("CustomerReturnID");
 
                     b.HasIndex("FixedProductID");
+
+                    b.HasIndex("OrderLineStatusID");
 
                     b.ToTable("Customer_Order_Line");
                 });
@@ -359,8 +364,8 @@ namespace BOX.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CustomerOrderStatusID");
 
@@ -528,6 +533,24 @@ namespace BOX.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Order_Delivery_Schedule");
+                });
+
+            modelBuilder.Entity("BOX.Models.Order_Line_Status", b =>
+                {
+                    b.Property<int>("OrderLineStatusID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderLineStatusID"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("OrderLineStatusID");
+
+                    b.ToTable("Order_Line_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Payment", b =>
@@ -1644,6 +1667,12 @@ namespace BOX.Migrations
                         .WithMany()
                         .HasForeignKey("FixedProductID");
 
+                    b.HasOne("BOX.Models.Order_Line_Status", "Order_Line_Status")
+                        .WithMany()
+                        .HasForeignKey("OrderLineStatusID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Custom_Product");
 
                     b.Navigation("Customer_Order");
@@ -1651,6 +1680,8 @@ namespace BOX.Migrations
                     b.Navigation("Customer_Return");
 
                     b.Navigation("Fixed_Product");
+
+                    b.Navigation("Order_Line_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Return", b =>

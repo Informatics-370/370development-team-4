@@ -1,6 +1,7 @@
 export interface AllCustomerDetailsVM {
   customerId: string;
   userId: string;
+  emailConfirmed: boolean;
   title: string;
   fullName: string;
   firstName: string;

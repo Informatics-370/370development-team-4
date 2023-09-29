@@ -49,29 +49,34 @@ export class OrderService {
   }
 
   initiatePlaceOrder(orderDetails: OrderDetails): Observable<any> {
-    if (orderDetails.paymentTypeID == 3) { //credit  
-      //update credit balance
-      let updatedBalance = orderDetails.creditBalance - orderDetails.amount;
-      return this.httpClient
-        .put<any>(`${this.apiUrl}User/UpdateCustomerCreditBalance/${orderDetails.customerID}/${updatedBalance}`, this.httpOptions);
-    }
-    else if (orderDetails.paymentTypeID == 1 || orderDetails.paymentTypeID == 2) { //pay immediately or cash on collection / delivery
-      let payment = {
-        merchant_id: 0,
-        merchant_key: '',
-        return_url: this.encodeURL(orderDetails.paymentTypeID, orderDetails.amount, 'success'),
-        cancel_url: this.encodeURL(orderDetails.paymentTypeID, orderDetails.amount, 'fail'),
-        amount: orderDetails.amount,
-        item_name: 'Quote #' + orderDetails.quoteID,
-        signature: '',
-        email_address: orderDetails.customerEmail,
-        cell_number: orderDetails.customerPhoneNo
+    try {
+      if (orderDetails.paymentTypeID == 3) { //credit  
+        //update credit balance
+        let updatedBalance = orderDetails.creditBalance - orderDetails.amount;
+        return this.httpClient
+          .put<any>(`${this.apiUrl}User/UpdateCustomerCreditBalance/${orderDetails.customerID}/${updatedBalance}`, this.httpOptions);
       }
-  
-      return this.httpClient
-        .post<any>(`${this.apiUrl}Payment/CreatePaymentRequest`, payment, this.httpOptions);
-    } else {
-      // If neither of the conditions is met, return null as an observable
+      else if (orderDetails.paymentTypeID == 1 || orderDetails.paymentTypeID == 2) { //pay immediately or cash on collection / delivery
+        let payment = {
+          merchant_id: 0,
+          merchant_key: '',
+          return_url: this.encodeURL(orderDetails.paymentTypeID, orderDetails.amount, 'success'),
+          cancel_url: this.encodeURL(orderDetails.paymentTypeID, orderDetails.amount, 'fail'),
+          amount: orderDetails.amount,
+          item_name: 'Quote #' + orderDetails.quoteID,
+          signature: '',
+          email_address: orderDetails.customerEmail,
+          cell_number: orderDetails.customerPhoneNo
+        }
+    
+        return this.httpClient
+          .post<any>(`${this.apiUrl}Payment/CreatePaymentRequest`, payment, this.httpOptions);
+      } else {
+        // If neither of the conditions is met, return null as an observable
+        return of(null);
+      }
+    } catch (error) {
+      // If an error occurs, return null as an observable
       return of(null);
     }
   }

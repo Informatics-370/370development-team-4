@@ -259,7 +259,7 @@ export class MyQuotesComponent {
     Swal.fire({
       icon: 'info',
       title: "Confirm",
-      html: '<ul style="text-align: left;"><li>By accepting the quote, you will be directed to place an order. You can cancel the process at any point before you\'ve made payment.</li><li>For an order to be placed successfully, you must pay a deposit of 20% of the order total. <b>This is not refundable.</b></li></ul>',      
+      html: '<ul style="text-align: left;"><li>By accepting the quote, you will be directed to place an order. You can cancel the process at any point before you\'ve made payment.</li><li>For an order to be placed successfully, you must pay a deposit of 20% of the order total. <b>This is not refundable.</b></li> <li>You can\'t place an order if you haven\'t confirmed your email. </li> </ul>',
       confirmButtonColor: '#32AF99',
       showCancelButton: true,
       cancelButtonColor: '#E33131',

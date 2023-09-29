@@ -214,6 +214,7 @@ namespace BOX.Controllers
                 {
                     CustomerId = "",
                     UserId = userId,
+                    EmailConfirmed = user.EmailConfirmed,
                     FullName = fullname,
                     FirstName = user.user_FirstName,
                     LastName = user.user_LastName,
@@ -235,6 +236,7 @@ namespace BOX.Controllers
                 {
                     CustomerId = customer.CustomerId,
                     UserId = userId,
+                    EmailConfirmed = user.EmailConfirmed,
                     FullName = fullname,
                     FirstName = user.user_FirstName,
                     LastName = user.user_LastName,

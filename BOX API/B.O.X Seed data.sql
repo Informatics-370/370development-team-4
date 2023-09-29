@@ -41,6 +41,13 @@ INSERT INTO [dbo].[Customer_Order_Status]
            ('Completed')
 GO
 
+INSERT INTO [dbo].[Order_Line_Status]
+           ([Description])
+     VALUES
+           ('Placed'),
+           ('In progress')
+GO
+
 INSERT INTO [dbo].[Quote_Duration]
            ([Duration])
      VALUES
@@ -152,3 +159,4 @@ select * from credit_application_status
 select * from cost_price_formula_variables
 select * from bulk_discount
 select * from delivery_type
+select * from order_line_status

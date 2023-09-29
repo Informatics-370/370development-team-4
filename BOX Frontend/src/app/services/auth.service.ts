@@ -125,6 +125,7 @@ export class AuthService {
       userId: '',
       customerId: '',
       title: '',
+      emailConfirmed: false,
       fullName: '',
       firstName: '',
       lastName: '',

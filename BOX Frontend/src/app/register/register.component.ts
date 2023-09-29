@@ -348,12 +348,11 @@ submitForm() {
         text: 'You have successfully registered.',
         timer: 2000 // Automatically close after 2 seconds
       }).then((result) => {
-        if (result.dismiss === Swal.DismissReason.timer) {
-            if (this.redirectURL != '') {
-                this.router.navigate(['/login', 'redirect-' + this.redirectURL]);
-            }
-            else this.router.navigate(['/login']);
+        //redirect no matter how the alert closes
+        if (this.redirectURL != '') {
+          this.router.navigate(['/login', 'redirect-' + this.redirectURL]);
         }
+        else this.router.navigate(['/login']);
       });
     },
     (error) => {

@@ -169,7 +169,7 @@ export class PlaceOrderComponent {
       //get customer
       await this.getCustomerData();
 
-      this.checkForCheating(quote);
+      this.checkIfAllowedToOrder(quote);
 
       //put quote in class
       let quoteLines: any[] = [];
@@ -202,13 +202,26 @@ export class PlaceOrderComponent {
  - quote is accepted. If it is then the customer is trying to order from a quote they've already ordered from before
  - quote belongs to the customer currently logged in. If not, then the customer is trying to order off someone else's quote
   */
-  checkForCheating(quote: QuoteVM): boolean {
+  checkIfAllowedToOrder(quote: QuoteVM): boolean {
     if (quote.quoteStatusID != 1 || this.customer.userId != quote.customerId) { //doesn't have status of generated or not right customer
       //error message
       Swal.fire({
         icon: 'error',
         title: "Oops...",
         html: "Something went wrong and, for security reasons, we cannot allow you to place this order. Please try again in a few minutes. If the problem persists, contact Mega Pack support.",
+        timer: 8000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        this.cancel();
+      });
+    }
+    else if (!this.customer.emailConfirmed) {
+      //error message
+      Swal.fire({
+        icon: 'error',
+        title: "Oh no",
+        html: "You have not confirmed your email. We emailed you a link when you registered so check your mailbox or spam. Once you confirm your email, you can place an order.",
         timer: 8000,
         timerProgressBar: true,
         confirmButtonColor: '#32AF99'
@@ -344,7 +357,7 @@ export class PlaceOrderComponent {
       //return payment request VM object to post to payfast
       this.orderService.initiatePlaceOrder(orderDetails).subscribe((payfastRequest: any) => {
         if (payfastRequest === null) {
-          throw 'Invalid payment type';
+          throw 'Error initiating order';
         }
         else if (paymentTypeId == 3 && typeof payfastRequest == 'number') { //credit purchase returns new credit balance
           let payment = {
@@ -398,6 +411,7 @@ export class PlaceOrderComponent {
       });
 
       console.error('Error submitting order: ', error);
+      this.submitted = false;
     }
   }
 
