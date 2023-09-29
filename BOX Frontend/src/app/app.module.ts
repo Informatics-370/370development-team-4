@@ -67,6 +67,8 @@ import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calend
 import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 
 
 @NgModule({
@@ -131,7 +133,8 @@ import { ForbiddenComponent } from './forbidden/forbidden.component';
         OrderDelCalendarComponent,
         QuotesComponent,
         NotFoundComponent,
-        ForbiddenComponent
+        ForbiddenComponent,
+        QuotesComponent,
         
   ],
   imports: [
@@ -141,7 +144,8 @@ import { ForbiddenComponent } from './forbidden/forbidden.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    FullCalendarModule
+    FullCalendarModule,
+    DragDropModule
  ],
   providers: [],
   bootstrap: [AppComponent]
