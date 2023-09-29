@@ -1,0 +1,34 @@
+#body {
+    width: 100vw;
+    height: 100vh;
+    padding: 2rem;
+    background-color: #D9D9D7;
+}
+
+#notFoundImgContainer {
+    width: 60%;
+    max-height: 100%;
+    margin: auto;
+}
+
+#notFoundImg { width: 100%; }
+
+#poem {
+    font-size: 1.8em;
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 0.5em;
+}
+
+#help-text {
+    width: fit-content;
+    margin: auto;
+}
+
+.link {
+    color: black;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.link:hover, .link:active { color: #D6AD60;}

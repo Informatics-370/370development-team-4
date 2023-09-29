@@ -23,6 +23,7 @@ import { Users } from '../shared/user';
 import { OrderVM } from '../shared/order-vm';
 import { QuoteVM } from '../shared/quote-vm';
 import { WriteOffItem } from '../shared/write-off-item';
+import { AllCustomerDetailsVM } from '../shared/all-customer-details-vm';
 
 imports: [
   HttpClientModule
@@ -530,6 +531,10 @@ export class DataService {
   //---------------------------------------- Customers ----------------------------------------
   GetCustomers(): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}User/GetAllCustomers`);
+  }
+  
+  GetCustomerByUserId(userId: string): Observable<AllCustomerDetailsVM> {
+    return this.httpClient.get<AllCustomerDetailsVM>(`${this.apiUrl}User/GetCustomerByUserId/${userId}`);
   }
 
   //---------------------------------------- REPORTS ----------------------------------------

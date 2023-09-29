@@ -111,15 +111,30 @@ INSERT INTO [dbo].[Title]
            ('Dr')
 GO
 
+INSERT INTO [dbo].[Delivery_Type]
+           ([Description])
+     VALUES
+           ('Delivery'),
+           ('Pick up')
+GO
+
+INSERT INTO [dbo].[Payment_Type]
+           ([Description])
+     VALUES
+           ('Pay immediately'),
+           ('Cash on delivery / collection'),
+           ('Credit')
+GO
+
 INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp])
 VALUES
-    (NEWID(), 'Administrators', 'ADMINISTRATORS', NEWID()),
+    (NEWID(), 'Administrator', 'ADMINISTRATOR', NEWID()),
     (NEWID(), 'Employee', 'EMPLOYEE', NEWID()),
     (NEWID(), 'Customer', 'CUSTOMER', NEWID()),
     (NEWID(), 'Receptionist', 'RECEPTIONIST', NEWID()),
     (NEWID(), 'Delivery Driver', 'DELIVERY DRIVER', NEWID()),
     (NEWID(), 'Warehouse Staff', 'WAREHOUSE STAFF', NEWID()),
-    (NEWID(), 'Managers', 'MANAGERS', NEWID())
+    (NEWID(), 'Manager', 'MANAGER', NEWID())
 GO
 
 SELECT name
@@ -135,3 +150,4 @@ select * from customer_order_status
 select * from credit_application_status
 select * from cost_price_formula_variables
 select * from bulk_discount
+select * from delivery_type

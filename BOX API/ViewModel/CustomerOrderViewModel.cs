@@ -13,8 +13,11 @@ namespace BOX.ViewModel
         public int DeliveryScheduleID { get; set; }
 		public DateTime DeliveryDate { get; set; }
 		public DateTime Date { get; set; } //date ordered
-		public string DeliveryType { get; set; } //delivery or pick up
+        public int DeliveryTypeID { get; set; }
+        public string DeliveryType { get; set; } //delivery or pick up
 		public string DeliveryPhoto { get; set; }
+        public int PaymentTypeID { get; set; }
+        public int PaymentID { get; set; } //ID of payment to attach order to
         public List<CustomerOrderLineViewModel> OrderLines { get; set; }
 	}
 }
