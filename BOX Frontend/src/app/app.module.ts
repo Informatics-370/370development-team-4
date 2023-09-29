@@ -130,8 +130,7 @@ import { AdminCreditApplicationComponent } from './admin-credit-application/admi
         RegistrationSuccessPopupComponent,
         CreditApplicationComponent,
         AdminCreditApplicationComponent,
-        
-        
+       
   ],
   imports: [
     BrowserModule,

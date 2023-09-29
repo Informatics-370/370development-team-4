@@ -24,6 +24,7 @@ import { Users } from '../shared/user';
 import { OrderVM } from '../shared/order-vm';
 import { QuoteVM } from '../shared/quote-vm';
 import { WriteOffItem } from '../shared/write-off-item';
+import { CreditApplication } from '../shared/creditApplication';
 
 imports: [
   HttpClientModule
@@ -569,9 +570,9 @@ export class DataService {
     return this.httpClient.get(`${this.apiUrl}CreditApplication/GetCreditApplications`)
       .pipe(map(result => result))
   }
-  submitApplication(formData: FormData): Observable<any> {
+  submitApplication(CreditApplicationVM: CreditApplication): Observable<any> {
     const endpoint = `${this.apiUrl}CreditApplication/SubmitApplication`;
-    return this.httpClient.post(endpoint, formData);
+    return this.httpClient.post(endpoint,CreditApplicationVM, this.httpOptions);
   }
 
   uploadApplication(formData: FormData): Observable<any> {

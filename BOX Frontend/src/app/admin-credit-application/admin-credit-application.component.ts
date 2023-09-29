@@ -93,7 +93,7 @@ searchCrApp(event: Event) {
   this.searchTerm = (event.target as HTMLInputElement).value;
   this.filteredCrApp = []; //clear array
   for (let i = 0; i < this.CreditApplications.length; i++) {
-    let currentCreditApplication: string = this.CreditApplications[i].ApplicationFile;
+    let currentCreditApplication: string = this.CreditApplications[i].application_Pdf64;
     if (currentCreditApplication.toString().includes(this.searchTerm))
     {
       this.filteredCrApp.push(this.CreditApplications[i]);

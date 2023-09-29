@@ -153,7 +153,7 @@ namespace BOX.Controllers
         //---------------------------------- SUBMIT APPLICATION ------------------------------
         [HttpPost]
         [Route("SubmitApplication")]
-        public async Task<IActionResult> SubmitApplication([FromForm] CreditApplicationViewModel creditAppVM)
+        public async Task<IActionResult> SubmitApplication([FromBody] CreditApplicationViewModel creditAppVM)
         {
             try
             {
@@ -164,15 +164,15 @@ namespace BOX.Controllers
                     // Read the uploaded PDF file as a byte array
                     using (var memoryStream = new MemoryStream())
                     {
-                        await file.CopyToAsync(memoryStream);
-                        byte[] pdfBytes = memoryStream.ToArray();
+                        //await file.CopyToAsync(memoryStream);
+                        //byte[] pdfBytes = memoryStream.ToArray();
 
                         // Create a new credit application for a user
                         var creditApplication = new Credit_Application
                         {
-                            CreditApplicationStatusID = creditAppVM.CreditApplicationStatusID,
+                            CreditApplicationStatusID = 1,
                             UserId = creditAppVM.UserId,
-                            Application_Pdf = pdfBytes
+                            Application_Pdf = Convert.FromBase64String(creditAppVM.Application_Pdf64)
                         };
 
                         // Save the credit application to the repository using the Add method
