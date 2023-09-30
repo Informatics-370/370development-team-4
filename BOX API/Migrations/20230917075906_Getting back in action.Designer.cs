@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230903150526_initial")]
-    partial class initial
+    [Migration("20230917075906_Getting back in action")]
+    partial class Gettingbackinaction
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

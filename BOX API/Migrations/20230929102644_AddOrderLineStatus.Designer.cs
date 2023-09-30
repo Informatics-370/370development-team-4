@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
+<<<<<<<< HEAD:BOX API/Migrations/20230929102644_AddOrderLineStatus.Designer.cs
     [Migration("20230929102644_AddOrderLineStatus")]
     partial class AddOrderLineStatus
+========
+    [Migration("20230929101900_Adding payment data")]
+    partial class Addingpaymentdata
+>>>>>>>> Internal-Testing:BOX API/Migrations/20230929101900_Adding payment data.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
