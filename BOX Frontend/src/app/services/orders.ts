@@ -84,7 +84,7 @@ export class OrderService {
   checkPaymentResult(gibberish: string): Observable<any> {
     return new Observable((observer) => {
       let relevantData = this.decodeURL(gibberish);
-      let paymentTypeId = relevantData[0];
+      let paymentTypeID = relevantData[0];
       let amount = relevantData[1];
       let result = relevantData[2];
 
@@ -102,10 +102,20 @@ export class OrderService {
 
       if (result == 'success') {
         this.httpClient
-          .post<any>(`${this.apiUrl}CustomerOrder/HandlePaymentResult/${paymentTypeId}`, payment, this.httpOptions)
+          .post<any>(`${this.apiUrl}CustomerOrder/HandlePaymentResult`, payment, this.httpOptions)
           .subscribe( (result) => {
-            console.log(result);
-            observer.next(result); // Emit the result to the observer
+            //add payment type to result
+            let paymentResult = {
+              amount: result.amount,
+              customerOrderID: result.customerOrderID,
+              customerOrder: result.customerOrder,
+              date_And_Time: result.date_And_Time,
+              paymentID: result.paymentID,
+              paymentTypeID: paymentTypeID
+            }
+
+            console.log(paymentResult);
+            observer.next(paymentResult); // Emit the result to the observer
             observer.complete(); // Complete the observable
           });
       } else {

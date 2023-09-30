@@ -329,6 +329,9 @@ export class PlaceOrderComponent {
           throw 'Invalid payment type chosen';
       }
 
+      //payfast won't allow payments below R20 so the minimum we allow is R30
+      if (amount < 30) throw 'Below minimum amount';
+
       //get delivery type ID
       switch (this.deliveryType?.value) {
         case "Delivery":
@@ -398,22 +401,36 @@ export class PlaceOrderComponent {
         }
       });
     } catch (error) {
-      //error message
-      Swal.fire({
-        icon: 'error',
-        title: "Oops...",
-        html: "Something went wrong and we could not process your order.",
-        timer: 3000,
-        timerProgressBar: true,
-        confirmButtonColor: '#32AF99'
-      }).then((result) => {
-        console.log(result);
-      });
+      if (error == 'Below minimum amount') {
+        Swal.fire({
+          icon: 'error',
+          title: "Amount too small",
+          html: "The minimum amount for cash on delivery or collection / immediate payment is R30. Please choose a different payment type",
+          timer: 8000,
+          timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
+        }).then((result) => {
+          console.log(result);
+        });
+      }
+      else {
+        //error message
+        Swal.fire({
+          icon: 'error',
+          title: "Oops...",
+          html: "Something went wrong and we could not process your order.",
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
+        }).then((result) => {
+          console.log(result);
+        });
+      }
 
       console.error('Error submitting order: ', error);
       this.submitted = false;
     }
-  }
+  }  
 
   async placeOrder(payment: any) {
     //display loading message
@@ -436,6 +453,7 @@ export class PlaceOrderComponent {
       customerFullName: '',
       paymentID: payment.paymentID,
       paymentTypeID: payment.paymentTypeID,
+      paymentType: '',
       orderLines: []
     };
 

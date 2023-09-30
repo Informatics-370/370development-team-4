@@ -449,7 +449,8 @@ export class ProductDetailsComponent {
         Swal.fire({
           icon: 'success',
           title: 'Successfully added to cart!',
-          timer: 3000,
+          html: 'View your cart to request a quote on this product.',
+          timer: 5000,
           timerProgressBar: true,
           confirmButtonColor: '#32AF99'
         }).then((result) => {

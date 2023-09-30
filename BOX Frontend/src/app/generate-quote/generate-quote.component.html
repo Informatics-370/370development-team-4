@@ -19,7 +19,7 @@
         <th scope="col">Qty</th>
         <th scope="col">Suggested Price</th>
         <th scope="col">Confirmed Price</th>
-        <th scope="col">Total</th>
+        <th scope="col" style="width: 13%; text-align: right;">Total</th>
       </tr>
     </thead>
     <tbody id="quote-details-tbody">
@@ -29,7 +29,7 @@
         <td>{{ line.suggestedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
         <td>R<input [(ngModel)]="line.confirmedUnitPrice" type="number" class="form-control modal-form-input modal-form-text table-input" placeholder="0.00" name="negotiatedTotal"
           required min="1" step="0.01" (keyup)="selectedQuote.refreshTotals()"></td>
-        <td>{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+        <td style="text-align: right;">{{line.confirmedUnitPrice * line.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
       </tr>
       <tr style="color: #E33131; font-size: 80%;" *ngIf="invalidPrices">
         <td colspan="5">Every product must have a valid price.</td>

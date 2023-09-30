@@ -286,6 +286,9 @@ namespace BOX.Migrations
                     b.Property<int?>("OrderDeliveryScheduleID")
                         .HasColumnType("int");
 
+                    b.Property<int>("PaymentTypeID")
+                        .HasColumnType("int");
+
                     b.Property<int>("QuoteID")
                         .HasColumnType("int");
 
@@ -300,6 +303,8 @@ namespace BOX.Migrations
                     b.HasIndex("DeliveryTypeID");
 
                     b.HasIndex("OrderDeliveryScheduleID");
+
+                    b.HasIndex("PaymentTypeID");
 
                     b.HasIndex("QuoteID");
 
@@ -568,14 +573,9 @@ namespace BOX.Migrations
                     b.Property<DateTime>("Date_And_Time")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PaymentTypeID")
-                        .HasColumnType("int");
-
                     b.HasKey("PaymentID");
 
                     b.HasIndex("CustomerOrderID");
-
-                    b.HasIndex("PaymentTypeID");
 
                     b.ToTable("Payment");
                 });
@@ -1622,6 +1622,12 @@ namespace BOX.Migrations
                         .WithMany()
                         .HasForeignKey("OrderDeliveryScheduleID");
 
+                    b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
+                        .WithMany()
+                        .HasForeignKey("PaymentTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Quote", "Quote")
                         .WithMany()
                         .HasForeignKey("QuoteID")
@@ -1639,6 +1645,8 @@ namespace BOX.Migrations
                     b.Navigation("Delivery_Type");
 
                     b.Navigation("Order_Delivery_Schedule");
+
+                    b.Navigation("Payment_Type");
 
                     b.Navigation("Quote");
 
@@ -1748,15 +1756,7 @@ namespace BOX.Migrations
                         .WithMany()
                         .HasForeignKey("CustomerOrderID");
 
-                    b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Customer_Order");
-
-                    b.Navigation("Payment_Type");
                 });
 
             modelBuilder.Entity("BOX.Models.Price", b =>

@@ -789,6 +789,13 @@ namespace BOX.Models
             return query.FirstOrDefault();
         }
 
+        //------------------------------------------------------ PAYMENT TYPE ------------------------------------------------------------
+        public async Task<Payment_Type> GetPaymentTypeAsync(int paymentTypeId)
+        {
+            IQueryable<Payment_Type> query = _appDbContext.Payment_Type.Where(c => c.PaymentTypeID == paymentTypeId);
+            return await query.FirstOrDefaultAsync();
+        }
+
         //------------------------------------------------------ CUSTOMER ORDER LINE STATUS ------------------------------------------------------------
         public async Task<Order_Line_Status> GetOrderLineStatusAsync(int statusId)
         {

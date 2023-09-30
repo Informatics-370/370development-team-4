@@ -64,6 +64,7 @@ namespace BOX.Controllers
                     var Status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
                     var deliveryType = await _repository.GetDeliveryTypeAsync(order.DeliveryTypeID); //get delivery type
                     string fullName = await _repository.GetUserFullNameAsync(order.UserId);
+                    var paymentType = await _repository.GetPaymentTypeAsync(order.PaymentTypeID); //get payment type                    
 
                     var deliverySchedule = new Order_Delivery_Schedule();
 
@@ -87,6 +88,8 @@ namespace BOX.Controllers
                         DeliveryTypeID = order.DeliveryTypeID,
                         DeliveryType = deliveryType.Description,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
+                        PaymentTypeID = order.PaymentTypeID,
+                        PaymentType = paymentType.Description,
                         OrderLines = orderLineList
                     };
                     customerOrderViewModels.Add(coVM);
@@ -105,7 +108,7 @@ namespace BOX.Controllers
         //-------------------------------------------------- Get Order By ID ------------------------------------------------
         [HttpGet]
         [Route("GetOrder/{customerOrderId}")]
-        public async Task<IActionResult> GetCustomerOrder(int customerOrderId)
+        public async Task<IActionResult> GetOrder(int customerOrderId)
         {
             try
             {
@@ -159,6 +162,7 @@ namespace BOX.Controllers
                 var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
                 var deliveryType = await _repository.GetDeliveryTypeAsync(order.DeliveryTypeID); //get delivery type
                 string fullName = await _repository.GetUserFullNameAsync(order.UserId);
+                var paymentType = await _repository.GetPaymentTypeAsync(order.PaymentTypeID);
 
                 //get delivery schedule date
                 var deliverySchedule = new Order_Delivery_Schedule();
@@ -183,6 +187,8 @@ namespace BOX.Controllers
                     DeliveryType = deliveryType.Description,
                     DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
                     Date = order.Date,
+                    PaymentTypeID = order.PaymentTypeID,
+                    PaymentType = paymentType.Description,
                     OrderLines = orderLineList
                 };
 
@@ -252,6 +258,7 @@ namespace BOX.Controllers
                     string fullName = await _repository.GetUserFullNameAsync(order.UserId);
                     var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID);
                     var deliveryType = await _repository.GetDeliveryTypeAsync(order.DeliveryTypeID); //get delivery type
+                    var paymentType = await _repository.GetPaymentTypeAsync(order.PaymentTypeID);
                     var rejectReason = new Reject_Reason();
 
                     //get delivery schedule date
@@ -277,6 +284,8 @@ namespace BOX.Controllers
                         DeliveryTypeID = order.DeliveryTypeID,
                         DeliveryType = deliveryType.Description,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
+                        PaymentTypeID = order.PaymentTypeID,
+                        PaymentType = paymentType.Description,
                         OrderLines = olList
                     };
                     customerOrderVMs.Add(orVM);
@@ -332,7 +341,8 @@ namespace BOX.Controllers
                     Delivery_Photo = Convert.FromBase64String(""),
                     Date = DateTime.Now,
                     Delivery_Date = CalculateTwoDaysFromNowOnWeekday(),
-                    DeliveryTypeID = customerOrderViewModel.DeliveryTypeID
+                    DeliveryTypeID = customerOrderViewModel.DeliveryTypeID,
+                    PaymentTypeID = customerOrderViewModel.PaymentTypeID
                 };
 
                 _repository.Add(order);
@@ -455,15 +465,14 @@ namespace BOX.Controllers
             }
         }
 
-
         //-------------------- verify payment --------------------
         private string UrlEncode(string value)
         {
             return WebUtility.UrlEncode(value)?.Replace("%20", "+");
         }
 
-        [HttpPost("HandlePaymentResult/{paymentTypeId}")]
-        public async Task<IActionResult> HandlePaymentResult(int paymentTypeId, [FromBody] PayFastRequestViewModel payment)
+        [HttpPost("HandlePaymentResult")]
+        public async Task<IActionResult> HandlePaymentResult([FromBody] PayFastRequestViewModel payment)
         {
             if (payment == null)
             {
@@ -495,7 +504,6 @@ namespace BOX.Controllers
             // If the signatures match, continue with saving the payment to the database
             Payment newPayment = new Payment
             {
-                PaymentTypeID = paymentTypeId,
                 Date_And_Time = DateTime.Now,
                 Amount = payment.amount
             };
@@ -631,6 +639,7 @@ namespace BOX.Controllers
 
                     //    var Status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
                     //    var deliveryType = await _repository.GetDeliveryTypeAsync(order.DeliveryTypeID); //get delivery type
+                    //    var paymentType = await _repository.GetPaymentTypeAsync(order.PaymentTypeID); //get payment type
                     //    string fullName = await _repository.GetUserFullNameAsync(order.UserId);
 
                     //    var deliverySchedule = new Order_Delivery_Schedule();
@@ -655,6 +664,8 @@ namespace BOX.Controllers
                         DeliveryTypeID = order.DeliveryTypeID,
                         //DeliveryType = deliveryType.Description,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
+                        PaymentTypeID = order.PaymentTypeID,
+                        //PaymentType = paymentType.Description,
                         //OrderLines = orderLineList
                     };
                     customerOrderViewModels.Add(coVM);

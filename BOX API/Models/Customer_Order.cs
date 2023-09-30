@@ -35,5 +35,9 @@ namespace BOX.Models
         [ForeignKey("Delivery_Type")]
         public int DeliveryTypeID { get; set; }
         public virtual Delivery_Type Delivery_Type { get; set; }
+
+        [ForeignKey("Payment_Type")]
+        public int PaymentTypeID { get; set; }
+        public virtual Payment_Type Payment_Type { get; set; }
     }
 }

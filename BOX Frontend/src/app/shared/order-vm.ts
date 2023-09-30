@@ -14,6 +14,7 @@ export interface OrderVM {
   deliveryType: string; //delivery or pick up
   deliveryPhoto: string;
   paymentTypeID: number;
+  paymentType: string;
   paymentID: number;
   orderLines: OrderLineVM[];
 }
