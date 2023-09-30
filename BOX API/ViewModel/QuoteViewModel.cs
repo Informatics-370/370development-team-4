@@ -23,6 +23,7 @@ namespace BOX.ViewModel
         //generic info
         public string CustomerId { get; set; }
         public string CustomerFullName { get; set; }
+        public string CustomerEmail { get; set; }
         public List<QuoteLineViewModel> Lines { get; set; }
     }
 }

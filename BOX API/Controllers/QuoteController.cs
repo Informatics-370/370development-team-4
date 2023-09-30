@@ -2,7 +2,6 @@ using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace BOX.Controllers
 {
     [Route("api/[controller]")]
@@ -22,8 +21,6 @@ namespace BOX.Controllers
         {
             try
             {
-                //check for any quotes that should have expired and expire them
-
                 var quotes = await _repository.GetAllQuotesAsync();
 
                 List<QuoteViewModel> qouteViewModels = new List<QuoteViewModel>(); //create array of VMs
@@ -82,8 +79,6 @@ namespace BOX.Controllers
         {
             try
             {
-                //check for any quotes that should have expired and expire them
-
                 var quote = await _repository.GetQuoteAsync(quoteId);
                 if (quote == null) return NotFound("The quote does not exist on the B.O.X System");
 
@@ -126,16 +121,21 @@ namespace BOX.Controllers
                 }
 
                 string fullName = await _repository.GetUserFullNameAsync(quote.UserId);
+                var user = await _repository.GetUserAsync(quote.UserId);
                 var status = await _repository.GetQuoteStatusAsync(quote.QuoteStatusID);
                 var duration = await _repository.GetQuoteDurationAsync(quote.QuoteDurationID);
                 var rejectReason = new Reject_Reason();
+                var priceMatch = await _repository.GetPriceMatchFileByQuoteAsync(quoteId); //get price match file
+                string priceMatchFileB64 = "";
 
                 if (quote.RejectReasonID != null)
                 {
                     int rejectReasonID = quote.RejectReasonID.Value;
                     rejectReason = await _repository.GetRejectReasonAsync(rejectReasonID);
                 }
-                string priceMatchFileB64 = rejectReason.Price_Match_File != null ? Convert.ToBase64String(rejectReason.Price_Match_File.File) : "";
+
+                if (priceMatch != null) //convert file to b64 if it exists
+                    priceMatchFileB64 = Convert.ToBase64String(priceMatch.File);
 
                 QuoteViewModel qrVM = new QuoteViewModel
                 {
@@ -145,6 +145,7 @@ namespace BOX.Controllers
                     QuoteStatusDescription = status.Description,
                     CustomerId = quote.UserId,
                     CustomerFullName = fullName,
+                    CustomerEmail = user.Email,
                     QuoteDurationID = quote.QuoteDurationID,
                     QuoteDuration = duration.Duration,
                     DateGenerated = quote.Date_Generated,
@@ -214,13 +215,17 @@ namespace BOX.Controllers
                     var status = await _repository.GetQuoteStatusAsync(quote.QuoteStatusID);
                     var duration = await _repository.GetQuoteDurationAsync(quote.QuoteDurationID);
                     var rejectReason = new Reject_Reason();
+                    var priceMatch = await _repository.GetPriceMatchFileByQuoteAsync(quote.QuoteID); //get price match file
+                    string priceMatchFileB64 = "";
 
                     if (quote.RejectReasonID != null)
                     {
                         int rejectReasonID = quote.RejectReasonID.Value;
                         rejectReason = await _repository.GetRejectReasonAsync(rejectReasonID);
                     }
-                    string priceMatchFileB64 = rejectReason.Price_Match_File != null ? Convert.ToBase64String(rejectReason.Price_Match_File.File) : "";
+
+                    if (priceMatch != null) //convert file to b64 if it exists
+                        priceMatchFileB64 = Convert.ToBase64String(priceMatch.File);
 
                     QuoteViewModel qrVM = new QuoteViewModel
                     {
@@ -286,7 +291,7 @@ namespace BOX.Controllers
                     {
                         QuoteLineID = ql.QuoteLineID,
                         FixedProductID = ql.FixedProductID == null ? 0 : ql.FixedProductID.Value,
-                        FixedProductDescription = fixedProduct.Description,
+                        FixedProductDescription = fixedProduct == null ? "" : fixedProduct.Description,
                         CustomProductID = ql.CustomProductID == null ? 0 : ql.CustomProductID.Value,
                         CustomProductDescription = customProdDescription,
                         ConfirmedUnitPrice = ql.Confirmed_Unit_Price,
@@ -434,5 +439,61 @@ namespace BOX.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
             }
         }
+
+        [HttpPut]
+        [Route("RejectQuote")]
+        public async Task<IActionResult> RejectQuote(QuoteViewModel quoteVM)
+        {
+            try
+            {
+                var existingQuote = await _repository.GetQuoteAsync(quoteVM.QuoteID); //get quote
+                if (existingQuote == null) return NotFound($"The quote does not exist on the B.O.X System");
+
+                existingQuote.RejectReasonID = quoteVM.RejectReasonID; //set reject reason ID
+
+                if (quoteVM.RejectReasonID == 1) //1 is "I got a better price elsewhere. Can you beat that price?"
+                {
+                    existingQuote.QuoteStatusID = 4; //update status to "Rejected and will renegotiate"
+                    //save price match file
+                    Price_Match_File newFile = new Price_Match_File
+                    {
+                        QuoteID = quoteVM.QuoteID,
+                        RejectReasonID = 1, //1 is "I got a better price elsewhere. Can you beat that price?" The only reject reason that allows you to upload price match files
+                        File = Convert.FromBase64String(quoteVM.PriceMatchFileB64)
+                    };
+                    _repository.Add(newFile);
+                }
+                else
+                {
+                    existingQuote.QuoteStatusID = 3; //update status to just "Rejected"
+                }
+
+                // Update the Quote in the repository
+                await _repository.UpdateQuoteAsync(existingQuote);
+
+                return Ok(existingQuote);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
+        //--------------------------------------------------- GET ALL REJECT REASONS ---------------------------------------------------
+        [HttpGet]
+        [Route("GetAllRejectReasons")]
+        public async Task<IActionResult> GetAllRejectReasons()
+        {
+            try
+            {
+                var rejectReasons = await _repository.GetAllRejectReasonsAsync();
+                return Ok(rejectReasons);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+        
     }
 }

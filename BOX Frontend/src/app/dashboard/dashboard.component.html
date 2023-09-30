@@ -4,67 +4,281 @@
         <div class="app-menu"></div>
     </div>
     <!-- Dashboard -->
-<div class="col-md-9">
-    <div class="text-center pt-3 pb-3">
-        <h3 style="color: #000000;">Hello,  Ismail Starke</h3>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;" [routerLink]="'/raw-material'">
-                    <div class="card-body text-center">
-                        <fa-icon class="fa-icon-large" [icon]="['fas', 'recycle']"></fa-icon>
-                        <h5 class="card-title text-center" style="color: #FFF;">Raw Material</h5>
+    <div class="col-md-9">
+        <div class="text-center pt-3 pb-3">
+            <h3 style="color: #000000;">Hello, {{user.firstName}} {{user.lastName}} </h3>
+        </div>
+        <!-- First Row -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;"
+                        [routerLink]="'/assign-employee'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'users-line']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Assign Sales Consultant</h5>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card" data-clickable="true" style="width: 18rem; background-color: #47AF31;" [routerLink]="'/supplier'">
-                    <div class="card-body text-center">
-                        <fa-icon class="fa-icon-large" [icon]="['fas', 'truck']"></fa-icon>
-                        <h5 class="card-title text-center" style="color: #FFF;">View Supplier List</h5>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #9931AF;"
+                        [routerLink]="'/employees'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'user-tie']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Employees</h5>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;" [routerLink]="'/size-units'">
-                    <div class="card-body text-center">
-                        <fa-icon class="fa-icon-large" [icon]="['fas', 'maximize']"></fa-icon>
-                        <h5 class="card-title text-center" style="color: #FFF;">Size Units</h5>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;"
+                        [routerLink]="'/quote-requests'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'file-invoice-dollar']"></fa-icon>
+                            <h5 class="card-title text-center text-white" style="color: #000000;">Quote Requests</h5>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Second Row -->
-    <div class="container pt-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;">
-                    <div class="card-body text-center">
-                        <fa-icon class="fa-icon-large" [icon]="['fas', 'chart-pie']"></fa-icon>
-                        <h5 class="card-title text-center" style="color: #FFF;">View Reports</h5>
+        <!--Second Row-->
+        <div class="container pt-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;"
+                        [routerLink]="'/raw-material'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'recycle']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Raw Material</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #47AF31;"
+                        [routerLink]="'/supplier'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'truck']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">View Supplier List</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;"
+                        [routerLink]="'/size-units'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'maximize']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Size Units</h5>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card" data-clickable="true" style="width: 18rem; background-color: #9931AF;" [routerLink]="'/cost-price-formula-variables'">
-                    <div class="card-body text-center">
-                        <fa-icon class="fa-icon-large" [icon]="['fas', 'square-root-variable']"></fa-icon>
-                        <h5 class="card-title text-center" style="color: #FFF;">Cost Price Formula</h5>
+        </div>
+
+        <!-- Second Row -->
+        <div class="container pt-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;"
+                        [routerLink]="'/write-off-reason'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'eraser']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Write Off Reasons</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #9931AF;"
+                        [routerLink]="'/return-reason'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'angles-left']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Refund Reasons</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;"
+                        [routerLink]="'/discount'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'tags']"></fa-icon>
+                            <h5 class="card-title text-center text-white" style="color: #000000;">Discounts</h5>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;" [routerLink]="'/discount'">
-                    <div class="card-body text-center">
-                        <fa-icon class="fa-icon-large" [icon]="['fas', 'tags']"></fa-icon>
-                        <h5 class="card-title text-center text-white" style="color: #000000;">Discounts</h5>
+        </div>
+
+        <!--Third Row-->
+        <div class="container pt-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;"
+                        [routerLink]="'/cost-price-formula-variables'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'square-root-variable']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Cost Price Formula</h5>
+                        </div>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #47AF31;"
+                        [routerLink]="'/fixed-product'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'boxes-packing']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Fixed Products</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;"
+                        [routerLink]="'/custom-product'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'ruler-combined']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Custom Products</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Fifth Row-->
+        <div class="container pt-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;"
+                        [routerLink]="'/review-report'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'comment-dots']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Customer Review Report</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #9931AF;"
+                        [routerLink]="'/sales-by-category'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'chart-bar']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Sales By Category Report</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;"
+                        [routerLink]="'/product-list'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'list-check']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Product List Report</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Sixth Row-->
+        <div class="container pt-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;"
+                        [routerLink]="'/inactive-customers'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'person-circle-question']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Inactive Customers Report</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #47AF31;"
+                        [routerLink]="'/supplier-list'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'clipboard-list']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Supplier List Report</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;"
+                        [routerLink]="'/vat'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'percent']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Value Added Tax</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Seventh Row-->
+        <div class="container pt-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;"
+                        [routerLink]="'/order-schedule'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'calendar']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Order Schedule</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #9931AF;"
+                        [routerLink]="'/users'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'users']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Users</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;"
+                        [routerLink]="'/customer-homepage'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'globe']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Mega Pack Website</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Eighth Row-->
+        <div class="container pt-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #3186AF;"
+                        [routerLink]="'/manage-quotes'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'file-invoice-dollar']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Quotes</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #47AF31;"
+                        [routerLink]="'/manage-orders'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'shopping-cart']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Customer Orders</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #47AF31;"
+                        [routerLink]="'/order-calendar'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'calendar']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Delivery Schedule</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="col-md-4">
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;"
+                        [routerLink]="'/vat'">
+                        <div class="card-body text-center">
+                            <fa-icon class="fa-icon-large" [icon]="['fas', 'percent']"></fa-icon>
+                            <h5 class="card-title text-center" style="color: #FFF;">Value Added Tax</h5>
+                        </div>
+                    </div>
+                </div> -->
             </div>
         </div>
     </div>
 </div>
-</div>    

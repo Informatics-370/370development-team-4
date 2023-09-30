@@ -133,7 +133,8 @@ namespace BOX.Controllers
                         UserViewModel userVM = new UserViewModel
                         {
                             emailaddress = user.Email,
-                            firstName = fullname
+                            firstName = fullname,
+                            phoneNumber = user.PhoneNumber
                         };
                         
                         inactiveCustomers.Add(userVM);

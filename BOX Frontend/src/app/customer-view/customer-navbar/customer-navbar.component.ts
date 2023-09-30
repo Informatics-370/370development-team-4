@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./customer-navbar.component.css']
 })
 export class CustomerNavbarComponent {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
@@ -24,10 +24,10 @@ export class CustomerNavbarComponent {
   testSwal() {
     Swal.fire({
       title: 'Oops...!',
-              icon: 'error',
-              text: 'There was an unexpected error when attempting to delete your account',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'OK',
-    });        
+      icon: 'error',
+      text: 'There was an unexpected error when attempting to delete your account',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'OK',
+    });
   }
 }

@@ -138,12 +138,14 @@ namespace BOX.Controllers
                 }
 
                 string fullName = await _repository.GetUserFullNameAsync(quoteRequest.UserId);
+                var user = await _repository.GetUserAsync(quoteRequest.UserId);
 
                 QuoteViewModel qrVM = new QuoteViewModel
                 {
                     QuoteRequestID = quoteRequest.QuoteRequestID,
                     CustomerId = quoteRequest.UserId,
                     CustomerFullName = fullName,
+                    CustomerEmail = user.Email,
                     DateRequested = quoteRequest.Date,
                     Lines = qrLineList
                 };

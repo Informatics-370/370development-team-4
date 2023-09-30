@@ -7,6 +7,7 @@ import { VAT } from '../../shared/vat';
 import { FixedProductVM } from '../../shared/fixed-product-vm';
 import { CustomProductVM } from '../../shared/custom-product-vm';
 import { take, lastValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-order-history',
@@ -71,7 +72,6 @@ export class OrderHistoryComponent {
       this.customProducts = allCustomProducts;
       console.log('All custom products', this.customProducts);
       this.allVATs = allVAT;
-      console.log('All VAT', this.allVATs);
 
       await this.getCustomerOrdersPromise();
     } catch (error) {
@@ -164,8 +164,27 @@ export class OrderHistoryComponent {
     console.log('Search results:', this.filteredOrders);
   }
 
-  cancelOrder(orderId: number) {
+  warnCustomer(orderId: number) {
     //notify them of how cancellation works and their deposit
+    //warn user
+    Swal.fire({
+      icon: 'warning',
+      title: "Are you sure?",
+      html: `20% of every order is a deposit. This amount is <b>not refundable</b>`,
+      confirmButtonColor: '#32AF99',
+      confirmButtonText: 'Yes, cancel order!',
+      showCancelButton: true,
+      cancelButtonColor: '#E33131',
+      cancelButtonText: 'Nevermind',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cancelOrder(orderId);
+      }
+    });
+  }
+
+  cancelOrder(orderId: number) {
     try {
       //statusID 3 = 'Cancelled'
       this.dataService.UpdateOrderStatus(orderId, 3).subscribe((result) => {

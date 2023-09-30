@@ -26,8 +26,6 @@ import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
-import { EstimateLineComponent } from './estimate/estimate-line.component';
-import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 import { CustomerNavbarComponent } from './customer-view/customer-navbar/customer-navbar.component';
 import { LoginComponent } from './login/login.component';
@@ -63,6 +61,13 @@ import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
 import { MessagesComponent } from './messages/messages.component';
+import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
+import { QuotesComponent } from './quotes/quotes.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { ForbiddenComponent } from './forbidden/forbidden.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CreditApplicationComponent } from './credit-application/credit-application.component';
 import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 
@@ -90,8 +95,6 @@ import { AdminCreditApplicationComponent } from './admin-credit-application/admi
         CategoriesMenuComponent,
         ProductDetailsComponent,
         CartPageComponent,
-        EstimateLineComponent,
-        EstimatePageComponent,
         CostPriceFormulaComponent,
         CustomerNavbarComponent,
         LoginComponent,
@@ -126,11 +129,17 @@ import { AdminCreditApplicationComponent } from './admin-credit-application/admi
         InactiveCustomerListComponent,
         SupplierListComponent,
         InventoryChartComponent,
-        MessagesComponent,        
+        MessagesComponent,
+        OrderDeliveryScheduleComponent,
+        OrderDelCalendarComponent,
+        QuotesComponent,
+        NotFoundComponent,
+        ForbiddenComponent,
+        QuotesComponent,
         RegistrationSuccessPopupComponent,
         CreditApplicationComponent,
-        AdminCreditApplicationComponent,
-       
+        AdminCreditApplicationComponent
+        
   ],
   imports: [
     BrowserModule,
@@ -138,8 +147,10 @@ import { AdminCreditApplicationComponent } from './admin-credit-application/admi
     FontAwesomeModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
-  ],
+    FormsModule,
+    FullCalendarModule,
+    DragDropModule
+ ],
   providers: [],
   bootstrap: [AppComponent]
 })

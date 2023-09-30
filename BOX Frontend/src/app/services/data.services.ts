@@ -16,7 +16,6 @@ import { SizeVM } from '../shared/size-vm';
 import { Supplier } from '../shared/supplier';
 import { Customer } from '../shared/customer';
 import { CostPriceFormulaVariables } from '../shared/cost-price-formula-variables';
-import { EstimateVM } from '../shared/estimate-vm';
 import { Role } from '../shared/role';
 import { SupplierOrderVM } from '../shared/supplierOrder-vm';
 import { Discount } from '../shared/discount';
@@ -24,6 +23,7 @@ import { Users } from '../shared/user';
 import { OrderVM } from '../shared/order-vm';
 import { QuoteVM } from '../shared/quote-vm';
 import { WriteOffItem } from '../shared/write-off-item';
+import { AllCustomerDetailsVM } from '../shared/all-customer-details-vm';
 import { CreditApplication } from '../shared/creditApplication';
 
 imports: [
@@ -290,14 +290,14 @@ export class DataService {
   }
 
   //---------------------------------------Customer--------------------------------------------
-  // GetCustomer(customerId: number): Observable<Customer> {
-  //   return this.httpClient.get<Customer>(`${this.apiUrl}Customer/GetCustomer/${customerId}`)
-  //     .pipe(map(result => result));
-  // }
+  /* GetCustomer(customerId: number): Observable<Customer> {
+     return this.httpClient.get<Customer>(`${this.apiUrl}Customer/GetCustomer/${customerId}`)
+       .pipe(map(result => result));
+  } */
 
   //------------------------------------------ QUOTE ------------------------------------------
-  GetAllEstimates(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}Estimate/GetAllEstimates`)
+  GetAllQuotes(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Quote/GetAllQuotes`)
       .pipe(map(result => result))
   }
 
@@ -320,16 +320,17 @@ export class DataService {
     );
   }
 
-  UpdateEstimate(estimateId: number, estimateViewModel: EstimateVM): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}Estimate/UpdateEstimate/${estimateId}`, estimateViewModel, this.httpOptions);
+  RejectQuote(quoteVM: QuoteVM): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}Quote/RejectQuote`, quoteVM, this.httpOptions);
   }
   
   UpdateQuoteStatus(quoteId: number, statusId: number): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}Quote/UpdateQuoteStatus/${quoteId}/${statusId}`, this.httpOptions);
   }
-
-  DeleteEstimate(estimateId: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.apiUrl}Estimate/DeleteEstimate/${estimateId}`, this.httpOptions);
+  
+  GetAllRejectReasons(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}Quote/GetAllRejectReasons`)
+      .pipe(map(result => result))
   }
 
   //-----------------------------COST PRICE FORMULA VARIABLES-----------------------------
@@ -476,6 +477,10 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
 
+  updateDeliveryDate(orderId: number, newDeliveryDate: Date): Observable<any> {
+    const url = `${this.apiUrl}CustomerOrder/UpdateDeliveryDate/${orderId}`;
+    return this.httpClient.put(url, { newDeliveryDate });
+  }
   //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
   GetAllCustomProducts(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)
@@ -491,6 +496,10 @@ export class DataService {
     return this.httpClient.post<any>(
       `${this.apiUrl}CustomProduct/CreateCustomProduct`, customProductViewModel, this.httpOptions
     );
+  }
+
+  DeleteCustomProduct(customProductId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.apiUrl}CustomProduct/DeleteCustomProduct/${customProductId}`, this.httpOptions);
   }
 
   //-------------------------------------------------------QUOTE REQUESTS-------------------------------------------------------
@@ -534,6 +543,10 @@ export class DataService {
   GetCustomers(): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}User/GetAllCustomers`);
   }
+  
+  GetCustomerByUserId(userId: string): Observable<AllCustomerDetailsVM> {
+    return this.httpClient.get<AllCustomerDetailsVM>(`${this.apiUrl}User/GetCustomerByUserId/${userId}`);
+  }
 
   //---------------------------------------- REPORTS ----------------------------------------
   GetSalesByCategoryReport(stringStartDate: string, stringEndDate: string): Observable<any[]> {
@@ -564,6 +577,11 @@ export class DataService {
 
   clearAllMessages(): Observable<string> {
     return this.httpClient.delete<string>(`${this.apiUrl}Authentication/ClearAllMessages`);
+  }
+
+  //------------------------------------------------------- EMAIL -------------------------------------------------------
+  SendEmail(email: any): Observable<any> {
+    return this.httpClient.post<any>(`${this.apiUrl}Email/SendEmail`, email, this.httpOptions);
   }
   //--------------------------------CREDIT APPLICATION------------------------------------
   GetCreditApplications(): Observable<any> {

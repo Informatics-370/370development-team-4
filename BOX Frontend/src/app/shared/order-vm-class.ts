@@ -1,7 +1,7 @@
 import { OrderVM } from "./order-vm";
 import { VAT } from "./vat";
 
-export class OrderVMClass {
+export class OrderVMClass implements OrderVM {
   customerOrderID: number;
   quoteID: number;
   customerId: string;
@@ -11,8 +11,11 @@ export class OrderVMClass {
   date: Date; //date ordered
   deliveryScheduleID: number;
   deliveryDate: Date;
+  deliveryTypeID: number;
   deliveryType: string; //delivery or pick up
   deliveryPhoto: string;
+  paymentID: number = 0;
+  paymentTypeID: number;
   orderLines: any[];
 
   /*line = {
@@ -39,8 +42,11 @@ export class OrderVMClass {
   applicableVAT: VAT;
   totalBeforeVAT = 0;
   totalVAT = 0;
+  checked!: boolean; //keep track of process order checkbox value
 
   constructor(order: OrderVM, lines: any[], applicableVAT: VAT) {
+    this.applicableVAT = applicableVAT;
+    this.orderLines = lines;
     this.customerOrderID = order.customerOrderID;
     this.quoteID = order.quoteID;
     this.customerId = order.customerId;
@@ -50,10 +56,16 @@ export class OrderVMClass {
     this.date = new Date(order.date);
     this.deliveryScheduleID = order.deliveryScheduleID;
     this.deliveryDate = new Date(order.deliveryDate);
+    this.deliveryTypeID = order.deliveryTypeID;
     this.deliveryType = order.deliveryType;
     this.deliveryPhoto = order.deliveryPhoto;
-    this.applicableVAT = applicableVAT;
-    this.orderLines = lines;
+    this.paymentTypeID = order.paymentTypeID;
+    this.totalBeforeVAT = this.getTotalBeforeVAT();
+    this.totalVAT = this.getVATAmount();
+
+    if (this.orderStatusID == 1) { //if order has status of Placed, then it can be changed to In progress
+      this.checked = false; //set checkbox value
+    }
   }
 
   getTotalBeforeVAT(): number {

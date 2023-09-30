@@ -4,6 +4,7 @@ import { take, lastValueFrom } from 'rxjs';
 import { FixedProductVM } from '../shared/fixed-product-vm';
 import { RawMaterialVM } from '../shared/rawMaterialVM';
 import { Supplier } from '../shared/supplier';
+//import * as html2pdf from 'html2pdf.js'
 @Component({
   selector: 'app-supplier-list',
   templateUrl: './supplier-list.component.html',
@@ -72,6 +73,15 @@ export class SupplierListComponent {
     this.loading = true;
     if (this.selectedProductID != 'NA') {
       let fixedProduct = this.selectedProductID.includes('f') ? 'true' : 'false';
+
+      //get product
+      if (fixedProduct == 'true') {
+        this.selectedProduct = this.fixedProducts.find(f => f.fixedProductID == parseInt(this.selectedProductID.substring(1)));
+      }
+      else {
+        this.selectedProduct = this.rawMaterials.find(f => f.rawMaterialID == parseInt(this.selectedProductID.substring(1)));
+      }
+
       this.dataService.GetSupplierListReport(parseInt(this.selectedProductID.substring(1)), fixedProduct).subscribe((result) => {
         this.supplierList = result;
         this.supplierCount = this.supplierList.length;
@@ -83,8 +93,8 @@ export class SupplierListComponent {
   generatePDFReport() {
     const content = document.getElementById('pdf-content');
     
-    if (content) {
-      
-    }
+    /* if (content) {
+      html2pdf().from(content).save();
+    } */
   }
 }
