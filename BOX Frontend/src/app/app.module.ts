@@ -26,8 +26,6 @@ import { ProductsComponent } from './customer-view/products/products.component';
 import { CategoriesMenuComponent } from './customer-view/categories-menu/categories-menu.component';
 import { ProductDetailsComponent } from './customer-view/product-details/product-details.component';
 import { CartPageComponent } from './customer-view/cart-page/cart-page.component';
-import { EstimateLineComponent } from './estimate/estimate-line.component';
-import { EstimatePageComponent } from './customer-view/estimate-page/estimate-page.component';
 import { CostPriceFormulaComponent } from './cost-price-formula/cost-price-formula.component';
 import { CustomerNavbarComponent } from './customer-view/customer-navbar/customer-navbar.component';
 import { LoginComponent } from './login/login.component';
@@ -67,6 +65,10 @@ import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { ForbiddenComponent } from './forbidden/forbidden.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 
 
 @NgModule({
@@ -91,8 +93,6 @@ import { QuotesComponent } from './quotes/quotes.component';
         CategoriesMenuComponent,
         ProductDetailsComponent,
         CartPageComponent,
-        EstimateLineComponent,
-        EstimatePageComponent,
         CostPriceFormulaComponent,
         CustomerNavbarComponent,
         LoginComponent,
@@ -131,7 +131,10 @@ import { QuotesComponent } from './quotes/quotes.component';
         MessagesComponent,
         OrderDeliveryScheduleComponent,
         OrderDelCalendarComponent,
-        QuotesComponent
+        QuotesComponent,
+        NotFoundComponent,
+        ForbiddenComponent,
+        QuotesComponent,
         
   ],
   imports: [
@@ -141,7 +144,8 @@ import { QuotesComponent } from './quotes/quotes.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    FullCalendarModule
+    FullCalendarModule,
+    DragDropModule
  ],
   providers: [],
   bootstrap: [AppComponent]

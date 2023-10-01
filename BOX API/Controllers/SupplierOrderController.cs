@@ -1,4 +1,4 @@
-﻿using BOX.Models;
+using BOX.Models;
 using BOX.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 

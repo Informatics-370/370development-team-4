@@ -1,7 +1,7 @@
 import { OrderVM } from "./order-vm";
 import { VAT } from "./vat";
 
-export class OrderVMClass {
+export class OrderVMClass implements OrderVM {
   customerOrderID: number;
   quoteID: number;
   customerId: string;
@@ -11,8 +11,11 @@ export class OrderVMClass {
   date: Date; //date ordered
   deliveryScheduleID: number;
   deliveryDate: Date;
+  deliveryTypeID: number;
   deliveryType: string; //delivery or pick up
   deliveryPhoto: string;
+  paymentID: number = 0;
+  paymentTypeID: number;
   orderLines: any[];
 
   /*line = {
@@ -53,8 +56,10 @@ export class OrderVMClass {
     this.date = new Date(order.date);
     this.deliveryScheduleID = order.deliveryScheduleID;
     this.deliveryDate = new Date(order.deliveryDate);
+    this.deliveryTypeID = order.deliveryTypeID;
     this.deliveryType = order.deliveryType;
     this.deliveryPhoto = order.deliveryPhoto;
+    this.paymentTypeID = order.paymentTypeID;
     this.totalBeforeVAT = this.getTotalBeforeVAT();
     this.totalVAT = this.getVATAmount();
 
