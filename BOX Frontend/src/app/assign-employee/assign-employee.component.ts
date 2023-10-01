@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { Customer, Employee } from '../shared/customer';
 import Swal from 'sweetalert2';
@@ -16,13 +16,19 @@ export class AssignEmployeeComponent {
   customerCount: number = -1;
   searchTerm: string = '';
   loading = true;
+  @Input()
+  customer!: Customer;
+
+  newCreditLimit!: number;
+  newCreditBalance!: number;
 
   constructor(private dataService: DataService, private authService: AuthService) { }
   
   ngOnInit(): void {
     this.getAllCustomers();
-  }
+  }  
 
+  
   getAllCustomers() {
     this.dataService.GetCustomers().subscribe((result: Customer[]) => {
       this.filteredCustomers = result;
@@ -86,6 +92,47 @@ export class AssignEmployeeComponent {
           }
         }
       });
+    });
+  }
+
+  openUpdateCreditDialog(customer: Customer) {
+    if (!customer) {
+      // Handle the case where customer is undefined
+      console.error('Customer is undefined');
+      return;
+    }
+    Swal.fire({
+      title: 'Update Credit Information',
+      html: `
+        <input type="number" [(ngModel)]="newCreditLimit" placeholder="New Credit Limit" class="form-control mb-3">
+        <input type="number" [(ngModel)]="newCreditBalance" placeholder="New Credit Balance" class="form-control">
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Update',
+      preConfirm: () => {
+        // Update the credit limit and balance in the backend
+        this.dataService
+          .updateCustomerCredit(
+            customer.user.email,
+            this.newCreditLimit,
+            this.newCreditBalance
+          )
+          .subscribe(
+            () => {
+              console.log(customer.user.email)
+              console.log(this.newCreditLimit)
+              console.log(this.newCreditBalance)
+              Swal.fire(
+                'Success',
+                'Credit information updated successfully!',
+                'success'
+              );
+            },
+            (error) => {
+              Swal.fire('Error', 'An error occurred while updating credit information.', 'error');
+            }
+          );
+      },
     });
   }
 }

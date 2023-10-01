@@ -1,0 +1,13 @@
+ion-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 999; /* Adjust this value as needed */
+  }
+
+  .scrollable-tab-bar {
+    display: flex;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent tab buttons from wrapping */
+  }
+  

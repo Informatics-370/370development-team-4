@@ -51,7 +51,7 @@ namespace BOX.Controllers
             var employees = await _dbContext.Users
                 .Join(_dbContext.UserRoles, u => u.Id, ur => ur.UserId, (u, ur) => new { User = u, UserRole = ur })
                 .Join(_dbContext.Roles, ur => ur.UserRole.RoleId, r => r.Id, (ur, r) => new { User = ur.User, Role = r })
-                .Where(x => x.Role.Name == "Employee")
+                .Where(x => x.Role.Name != "Customer")
                 .Join(_dbContext.Employee, u => u.User.Id, e => e.UserId, (u, e) => new { User = u.User, Employee = e })
                 .Select(u => new EmployeeDTO
                 {

@@ -86,7 +86,7 @@ namespace BOX.Controllers
                         user_FirstName = uvm.firstName,
                         user_LastName = uvm.lastName,
                         user_Address = uvm.address,
-                        TitleID = 1,
+                        TitleID = uvm.title,
                         TwoFactorEnabled = false
                     };
 
@@ -120,7 +120,8 @@ namespace BOX.Controllers
 
                         // Store the registration message in the database
                         var registrationMessage = $"New registration: {uvm.firstName} {uvm.lastName} has signed up to Mega Pack using this email address. ({uvm.emailaddress}) \n\n Please assign {uvm.firstName} {uvm.lastName} to a sales consultant as soon as possible";
-                        _dbContext.RegisterMessages.Add(new RegisterMessages { message = registrationMessage });
+                        var registrationDate = DateTime.Now;
+                        _dbContext.RegisterMessages.Add(new RegisterMessages { message = registrationMessage, messageDate = registrationDate });
                         await _dbContext.SaveChangesAsync();
 
                         await _hubContext.Clients.All.SendAsync("SendRegistrationAlert", registrationMessage);
@@ -154,6 +155,16 @@ namespace BOX.Controllers
             }
 
         }
+
+        [HttpGet]
+        [Route("GetAllTitles")]
+        public async Task<ActionResult<IEnumerable<Title>>> GetAllTitles()
+        {
+            var titles = await _dbContext.Title.ToListAsync();
+
+            return titles;
+        }
+
 
         [HttpPost("send-sms")]
         public IActionResult SendSms(string phoneNumber)
@@ -439,7 +450,7 @@ namespace BOX.Controllers
                     user_FirstName = uvm.firstName,
                     user_LastName = uvm.lastName,
                     user_Address = uvm.address,
-                    TitleID = 1,
+                    TitleID = uvm.title,
                     TwoFactorEnabled = false
                 };
 
@@ -552,9 +563,7 @@ namespace BOX.Controllers
         [Route("AssignEmployee/{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, [FromBody] AssignEmpDTO assignEmp)
         {
-            var customer = await _dbContext.Customer
-                .Include(c => c.User) // Include the User details of the customer
-                .FirstOrDefaultAsync(u => u.UserId == userId);
+            var customer = await _repository.GetCustomerByUserId(userId);
 
             if (customer == null)
             {

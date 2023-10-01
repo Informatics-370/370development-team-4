@@ -196,6 +196,46 @@ namespace BOX.Controllers
 
             return customer;
         }
+        [HttpPut]
+        [Route("UpdateCustomerCredit")]
+        public async Task<IActionResult> UpdateCustomerCredit([FromBody] UpdateCustomerCreditDTO updateData)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == updateData.Email);
+
+            if (user == null)
+            {
+                return NotFound(); // User not found
+            }
+
+            // Find the associated customer
+            var customer = await _dbContext.Customer.FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+            if (customer == null)
+            {
+                return NotFound(); // Customer not found
+            }
+
+            // Update the customer's credit limit and balance
+            if (updateData.CreditLimit.HasValue)
+            {
+                customer.creditLimit = updateData.CreditLimit.Value;
+            }
+
+            if (updateData.CreditBalance.HasValue)
+            {
+                customer.creditBalance = updateData.CreditBalance.Value;
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent(); // Update successful, return 204 No Content response
+        }
+
 
         [HttpGet]
         [Route("GetCustomerByUserId/{userId}")]
@@ -283,7 +323,7 @@ namespace BOX.Controllers
                 return BadRequest("Failed to update role"); // Role update failed
             }
 
-            if (role.Name == "Admin")
+            if (role.Name == "Administrator")
             {
                 var admin = new Admin
                 {

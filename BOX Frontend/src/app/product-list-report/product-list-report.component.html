@@ -5,7 +5,9 @@
     </div>
     <!--Right Side-->
     <div class="col-md-10">
-      <h3 class="p-3" style="color: black;">Generate Product List Report</h3>
+      <div class="container">
+        <h3 class="p-3" style="color: black;">Generate Product List Report</h3>
+        <canvas id="inventoryChart"></canvas>
 
       <button type="submit" class="btn btn-create" [disabled]="loading" (click)="generateReport()">Generate</button>
       <button *ngIf="!loading && productCount > 0" class="btn btn-create" (click)="generatePDFReport()">Download PDF</button>
@@ -49,6 +51,7 @@
             </tr>
           </tfoot>
         </table>
+      </div>
       </div>
     </div>
   </div>

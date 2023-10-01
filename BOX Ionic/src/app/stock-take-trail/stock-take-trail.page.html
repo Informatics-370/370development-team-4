@@ -1,0 +1,29 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Stock Take Trail</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12">
+        <div class="mt-4">
+          <h2 class="ion-text-display6">Stock Take Trail</h2>
+          <ion-button class="ion-margin-top" (click)="goBack()">Back</ion-button>
+          <ion-list class="ion-margin-top" *ngFor="let stockTake of stockTakes">
+            <ion-item>
+              <ion-label>Stock Take ID: {{ stockTake.stockTakeID }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>User Name: {{ stockTake.userId }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>Date: {{ stockTake.date | date: 'dd/MM/yyyy' }}</ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

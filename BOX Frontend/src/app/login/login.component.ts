@@ -83,7 +83,7 @@ export class LoginComponent {
     if (this.redirectURL != '') {
         this.router.navigate(['/' + this.redirectURL]);
     }
-    else if (userRole === 'Admin' || userRole === 'Employee') {
+    else if (userRole != 'Customer') {
       // Redirect to the dashboard for admin or employee
       this.router.navigate(['/dashboard']);
     } else if (userRole === 'Customer') {

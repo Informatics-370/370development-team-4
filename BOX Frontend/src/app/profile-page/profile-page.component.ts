@@ -23,11 +23,18 @@ export class ProfilePageComponent implements OnInit {
   isBusiness = false;
   isEditMode = false;
   token = localStorage.getItem('access_token')!;
+  titleMap: { [key: number]: string } = {};
 
   constructor(private authService: AuthService, private dataService: DataService, private router: Router) { }
 
   ngOnInit(): void {
      this.getUserDetails();
+
+     this.authService.getAllTitles().subscribe((titles) => {
+      titles.forEach((title) => {
+        this.titleMap[title.titleID] = title.description;
+      });
+    });
   }
 
   toggleEditMode(): void {

@@ -6,6 +6,7 @@ import { AssignEmpDTO } from '../shared/assign-emp-dto';
 import { Users } from '../shared/user';
 import { take, lastValueFrom } from 'rxjs';
 import { AllCustomerDetailsVM } from '../shared/all-customer-details-vm';
+import { Title } from '../shared/title';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,11 @@ export class AuthService {
   private authUrl = 'http://localhost:5116/api/Authentication/'
 
   constructor(private http: HttpClient, private dataService: DataService) { }
+
+  getAllTitles(): Observable<Title[]> {
+    const url = `${this.authUrl}GetAllTitles`;
+    return this.http.get<Title[]>(url);
+  }
 
   registerUser(user: any): Observable<any> {
     return this.http.post(`${this.authUrl}Register`, user);
