@@ -112,10 +112,10 @@ const routes: Routes = [
   { path: 'order-schedule', component: OrderDeliveryScheduleComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
   { path: 'order-calendar', component: OrderDelCalendarComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
   { path: 'manage-quotes', component: QuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'credit-application', component: CreditApplicationComponent },
+  { path: 'admin-credit-application', component: AdminCreditApplicationComponent },
   {path: 'forbidden', component: ForbiddenComponent },
-    { path: '**', component: NotFoundComponent },
-    { path: 'credit-application', component: CreditApplicationComponent },
-    { path: 'admin-credit-application', component: AdminCreditApplicationComponent }
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({
