@@ -19,6 +19,7 @@
     <!--Messages to user-->
     <div class="m-3 text-center">
       <span *ngIf="loading">Getting your quotes..</span>
+      <span *ngIf="error">Error retrieving your quotes from the database</span>
       <span *ngIf="quoteCount == 0 && quoteRequest == null">
         <span class="empty-msg"><fa-icon class="m-3" [icon]="['fas', 'file-invoice']"></fa-icon></span><br />
         No quotes or requests for quote found.

@@ -28,7 +28,7 @@ export class MyQuotesComponent {
   //messages to user
   quoteCount = -1;
   loading = true;
-  pleaseWait = false;
+  error = false;
   //searchTerm: string = '';
 
   //data from DB
@@ -115,6 +115,9 @@ export class MyQuotesComponent {
         await this.getCustomerQuotesPromise();
       }
     } catch (error) {
+      this.loading = false;
+      this.quoteCount = -1;
+      this.error = true;
       console.error('An error occurred:', error);
     }
   }
@@ -134,6 +137,9 @@ export class MyQuotesComponent {
         this.displayCustomerQuotes(); //Execute only after data has been retrieved from the DB otherwise error
       }
     } catch (error) {
+      this.loading = false;
+      this.quoteCount = -1;
+      this.error = true;
       console.error('An error occurred while retrieving quotes: ', error);
     }
   }

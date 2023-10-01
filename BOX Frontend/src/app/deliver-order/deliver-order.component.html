@@ -1,0 +1,16 @@
+<div class="row page-row">
+  <!--Menu bar-->
+  <div class="col-md-3">
+    <div class="app-menu"></div>
+  </div>
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 page-content">
+    <h3 class="p-3" style="color: black;">Deliver / Collect Order #{{order == null ? '' : order.customerOrderID}}</h3>
+
+    <hr class="hr hr-blurry m-3" />
+    <div class="messages p-3">
+      <span *ngIf="loading">Loading order data</span>
+      <span *ngIf="error">Error retrieving data. Please check the code.</span>
+    </div>
+  </div>
+</div>

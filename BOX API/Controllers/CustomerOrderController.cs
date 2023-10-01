@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+//QR Code Generation
+using QRCoder;
+using System.Drawing;
 
 
 namespace BOX.Controllers
@@ -342,7 +345,8 @@ namespace BOX.Controllers
                     Date = DateTime.Now,
                     Delivery_Date = CalculateTwoDaysFromNowOnWeekday(),
                     DeliveryTypeID = customerOrderViewModel.DeliveryTypeID,
-                    PaymentTypeID = customerOrderViewModel.PaymentTypeID
+                    PaymentTypeID = customerOrderViewModel.PaymentTypeID,
+                    QR_Code_Photo = Convert.FromBase64String("")
                 };
 
                 _repository.Add(order);
@@ -597,6 +601,18 @@ namespace BOX.Controllers
                 }
 
                 existingOrder.Delivery_Date = newDeliveryDate;
+
+                //update order status
+
+                //generate QR code to use on delivery; QR code is made from unique alphanumeric code between 13 and 20 characters long
+                var orders = await _repository.GetAllCustomerOrdersAsync();
+                string code = GenerateAlphanumericCode(orders);
+                var qrCodeBytes = GenerateQRCode(code);
+
+                //assign QR Code to order
+                existingOrder.Code = code;
+                existingOrder.QR_Code_Photo = qrCodeBytes;
+
                 await _repository.SaveChangesAsync();
 
                 return Ok(existingOrder);
@@ -604,6 +620,50 @@ namespace BOX.Controllers
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
+        //generate alphanumeric code
+        public string GenerateAlphanumericCode(Customer_Order[] existingOrders)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; //define character set
+            Random random = new Random();
+            string newCode;
+
+            // Generate new code and check if it already exists in the array
+            do
+            {
+                int length = random.Next(13, 21);
+                char[] code = new char[length];
+
+                // Populate the code with random characters
+                for (int i = 0; i < length; i++)
+                {
+                    code[i] = chars[random.Next(chars.Length)];
+                }
+
+                // Convert char array to string
+                newCode = new string(code);
+
+            } while (Array.Exists(existingOrders, order => order.Code == newCode)); // Check if the code already exists in the array
+
+            return newCode;
+        }
+
+        //Generating the QR Code
+        private byte[] GenerateQRCode(string data)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                qrCodeImage.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                byte[] imageBytes = stream.ToArray();
+                string base64Image = Convert.ToBase64String(imageBytes);
+                return Convert.FromBase64String(base64Image);
             }
         }
 

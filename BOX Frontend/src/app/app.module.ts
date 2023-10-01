@@ -68,7 +68,8 @@ import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-
+import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
+import { NgxScannerQrcodeModule } from 'ngx-scanner-qrcode';
 
 
 @NgModule({
@@ -135,6 +136,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         NotFoundComponent,
         ForbiddenComponent,
         QuotesComponent,
+        DeliverOrderComponent,
         
   ],
   imports: [
@@ -145,7 +147,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     ReactiveFormsModule,
     FormsModule,
     FullCalendarModule,
-    DragDropModule
+    DragDropModule,
+    NgxScannerQrcodeModule
  ],
   providers: [],
   bootstrap: [AppComponent]
