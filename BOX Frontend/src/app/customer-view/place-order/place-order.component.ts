@@ -330,7 +330,7 @@ export class PlaceOrderComponent {
       }
 
       //payfast won't allow payments below R20 so the minimum we allow is R30
-      if (amount < 30) throw 'Below minimum amount';
+      if (amount < 30 && paymentTypeId != 3) throw 'Below minimum amount';
 
       //get delivery type ID
       switch (this.deliveryType?.value) {
@@ -630,34 +630,6 @@ export class PlaceOrderComponent {
     this.addCanvasToPDF(canvases[3], fullWidth - halfPageWidth - margin, yOffset + margin, halfPageWidth, halfPageWidth * ratio, 3);
     console.log(`index: 3; x: ${fullWidth - halfPageWidth - margin}; y: ${yOffset + margin}; width: ${halfPageWidth} height: ${halfPageWidth * ratio}`);
     yOffset += (halfPageWidth * ratio) + (margin * 2);
-
-
-    // Add the canvases to the PDF
-    // canvases.forEach((canvas, index) => {
-    //   let x = 10; //give 10mm margin between left paper edge and doc content
-    //   let y = yOffset; //give 10mm margin between top paper edge and doc content
-    //   let width = halfPageWidth;
-    //   let height = pageHeight / 8; //calculate height
-
-    //   // Adjust x coordinates for each canvas as needed
-    //   if (index === 1) {
-    //     x = fullWidth - width - margin; //calculate x from the right margin not the left
-    //   } else if (index === 2) {
-    //     height = 8 + (this.invoice.lines.length * 8); //for each invoice line, add 8mm. And add 8mm at the start for the table headings
-    //     width = pageWidth;
-    //   } else if (index === 3) {
-    //     height = pageHeight / 10;
-    //   } else if (index === 4) {
-    //     height = pageHeight / 10;
-    //     x = fullWidth - width - margin; //calculate x from the right margin not the left
-    //   }
-
-    //   console.log(index, x, y, width, height);
-    //   this.addCanvasToPDF(canvas, x, y, width, height, index);
-
-    //   // Update the yOffset for the next canvas; unless it's a half block that should have the same y position as the previous half block
-    //   if (index === 1 || index === 2 || index === 4) yOffset = y + height + margin;
-    // });
 
     //add disclaimer text to pdf
     this.pdf.setFontSize(9); // Set the font size to be less than normal
