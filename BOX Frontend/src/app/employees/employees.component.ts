@@ -49,7 +49,11 @@ export class EmployeesComponent implements OnInit{
         this.titles = titles;
       },
       (error) => {
-        console.error('Error fetching titles', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...something went wrong',
+          text: 'An error occured when trying to collect all the titles. Please try again later.'
+        });
       }
     );
   }
@@ -62,14 +66,13 @@ export class EmployeesComponent implements OnInit{
   getAllUsers() { //get all Users
     this.dataService.GetEmployees().subscribe((result: any[]) => {
       let allUsers: any[] = result;
-      this.filteredUsers = []; //empty VAT array
+      this.filteredUsers = [];
       allUsers.forEach((user) => {
         this.filteredUsers.push(user);
       });
-      this.Users = this.filteredUsers; //store all the vat someplace before I search below
-      this.userCount = this.filteredUsers.length; //update the number of vat
+      this.Users = this.filteredUsers;
+      this.userCount = this.filteredUsers.length;
   
-      console.log('All Users array: ', this.filteredUsers);
       this.loading = false; //stop displaying loading message
     });
   }
@@ -110,11 +113,19 @@ export class EmployeesComponent implements OnInit{
   deleteUser(email: string): void {
     this.dataService.DeleteUser(email).subscribe(
       (result) => {
-        console.log('Successfully deleted ', result);
+        Swal.fire({
+          icon: 'success',
+          title: 'Employee Deleted Successfully',
+          text: 'You have successfully deleted the employee.'
+        });
         this.getAllUsers(); // Refresh Users list
       },
       (error) => {
-        console.error('Error deleting User with email ', email, error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...something went wrong',
+          text: 'An error occured when trying to delete the employee. Please try again later.'
+        });
       }
     );
   }
@@ -165,12 +176,20 @@ export class EmployeesComponent implements OnInit{
         this.authService.registerEmployee(employeeData).subscribe(
           (response) => {
             // Handle success response, if needed
-            console.log('Employee created successfully', response);
+            Swal.fire({
+              icon: 'success',
+              title: 'Employee Created Successfully',
+              text: 'You have successfully added a new employee. The new employee will receive an email with their username, password as well as a link to change their password ASAP.'
+            });
             this.getAllUsers(); // Refresh the user list
           },
           (error) => {
             // Handle error response, if needed
-            console.error('Error creating employee', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...something went wrong',
+              text: 'An error occured when trying to create the employee. Please ensure that you have entered all their details.'
+            });
           }
         );
       }
@@ -227,11 +246,19 @@ export class EmployeesComponent implements OnInit{
       
             this.dataService.UpdateUser(email, updatedUser).subscribe(
               () => {
-                console.log('Employee updated successfully');
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Employee Updated Successfully',
+                  text: 'You have successfully updated the employee details.'
+                });
                 this.getAllUsers(); // Refresh the user list
               },
               (error) => {
-                console.error('Error updating employee', error);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...something went wrong',
+                  text: 'An error occured when trying to update the employee. Please try again later.'
+                });
               }
             );
           }

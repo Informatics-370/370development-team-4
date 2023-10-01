@@ -53,11 +53,19 @@ export class ProfilePageComponent implements OnInit {
     this.user.id = userId
     this.dataService.UpdateUser(this.user.email, this.user).subscribe(
       () => {
-        console.log('Profile updated successfully');
+        Swal.fire({
+          icon: 'success',
+          title: 'Profile Updated!',
+          text: 'Your profile has been updated successfully.'
+        });
         this.isEditMode = false;
       },
       (error) => {
-        console.error('Error updating profile', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...something went wrong',
+          text: 'Some went wrong when trying to update your profile. Please try again later.'
+        });
       }
     );
   }

@@ -9,7 +9,6 @@ namespace BOX.ViewModel
 
         public decimal? CreditLimit { get; set; }
 
-        public decimal? CreditBalance { get; set; }
     }
 
 }

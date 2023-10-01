@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -64,8 +65,11 @@ export class LoginComponent {
       },
       (error: any) => {
         // Login failed
-        console.error('Login failed:', error);
-        // Handle the error, such as displaying an error message to the user
+        Swal.fire({
+          icon: 'error',
+          title: 'Something Went Wrong...',
+          text: 'Please check whether you entered your email or your password correctly.'
+        });
       }
     );        
 }
@@ -90,7 +94,11 @@ export class LoginComponent {
       // Redirect to the customer homepage for customers
       this.router.navigate(['/customer-homepage']);
     } else {
-      console.error('Unknown user role:', userRole);
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid User Role',
+        text: 'Your user role could not be identified. Please contact Mega Pack IT Support to assist you with this issue.'
+      });
     }
 } 
 

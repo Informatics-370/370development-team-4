@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-forgot-password',
@@ -65,12 +66,18 @@ export class ForgotPasswordComponent implements OnInit {
     // Call the AuthService to trigger the forgot password email
     this.authService.ChangePassword(forgotPasswordData).subscribe(
       (response: any) => {
-        // Email sent successfully
-        console.log('Password changes successfully', response);
+        Swal.fire({
+          icon: 'success',
+          title: 'Password Changed Successfully',
+          text: 'Your password has been sucessfuly changed.'
+        });
       },
       (error: any) => {
-        // Failed to send the email
-        console.error('Password changes unsuccessfully', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...something went wrong',
+          text: 'An error occured when trying to reset your password. Please ensure that you enter at least 1 lowercase letter, 1 uppercase letter and 1 digit into your password which should have a length of 8 characters.'
+        });
       }
     );  
   }

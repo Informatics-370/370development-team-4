@@ -23,11 +23,9 @@ export class CustomerNavbarComponent {
 
   testSwal() {
     Swal.fire({
-      title: 'Oops...!',
       icon: 'error',
-      text: 'There was an unexpected error when attempting to delete your account',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'OK',
+      title: 'Oops...something went wrong',
+      text: 'An error occured when trying to update the employee. Please try again later.'
     });
   }
 }

@@ -388,7 +388,7 @@ namespace BOX.Controllers
             var message = new Message(new string[] { user.Email }, "Password Reset", "Click the link below to reset your password: " + resetPasswordLink);
             _emailService.SendEmail(message);
 
-            return Ok("Password reset link sent successfully");
+            return Ok();
         }
 
         //-------------------------- Change Password ------------------------------

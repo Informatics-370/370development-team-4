@@ -226,11 +226,6 @@ namespace BOX.Controllers
                 customer.creditLimit = updateData.CreditLimit.Value;
             }
 
-            if (updateData.CreditBalance.HasValue)
-            {
-                customer.creditBalance = updateData.CreditBalance.Value;
-            }
-
             await _dbContext.SaveChangesAsync();
 
             return NoContent(); // Update successful, return 204 No Content response

@@ -29,6 +29,9 @@
         <li class="nav-item" *ngIf="isLoggedIn(); else loginLink">
           <a class="nav-link active" aria-current="page" (click)="logout()">Logout</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" (click)="testSwal()">Test</a>
+        </li>
         <ng-template #loginLink>
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" [routerLink]="['/login']">Login</a>
