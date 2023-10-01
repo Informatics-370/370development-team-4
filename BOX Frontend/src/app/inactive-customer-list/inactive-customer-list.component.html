@@ -8,7 +8,7 @@
       <h3 class="p-3" style="color: black;">Generate Inactive Customer List</h3>
 
       <button type="submit" class="btn btn-create" [disabled]="loading" (click)="generateReport()">Generate</button>      
-      <button type="button" class="btn btn-create" [disabled]="loading"  [disabled]="!generateClicked" (click)="generatePDFReport()">Generate PDF</button>
+      <button type="button" class="btn btn-create" [disabled]="loading"  [disabled]="!generateClicked" (click)="generatePDFReport()">Download PDF</button>
       <hr class="hr hr-blurry m-3" />
       <div *ngIf="loading">Generating report for you...</div>
       <div *ngIf="userCount == 0">No customers were inactive in the past 90 days.</div>
