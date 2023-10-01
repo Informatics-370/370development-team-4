@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.services';
 import { AuthService } from '../../services/auth.service';
-import { EmailService } from '../../services/email.service';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VAT } from '../../shared/vat';
@@ -11,10 +10,8 @@ import { QuoteVM } from '../../shared/quote-vm';
 import { Route, Router } from '@angular/router';
 import { QuoteVMClass } from '../../shared/quote-vm-class';
 import { Users } from '../../shared/user';
-import { EmailAttachmentVM } from '../../shared/email-attachment-vm';
+import Swal from 'sweetalert2';
 declare var $: any;
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-my-quotes',
@@ -54,25 +51,16 @@ export class MyQuotesComponent {
   rejectReasonId = 1;
   rejectQuoteForm: FormGroup;
 
-  //invoice info
-  invoice: any = null;
-
-  // Create a new instance of jsPDF
-  pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-  });
-
   /*Status list: no need to retrieve this from the backend because it's static:
   1 Generated
   2 Accepted
   3 Rejected
   4 Rejected and will renegotiate
-  5 Expired */
+  5 Expired
+  6 Rejected; Successfully renegotiated */
 
   constructor(private dataService: DataService, private router: Router, private authService: AuthService, 
-    private formBuilder: FormBuilder, private emailService: EmailService) {
+    private formBuilder: FormBuilder) {
     this.rejectQuoteForm = this.formBuilder.group({
       quoteID: [0, Validators.required],
       rejectReasonID: [1, Validators.required],
@@ -267,191 +255,22 @@ export class MyQuotesComponent {
   //--------------------------------------------- ACCEPT ---------------------------------------------- 
   //ACCEPT QUOTE aka BUY NOW
   acceptQuote(quote: QuoteVMClass) {
-    try {
-      //statusID 2 = 'Accepted'
-      this.dataService.UpdateQuoteStatus(quote.quoteID, 2).subscribe(async (result) => {
-        console.log("Result", result);
-        //email customer their invoice; this can take a while so let them know, we're on it.
-        this.pleaseWait = true;
-        document.body.style.overflowY = 'none';
-        await this.createInvoice(quote);
-
+    //confirm alert
+    Swal.fire({
+      icon: 'info',
+      title: "Confirm",
+      html: '<ul style="text-align: left;"><li>By accepting the quote, you will be directed to place an order. You can cancel the process at any point before you\'ve made payment.</li><li>For an order to be placed successfully, you must pay a deposit of 20% of the order total. <b>This is not refundable.</b></li></ul>',      
+      confirmButtonColor: '#32AF99',
+      showCancelButton: true,
+      cancelButtonColor: '#E33131',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
         //Navigate to PLACE ORDER page and send quote ID encoded in URL:
         let gibberish = this.encodeQuoteID(quote.quoteID);
-        this.router.navigate(['place-order', gibberish]);
-      });
-    } catch (error) {
-      this.pleaseWait = true;
-      document.body.style.overflowY = 'scroll';
-      console.error('Error updating status: ', error);
-    }
-  }
-
-  //create invoice PDF
-  async createInvoice(quote: QuoteVMClass) {
-    let address = this.customer.address.split(', ');
-    let customerName = this.customer.title ? this.customer.title + ' ' + this.customer.firstName + ' ' + this.customer.lastName : this.customer.firstName + ' ' + this.customer.lastName;
-    let restOfAddress = '';
-
-    for (let i = 2; i < address.length; i++) {
-      restOfAddress += address[i] + ', ';
-    }
-
-    let invoiceLines: any[] = [];
-    quote.lines.forEach(line => {
-      let invoiceL = {
-        productDescription: line.productDescription,
-        quantity: line.quantity,
-        confirmedUnitPrice: line.confirmedUnitPrice,
-        total: line.quantity * line.confirmedUnitPrice
-      };
-
-      invoiceLines.push(invoiceL);
-    });
-
-    this.invoice = {
-      date: new Date(Date.now()),
-      customer: customerName,
-      addressLine1: address[0],
-      addressLine2: address[1],
-      addressLine3: restOfAddress.substring(0, restOfAddress.length - 2),
-      deposit: quote.totalBeforeVAT * 0.2,
-      totalExlcudingDeposit: quote.totalBeforeVAT * 0.8,
-      totalVAT: quote.totalVAT,
-      total: quote.getTotalAfterVAT(),
-      lines: invoiceLines
-    }
-
-    // Wait 100 millisec to ensure the invoice is rendered and the data displayed before trying to screenshot and all that
-    await this.delay(10);
-
-    let invoiceImg = document.getElementById("invoice-img") as HTMLImageElement;
-    //add mega pack header to the pdf manually cos trying to html2canvas it is giving errors
-    this.pdf.addImage(invoiceImg, 'JPG', 10, 10, 190, 62.301845, 'aliasIMG', 'FAST');
-
-    //get other parts of invoice for html2canvas
-    let invoiceHdLeft = document.getElementById("header-left") as HTMLElement;
-    let invoiceHdRight = document.getElementById("header-right") as HTMLElement;
-    let invoiceBod = document.getElementById("invoice-body") as HTMLElement;
-    let invoiceFtLeft = document.getElementById("footer-left") as HTMLElement;
-    let invoiceFtRight = document.getElementById("footer-right") as HTMLElement;
-    //let disclaimer = document.getElementById("disclaimer") as HTMLElement;
-    let invoiceParts: HTMLElement[] = [];
-
-    invoiceParts.push(invoiceHdLeft, invoiceHdRight, invoiceBod, invoiceFtLeft, invoiceFtRight);
-
-    // Call the html2canvas function and pass the elements as an argument also use Promise.all to wait for all calls to complete
-    const invoiceCanvases = await Promise.all(invoiceParts.map(async (part) => {
-      const canvas = await html2canvas(part);
-      return canvas; // Return the canvas directly
-    }));
-
-    console.log(invoiceCanvases);
-    this.createPDF(invoiceCanvases, quote.quoteID);
-  }
-
-  createPDF(canvases: HTMLCanvasElement[], quoteNo: number) {
-    // dimensions and positions for each part of the PDF
-    const fullWidth = this.pdf.internal.pageSize.getWidth();
-    const pageHeight = this.pdf.internal.pageSize.getHeight() - 20;
-    const pageWidth = this.pdf.internal.pageSize.getWidth() - 20; //add margin of 20mm
-    const halfPageWidth = (fullWidth / 2) - 11.5; //account for 20mm margin and 3mm space between half page blocks. Therefore, 10 + 1.5
-    const margin = 10; //margin of the page
-    let yOffset = 20 + 62.301845; //used to recalculate starting y position
-    
-    // Add the canvases to the PDF
-    canvases.forEach((canvas, index) => {
-      let x = 10; //give 10mm margin between left paper edge and doc content
-      let y = yOffset; //give 10mm margin between top paper edge and doc content
-      let width = halfPageWidth;
-      let height = pageHeight / 8; //calculate height
-
-      // Adjust x coordinates for each canvas as needed
-      if (index === 1) {
-        x = fullWidth - width - margin; //calculate x from the right margin not the left
-      } else if (index === 2) {
-        height = 8 + (this.invoice.lines.length * 8); //for each invoice line, add 8mm. And add 8mm at the start for the table headings
-        width = pageWidth;
-      } else if (index === 3) {
-        height = pageHeight / 10;
-      } else if (index === 4) {
-        height = pageHeight / 10;
-        x = fullWidth - width - margin; //calculate x from the right margin not the left
+        this.router.navigate(['place-order', gibberish, '1']);
       }
-      
-      /* if (index === 0) {
-        width = pageWidth;
-      }
-      else if (index === 1) {
-        //x = margin;
-        //y = fullPageHeight;
-      } else if (index === 2) {
-        x = fullWidth - width - margin; //calculate x from the right margin not the left
-        //y = fullPageHeight;
-      } else if (index === 3) {
-        //y = fullPageHeight / 2;
-        width = pageWidth;
-      } else if (index === 4) {
-        //x = margin;
-        //y = fullPageHeight / 3;
-      } else if (index === 5) {
-        x = fullWidth - halfPageWidth - margin; //calculate x from the right margin not the left
-      }
-      else if (index == 6) {
-        width = pageWidth * 0.8;
-      } */
-
-      console.log(index, x, y, width, height);
-      this.addCanvasToPDF(canvas, x, y, width, height, index);
-
-      // Update the yOffset for the next canvas; unless it's a half block that should have the same y position as the previous half block
-      if (index === 1 || index === 2|| index === 4) yOffset = y + height + margin;
-    });
-
-    //add disclaimer text to pdf
-    this.pdf.setFontSize(9); // Set the font size to be less than normal
-    // Add the text
-    this.pdf.text('*Note that every order contains a deposit of 20% and without this down payment, your order cannot be processed.', 10, yOffset);
-
-    this.pleaseWait = false; //stop showing please wait message and redirect them to place order
-    document.body.style.overflowY = 'scroll';
-
-    //send email
-    let emailBody = `<div style="width: 100%; height: 100%; background-color: rgb(213, 213, 213); padding: 0.25rem 0; font-family: Tahoma, Arial, Helvetica, sans-serif;">
-                        <div style='width: 50%; margin: auto; height: 100%; background-color: white; padding: 0 1rem;'>
-                          <h3>Hi ${this.invoice.customer},</h3>
-                          <p>We hope you're well. Please see attached your invoice for Quote ${quoteNo}. 
-                          Thank you for shopping with us. We really appreciate your business! </p>
-                          <p>Please don't hesitate to reach out if you have any questions.</p>
-                          Kind regards<br />
-                          MegaPack
-                        </div>
-                      </div>`;
-
-    let pdfData = this.pdf.output("datauristring");
-    var base64String = pdfData.split(',')[1];
-    
-    let attachment: EmailAttachmentVM = {
-      fileName: 'Invoice for Quotation #' + quoteNo + '.pdf',
-      fileBase64: base64String
-    }
-
-    this.emailService.sendEmail(this.customer.email, 'Invoice', emailBody, [attachment]);
-
-    //Save the combined PDF
-    //this.pdf.save(pdfName + '.pdf');
-  }
-
-  // Function to add a canvas to the PDF with specified position and dimensions
-  addCanvasToPDF(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, i: number) {
-    const imageData = canvas.toDataURL("image/png");
-    //console.log(i, imageData);
-    this.pdf.addImage(imageData, 'PNG', x, y, width, height, 'alias' + i, 'FAST');
-  }
-
-  //delay action by a number of milliseconds using promise
-  delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    });    
   }
 
   //I want to send quote ID in url to order page but don't want to send the ID as is

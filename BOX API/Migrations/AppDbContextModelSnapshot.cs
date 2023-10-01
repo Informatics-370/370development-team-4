@@ -278,16 +278,15 @@ namespace BOX.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("DeliveryTypeID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Delivery_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Delivery_Photo")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Delivery_Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("OrderDeliveryScheduleID")
                         .HasColumnType("int");
@@ -302,6 +301,8 @@ namespace BOX.Migrations
                     b.HasKey("CustomerOrderID");
 
                     b.HasIndex("CustomerOrderStatusID");
+
+                    b.HasIndex("DeliveryTypeID");
 
                     b.HasIndex("OrderDeliveryScheduleID");
 
@@ -436,6 +437,24 @@ namespace BOX.Migrations
                     b.ToTable("Customer_Review");
                 });
 
+            modelBuilder.Entity("BOX.Models.Delivery_Type", b =>
+                {
+                    b.Property<int>("DeliveryTypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryTypeID"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("DeliveryTypeID");
+
+                    b.ToTable("Delivery_Type");
+                });
+
             modelBuilder.Entity("BOX.Models.Employee", b =>
                 {
                     b.Property<string>("EmployeeId")
@@ -525,7 +544,7 @@ namespace BOX.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CustomerOrderID")
+                    b.Property<int?>("CustomerOrderID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date_And_Time")
@@ -1586,6 +1605,12 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BOX.Models.Delivery_Type", "Delivery_Type")
+                        .WithMany()
+                        .HasForeignKey("DeliveryTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Order_Delivery_Schedule", "Order_Delivery_Schedule")
                         .WithMany()
                         .HasForeignKey("OrderDeliveryScheduleID");
@@ -1603,6 +1628,8 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer_Order_Status");
+
+                    b.Navigation("Delivery_Type");
 
                     b.Navigation("Order_Delivery_Schedule");
 
@@ -1704,9 +1731,7 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
                         .WithMany()
-                        .HasForeignKey("CustomerOrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerOrderID");
 
                     b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
                         .WithMany()

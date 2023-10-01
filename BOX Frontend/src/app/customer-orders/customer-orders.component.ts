@@ -131,6 +131,7 @@ export class CustomerOrdersComponent {
         this.dataService.UpdateOrderStatus(orderID, 2).subscribe((result) => {
           console.log("Result", result);
           this.getDataFromDB(); //refresh list
+          this.isAnyCheckboxChecked = false;
         });
       });
     } catch (error) {
