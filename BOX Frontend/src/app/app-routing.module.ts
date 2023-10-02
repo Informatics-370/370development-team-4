@@ -53,6 +53,7 @@ import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
+import { ReviewOrderComponent } from './review-order/review-order.component';
 
 // THE ROUTE TO THE NOT FOUND COMPONENT MUST ALWAYS BE LAST or things might not work as expected
 const routes: Routes = [
@@ -111,8 +112,9 @@ const routes: Routes = [
   { path: 'order-schedule', component: OrderDeliveryScheduleComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee'] } },
   { path: 'order-calendar', component: OrderDelCalendarComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee'] } },
   { path: 'manage-quotes', component: QuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee'] } },
-  { path: 'deliver-order', component: DeliverOrderComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee'] } },
+  //{ path: 'deliver-order', component: DeliverOrderComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee'] } },
   { path: 'deliver-order/:code', component: DeliverOrderComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee'] } },
+  { path: 'review-order/:code', component: ReviewOrderComponent },
   { path: 'forbidden', component: ForbiddenComponent },
   { path: '**', component: NotFoundComponent }
 ];

@@ -69,6 +69,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
+import { ReviewOrderComponent } from './review-order/review-order.component';
 
 
 @NgModule({
@@ -136,6 +137,7 @@ import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
         ForbiddenComponent,
         QuotesComponent,
         DeliverOrderComponent,
+        ReviewOrderComponent,
         
   ],
   imports: [
