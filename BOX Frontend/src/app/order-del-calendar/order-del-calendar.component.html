@@ -27,28 +27,19 @@
             <tbody>
               <tr *ngFor="let week of weeks">
                 <td *ngFor="let day of week" class="calendar-cell"
-                [ngClass]="{'current-day': isCurrentDay(day?.date || 0), 'inactive-day': !day.isActive}"
-                cdkDropList
-                (cdkDropListDropped)="onDropEvent($event)">
-                {{ day?.date }}
-                <div class="event-dot" *ngIf="day.event">{{ day.event.name.charAt(0) }}</div>
-                <div class="event-title" *ngIf="day.event">{{ day.event.name }}</div>
-            </td>
-            
+                    [ngClass]="{'current-day': isCurrentDay(day?.date || 0), 'inactive-day': !day.isActive}"
+                    cdkDropList
+                    (cdkDropListDropped)="onDropEvent($event)">
+                    {{ day?.date }}
+                    <div class="event-title" *ngIf="day.event">
+                        <span class="red-dot"></span>{{ day.event.customerFullName  }}
+                    </div>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
-      <div class="unscheduled-orders">
-        <h2>Unscheduled Orders</h2>
-        <div class="event" *ngFor="let event of unscheduledEvents" cdkDrag
-     [cdkDragData]="event" (cdkDragEnded)="onDragEnd(event)">
-          <h3>{{ event.name }}</h3>
-          <p>Date: {{ event.date }}</p>
-          <p>Time: {{ event.time }}</p>
-        </div>
-      </div>   
+      </div>  
     </div>
   </div>
 </div>

@@ -162,3 +162,19 @@ thead th {
   font-size: 14px; /* Font size for event details */
   color: #777; /* Text color for event details */
 }
+.event-day::before {
+  content: "\2022"; /* Use the bullet character as a red dot */
+  color: red;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 10px;
+}
+.red-dot {
+  display: inline-block;
+  width: 8px; /* Adjust the size of the red dot as needed */
+  height: 8px; /* Adjust the size of the red dot as needed */
+  background-color: red;
+  border-radius: 50%; /* Create a circular red dot */
+  margin-right: 5px; /* Add spacing between the red dot and event title */
+}
