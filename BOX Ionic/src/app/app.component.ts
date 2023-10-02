@@ -28,10 +28,10 @@ export class AppComponent {
   public appPages = [
     { title: 'View Reports', url: '/reporting', icon: 'download', },
     { title: 'View Stock Take', url: '/write-off', icon: 'book' },
-    { title: 'Supplier', url: '/folder/supplier', icon: 'person' },
+    { title: 'Supplier', url: '/supplier', icon: 'person' },
     { title: 'Supplier Order', url: '/folder/supplier-order', icon: 'navigate' },
     { title: 'Cost Price Formula', url: '/folder/cost-price-formula-variables', icon: 'code' },
-    { title: 'Product Category', url: '/folder/cost-price-formula-variables', icon: 'bookmark' },
+    { title: 'Product Category', url: '/product-category', icon: 'bookmark' },
     { title: 'Size Units', url: '/folder/cost-price-formula-variables', icon: 'bookmark' },
     { title: 'Fixed Products', url: '/folder/cost-price-formula-variables', icon: 'bookmark' },
     { title: 'Custom Products', url: '/folder/cost-price-formula-variables', icon: 'bookmark' },

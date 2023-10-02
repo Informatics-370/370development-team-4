@@ -25,7 +25,7 @@ export class AuthService {
     return this.http.post(`${this.authUrl}Register`, user);
   }
 
-  registerEmployee(user: any): Observable<any> {
+  registerEmployee(email: string, user: any): Observable<any> {
     return this.http.post(`${this.authUrl}RegisterEmployee`, user);
   }  
 

@@ -20,6 +20,7 @@ export class RoleAuthGuard implements CanActivate {
     const allowedRoles = route.data['allowedRoles'] as string[];
     const token = localStorage.getItem('access_token')!;
     const userRole = this.authService.getUserRole(token);
+    console.log(userRole)
 
     if (!userRole || !allowedRoles.includes(userRole)) {
       // User does not have the required role, redirect to a forbidden page or show an error message

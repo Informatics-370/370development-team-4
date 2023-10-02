@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230920123349_addDeliveryTypeTable")]
-    partial class addDeliveryTypeTable
+    [Migration("20231001225729_final_submission")]
+    partial class final_submission
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -232,6 +232,9 @@ namespace BOX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("TitleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -255,6 +258,8 @@ namespace BOX.Migrations
                     b.HasKey("CustomerId");
 
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("TitleId");
 
                     b.HasIndex("UserId");
 
@@ -541,7 +546,7 @@ namespace BOX.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CustomerOrderID")
+                    b.Property<int?>("CustomerOrderID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date_And_Time")
@@ -911,6 +916,9 @@ namespace BOX.Migrations
                     b.Property<string>("message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("messageDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("messageId");
 
@@ -1572,6 +1580,12 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BOX.Models.Title", "Title")
+                        .WithMany()
+                        .HasForeignKey("TitleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1579,6 +1593,8 @@ namespace BOX.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Title");
 
                     b.Navigation("User");
                 });
@@ -1717,9 +1733,7 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
                         .WithMany()
-                        .HasForeignKey("CustomerOrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerOrderID");
 
                     b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
                         .WithMany()

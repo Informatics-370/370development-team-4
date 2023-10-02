@@ -54,16 +54,13 @@ export const routes: Routes = [
     loadComponent: () => import('./fixed-products/fixed-products.page').then( m => m.FixedProductsPage)
   },
   {
-    path: 'product-items',
-    loadComponent: () => import('./product-items/product-items.page').then( m => m.ProductItemsPage)
-  },
-  {
-    path: 'raw-materials',
-    loadComponent: () => import('./raw-materials/raw-materials.page').then( m => m.RawMaterialsPage)
-  },
-  {
     path: 'write-off-reasons',
     loadComponent: () => import('./write-off-reasons/write-off-reasons.page').then( m => m.WriteOffReasonsPage)
   },
+  {
+    path: 'product-category',
+    loadComponent: () => import('./product-category/product-category.page').then( m => m.ProductCategoryPage)
+  },
+
    
 ];

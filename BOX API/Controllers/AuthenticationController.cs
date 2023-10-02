@@ -136,6 +136,12 @@ namespace BOX.Controllers
                         var message = new Message(new string[] { user.Email! }, "Confirmation Email Link", "Dear user,\n\n Thank you for registering with MegaPack. Click the link below to verify your email: \n" + confirmEmailLink);
                         _emailService.SendEmail(message);
 
+                        var sms = MessageResource.Create(
+                            to: new PhoneNumber("+27721409900"),
+                            from: new PhoneNumber("+12253046970"),
+                            body: $"Hello {uvm.firstName}. Welcome to Mega Pack! Please use the following link to confirm your email: " + confirmEmailLink,
+                            client: _client);
+
                         // Return success
                         return Ok();
                     }
@@ -253,6 +259,16 @@ namespace BOX.Controllers
 
                         return Ok();
                     }
+                    var auditTrail = new Audit_Trail
+                    {
+                        User_FullName = user.UserName,
+                        Transaction_Type = "Login",
+                        DateTime = DateTime.Now,
+                        Critical_Data = "Login",
+                        Critical_Data_Description = "Successful",
+                    };
+                    _dbContext.Add(auditTrail);
+                    await _dbContext.SaveChangesAsync();
                     return GenerateJwtToken(user);
                 }
                 catch (Exception ex)
@@ -411,7 +427,17 @@ namespace BOX.Controllers
                         ModelState.AddModelError(error.Code, error.Description);
                     }
                 }
-                return StatusCode(StatusCodes.Status200OK, "Password has been changed");
+                var auditTrail = new Audit_Trail
+                {
+                    User_FullName = user.UserName,
+                    Transaction_Type = "Change Password",
+                    DateTime = DateTime.Now,
+                    Critical_Data = "Change Password",
+                    Critical_Data_Description = "Successful",
+                };
+                _dbContext.Add(auditTrail);
+                await _dbContext.SaveChangesAsync();
+                return Ok();
             }
             return StatusCode(StatusCodes.Status400BadRequest, "Error");
         }
@@ -472,7 +498,7 @@ namespace BOX.Controllers
                     if (!roleExists)
                     {
                         await _roleManager.CreateAsync(new IdentityRole(role));
-                    }
+                    };
 
                     // Create the customer
                     _repository.Add(employee);
@@ -561,9 +587,9 @@ namespace BOX.Controllers
 
         [HttpPut]
         [Route("AssignEmployee/{userId}")]
-        public async Task<IActionResult> UpdateUser(string userId, [FromBody] AssignEmpDTO assignEmp)
+        public async Task<IActionResult> UpdateUser(String userId, [FromBody] AssignEmpDTO assignEmp)
         {
-            var customer = await _repository.GetCustomerByUserId(userId);
+            Customer customer = await _repository.GetCustomerByUserId(userId);
 
             if (customer == null)
             {

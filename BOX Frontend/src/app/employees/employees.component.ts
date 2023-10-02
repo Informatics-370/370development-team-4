@@ -161,8 +161,9 @@ export class EmployeesComponent implements OnInit{
           title: selectedTitleId // Use the extracted titleID directly
         };
   
-        console.log(employeeData);
-        this.authService.registerEmployee(employeeData).subscribe(
+        const token = localStorage.getItem('access_token')!;
+        const email = this.authService.getEmailFromToken(token)!;
+        this.authService.registerEmployee(email, employeeData).subscribe(
           (response) => {
             // Handle success response, if needed
             console.log('Employee created successfully', response);

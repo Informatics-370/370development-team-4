@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BOX.Migrations
 {
-    public partial class Gettingbackinaction : Migration
+    public partial class final_submission : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -126,6 +126,19 @@ namespace BOX.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Delivery_Type",
+                columns: table => new
+                {
+                    DeliveryTypeID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Delivery_Type", x => x.DeliveryTypeID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Payment_Type",
                 columns: table => new
                 {
@@ -209,7 +222,8 @@ namespace BOX.Migrations
                 {
                     messageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    message = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    messageDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -618,7 +632,7 @@ namespace BOX.Migrations
                         column: x => x.SizeID,
                         principalTable: "Size_Units",
                         principalColumn: "SizeID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -902,6 +916,7 @@ namespace BOX.Migrations
                     CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TitleId = table.Column<int>(type: "int", nullable: false),
                     isBusiness = table.Column<bool>(type: "bit", nullable: false),
                     vatNo = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     creditLimit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
@@ -922,7 +937,13 @@ namespace BOX.Migrations
                         column: x => x.EmployeeId,
                         principalTable: "Employee",
                         principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Customer_Title_TitleId",
+                        column: x => x.TitleId,
+                        principalTable: "Title",
+                        principalColumn: "TitleID",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -958,7 +979,7 @@ namespace BOX.Migrations
                         column: x => x.QuoteRequestID,
                         principalTable: "Quote_Request",
                         principalColumn: "QuoteRequestID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Quote_Quote_Status_QuoteStatusID",
                         column: x => x.QuoteStatusID,
@@ -1058,7 +1079,7 @@ namespace BOX.Migrations
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Delivery_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Delivery_Photo = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    Delivery_Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    DeliveryTypeID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1074,6 +1095,12 @@ namespace BOX.Migrations
                         column: x => x.CustomerOrderStatusID,
                         principalTable: "Customer_Order_Status",
                         principalColumn: "CustomerOrderStatusID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Delivery_Type_DeliveryTypeID",
+                        column: x => x.DeliveryTypeID,
+                        principalTable: "Delivery_Type",
+                        principalColumn: "DeliveryTypeID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Customer_Order_Order_Delivery_Schedule_OrderDeliveryScheduleID",
@@ -1194,7 +1221,7 @@ namespace BOX.Migrations
                     PaymentID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PaymentTypeID = table.Column<int>(type: "int", nullable: false),
-                    CustomerOrderID = table.Column<int>(type: "int", nullable: false),
+                    CustomerOrderID = table.Column<int>(type: "int", nullable: true),
                     Date_And_Time = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -1205,8 +1232,7 @@ namespace BOX.Migrations
                         name: "FK_Payment_Customer_Order_CustomerOrderID",
                         column: x => x.CustomerOrderID,
                         principalTable: "Customer_Order",
-                        principalColumn: "CustomerOrderID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CustomerOrderID");
                     table.ForeignKey(
                         name: "FK_Payment_Payment_Type_PaymentTypeID",
                         column: x => x.PaymentTypeID,
@@ -1295,6 +1321,11 @@ namespace BOX.Migrations
                 column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customer_TitleId",
+                table: "Customer",
+                column: "TitleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Customer_UserId",
                 table: "Customer",
                 column: "UserId");
@@ -1303,6 +1334,11 @@ namespace BOX.Migrations
                 name: "IX_Customer_Order_CustomerOrderStatusID",
                 table: "Customer_Order",
                 column: "CustomerOrderStatusID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customer_Order_DeliveryTypeID",
+                table: "Customer_Order",
+                column: "DeliveryTypeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_Order_OrderDeliveryScheduleID",
@@ -1659,6 +1695,9 @@ namespace BOX.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customer_Order_Status");
+
+            migrationBuilder.DropTable(
+                name: "Delivery_Type");
 
             migrationBuilder.DropTable(
                 name: "Order_Delivery_Schedule");

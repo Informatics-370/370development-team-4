@@ -759,9 +759,9 @@ namespace BOX.Models
             return await _appDbContext.Employee.FirstOrDefaultAsync(e => e.UserId == userId);
         }
 
-        public async Task<Customer> GetCustomerByUserId(string userId)
+        public async Task<Customer> GetCustomerByUserId(String userId)
         {
-            return await _appDbContext.Customer.FirstOrDefaultAsync(e => e.UserId == userId);
+            return await _appDbContext.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
         }
 
         public async Task<Admin> GetAdminByUserId(string userId)
