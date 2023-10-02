@@ -394,6 +394,44 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
+        //--------------------------------- CREDIT APPLICATION -------------------------
+
+        public async Task<Credit_Application[]> GetCreditApplicationsAsync() //Get All Credit Applications (admin)
+        {
+            IQueryable<Credit_Application> query = _appDbContext.Credit_Application;
+            return await query.ToArrayAsync();
+        }
+
+        public async Task<Credit_Application[]> SubmitApplicationAsync(Credit_Application creditApplication) //Submit Credit Applications (Customer)
+        {
+            _appDbContext.Credit_Application.Add(creditApplication);
+            await _appDbContext.SaveChangesAsync();
+
+            // Retrieve and return the updated array of credit applications
+            return await _appDbContext.Credit_Application.ToArrayAsync();
+        }
+        //Upload Credit Application (customer)
+        private readonly string _fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "CreditApplicationForm");
+        public async Task UploadCreditApplicationAsync(IFormFile file)
+        {
+            string filePath = Path.Combine(_fileStoragePath, file.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+        }
+        //Download Credit application (customer) 
+        public async Task<Stream> DownloadCreditApplicationAsync(string fileName)
+        {
+            string filePath = Path.Combine(_fileStoragePath, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+                return null;
+
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            return fileStream;
+        }
 
         //----------------------------------------------------EMPLOYEE (TEMP)-------------------------------------
         //public async Task<Employee> GetEmployeeAsync(int employeeId)

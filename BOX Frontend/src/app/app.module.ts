@@ -68,6 +68,8 @@ import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CreditApplicationComponent } from './credit-application/credit-application.component';
+import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
 import { ReviewOrderComponent } from './review-order/review-order.component';
 
@@ -111,7 +113,6 @@ import { ReviewOrderComponent } from './review-order/review-order.component';
         PlaceOrderComponent,
         OrderHistoryComponent,
         CustomerOrdersComponent,
-        RegistrationSuccessPopupComponent,
         CustomProdComponent,
         ConfirmEmailComponent,
         FooterComponent,
@@ -136,9 +137,11 @@ import { ReviewOrderComponent } from './review-order/review-order.component';
         NotFoundComponent,
         ForbiddenComponent,
         QuotesComponent,
+        RegistrationSuccessPopupComponent,
+        CreditApplicationComponent,
+        AdminCreditApplicationComponent,
         DeliverOrderComponent,
-        ReviewOrderComponent,
-        
+        ReviewOrderComponent
   ],
   imports: [
     BrowserModule,

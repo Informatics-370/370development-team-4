@@ -31,6 +31,7 @@ import { RoleAuthGuard } from './role-auth.guard';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
+import { CreditApplicationComponent } from './credit-application/credit-application.component';
 import { CustomProdComponent } from './custom-prod/custom-prod.component';
 import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
 import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
@@ -47,6 +48,7 @@ import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
 import { MessagesComponent } from './messages/messages.component';
+import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
@@ -116,6 +118,24 @@ const routes: Routes = [
   { path: 'deliver-order/:code', component: DeliverOrderComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee'] } },
   { path: 'review-order/:code', component: ReviewOrderComponent },
   { path: 'forbidden', component: ForbiddenComponent },
+  { path: '**', component: NotFoundComponent }
+  { path: 'my-quotes', component: MyQuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Customer', 'Admin', 'Employee']} },
+  { path: 'quote-requests', component: QouteRequestsComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'sales-by-category', component: SalesByCategoryReportComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'product-list', component: ProductListReportComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'inactive-customers', component: InactiveCustomerListComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'assign-employee', component: AssignEmployeeComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'supplier-list', component: SupplierListComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'review-report', component: ReviewReportComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'write-off-report', component: WriteOffByProductCategoryComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'inventory-chart', component: InventoryChartComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'messages', component: MessagesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'order-schedule', component: OrderDeliveryScheduleComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'order-calendar', component: OrderDelCalendarComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'manage-quotes', component: QuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'credit-application', component: CreditApplicationComponent },
+  { path: 'admin-credit-application', component: AdminCreditApplicationComponent },
+  {path: 'forbidden', component: ForbiddenComponent },
   { path: '**', component: NotFoundComponent }
 ];
 

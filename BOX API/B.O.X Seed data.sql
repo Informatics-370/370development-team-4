@@ -145,6 +145,14 @@ VALUES
     (NEWID(), 'Manager', 'MANAGER', NEWID())
 GO
 
+
+INSERT INTO [dbo].[Credit_Application_Status]
+           ([Description])
+     VALUES
+           ('Submitted'),
+		   ('Accepted'),
+		   ('Rejected')
+GO
 SELECT name
 FROM sys.tables
 

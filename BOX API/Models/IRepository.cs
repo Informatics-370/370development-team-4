@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 
+//using BOX.Migrations;
+
 namespace BOX.Models
 {
     public interface IRepository
@@ -153,6 +155,12 @@ namespace BOX.Models
         //--------------------------- CREDIT APPLICATION STATUS --------------------------
         Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
         Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
+
+        //--------------------------- CREDIT APPLICATION --------------------------
+        Task<Credit_Application[]> GetCreditApplicationsAsync();
+        Task<Credit_Application[]> SubmitApplicationAsync(Credit_Application creditApplication);
+        Task UploadCreditApplicationAsync(IFormFile file);
+        Task<Stream> DownloadCreditApplicationAsync(string fileName);
 
         //--------------------------- STOCK TAKE ----------------------------------------
         Task<Stock_Take[]> GetAllStockTakeAsync();
