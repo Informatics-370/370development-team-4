@@ -497,10 +497,8 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-        //Gets one Fixed Product according to the ID
         public async Task<Customer_Order> GetCustomerOrderAsync(int customerOrderId)
         {
-            //Query to select fixed product where the ID passing through the API matches the ID in the Database
             IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.CustomerOrderID == customerOrderId);
             return await query.FirstOrDefaultAsync();
         }
@@ -528,6 +526,12 @@ namespace BOX.Models
         {
             IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.CustomerOrderStatusID == statusId);
             return await query.ToArrayAsync();
+        }
+
+        public async Task<Customer_Order> GetOrderByCodeAsync(string code)
+        {
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.Code == code);
+            return await query.FirstOrDefaultAsync();
         }
 
         //------------------------------------------------------ Customer Order LINE------------------------------------------------------------

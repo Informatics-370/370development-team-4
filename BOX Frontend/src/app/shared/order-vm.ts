@@ -16,5 +16,7 @@ export interface OrderVM {
   paymentTypeID: number;
   paymentType: string;
   paymentID: number;
+  code: string;
+  qrcodeB64: string;
   orderLines: OrderLineVM[];
 }

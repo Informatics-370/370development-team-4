@@ -454,6 +454,8 @@ export class PlaceOrderComponent {
       paymentID: payment.paymentID,
       paymentTypeID: payment.paymentTypeID,
       paymentType: '',
+      code: '',
+      qrcodeB64: '',
       orderLines: []
     };
 

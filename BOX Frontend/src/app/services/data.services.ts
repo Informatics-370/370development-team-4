@@ -474,6 +474,16 @@ export class DataService {
     const url = `${this.apiUrl}CustomerOrder/UpdateDeliveryDate/${orderId}`;
     return this.httpClient.put(url, { newDeliveryDate });
   }
+
+  GetOrderByCode(alphanumericcode: string): Observable<OrderVM> {
+    return this.httpClient.get<OrderVM>(`${this.apiUrl}CustomerOrder/GetOrderByCode/${alphanumericcode}`)
+      .pipe(map(result => result));
+  }
+
+  DeliverOrder(customerOrderId: number, deliveredOrder: OrderVM): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/DeliverOrder/${customerOrderId}`, deliveredOrder, this.httpOptions);
+  }
+
   //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
   GetAllCustomProducts(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)

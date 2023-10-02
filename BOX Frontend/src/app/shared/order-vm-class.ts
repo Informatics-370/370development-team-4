@@ -17,6 +17,8 @@ export class OrderVMClass implements OrderVM {
   paymentID: number = 0;
   paymentTypeID: number;
   paymentType: string;
+  code: string;
+  qrcodeB64: string;
   orderLines: any[];
 
   /*line = {
@@ -61,6 +63,8 @@ export class OrderVMClass implements OrderVM {
     this.deliveryPhoto = order.deliveryPhoto;
     this.paymentTypeID = order.paymentTypeID;
     this.paymentType = order.paymentType;
+    this.code = order.code;
+    this.qrcodeB64 = order.qrcodeB64;
     this.totalBeforeVAT = this.getTotalBeforeVAT();
     this.totalVAT = this.getVATAmount();
   }

@@ -725,6 +725,8 @@ namespace BOX.Controllers
                         //DeliveryType = deliveryType.Description,
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
                         PaymentTypeID = order.PaymentTypeID,
+                        Code = order.Code,
+                        QRCodeB64 = Convert.ToBase64String(order.QR_Code_Photo)
                         //PaymentType = paymentType.Description,
                         //OrderLines = orderLineList
                     };
@@ -738,6 +740,97 @@ namespace BOX.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + ' ' + ex.InnerException);
             }
 
+        }
+
+        //-------------------------------------------------- Get Order By Code ------------------------------------------------
+        [HttpGet]
+        [Route("GetOrderByCode/{alphanumericcode}")]
+        public async Task<IActionResult> GetOrderByCode(string alphanumericcode)
+        {
+            try
+            {
+                var order = await _repository.GetOrderByCodeAsync(alphanumericcode);
+                if (order == null) return NotFound("The Customer Order does not exist on the B.O.X System");
+
+                //need order lines for order total
+                var orderLines = await _repository.GetOrderLinesByOrderAsync(order.CustomerOrderID); //get all order lines associated with this order
+                if (orderLines == null) return NotFound("The Customer Order does not exist on the B.O.X System"); //an order must have at least 1 line
+
+                //create list from order lines
+                List<CustomerOrderLineViewModel> orderLineList = new List<CustomerOrderLineViewModel>();
+
+                //put all order lines for this specific order in the list
+                foreach (var ol in orderLines)
+                {
+                    CustomerOrderLineViewModel olvm = new CustomerOrderLineViewModel()
+                    {
+                        CustomerOrderLineID = ol.CustomerOrderLineID,
+                        FixedProductID = ol.FixedProductID == null ? 0 : ol.FixedProductID.Value,
+                        CustomProductID = ol.CustomProductID == null ? 0 : ol.CustomProductID.Value,
+                        Quantity = ol.Quantity,
+                        ConfirmedUnitPrice = ol.Confirmed_Unit_Price,
+                        OrderLineStatusID = ol.OrderLineStatusID,
+                    };
+                    orderLineList.Add(olvm);
+                }
+
+                var status = await _repository.GetCustomerOrderStatusAsync(order.CustomerOrderStatusID); //get status associated with this customer order
+                var deliveryType = await _repository.GetDeliveryTypeAsync(order.DeliveryTypeID); //get delivery type
+                string fullName = await _repository.GetUserFullNameAsync(order.UserId);
+                var paymentType = await _repository.GetPaymentTypeAsync(order.PaymentTypeID);
+
+                var CustomerOrderViewModel = new CustomerOrderViewModel
+                {
+                    CustomerOrderID = order.CustomerOrderID,
+                    QuoteID = order.QuoteID,
+                    OrderStatusID = order.CustomerOrderStatusID,
+                    OrderStatusDescription = status.Description,
+                    CustomerId = order.UserId,
+                    CustomerFullName = fullName,
+                    DeliveryDate = (DateTime)order.Delivery_Date,
+                    DeliveryTypeID = order.DeliveryTypeID,
+                    DeliveryType = deliveryType.Description,
+                    DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
+                    Date = order.Date,
+                    PaymentTypeID = order.PaymentTypeID,
+                    PaymentType = paymentType.Description,
+                    Code = order.Code,
+                    QRCodeB64 = Convert.ToBase64String(order.QR_Code_Photo),
+                    OrderLines = orderLineList,
+                };
+
+                return Ok(CustomerOrderViewModel); //return order VM which contains order info plus order lines info in list format
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
+
+        //---------------------------- DELIVER ORDER ----------------------------
+        [HttpPut]
+        [Route("DeliverOrder/{customerOrderId}")]
+        public async Task<IActionResult> DeliverOrder(int customerOrderId, CustomerOrderViewModel deliveredOrder)
+        {
+            try
+            {
+                var existingCustomerOrder = await _repository.GetCustomerOrderAsync(customerOrderId); //get order
+
+                if (existingCustomerOrder == null) return NotFound($"The order does not exist on the B.O.X System");
+
+                existingCustomerOrder.CustomerOrderStatusID = 7; //update status to Completed
+                existingCustomerOrder.Delivery_Date = DateTime.Now;
+                existingCustomerOrder.Delivery_Photo = Convert.FromBase64String(deliveredOrder.DeliveryPhoto);
+
+                await _repository.SaveChangesAsync();
+
+                return Ok(existingCustomerOrder);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services.");
+            }
         }
 
     }
