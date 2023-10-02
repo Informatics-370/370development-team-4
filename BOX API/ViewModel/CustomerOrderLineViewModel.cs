@@ -12,5 +12,7 @@
 		public decimal ConfirmedUnitPrice { get; set; }
 		public int Quantity { get; set; }
         public int CustomerReturnID { get; set; }
+        public int OrderLineStatusID { get; set; }
+        public string OrderLineStatusDescription { get; set; }
     }
 }

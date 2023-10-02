@@ -32,6 +32,7 @@ namespace BOX.Models
         public DbSet<Customer_Return_Reason> Customer_Return_Reason { get; set; }
 
         public DbSet<Customer_Review> Customer_Review { get; set; }
+        public DbSet<Delivery_Type> Delivery_Type { get; set; }
 
         public DbSet<Bulk_Discount> Bulk_Discount { get; set; }
         public DbSet<Employee> Employee { get; set; }
@@ -46,6 +47,7 @@ namespace BOX.Models
         public DbSet<Fixed_Product> Fixed_Product { get; set; }
 
         public DbSet<Order_Delivery_Schedule> Order_Delivery_Schedule { get; set; }
+        public DbSet<Order_Line_Status> Order_Line_Status { get; set; }
 
         public DbSet<Payment> Payment { get; set; }
 

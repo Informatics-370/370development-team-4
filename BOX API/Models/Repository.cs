@@ -394,6 +394,44 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
+        //--------------------------------- CREDIT APPLICATION -------------------------
+
+        public async Task<Credit_Application[]> GetCreditApplicationsAsync() //Get All Credit Applications (admin)
+        {
+            IQueryable<Credit_Application> query = _appDbContext.Credit_Application;
+            return await query.ToArrayAsync();
+        }
+
+        public async Task<Credit_Application[]> SubmitApplicationAsync(Credit_Application creditApplication) //Submit Credit Applications (Customer)
+        {
+            _appDbContext.Credit_Application.Add(creditApplication);
+            await _appDbContext.SaveChangesAsync();
+
+            // Retrieve and return the updated array of credit applications
+            return await _appDbContext.Credit_Application.ToArrayAsync();
+        }
+        //Upload Credit Application (customer)
+        private readonly string _fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "CreditApplicationForm");
+        public async Task UploadCreditApplicationAsync(IFormFile file)
+        {
+            string filePath = Path.Combine(_fileStoragePath, file.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+        }
+        //Download Credit application (customer) 
+        public async Task<Stream> DownloadCreditApplicationAsync(string fileName)
+        {
+            string filePath = Path.Combine(_fileStoragePath, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+                return null;
+
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            return fileStream;
+        }
 
         //----------------------------------------------------EMPLOYEE (TEMP)-------------------------------------
         //public async Task<Employee> GetEmployeeAsync(int employeeId)
@@ -497,10 +535,8 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
-        //Gets one Fixed Product according to the ID
         public async Task<Customer_Order> GetCustomerOrderAsync(int customerOrderId)
         {
-            //Query to select fixed product where the ID passing through the API matches the ID in the Database
             IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.CustomerOrderID == customerOrderId);
             return await query.FirstOrDefaultAsync();
         }
@@ -530,12 +566,24 @@ namespace BOX.Models
             return await query.ToArrayAsync();
         }
 
+        public async Task<Customer_Order> GetOrderByCodeAsync(string code)
+        {
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.Code == code);
+            return await query.FirstOrDefaultAsync();
+        }
+
         //------------------------------------------------------ Customer Order LINE------------------------------------------------------------
         //gets all Customer Order lines for a specific order
         public async Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId)
         {
             IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerOrderID == orderId);
             return await query.ToArrayAsync();
+        }
+
+        public async Task<Customer_Order_Line> GetOrderLineAsync(int orderLineId)
+        {
+            IQueryable<Customer_Order_Line> query = _appDbContext.Customer_Order_Line.Where(c => c.CustomerOrderLineID == orderLineId);
+            return await query.FirstOrDefaultAsync();
         }
 
         //------------------------------------------------------------- Supplier Return  -------------------------------------------------------------------
@@ -767,6 +815,34 @@ namespace BOX.Models
         public async Task<Admin> GetAdminByUserId(string userId)
         {
             return await _appDbContext.Admin.FirstOrDefaultAsync(e => e.UserId == userId);
+        }
+
+        //------------------------------------------------------ DELIVERY TYPE ------------------------------------------------------------
+        public async Task<Delivery_Type> GetDeliveryTypeAsync(int deliveryTypeId)
+        {
+            IQueryable<Delivery_Type> query = _appDbContext.Delivery_Type.Where(c => c.DeliveryTypeID == deliveryTypeId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        //------------------------------------------------------ PAYMENT ------------------------------------------------------------
+        public Payment GetPayment(int paymentId)
+        {
+            var query = _appDbContext.Payment.Where(c => c.PaymentID == paymentId);
+            return query.FirstOrDefault();
+        }
+
+        //------------------------------------------------------ PAYMENT TYPE ------------------------------------------------------------
+        public async Task<Payment_Type> GetPaymentTypeAsync(int paymentTypeId)
+        {
+            IQueryable<Payment_Type> query = _appDbContext.Payment_Type.Where(c => c.PaymentTypeID == paymentTypeId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        //------------------------------------------------------ CUSTOMER ORDER LINE STATUS ------------------------------------------------------------
+        public async Task<Order_Line_Status> GetOrderLineStatusAsync(int statusId)
+        {
+            IQueryable<Order_Line_Status> query = _appDbContext.Order_Line_Status.Where(c => c.OrderLineStatusID == statusId);
+            return await query.FirstOrDefaultAsync();
         }
 
         //--------------------------------- TRANSACTIONS --------------------------------

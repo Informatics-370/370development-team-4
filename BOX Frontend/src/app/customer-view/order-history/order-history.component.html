@@ -16,11 +16,17 @@
     </div>
 
     <hr class="hr hr-blurry m-3" />
+
+    <!--Track order-->
+    <div style="width: 100%;">
+      <img id="track-order" src="../../../assets/Track order.png" alt="How to track your order">
+    </div>
+
     <!--Messages to user-->
     <div class="m-3" style="text-align: center;">
-      <span *ngIf="error">Error retrieving your orders...</span>
+      <span *ngIf="error">Error retrieving your orders</span>
       <span *ngIf="loading">Getting your past orders...</span>
-      <span *ngIf="orderCount == 0">No orders found.</span>
+      <span *ngIf="orderCount == 0">No orders found</span>
     </div>
     
     <div class="row quotes-container p-1">
@@ -47,6 +53,9 @@
               </div>
               <div class="col-8">
                 <span class="light-bold">{{orderLine.productDescription}}</span><br />
+                <span>Status: <span class="light-bold" [ngClass]="{'placed': orderLine.statusID == 1, 'in-progress': orderLine.statusID == 2}">
+                  {{orderLine.statusDescription}}</span>
+                </span>
 
                 <div class="quote-line-footer flex-space-between">
                   Qty: {{orderLine.quantity}}

@@ -23,6 +23,8 @@ import { Users } from '../shared/user';
 import { OrderVM } from '../shared/order-vm';
 import { QuoteVM } from '../shared/quote-vm';
 import { WriteOffItem } from '../shared/write-off-item';
+import { AllCustomerDetailsVM } from '../shared/all-customer-details-vm';
+import { CreditApplication } from '../shared/creditApplication';
 
 imports: [
   HttpClientModule
@@ -214,6 +216,10 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}FixedProduct/UpdateFixedProduct/${fixedProductId}`, fixedProductViewModel, this.httpOptions);
   }
 
+  UpdateFixedProductQuantity(fixedProductId: number, fixedProductQuantityOnHand: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}FixedProduct/EditFixedProductQuantity/${fixedProductId}/${fixedProductQuantityOnHand}`, this.httpOptions);
+  }
+
   DeleteFixedProduct(fixedProductId: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}FixedProduct/DeleteFixedProduct/${fixedProductId}`, this.httpOptions);
   }
@@ -253,8 +259,8 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterial/${rawmaterialId}/${rawMaterialDescription}`, this.httpOptions);
   }
 
-  UpdateRawMaterialQuantity(rawId: number, rawQuantity: number): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}EditRawMaterialQuantity/{rawmaterialId}/{rawMaterialQuantityOnHand}`, this.httpOptions);
+  UpdateRawMaterialQuantity(rawmaterialId: number, rawMaterialQuantityOnHand: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}RawMaterials/EditRawMaterialQuantity/${rawmaterialId}/${rawMaterialQuantityOnHand}`, this.httpOptions);
   }
 
 
@@ -383,6 +389,12 @@ export class DataService {
       .pipe(map(result => result))
   }
 
+  GetSupplierOrder(supplierOrderID : number) : Observable<any>
+  {
+    return this.httpClient.get<SupplierOrderVM>(`${this.apiUrl}SupplierOrder/GetSupplierOrder/${supplierOrderID}`)
+      .pipe(map(result => result));
+  }
+
 
 
 
@@ -461,6 +473,10 @@ export class DataService {
     );
   }
 
+  ProcessOrderLine(orderLineId: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/ProcessOrderLine/${orderLineId}`, this.httpOptions);
+  }
+
   UpdateOrderStatus(customerOrderId: number, customerOrderStatusId: number): Observable<any> {
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/UpdateCustomerOrderStatus/${customerOrderId}/${customerOrderStatusId}`, this.httpOptions);
   }
@@ -469,6 +485,16 @@ export class DataService {
     const url = `${this.apiUrl}CustomerOrder/UpdateDeliveryDate/${orderId}`;
     return this.httpClient.put(url, { newDeliveryDate });
   }
+
+  GetOrderByCode(alphanumericcode: string): Observable<OrderVM> {
+    return this.httpClient.get<OrderVM>(`${this.apiUrl}CustomerOrder/GetOrderByCode/${alphanumericcode}`)
+      .pipe(map(result => result));
+  }
+
+  DeliverOrder(customerOrderId: number, deliveredOrder: OrderVM): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/DeliverOrder/${customerOrderId}`, deliveredOrder, this.httpOptions);
+  }
+
   //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
   GetAllCustomProducts(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)
@@ -531,6 +557,10 @@ export class DataService {
   GetCustomers(): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}User/GetAllCustomers`);
   }
+  
+  GetCustomerByUserId(userId: string): Observable<AllCustomerDetailsVM> {
+    return this.httpClient.get<AllCustomerDetailsVM>(`${this.apiUrl}User/GetCustomerByUserId/${userId}`);
+  }
 
   //---------------------------------------- REPORTS ----------------------------------------
   GetSalesByCategoryReport(stringStartDate: string, stringEndDate: string): Observable<any[]> {
@@ -567,4 +597,24 @@ export class DataService {
   SendEmail(email: any): Observable<any> {
     return this.httpClient.post<any>(`${this.apiUrl}Email/SendEmail`, email, this.httpOptions);
   }
+  //--------------------------------CREDIT APPLICATION------------------------------------
+  GetCreditApplications(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CreditApplication/GetCreditApplications`)
+      .pipe(map(result => result))
+  }
+  submitApplication(CreditApplicationVM: CreditApplication): Observable<any> {
+    const endpoint = `${this.apiUrl}CreditApplication/SubmitApplication`;
+    return this.httpClient.post(endpoint,CreditApplicationVM, this.httpOptions);
+  }
+
+  uploadApplication(formData: FormData): Observable<any> {
+    return this.httpClient.post(`${this.apiUrl}CreditApplication/UploadApplication`, formData, {
+      responseType: 'text'});
+  }
+
+  downloadApplication(formData: FormData): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}CreditApplication/DownloadFile`)
+    .pipe(map(result => result))
+  }
+
 }

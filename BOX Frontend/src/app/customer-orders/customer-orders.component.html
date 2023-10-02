@@ -10,7 +10,7 @@
     <div id="searchbar">
       <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
         (keyup)="searchOrders($event)" (change)="searchOrders($event)" (paste)="searchOrders($event)"
-        placeholder="e.g. Search by ID, customer, status, price" />
+        placeholder="e.g. Search by ID, customer, status" />
       <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
     </div>
 
@@ -23,7 +23,6 @@
           <th scope="col">Customer</th>
           <th scope="col">Status</th>
           <th scope="col">Date</th>
-          <th scope="col" style="width: 120px;">Process order</th>
         </tr>
       </thead>
       <tbody>
@@ -47,17 +46,9 @@
           <td>{{order.customerFullName}}</td>
           <td>{{order.orderStatusDescription}}</td>
           <td>{{order.date | date:'d MMM yyyy HH:mm' }}</td>
-          <td class="text-center">
-            <label class="form-check-label modal-form-label">
-              <input *ngIf="order.orderStatusID == 1" [(ngModel)]="order.checked"
-                class="form-check-input process-checkbox" type="checkbox" (change)="checkboxChanged()">
-            </label>
-          </td>
         </tr>
       </tbody>
     </table>
-
-    <button class="btn btn-create" (click)="processOrders()" [disabled]="!isAnyCheckboxChecked">Process Orders</button>
   </div>
 </div>
 
@@ -78,8 +69,8 @@
         <span class="bold">Customer: </span>{{selectedOrder.customerFullName}}<br />
         <span class="bold">Status: </span>{{selectedOrder.orderStatusDescription}}<br />
         <span class="bold">Date: </span>{{selectedOrder.date | date:'d MMM yyyy HH:mm' }}<br />
-        <span class="bold">Delivery date: </span>{{selectedOrder.orderStatusID != 4 ? 'Not yet scheduled for delivery' : selectedOrder.deliveryDate.toDateString() }} <br />
-        <div *ngIf="selectedOrder.deliveryScheduleID > 0">
+        <span class="bold">Delivery date: </span>{{selectedOrder.orderStatusID != 5 ? 'Not yet scheduled for delivery' : selectedOrder.deliveryDate.toDateString() }} <br />
+        <div *ngIf="selectedOrder.orderStatusID == 7">
           <span class="bold">Photo of delivery: </span>
         <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{selectedOrder.deliveryPhoto}}"
           alt='Not yet delivered' />
@@ -93,6 +84,7 @@
               <th scope="col">Price</th>
               <th scope="col">Qty</th>
               <th scope="col">Total</th>
+              <th scope="col" style="width: 120px;">In progress</th>
             </tr>
           </thead>
           <tbody id="quote-details-tbody">
@@ -102,6 +94,12 @@
               <td>{{orderLine.confirmedUnitPrice | currency: 'ZAR':'symbol-narrow'}}</td>
               <td>{{orderLine.quantity}}</td>
               <td>{{orderLine.confirmedUnitPrice * orderLine.quantity | currency: 'ZAR':'symbol-narrow'}}</td>
+              <td class="text-center">
+                <label class="form-check-label modal-form-label">
+                  <input [disabled]="orderLine.orderLineStatusID != 1" [(ngModel)]="orderLine.checked"
+                    class="form-check-input process-checkbox" type="checkbox" (change)="checkboxChanged()">
+                </label>
+              </td>
             </tr>
           </tbody>
         </table><br />
@@ -123,6 +121,10 @@
             <td class="totals-qty">{{selectedOrder.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
         </table>
+
+        <div style="width: 100%; text-align: right; margin-top: 1em;">
+          <button class="btn btn-create" (click)="processOrderLines()" [disabled]="!isAnyCheckboxChecked">Process Order Lines</button>
+        </div>
       </div>
 
       <!-- Modal footer -->

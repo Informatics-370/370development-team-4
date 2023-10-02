@@ -49,7 +49,7 @@ export class OrderDeliveryScheduleComponent implements OnInit {
     this.orderService.getAllCustomerOrders().subscribe(
       (orders: OrderVM[]) => {
         // Filter orders based on their status (you can adjust this logic as needed)
-        this.unscheduledOrders = orders.filter(order => order.orderStatusID == 1);
+        this.unscheduledOrders = orders.filter(order => order.orderStatusID == 4);
         this.unscheduledOrdersCount = this.unscheduledOrders.length; // Update the count
         console.log('Unscheduled Orders Count: ' + this.unscheduledOrdersCount);
       this.loading = false;
@@ -72,7 +72,7 @@ export class OrderDeliveryScheduleComponent implements OnInit {
   
       if (!isNaN(parsedScheduleDate.getTime())) {
         // Schedule date is a valid Date object
-        const newStatusId = 4; 
+        const newStatusId = 5; 
   
         // First, update the order status
         this.orderService.updateOrderStatus(

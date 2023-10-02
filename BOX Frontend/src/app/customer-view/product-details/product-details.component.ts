@@ -449,39 +449,14 @@ export class ProductDetailsComponent {
         Swal.fire({
           icon: 'success',
           title: 'Successfully added to cart!',
-          timer: 3000,
+          html: 'View your cart to request a quote on this product.',
+          timer: 5000,
           timerProgressBar: true,
           confirmButtonColor: '#32AF99'
         }).then((result) => {
           console.log(result);
         });
     }
-
-    /* let fixedProdToAdd = this.fixedProducts.find(prod => prod.fixedProductID == id); //get fixed product to put in cart
-    if (fixedProdToAdd) {
-      //check if user already has that product in their cart
-      let duplicateCartItem = this.cart.find(cartItem => cartItem.fixedProduct.fixedProductID == fixedProdToAdd?.fixedProductID);
-
-      if (duplicateCartItem) {
-        let index = this.cart.indexOf(duplicateCartItem);
-        console.log('Cart item before updating qty: ', this.cart[index]);
-        //if the product already exists in the cart, just increase the quantity; don't worry about adjusting discount cos they can't see it on this page; they'll see it in their cart
-        this.cart[index].quantity += this.addToCartForm.get("qty")?.value;
-        console.log('Cart item after updating qty: ', this.cart[index]);
-      }
-      else {
-        //if not, create new cart item
-        //fixedProdToAdd.price = this.getVATInclusive(fixedProdToAdd.price); //make fixed product price vat inclusive so cart is auto vat inclusive
-
-        let newCartItem: Cart = {
-          fixedProduct: fixedProdToAdd,
-          sizeString: this.selectedProductVM.sizeStringArray[this.selectedSizeIndex],
-          quantity: this.addToCartForm.get("qty")?.value
-        }
-
-        this.cart.push(newCartItem);
-      }
-    } */
   }
 
   toggleOutOfStock(isProductOutOfStock: boolean) {

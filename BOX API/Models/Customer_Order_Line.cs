@@ -22,8 +22,12 @@ namespace BOX.Models
 		[ForeignKey("Custom_Product")]
 		public int? CustomProductID { get; set; }
 		public virtual Custom_Product Custom_Product { get; set; }
-		
-		[Required] public int Quantity { get; set; }
+
+        [ForeignKey("Order_Line_Status")]
+        public int OrderLineStatusID { get; set; }
+        public virtual Order_Line_Status Order_Line_Status { get; set; }
+
+        [Required] public int Quantity { get; set; }
         [Required] public decimal Confirmed_Unit_Price { get; set; }
 
     }

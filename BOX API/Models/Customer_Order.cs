@@ -30,6 +30,18 @@ namespace BOX.Models
         [Required] public DateTime Date { get; set; }
 		[Required] public DateTime Delivery_Date { get; set; }
 		[Required] public byte[] Delivery_Photo { get; set; }
-		[Required] public string Delivery_Type { get; set; } //delivery or pick up
-	}
+
+
+        [ForeignKey("Delivery_Type")]
+        public int DeliveryTypeID { get; set; }
+        public virtual Delivery_Type Delivery_Type { get; set; }
+
+        [ForeignKey("Payment_Type")]
+        public int PaymentTypeID { get; set; }
+        public virtual Payment_Type Payment_Type { get; set; }
+
+        //QR code. Will link to QR code table later
+        public string? Code { get; set; }
+        public byte[] QR_Code_Photo { get; set; }
+    }
 }

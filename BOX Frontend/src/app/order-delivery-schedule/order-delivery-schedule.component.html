@@ -44,31 +44,28 @@
       Order Scheduling
     </h1>
 
-    <button class="viewCalendar" (click)="navigateToCalendar()">View Order Calendar</button>
+    <button class="btn btn-create viewCalendar" (click)="navigateToCalendar()">View Order Calendar</button>
 
     <table class="table">
       <thead>
         <tr>
-          <th style="width: 110px;" scope="col"></th>
           <th scope="col">Order ID </th>
           <th scope="col">Customer Name</th>
           <th scope="col">Order Status</th>
+          <th class="text-center" scope="col">Schedule</th>
         </tr>
       </thead>
       <tbody>
         <!--Error message if there's no orders to schedule in the DB-->
         <tr *ngIf="unscheduledOrdersCount==0">
-          <td colspan="3">There are no customer orders to schedule for delivery</td>
+          <td colspan="4">There are no customer orders to schedule for delivery</td>
         </tr>
         <!--Loading message while data is still being retrieved from the DB-->
         <tr *ngIf="loading">
-          <td colspan="3">Please wait while we load all Unscheduled Orders...</td>
+          <td colspan="4">Please wait while we load all Unscheduled Orders...</td>
         </tr>
         <!--Item data from API-->
         <tr *ngFor="let order of unscheduledOrders">
-          <td>
-            &nbsp;
-          </td>
           <td>
             {{order.customerOrderID}}
           </td>
@@ -79,7 +76,7 @@
             {{order.orderStatusDescription}}
           </td>
           <td>
-            <button title="Schedule Order" (click)="openScheduleModal(order)">Schedule Order</button>
+            <button class="btn btn-create" title="Schedule Order" (click)="openScheduleModal(order)">Schedule Order</button>
           </td>
         </tr>
       </tbody>

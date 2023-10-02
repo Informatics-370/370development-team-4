@@ -9,10 +9,45 @@
   <div class="col-md-9 col-sm-9 p-2">
     <h3 class="p-3" style="color: black;">Place Order</h3>
     <h5 class="p-3">Orders are as easy as 1, 2 3!</h5>
-    <!--Progress bar-->
-    <div class="progress">
-      <div id="bar" class="progress-bar" style="width: 0%; background-color: #32AF99;"></div>
-    </div>
+
+    <!--Custom progress bar-->
+    <ul id="progress-container">
+      <!--Confirm shipping-->
+      <li>
+        <fa-icon class="progress-icon" [icon]="['fas', 'truck']" ></fa-icon>
+        <div class="step one" [ngClass]="{'active-step': tab == 1, 'complete': tab > 1}">
+          <p class="progress-counter">1</p>
+          <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
+        </div>
+        <div class="step-after">
+          <div [ngClass]="{'step-complete': tab > 1}"></div>
+        </div>
+        <p class="progress-label">Shipping</p>
+      </li>
+
+      <!--Choose payment type-->
+      <li>
+        <fa-icon class="progress-icon" [icon]="['fas', 'wallet']" ></fa-icon>
+        <div class="step two" [ngClass]="{'active-step': tab == 2, 'complete': tab > 2}">
+          <p class="progress-counter">2</p>
+          <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
+        </div>
+        <div class="step-after">
+          <div [ngClass]="{'step-complete': tab > 2}"></div>
+        </div>
+        <p class="progress-label">Payment type</p>
+      </li>
+
+      <!--Pay-->
+      <li>
+        <fa-icon class="progress-icon" [icon]="['fas', 'credit-card']" ></fa-icon>
+        <div class="step three" [ngClass]="{'active-step': tab == 3, 'complete': tab > 3}">
+          <p class="progress-counter">3</p>
+          <fa-icon class="progress-check" [icon]="['fas', 'check']" ></fa-icon>
+        </div>
+        <p class="progress-label">Payment</p>
+      </li>
+    </ul>
 
     <!--Tabs-->
     <form [formGroup]="placeOrderForm">
@@ -31,6 +66,9 @@
           <div style="margin-bottom: 0.5em;" class="form-group" *ngIf="deliveryType?.value == 'Delivery'">
             <label for="address" class="form-label modal-form-label bold">Is this the correct shipping address?</label>
             <input id="address" type="text" formControlName="shippingAddress" class="form-control modal-form-input modal-form-text" required>
+            <div class="error-msg" *ngIf="shippingAddress?.dirty">
+              This will also update your address.
+            </div>
           </div>
           
           Deliveries are free. We try to deliver within 24 hours of order placement.
@@ -46,23 +84,28 @@
           </label><br />
 
           <label for="cash" class="form-label modal-form-label">
-            <input id="cash" type="radio" name="paymentType" formControlName="paymentType" value="Cash on delivery">Cash on delivery
+            <input id="cash" type="radio" name="paymentType" formControlName="paymentType" value="Cash on delivery">Cash on delivery / collection
           </label><br />
 
-          <label for="credit" class="form-label modal-form-label">
-            <input id="credit" type="radio" name="paymentType" formControlName="paymentType" value="Credit" [attr.disabled]="!creditAllowed ? 'disabled' : null">Credit
+          <label for="credit" class="form-label modal-form-label" [ngClass]="{'text-red': !creditAllowed}">
+            <input id="credit" type="radio" name="paymentType" formControlName="paymentType" value="Credit" 
+              [attr.disabled]="!creditAllowed ? 'disabled' : null">Credit
           </label><br />
-          <span *ngIf="!creditAllowed">Your credit balance is insufficient / you aren't approved for credit.
+          <span class="error-msg" *ngIf="!creditAllowed">Your credit balance is insufficient / you aren't approved for credit.
             You can <a>apply for credit</a>.</span>
         </div><br />
       </div>
 
       <div class="row tab" *ngIf="tab == 3">
         <h6>Confirm</h6>
+        
+        <div *ngIf="paymentType?.value == 'Credit'">
+          This order is payable on {{creditBalanceDue | date:'ccc, d MMM yyyy' }}
+        </div>
 
         You are ordering:<br/><br/>
 
-        <table id="quote-details-table" class="table">
+        <table id="quote-details-table" class="table" *ngIf="quote != null">
           <thead>
             <tr>
               <th scope="col">Product</th>
@@ -98,38 +141,173 @@
             </tr>
           </tfoot>
         </table><br />
-
-        <!-- <table id="total-table">
-          <tr>
-            <td class="text-right" style="width: 80%;">Subtotal:</td>
-            <td>{{quote.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
-          </tr>
-          <tr>
-            <td class="text-right">VAT:</td>
-            <td>{{quote.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
-          </tr>
-          <tr style="font-weight: bold;">
-            <td class="text-right">Total:</td>
-            <td>{{quote.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
-          </tr>
-        </table><br /> -->
-        <div *ngIf="paymentType?.value == 'Credit'">
-          This order is payable on {{creditBalanceDue | date:'ccc, d MMM yyyy' }}
-        </div>
-
-        <div *ngIf="paymentType?.value != 'Credit'">
-          <h6>PayFast</h6>
-        </div>
       </div>
 
       <div class="form-progress-div">
         <button *ngIf="tab == 1" class="btn btn-create btn-red" (click)="cancel()">Cancel</button>
-        <button *ngIf="tab > 1" class="btn btn-create" (click)="changeTab('previous')">Previous</button>
+        <button *ngIf="tab > 1" class="btn btn-create" [disabled]="submitted" (click)="changeTab('previous')">Previous</button>
         <button *ngIf="tab != 3" class="btn btn-create btn-next" (click)="changeTab('next')">Next</button>
-        <button *ngIf="tab == 3" class="btn btn-create btn-order" (click)="placeOrder('Your credit balance has been updated')">{{orderBtnText}}</button>
+        <button *ngIf="tab == 3" class="btn btn-create btn-order" [disabled]="submitted" (click)="initiateOrder()">{{orderBtnText}}</button>
       </div>
     </form>
+    
+    <hr class="hr hr-blurry">
+    <span class="p-3" style="font-size: 90%;">
+      <strong>Order info and tips:</strong>
+      <ul>
+        <li>The minimum amount to be paid through PayFast is R30</li>
+        <li><b>20% of the order total is a deposit</b> and must be paid before an order can be placed regardless of the payment type you choose. <strong>This amount is not refundable under any circumstances.</strong></li>
+        <li>Buying on credit will cause the order total to be deducted from your credit balance.</li>
+        <li>You still need to pay the deposit if you choose cash on collection / delivery as your payment type. You'll be required to pay the 20% deposit using our payment gateway and the remaining 80% when you receive your order.</li>
+        <li>Pay immediately means paying for the order completely right now.</li>
+        <li>Deliveries are free. We try to deliver within 24 hours of order placement. Orders outside Gauteng will be couriered.</li>
+        <!-- <li>Cash on collection / delivery is not available for orders that must be delivered outside Gauteng.</li> -->
+        <li><strong>Do not change your address until after your order is delivered</strong> because deliveries are always made to your account address. Changing the shipping address on this page will, thus, change your address.</li>
+        <li>Within 7 days of order delivery / collection, you can request a return on any item in your order. Mega Pack will contact you to ensure the item is in good condition and determine how to refund you. Credit refunds cannot be redeemed as cash.</li>
+        <li>No refunds on custom products.</li>
+      </ul>
+    </span>
   </div>
 </div>
 
 <div class="app-footer"></div>
+
+<!--PROCESSING MODAL-->
+<div class="modal fade" id="processing" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <!--BODY-->
+      <div class="modal-body" style="margin: 12vh 0;">
+        <h5 class="text-center">Processing order... <br/> Please don't close this window</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--INVOICE to email-->
+<div id="invoice-container" *ngIf="invoice != null">
+  <div id="invoice">
+    <img id="invoice-img" src="../../../assets/mega-pack-header.jpg" alt="Mega Pack Letterhead" style="width: 100%; height: auto;" />
+
+    <div id="header-left" class="invoice-block small-block">
+
+      <div style="margin-bottom: 1rem; display: flex; justify-content: end;" class="full">
+        <table style="display: inline-block;" class="fit">
+          <tr>
+            <td class="fit">Tel:</td>
+            <td class="fit text-left">(012) 666 8025/8540</td>
+          </tr>
+          <tr>
+            <td class="fit">Fax:</td>
+            <td class="fit text-left">(012) 666 9643</td>
+          </tr>
+          <tr>
+            <td class="fit">VAT No:</td>
+            <td class="fit text-left">4120 199635</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="line-height: 1.2em;">
+        Mega Pack<br />
+        PO Box 14673<br />
+        Laudium<br />
+        0037
+      </div>
+    </div>
+
+    <div id="header-right" class="invoice-block right text-right small-block">
+      <h3>TAX INVOICE #{{invoice.number}}</h3>
+      <div style="display: flex; justify-content: end;" class="full">
+        <table style="display: inline-block;" class="fit text-left">
+          <tr>
+            <td class="fit" style="padding-right: 0.75em; padding-bottom: 0.5em;">Payment type:</td>
+            <td class="fit" style="padding-bottom: 0.5em;">{{invoice.paymentType }}</td>
+          </tr>
+          <tr>
+            <td class="fit" style="padding-right: 0.75em; padding-bottom: 0.5em;">Date:</td>
+            <td class="fit" style="padding-bottom: 0.5em;">{{invoice.date | date:'dd/MM/yyyy' }}</td>
+          </tr>
+          <tr>
+            <td rowspan="4" style="padding-right: 0.75em; vertical-align: top;">Bill To:</td>
+            <td>{{invoice.customer}}</td>
+          </tr>
+          <tr>
+            <td class="fit">{{invoice.addressLine1}}</td>
+          </tr>
+          <tr>
+            <td class="fit">{{invoice.addressLine2}}</td>
+          </tr>
+          <tr>
+            <td class="fit">{{invoice.addressLine3}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="invoice-body" class="invoice-block full">
+      <table id="invoice-lines" class="text-left">
+        <thead>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let line of invoice.lines">
+            <td>{{line.productDescription}}</td>
+            <td>{{line.quantity | currency: 'ZAR':'symbol-narrow' }}</td>
+            <td>{{line.confirmedUnitPrice}}</td>
+            <td>{{line.total | currency: 'ZAR':'symbol-narrow' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="footer-left" class="invoice-block footer-block">
+      <div style="margin-bottom: 1rem; display: flex; justify-content: end;" class="full">
+        <table class="text-left footer-table">
+          <tr>
+            <td>Bank:</td>
+            <td>ABSA</td>
+          </tr>
+          <tr>
+            <td>Branch Code:</td>
+            <td>632 - 005</td>
+          </tr>
+          <tr>
+            <td>Account No:</td>
+            <td>4055 277 664</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="footer-right" class="invoice-block footer-block right">
+      <table id="invoice-totals">
+        <tr>
+          <td style="width: 70%;">Deposit* (20%)</td>
+          <td>{{invoice.deposit | currency: 'ZAR':'symbol-narrow' }}</td>
+        </tr>
+        <tr>
+          <td>Subtotal</td>
+          <td>{{invoice.totalExlcudingDeposit | currency: 'ZAR':'symbol-narrow' }}</td>
+        </tr>
+        <tr>
+          <td>Tax</td>
+          <td>{{invoice.totalVAT | currency: 'ZAR':'symbol-narrow' }}</td>
+        </tr>
+        <tr class="total-divider">
+          <td colspan="2" style="border-right: none;"></td>
+        </tr>
+        <tr style="font-weight: bold;">
+          <td>Total</td>
+          <td>{{invoice.total | currency: 'ZAR':'symbol-narrow' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <span id="disclaimer" style="font-size: 80%;">*Note that every order contains a deposit of 20% and without this down payment, your order cannot be processed.</span>
+  </div>
+</div>

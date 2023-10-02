@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230903150526_initial")]
-    partial class initial
+    [Migration("20231002032242_second")]
+    partial class second
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -269,11 +269,17 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerOrderID"), 1L, 1);
 
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CustomerOrderStatusID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DeliveryTypeID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Delivery_Date")
                         .HasColumnType("datetime2");
@@ -282,12 +288,15 @@ namespace BOX.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("Delivery_Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("OrderDeliveryScheduleID")
                         .HasColumnType("int");
+
+                    b.Property<int>("PaymentTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("QR_Code_Photo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("QuoteID")
                         .HasColumnType("int");
@@ -300,7 +309,11 @@ namespace BOX.Migrations
 
                     b.HasIndex("CustomerOrderStatusID");
 
+                    b.HasIndex("DeliveryTypeID");
+
                     b.HasIndex("OrderDeliveryScheduleID");
+
+                    b.HasIndex("PaymentTypeID");
 
                     b.HasIndex("QuoteID");
 
@@ -332,6 +345,9 @@ namespace BOX.Migrations
                     b.Property<int?>("FixedProductID")
                         .HasColumnType("int");
 
+                    b.Property<int>("OrderLineStatusID")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -344,6 +360,8 @@ namespace BOX.Migrations
                     b.HasIndex("CustomerReturnID");
 
                     b.HasIndex("FixedProductID");
+
+                    b.HasIndex("OrderLineStatusID");
 
                     b.ToTable("Customer_Order_Line");
                 });
@@ -358,8 +376,8 @@ namespace BOX.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CustomerOrderStatusID");
 
@@ -431,6 +449,24 @@ namespace BOX.Migrations
                     b.HasKey("CustomerReviewID");
 
                     b.ToTable("Customer_Review");
+                });
+
+            modelBuilder.Entity("BOX.Models.Delivery_Type", b =>
+                {
+                    b.Property<int>("DeliveryTypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryTypeID"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("DeliveryTypeID");
+
+                    b.ToTable("Delivery_Type");
                 });
 
             modelBuilder.Entity("BOX.Models.Employee", b =>
@@ -511,6 +547,24 @@ namespace BOX.Migrations
                     b.ToTable("Order_Delivery_Schedule");
                 });
 
+            modelBuilder.Entity("BOX.Models.Order_Line_Status", b =>
+                {
+                    b.Property<int>("OrderLineStatusID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderLineStatusID"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("OrderLineStatusID");
+
+                    b.ToTable("Order_Line_Status");
+                });
+
             modelBuilder.Entity("BOX.Models.Payment", b =>
                 {
                     b.Property<int>("PaymentID")
@@ -522,20 +576,15 @@ namespace BOX.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CustomerOrderID")
+                    b.Property<int?>("CustomerOrderID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date_And_Time")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PaymentTypeID")
-                        .HasColumnType("int");
-
                     b.HasKey("PaymentID");
 
                     b.HasIndex("CustomerOrderID");
-
-                    b.HasIndex("PaymentTypeID");
 
                     b.ToTable("Payment");
                 });
@@ -1572,9 +1621,21 @@ namespace BOX.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BOX.Models.Delivery_Type", "Delivery_Type")
+                        .WithMany()
+                        .HasForeignKey("DeliveryTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Order_Delivery_Schedule", "Order_Delivery_Schedule")
                         .WithMany()
                         .HasForeignKey("OrderDeliveryScheduleID");
+
+                    b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
+                        .WithMany()
+                        .HasForeignKey("PaymentTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BOX.Models.Quote", "Quote")
                         .WithMany()
@@ -1590,7 +1651,11 @@ namespace BOX.Migrations
 
                     b.Navigation("Customer_Order_Status");
 
+                    b.Navigation("Delivery_Type");
+
                     b.Navigation("Order_Delivery_Schedule");
+
+                    b.Navigation("Payment_Type");
 
                     b.Navigation("Quote");
 
@@ -1617,6 +1682,12 @@ namespace BOX.Migrations
                         .WithMany()
                         .HasForeignKey("FixedProductID");
 
+                    b.HasOne("BOX.Models.Order_Line_Status", "Order_Line_Status")
+                        .WithMany()
+                        .HasForeignKey("OrderLineStatusID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Custom_Product");
 
                     b.Navigation("Customer_Order");
@@ -1624,6 +1695,8 @@ namespace BOX.Migrations
                     b.Navigation("Customer_Return");
 
                     b.Navigation("Fixed_Product");
+
+                    b.Navigation("Order_Line_Status");
                 });
 
             modelBuilder.Entity("BOX.Models.Customer_Return", b =>
@@ -1690,19 +1763,9 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.Customer_Order", "Customer_Order")
                         .WithMany()
-                        .HasForeignKey("CustomerOrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerOrderID");
 
                     b.Navigation("Customer_Order");
-
-                    b.Navigation("Payment_Type");
                 });
 
             modelBuilder.Entity("BOX.Models.Price", b =>

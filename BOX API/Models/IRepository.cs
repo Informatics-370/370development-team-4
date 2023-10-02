@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 
+//using BOX.Migrations;
+
 namespace BOX.Models
 {
     public interface IRepository
@@ -125,9 +127,14 @@ namespace BOX.Models
         Customer_Order GetOrdersByCustomer(string customerId, int quoteId); //get orders for this customer synchronously
         Task<Customer_Order[]> GetCustomerOrdersByDeliverySchedule(int orderDeliveryScheduleId);
         Task<Customer_Order[]> GetCustomerOrdersByStatus(int statusId);
+        Task<Customer_Order> GetOrderByCodeAsync(string code);
 
         //-----------------------------------------------Customer Order LINE---------------------------------------------
         Task<Customer_Order_Line[]> GetOrderLinesByOrderAsync(int orderId);
+        Task<Customer_Order_Line> GetOrderLineAsync(int orderLineId);
+
+        //----------------------------------------------- Customer Order Line Status ---------------------------------------------
+        Task<Order_Line_Status> GetOrderLineStatusAsync(int statusId);
 
         //------------------------------------------------------------- Supplier Return -------------------------------------------------------------------
         Task<Supplier_Return[]> GetAllSupplierReturnsAsync();
@@ -148,6 +155,12 @@ namespace BOX.Models
         //--------------------------- CREDIT APPLICATION STATUS --------------------------
         Task<Credit_Application_Status[]> GetAllAppStatusesAsync();
         Task<Credit_Application_Status> GetAppStatusAsync(int applicationId);
+
+        //--------------------------- CREDIT APPLICATION --------------------------
+        Task<Credit_Application[]> GetCreditApplicationsAsync();
+        Task<Credit_Application[]> SubmitApplicationAsync(Credit_Application creditApplication);
+        Task UploadCreditApplicationAsync(IFormFile file);
+        Task<Stream> DownloadCreditApplicationAsync(string fileName);
 
         //--------------------------- STOCK TAKE ----------------------------------------
         Task<Stock_Take[]> GetAllStockTakeAsync();
@@ -187,6 +200,13 @@ namespace BOX.Models
         Task<Employee> GetEmployeeByUserId(string userId);
         Task<Admin> GetAdminByUserId(string userId);
         Task<Customer> GetCustomerByUserId(string userId);
-    }
 
+        //--------------------------- DELIVERY TYPE --------------------------
+        Task<Delivery_Type> GetDeliveryTypeAsync(int deliveryTypeId);
+
+        //-------------------------------------------------------- PAYMENT --------------------------------------------------------
+        Payment GetPayment(int paymentId);
+        //---------------------------------------------------- PAYMENT TYPE ----------------------------------------------------
+        Task<Payment_Type> GetPaymentTypeAsync(int paymentTypeId);
+    }
 }

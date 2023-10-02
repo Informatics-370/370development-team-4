@@ -197,6 +197,63 @@ namespace BOX.Controllers
             return customer;
         }
 
+        [HttpGet]
+        [Route("GetCustomerByUserId/{userId}")]
+        public async Task<IActionResult> GetCustomerByUserId(string userId)
+        {
+            var customer = await _repository.GetCustomerByUserId(userId);
+            var user = await _repository.GetUserAsync(userId);
+            AllCustomerDetailsViewModel customerDetails;
+
+            if (user == null) return NotFound("User does not exist on the B.O.X system");
+            else if (customer == null)
+            { //if user is not null but customer is null, then it isn't a customer. It's some other kind of user
+                string fullname = await _repository.GetUserFullNameAsync(userId);
+
+                customerDetails = new AllCustomerDetailsViewModel
+                {
+                    CustomerId = "",
+                    UserId = userId,
+                    EmailConfirmed = user.EmailConfirmed,
+                    FullName = fullname,
+                    FirstName = user.user_FirstName,
+                    LastName = user.user_LastName,
+                    Email = user.Email,
+                    Address = user.user_Address,
+                    PhoneNumber = user.PhoneNumber,
+                    EmployeeId = "",
+                    IsBusiness = false,
+                    VatNo = "",
+                    CreditBalance = 0,
+                    CreditLimit = 0
+                };
+            }
+            else
+            {
+                string fullname = await _repository.GetUserFullNameAsync(userId);
+
+                customerDetails = new AllCustomerDetailsViewModel
+                {
+                    CustomerId = customer.CustomerId,
+                    UserId = userId,
+                    EmailConfirmed = user.EmailConfirmed,
+                    FullName = fullname,
+                    FirstName = user.user_FirstName,
+                    LastName = user.user_LastName,
+                    Email = user.Email,
+                    Address = user.user_Address,
+                    PhoneNumber = user.PhoneNumber,
+                    EmployeeId = customer.EmployeeId,
+                    IsBusiness = customer.isBusiness,
+                    VatNo = customer.vatNo,
+                    CreditBalance = customer.creditBalance == null ? 0 : customer.creditBalance.Value,
+                    CreditLimit = customer.creditLimit == null ? 0 : customer.creditLimit.Value
+                };
+            }
+
+            return Ok(customerDetails);
+        }
+
         [HttpPut]
         [Route("UpdateUserRoleAndNotifyAdmin")]
         public async Task<IActionResult> UpdateUserRoleAndNotifyAdmin(string email, string roleId)
@@ -272,7 +329,21 @@ namespace BOX.Controllers
             return NoContent(); // Role updated successfully
         }
 
+        [HttpPut]
+        [Route("UpdateCustomerCreditBalance/{userId}/{creditBalance}")]
+        public async Task<IActionResult> UpdateCustomerCreditBalance(string userId, int creditBalance)
+        {
+            var customer = await _repository.GetCustomerByUserId(userId);
 
+            if (customer == null) return NotFound("Customer does not exist on the B.O.X system");
+
+            // Update the customer's credit balance
+            customer.creditBalance = creditBalance;
+
+            await _repository.SaveChangesAsync();
+
+            return Ok(creditBalance); // Update successful
+        }
 
     }
 }
