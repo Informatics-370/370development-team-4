@@ -55,7 +55,7 @@ import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
-import { ReviewOrderComponent } from './review-order/review-order.component';
+import { ReviewOrderComponent } from './customer-view/review-order/review-order.component';
 
 // THE ROUTE TO THE NOT FOUND COMPONENT MUST ALWAYS BE LAST or things might not work as expected
 const routes: Routes = [

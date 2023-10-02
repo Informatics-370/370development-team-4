@@ -71,7 +71,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CreditApplicationComponent } from './credit-application/credit-application.component';
 import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
-import { ReviewOrderComponent } from './review-order/review-order.component';
+import { ReviewOrderComponent } from './customer-view/review-order/review-order.component';
 
 
 @NgModule({

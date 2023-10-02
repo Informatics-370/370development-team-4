@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { OrderVM } from '../shared/order-vm';
+import { OrderVM } from '../../shared/order-vm';
 import Swal from 'sweetalert2';
 import { HttpClient } from '@angular/common/http';
 
