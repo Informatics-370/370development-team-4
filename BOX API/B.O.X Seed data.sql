@@ -136,7 +136,7 @@ GO
 
 INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp])
 VALUES
-    (NEWID(), 'Administrator', 'ADMINISTRATOR', NEWID()),
+    (NEWID(), 'Admin', 'ADMIN', NEWID()),
     (NEWID(), 'Employee', 'EMPLOYEE', NEWID()),
     (NEWID(), 'Customer', 'CUSTOMER', NEWID()),
     (NEWID(), 'Receptionist', 'RECEPTIONIST', NEWID()),

@@ -582,7 +582,7 @@ export class PlaceOrderComponent {
     // Call the html2canvas function and pass the elements as an argument also use Promise.all to wait for all calls to complete
     const invoiceCanvases = await Promise.all(invoiceParts.map(async (part) => {
       const canvas = await html2canvas(part);
-      document.body.appendChild(canvas);
+      //document.body.appendChild(canvas);
       return canvas; // Return the canvas directly
     }));
 

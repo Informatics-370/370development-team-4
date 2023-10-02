@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-<<<<<<<< HEAD:BOX API/Migrations/20230930125819_second.Designer.cs
-    [Migration("20230930125819_second")]
+    [Migration("20231002032242_second")]
     partial class second
-========
-    [Migration("20231001073635_Just")]
-    partial class Just
->>>>>>>> Internal-Testing:BOX API/Migrations/20231001073635_Just.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -274,6 +269,9 @@ namespace BOX.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerOrderID"), 1L, 1);
 
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CustomerOrderStatusID")
                         .HasColumnType("int");
 
@@ -293,6 +291,13 @@ namespace BOX.Migrations
                     b.Property<int?>("OrderDeliveryScheduleID")
                         .HasColumnType("int");
 
+                    b.Property<int>("PaymentTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("QR_Code_Photo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<int>("QuoteID")
                         .HasColumnType("int");
 
@@ -307,6 +312,8 @@ namespace BOX.Migrations
                     b.HasIndex("DeliveryTypeID");
 
                     b.HasIndex("OrderDeliveryScheduleID");
+
+                    b.HasIndex("PaymentTypeID");
 
                     b.HasIndex("QuoteID");
 
@@ -575,14 +582,9 @@ namespace BOX.Migrations
                     b.Property<DateTime>("Date_And_Time")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PaymentTypeID")
-                        .HasColumnType("int");
-
                     b.HasKey("PaymentID");
 
                     b.HasIndex("CustomerOrderID");
-
-                    b.HasIndex("PaymentTypeID");
 
                     b.ToTable("Payment");
                 });
@@ -1629,6 +1631,12 @@ namespace BOX.Migrations
                         .WithMany()
                         .HasForeignKey("OrderDeliveryScheduleID");
 
+                    b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
+                        .WithMany()
+                        .HasForeignKey("PaymentTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BOX.Models.Quote", "Quote")
                         .WithMany()
                         .HasForeignKey("QuoteID")
@@ -1646,6 +1654,8 @@ namespace BOX.Migrations
                     b.Navigation("Delivery_Type");
 
                     b.Navigation("Order_Delivery_Schedule");
+
+                    b.Navigation("Payment_Type");
 
                     b.Navigation("Quote");
 
@@ -1755,15 +1765,7 @@ namespace BOX.Migrations
                         .WithMany()
                         .HasForeignKey("CustomerOrderID");
 
-                    b.HasOne("BOX.Models.Payment_Type", "Payment_Type")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Customer_Order");
-
-                    b.Navigation("Payment_Type");
                 });
 
             modelBuilder.Entity("BOX.Models.Price", b =>
