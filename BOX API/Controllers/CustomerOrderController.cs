@@ -192,6 +192,8 @@ namespace BOX.Controllers
                     Date = order.Date,
                     PaymentTypeID = order.PaymentTypeID,
                     PaymentType = paymentType.Description,
+                    Code = order.Code,
+                    QRCodeB64 = Convert.ToBase64String(order.QR_Code_Photo),
                     OrderLines = orderLineList
                 };
 

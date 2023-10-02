@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
 import { take, lastValueFrom } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Route, Router, ActivatedRoute } from '@angular/router';
 import { OrderVM } from '../shared/order-vm';
 import { Users } from '../shared/user';
 import { OrderVMClass } from '../shared/order-vm-class';
@@ -40,7 +40,8 @@ export class DeliverOrderComponent {
   currentVAT!: VAT;
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder, private activatedRoute: ActivatedRoute, 
-    private authService: AuthService, private emailService: EmailService, private currencyPipe: CurrencyPipe) {
+    private authService: AuthService, private emailService: EmailService, private currencyPipe: CurrencyPipe,
+    private router: Router) {
     this.deliveryForm = this.formBuilder.group({
       deliveryType: [Validators.required],
       paymentType: [Validators.required],
@@ -48,7 +49,7 @@ export class DeliverOrderComponent {
       deliveryPhoto: ['', Validators.required],
     });
 
-    // Disable all form fields except deliveryPhoto
+    //disable all form fields except deliveryPhoto
     this.deliveryForm.get('deliveryType')?.disable();
     this.deliveryForm.get('paymentType')?.disable();
     this.deliveryForm.get('amount')?.disable();
@@ -84,13 +85,13 @@ export class DeliverOrderComponent {
     try {
       //turn Observables that retrieve data from DB into promises
       const getVATPromise = lastValueFrom(this.dataService.GetVAT().pipe(take(1)));
-      //const getOrderPromise = lastValueFrom(this.dataService.GetOrderByCode(alphanumericcode).pipe(take(1)));
+      const getOrderPromise = lastValueFrom(this.dataService.GetOrderByCode(alphanumericcode).pipe(take(1)));
 
       /*The idea is to execute all promises at the same time, but wait until all of them are done before calling next method
       That's what the Promise.all method is supposed to be doing.*/
-      const [currentVAT] = await Promise.all([
+      const [currentVAT, order] = await Promise.all([
         getVATPromise,
-        //getOrderPromise
+        getOrderPromise
       ]);
 
       //put results from DB in global attributes
@@ -99,36 +100,8 @@ export class DeliverOrderComponent {
       await this.getDriverData();
 
       //put order in class
-      this.loading = false;
-      //this.order = new OrderVMClass(order, order.orderLines, this.currentVAT);
-      let orderVM: OrderVM = {
-        customerOrderID: 81,
-        quoteID: 16,
-        paymentID: 5,
-        customerId: this.driver.id,
-        customerFullName: `Mr ${this.driver.firstName} ${this.driver.lastName}`,
-        orderStatusID: 6,
-        orderStatusDescription: 'Out for delivery',
-        paymentTypeID: 2,
-        paymentType: 'Cash on delivery / collection',
-        deliveryTypeID: 2,
-        deliveryDate: new Date(Date.now()),
-        deliveryPhoto: '',
-        deliveryType: 'Delivery',
-        deliveryScheduleID: 0,
-        date: new Date('2023-09-16'),
-        code: this.code,
-        qrcodeB64: '',
-        orderLines: []
-      }
-
-      let orderLines = [
-        {quantity: 12, confirmedUnitPrice: 27.5, fixedProductID: 1, customProductID: 0},
-        {quantity: 7, confirmedUnitPrice: 15, fixedProductID: 13, customProductID: 0},
-        {quantity: 100, confirmedUnitPrice: 12, fixedProductID: 0, customProductID: 10},
-      ];
-
-      this.order = new OrderVMClass(orderVM, orderLines, this.currentVAT);
+      this.order = new OrderVMClass(order, order.orderLines, this.currentVAT);
+      this.preventDuplicates();
 
       //set field values
       if (this.order.paymentTypeID == 2) this.cashOnDelivery = true;
@@ -137,6 +110,7 @@ export class DeliverOrderComponent {
         deliveryType: this.order.deliveryType,
         amount: this.cashOnDelivery ? this.currencyPipe.transform((this.order.totalBeforeVAT * 0.8) + this.order.totalVAT, 'ZAR', 'R') : 0
       });
+      this.loading = false;
 
       console.log('order', this.order);
 
@@ -144,6 +118,22 @@ export class DeliverOrderComponent {
       this.loading = false;
       this.error = true;
       console.error('An error occurred:', error);
+    }
+  }
+
+  //prevent order from being delivered twice
+  preventDuplicates() {
+    if (this.order.orderStatusID == 7) {
+      Swal.fire({
+        icon: 'error',
+        title: "Oh no",
+        html: "This order has already been delivered.",
+        timer: 3000,
+        timerProgressBar: true,
+        confirmButtonColor: '#32AF99'
+      }).then((result) => {
+        this.router.navigate(['dashboard']);
+      });
     }
   }
 
@@ -220,19 +210,19 @@ export class DeliverOrderComponent {
         deliveryPhoto: formImage ? await this.convertToBase64(formImage) : '', //convert to B64 if there's an image selected, otherwise, empty string
         paymentID: this.order.paymentID,
         paymentTypeID: this.order.paymentTypeID,
-        paymentType: this.order.paymentType,
+        paymentType: '',
         deliveryDate: this.order.deliveryDate,
         customerId: this.order.customerId,
-        customerFullName: this.order.customerFullName,
+        customerFullName: '',
         orderStatusID: this.order.orderStatusID,
-        orderStatusDescription: this.order.orderStatusDescription,
+        orderStatusDescription: '',
         deliveryTypeID: this.order.deliveryTypeID,
-        deliveryType: this.order.deliveryType,
-        deliveryScheduleID: this.order.deliveryScheduleID,
-        date: this.order.date,
+        deliveryType: '',
+        deliveryScheduleID: 0,
+        date: new Date(Date.now()),
         code: this.code,
-        qrcodeB64: this.order.qrcodeB64,
-        orderLines: this.order.orderLines
+        qrcodeB64: '',
+        orderLines: []
       }
 
       try {
@@ -244,9 +234,9 @@ export class DeliverOrderComponent {
           this.dataService.GetCustomerByUserId(this.order.customerId).subscribe((result) => {
             let customerEmail = result.email;
 
-            let emailBody = `<p>Thank you for ordering with MegaPack. Your order was delivered / collected and completed.</p>
-                            <p>would you mind completing a
-                            <a style='font-weight: 600; text-decoration: underline; cursor: pointer; color: black;' href=''>quick review</a>?</p>`;
+            let emailBody = `<p>Thank you for ordering with MegaPack. Your order was delivered / collected and completed. Would 
+                            you mind completing a
+                            <a style='font-weight: 600; text-decoration: underline; cursor: pointer; color: black;' href='http://localhost:4200/review-order/${this.code}'>quick review</a>?</p>`;
 
             this.emailService.sendEmail(customerEmail, 'Your package has arrived', this.order.customerFullName, emailBody);
 
@@ -255,12 +245,13 @@ export class DeliverOrderComponent {
             Swal.fire({
               icon: 'success',
               title: "Success",
-              html: "The order is now makred as completedand the customer has been notified via email.",
+              html: "The order is now marked as completed and the customer has been notified via email.",
               timer: 3000,
               timerProgressBar: true,
               confirmButtonColor: '#32AF99'
-            }).then((result) => {}
-            );
+            }).then((result) => {
+              this.router.navigate(['dashboard']);
+            });
           });
 
         });
