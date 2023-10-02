@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
+import { OrderService } from '../services/orders';
+import { OrderVM } from '../shared/order-vm';
 
 @Component({
   selector: 'app-calendar',
@@ -8,30 +10,20 @@ import Swal from 'sweetalert2/dist/sweetalert2.js';
   styleUrls: ['./order-del-calendar.component.css']
 })
 export class OrderDelCalendarComponent implements OnInit {
+  unscheduledOrders: OrderVM[] = []; // An array of type OrderView Model to hold all unscheduled orders
+  scheduledOrders: OrderVM[] = []; // An array of type OrderView Model which holds all scheduled orders
   currentMonth: Date = new Date();
   daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   weeks: { date: number | null; dayOfWeek: string; isActive: boolean; event: any | null }[][] = [];
   emptyDays: any[] = [];
-  unscheduledEvents: any[] = [  
-  {
-    name: "Event 1",
-    date: "September 25, 2023",
-    time: "2:00 PM - 4:00 PM"
-  },
-  {
-    name: "Event 2",
-    date: "September 27, 2023",
-    time: "10:00 AM - 12:00 PM"
-  },
-  // Add more events here
-];
-  
-  constructor() { }
+   
+  constructor(private orderService: OrderService) { }
 
   ngOnInit(): void {
+    this.loadScheduledOrders();
+
     this.generateCalendar();
-    
-   
+  
     const monthYearInput = document.querySelector('.monthHeading');
     if (monthYearInput) {
       monthYearInput.addEventListener('keydown', (event) => {
@@ -43,52 +35,82 @@ export class OrderDelCalendarComponent implements OnInit {
         }
       });
     }
+    this.generateCalendar();
+
+ 
   }
+  
+  private loadScheduledOrders(): void {
+    this.orderService.getAllCustomerOrders().subscribe(
+      (orders: OrderVM[]) => {
+        this.scheduledOrders = orders.filter(order => order.orderStatusID =5);
+        // Update the count
+        console.log ("scheduled orders"+this.scheduledOrders);
+        console.log('Scheduled Orders Count: ' + this.scheduledOrders.length);
+      },
+      (error) => {
+        console.error('Error fetching scheduled orders:', error);
+      }
+    );
+  }
+  
+  
 
   generateCalendar() {
     this.weeks = [];
     const startDate = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), 1);
     const endDate = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 0);
-
+  
     let firstDayOfWeek = startDate.getDay();
     if (firstDayOfWeek === 0) {
-        firstDayOfWeek = 8;
+      firstDayOfWeek = 7; // Adjust to make Sunday correspond to 7
     }
-    const numberOfEmptyCells = firstDayOfWeek; // Having the number of empty cells equated to the first day of the week and making it the 8th day correctly initializes the calendar to handle months that end with 30 or 31 days accordingly
-
+    const numberOfEmptyCells = firstDayOfWeek - 1;
+  
     let currentDay = new Date(startDate);
     currentDay.setDate(currentDay.getDate() - numberOfEmptyCells);
-
+  
     let currentWeek: { date: number | null; dayOfWeek: string; isActive: boolean; event: any | null }[] = [];
-
+  
     const isTodayOrLater = (date: Date) => {
-        const currentDate = new Date();
-        currentDate.setHours(0, 0, 0, 0);
-        return date >= currentDate;
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      return date >= currentDate;
     };
-
+  
     while (currentDay <= endDate) {
-        const isActive = isTodayOrLater(currentDay);
-        currentWeek.push({
-            date: currentDay.getDate(),
-            dayOfWeek: this.daysOfWeek[currentDay.getDay()],
-            isActive: isActive,
-            event: null, // Initialize event property to null for each day
-        });
-
-        if (currentDay.getDay() === 6) {
-            this.weeks.push(currentWeek);
-            currentWeek = [];
-        }
-
-        currentDay.setDate(currentDay.getDate() + 1);
-    }
-
-    if (currentWeek.length > 0) {
+      const isActive = isTodayOrLater(currentDay);
+  
+      // Check if there is a scheduled order on this day
+      const orderOnThisDay = this.scheduledOrders.find((order) => {
+        const orderDate = new Date(order.date);
+        return (
+          orderDate.getDate() === currentDay.getDate() &&
+          orderDate.getMonth() === currentDay.getMonth() &&
+          orderDate.getFullYear() === currentDay.getFullYear()
+        );
+      });
+  
+      currentWeek.push({
+        date: currentDay.getDate(),
+        dayOfWeek: this.daysOfWeek[currentDay.getDay()],
+        isActive: isActive,
+        event: orderOnThisDay, // Associate the scheduled order with the day
+      });
+  
+      if (currentDay.getDay() === 6) {
         this.weeks.push(currentWeek);
+        currentWeek = [];
+      }
+  
+      currentDay.setDate(currentDay.getDate() + 1);
     }
-}
-
+  
+    if (currentWeek.length > 0) {
+      this.weeks.push(currentWeek);
+    }
+  }
+  
   
 
   isDayActive(day: number): boolean {
