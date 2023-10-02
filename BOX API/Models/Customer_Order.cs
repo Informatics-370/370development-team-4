@@ -40,6 +40,10 @@ namespace BOX.Models
         public int PaymentTypeID { get; set; }
         public virtual Payment_Type Payment_Type { get; set; }
 
+        [ForeignKey("Customer_Review")]
+        public int? CustomerReviewID { get; set; }
+        public virtual Customer_Review Customer_Review { get; set; }
+
         //QR code. Will link to QR code table later
         public string? Code { get; set; }
         public byte[] QR_Code_Photo { get; set; }
