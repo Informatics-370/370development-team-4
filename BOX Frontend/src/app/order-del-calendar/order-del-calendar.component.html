@@ -32,7 +32,7 @@
                     (cdkDropListDropped)="onDropEvent($event)">
                     {{ day?.date }}
                     <div class="event-title" *ngIf="day.event">
-                        <span class="red-dot"></span>{{ day.event.customerFullName  }}
+                        <span class="red-dot"></span>Order #{{ day.event.customerOrderID  }}
                     </div>
                 </td>
               </tr>
