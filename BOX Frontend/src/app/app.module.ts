@@ -68,6 +68,8 @@ import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CreditApplicationComponent } from './credit-application/credit-application.component';
+import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 
 
 
@@ -110,7 +112,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         PlaceOrderComponent,
         OrderHistoryComponent,
         CustomerOrdersComponent,
-        RegistrationSuccessPopupComponent,
         CustomProdComponent,
         ConfirmEmailComponent,
         FooterComponent,
@@ -135,6 +136,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         NotFoundComponent,
         ForbiddenComponent,
         QuotesComponent,
+        RegistrationSuccessPopupComponent,
+        CreditApplicationComponent,
+        AdminCreditApplicationComponent
         
   ],
   imports: [

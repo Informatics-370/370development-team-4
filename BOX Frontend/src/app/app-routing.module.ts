@@ -31,6 +31,7 @@ import { RoleAuthGuard } from './role-auth.guard';
 import { PlaceOrderComponent } from './customer-view/place-order/place-order.component';
 import { OrderHistoryComponent } from './customer-view/order-history/order-history.component';
 import { CustomerOrdersComponent } from './customer-orders/customer-orders.component';
+import { CreditApplicationComponent } from './credit-application/credit-application.component';
 import { CustomProdComponent } from './custom-prod/custom-prod.component';
 import { MyQuotesComponent } from './customer-view/my-quotes/my-quotes.component';
 import { QouteRequestsComponent } from './qoute-requests/qoute-requests.component';
@@ -47,6 +48,7 @@ import { ReviewReportComponent } from './review-report/review-report.component';
 import { WriteOffByProductCategoryComponent } from './write-off-by-product-category/write-off-by-product-category.component';
 import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
 import { MessagesComponent } from './messages/messages.component';
+import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
@@ -110,8 +112,10 @@ const routes: Routes = [
   { path: 'order-schedule', component: OrderDeliveryScheduleComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
   { path: 'order-calendar', component: OrderDelCalendarComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
   { path: 'manage-quotes', component: QuotesComponent, canActivate: [RoleAuthGuard], data: { allowedRoles: ['Admin', 'Employee']} },
+  { path: 'credit-application', component: CreditApplicationComponent },
+  { path: 'admin-credit-application', component: AdminCreditApplicationComponent },
   {path: 'forbidden', component: ForbiddenComponent },
-  {path: '**', component: NotFoundComponent }
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({

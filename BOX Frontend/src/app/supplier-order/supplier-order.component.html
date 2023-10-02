@@ -136,7 +136,7 @@
     <h3 class="p-3" style="color: black;">Supplier orders</h3>
     <div id="searchbar">
       <input type="text" id="search" name="searchTerm" class="modal-form-input modal-form-text"
-        placeholder="e.g. Search by ID, customer, status, price" (keyup)="searchSupplierOrders($event)"
+        placeholder="e.g. Search by Supplier" (keyup)="searchSupplierOrders($event)"
         (change)="searchSupplierOrders($event)" />
       <fa-icon id="search-icon" class="m-3 search-icon" [icon]="['fas', 'search']"></fa-icon>
     </div>
@@ -163,7 +163,8 @@
         </tr>
         <!--Item data from API-->
         <tr *ngFor="let order of supplierOrders" >
-          <td><button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#viewsupplierorderdetails">
+          <td>
+            <button data-bs-toggle="modal" data-bs-target="#viewSupplierOrder" class="CRUD-icon" (click)="openViewSupplierOrder(order)">
               <fa-icon [icon]="['fas','info']"></fa-icon>
             </button></td>
           <td> {{order.supplierName}}</td>
@@ -295,45 +296,97 @@
   </div>
 </div>
 
-<!-- view supplier order details modal -->
-<div class="modal fade" id="viewsupplierorderdetails" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-    <div class="modal-content" *ngIf="viewsupplierorder!= null">
-
-      <!--HEADER-->
-      <div class="modal-header">
-        <h4 class="modal-title">View supplier order details</h4>
-        <button class="close-modal" data-bs-dismiss="modal">
-          <fa-icon [icon]="['fas', 'window-close']"></fa-icon>
-        </button>
-      </div>
-
-      <!--body-->
-      <div class="modal-body">
-        <div>
-          Supplier order# : {{viewsupplierorder.supplierOrderID}} <br />
-          Supplier: {{viewsupplierorder.supplierName}}
-          Contents of order:
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Product Description</th>
-              <th scope="col">Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let order of viewsupplierorder.supplierOrders">
-              <td>{{order.fixedProductDescription != '' ? order.fixedProductDescription: order.rawMaterialDescription}} </td>
-              <td>{{order.quantity}}</td>
-            </tr>
-          </tbody>
-        </table>
-
-      </div>
-
-
-    </div>
+<div class="modal fade" id="viewSupplierOrder" tabindex="-1" >
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-content"*ngIf="viewsupplierorder != null">
+  <div class="modal-header" >  <h5>Supplier Order Details</h5>
+  <div style="position: absolute; top: 10px; right: 30px;"> 
+    <span class="close-modal" data-bs-dismiss="modal" id="close"><fa-icon [icon]="['fas', 'window-close']" ></fa-icon></span> 
+    </div> <!--<fa-icon [icon]="['fas', 'window-close']"></fa-icon>-->
   </div>
-</div>
+  
+       <!--BODY-->
+  <div class="modal-body">
+  
+    <p class="modal-form-input bold">Supplier Name: {{viewsupplierorder.supplierName}}</p>
+   
+    <!-- <div  *ngFor="let SupplierOrderLine of viewsupplierorder.supplierOrders" >   
+    <div *ngIf="SupplierOrderLine.rawMaterialID != null"> <p> Product: {{SupplierOrderLine.rawMaterialDescription}} </p> </div> </div> <p>Product: {{SupplierOrderLine.rawMaterialDescription}} -->
+      <div *ngFor="let SupplierOrderLine of viewsupplierorder.supplierOrders"> 
+        <p *ngIf="SupplierOrderLine.fixedProductID; else rawMaterialDescriptionBlock">
+        Product Type (Fixed Product): {{ SupplierOrderLine.fixedProductID }}
+      </p>
+      <ng-template #rawMaterialDescriptionBlock>
+        <p>
+          Product Type (Raw Material): {{ SupplierOrderLine.rawMaterialID }}
+        </p>
+      </ng-template>
+      </div>
+    <p *ngFor="let SupplierOrderLine of viewsupplierorder.supplierOrders"> Quantity: {{SupplierOrderLine.quantity}}</p>
+  
+    <!-- <tr *ngFor="let order of viewsupplierorder.supplierOrders"> <td>Product Description: {{order.fixedProductDescription != '' ? order.fixedProductDescription: order.rawMaterialDescription}}</td>
+  </tr> -->
+    </div>        
+  
+  <!-- Modal footer -->
+  
+  </div>
+  </div>
+  <div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>
+
+<!-- <div class="modal fade" id="viewSupplierOrder" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" *ngIf="viewsupplierorder != null">
+
+          <!-HEADER-->
+          <!-- <div class="modal-header">
+              <h4 id="modal-title" class="modal-title">Supplier Order Details</h4>
+              <button class="close-modal" data-bs-dismiss="modal"><fa-icon [icon]="['fas', 'window-close']"></fa-icon></button>
+          </div> -->
+
+          <!--BODY-->
+          <!-- <div class="modal-body">
+              <span class="bold">Quantity on hand: </span>{{viewsupplierorder.supplierName}}<br />
+              
+              <div style="text-align: center;">
+              </div>
+          </div> -->
+
+          <!-- Modal footer -->
+          <!-- <div class="modal-footer justify-content-evenly">
+              <button class="btn btn-create modal-form-submit" data-bs-dismiss="modal">Close</button>
+          </div>
+
+      </div>
+  </div>
+</div> --> 
+
+<!-- <div>
+   Display the modal when viewsupplierorder is not null -->
+ <!-- <div *ngIf="viewsupplierorder != null">
+   <div class="modal fade" id="viewSupplierOrder" tabindex="-1" role="dialog">
+     <div class="modal-dialog modal-lg" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h4 class="modal-title">View Supplier Order Details</h4>
+           <button type="button" class="close" (click)="closePopup()">
+             <span aria-hidden="true">&times;</span>
+           </button>
+         </div>
+         <div class="modal-body">
+            Display order details here using Angular data binding -->
+           <!-- <p>Order ID: {{ viewsupplierorder.supplierOrderID }}</p>
+           <p>Supplier Name: {{ viewsupplierorder.supplierName }}</p>
+            Add more order details as needed -->
+         <!-- </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" (click)="closePopup()">Close</button>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div> --> 
+
+
+
+
