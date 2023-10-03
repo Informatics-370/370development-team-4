@@ -6,7 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
-import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ViewHelpInventoryComponent } from './view-help-inventory/view-help-inventory.component';
 import { ProductItemTestComponent } from './product-item-test/product-item-test.component';
@@ -62,7 +62,7 @@ import { WriteOffByProductCategoryComponent } from './write-off-by-product-categ
 import { InventoryChartComponent } from './inventory-chart/inventory-chart.component';
 import { MessagesComponent } from './messages/messages.component';
 import { OrderDeliveryScheduleComponent } from './order-delivery-schedule/order-delivery-schedule.component';
-import { FullCalendarModule } from '@fullcalendar/angular';
+//import { FullCalendarModule } from '@fullcalendar/angular';
 import { OrderDelCalendarComponent } from './order-del-calendar/order-del-calendar.component';
 import { QuotesComponent } from './quotes/quotes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
@@ -150,7 +150,7 @@ import { ReviewOrderComponent } from './customer-view/review-order/review-order.
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    FullCalendarModule,
+    //FullCalendarModule,
     DragDropModule
  ],
   providers: [],

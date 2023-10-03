@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BOX.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231002181302_Add review ID to order")]
-    partial class AddreviewIDtoorder
+    [Migration("20231002191630_newInitial")]
+    partial class newInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

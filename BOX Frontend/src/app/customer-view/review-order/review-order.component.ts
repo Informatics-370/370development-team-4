@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { DataService } from '../../services/data.services';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Route, Router, ActivatedRoute } from '@angular/router';
 import { OrderVM } from '../../shared/order-vm';
 import Swal from 'sweetalert2';
 import { HttpClient } from '@angular/common/http';
@@ -10,16 +12,48 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./review-order.component.css']
 })
 export class ReviewOrderComponent {
+  order!: OrderVM;
+  code!: string;
 
   //forms logic
-  reviewOrder: FormGroup;
+  reviewOrderForm: FormGroup;
+  rating = 0;
+  submitted = false;
 
-  constructor(private http: HttpClient, private formBuilder: FormBuilder) {
-    this.reviewOrder = this.formBuilder.group({
-      productRating: [5, Validators.required],
-      reviewComments: ['', Validators.required],
+  constructor(private dataService: DataService, private http: HttpClient, private activatedRoute: ActivatedRoute, 
+    private formBuilder: FormBuilder, private router: Router) {
+    this.reviewOrderForm = this.formBuilder.group({
+      comments: ['', Validators.required],
       recommendation: ['true', Validators.required]
     });
+  }
+
+  ngOnInit() {    
+    //Retrieve the code that leads to this order from url
+    this.activatedRoute.paramMap.subscribe(params => {
+      //get parameters from url
+      let codeFromURL = params.get('code');
+      if (codeFromURL) {
+        this.code = codeFromURL;
+        //this.getOrder(this.code);
+      }      
+    });
+  }
+
+  getOrder(code: string) {
+    this.dataService.GetOrderByCode(code).subscribe((result) => {
+      this.order = result;
+
+      console.log('Order to review:', this.order);
+    });
+  }
+
+  rate(stars: number) {
+    if (stars > 0 && stars < 6) this.rating = stars;
+  }
+
+  reviewOrder() {
+    
   }
 
   openReviewModal() {
@@ -66,4 +100,5 @@ export class ReviewOrderComponent {
     );
   }
 
+  get recommendation() { return this.reviewOrderForm.get('recommendation'); }
 }

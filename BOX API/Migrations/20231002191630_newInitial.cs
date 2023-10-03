@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BOX.Migrations
 {
-    public partial class initial : Migration
+    public partial class newInitial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -90,7 +90,7 @@ namespace BOX.Migrations
                 {
                     CustomerOrderStatusID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -123,6 +123,32 @@ namespace BOX.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customer_Review", x => x.CustomerReviewID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Delivery_Type",
+                columns: table => new
+                {
+                    DeliveryTypeID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Delivery_Type", x => x.DeliveryTypeID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Order_Line_Status",
+                columns: table => new
+                {
+                    OrderLineStatusID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order_Line_Status", x => x.OrderLineStatusID);
                 });
 
             migrationBuilder.CreateTable(
@@ -490,7 +516,7 @@ namespace BOX.Migrations
                         column: x => x.SupplierID,
                         principalTable: "Supplier",
                         principalColumn: "SupplierID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1012,8 +1038,8 @@ namespace BOX.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WriteOffReasonID = table.Column<int>(type: "int", nullable: false),
                     StockTakeID = table.Column<int>(type: "int", nullable: false),
-                    RawMaterialId = table.Column<int>(type: "int", nullable: false),
-                    FixedProductId = table.Column<int>(type: "int", nullable: false),
+                    RawMaterialId = table.Column<int>(type: "int", nullable: true),
+                    FixedProductId = table.Column<int>(type: "int", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -1023,14 +1049,12 @@ namespace BOX.Migrations
                         name: "FK_Write_Off_Fixed_Product_FixedProductId",
                         column: x => x.FixedProductId,
                         principalTable: "Fixed_Product",
-                        principalColumn: "FixedProductID",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "FixedProductID");
                     table.ForeignKey(
                         name: "FK_Write_Off_Raw_Material_RawMaterialId",
                         column: x => x.RawMaterialId,
                         principalTable: "Raw_Material",
-                        principalColumn: "RawMaterialID",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "RawMaterialID");
                     table.ForeignKey(
                         name: "FK_Write_Off_Stock_Take_StockTakeID",
                         column: x => x.StockTakeID,
@@ -1058,7 +1082,11 @@ namespace BOX.Migrations
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Delivery_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Delivery_Photo = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    Delivery_Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    DeliveryTypeID = table.Column<int>(type: "int", nullable: false),
+                    PaymentTypeID = table.Column<int>(type: "int", nullable: false),
+                    CustomerReviewID = table.Column<int>(type: "int", nullable: true),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    QR_Code_Photo = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1068,7 +1096,7 @@ namespace BOX.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Customer_Order_Customer_Order_Status_CustomerOrderStatusID",
                         column: x => x.CustomerOrderStatusID,
@@ -1076,10 +1104,27 @@ namespace BOX.Migrations
                         principalColumn: "CustomerOrderStatusID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Customer_Order_Customer_Review_CustomerReviewID",
+                        column: x => x.CustomerReviewID,
+                        principalTable: "Customer_Review",
+                        principalColumn: "CustomerReviewID");
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Delivery_Type_DeliveryTypeID",
+                        column: x => x.DeliveryTypeID,
+                        principalTable: "Delivery_Type",
+                        principalColumn: "DeliveryTypeID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Customer_Order_Order_Delivery_Schedule_OrderDeliveryScheduleID",
                         column: x => x.OrderDeliveryScheduleID,
                         principalTable: "Order_Delivery_Schedule",
                         principalColumn: "OrderDeliveryScheduleID");
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Payment_Type_PaymentTypeID",
+                        column: x => x.PaymentTypeID,
+                        principalTable: "Payment_Type",
+                        principalColumn: "PaymentTypeID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Customer_Order_Quote_QuoteID",
                         column: x => x.QuoteID,
@@ -1158,6 +1203,7 @@ namespace BOX.Migrations
                     CustomerOrderID = table.Column<int>(type: "int", nullable: false),
                     FixedProductID = table.Column<int>(type: "int", nullable: true),
                     CustomProductID = table.Column<int>(type: "int", nullable: true),
+                    OrderLineStatusID = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Confirmed_Unit_Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -1185,6 +1231,12 @@ namespace BOX.Migrations
                         column: x => x.FixedProductID,
                         principalTable: "Fixed_Product",
                         principalColumn: "FixedProductID");
+                    table.ForeignKey(
+                        name: "FK_Customer_Order_Line_Order_Line_Status_OrderLineStatusID",
+                        column: x => x.OrderLineStatusID,
+                        principalTable: "Order_Line_Status",
+                        principalColumn: "OrderLineStatusID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1193,8 +1245,7 @@ namespace BOX.Migrations
                 {
                     PaymentID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PaymentTypeID = table.Column<int>(type: "int", nullable: false),
-                    CustomerOrderID = table.Column<int>(type: "int", nullable: false),
+                    CustomerOrderID = table.Column<int>(type: "int", nullable: true),
                     Date_And_Time = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -1205,14 +1256,7 @@ namespace BOX.Migrations
                         name: "FK_Payment_Customer_Order_CustomerOrderID",
                         column: x => x.CustomerOrderID,
                         principalTable: "Customer_Order",
-                        principalColumn: "CustomerOrderID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Payment_Payment_Type_PaymentTypeID",
-                        column: x => x.PaymentTypeID,
-                        principalTable: "Payment_Type",
-                        principalColumn: "PaymentTypeID",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "CustomerOrderID");
                 });
 
             migrationBuilder.CreateIndex(
@@ -1305,9 +1349,24 @@ namespace BOX.Migrations
                 column: "CustomerOrderStatusID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customer_Order_CustomerReviewID",
+                table: "Customer_Order",
+                column: "CustomerReviewID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customer_Order_DeliveryTypeID",
+                table: "Customer_Order",
+                column: "DeliveryTypeID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Customer_Order_OrderDeliveryScheduleID",
                 table: "Customer_Order",
                 column: "OrderDeliveryScheduleID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customer_Order_PaymentTypeID",
+                table: "Customer_Order",
+                column: "PaymentTypeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_Order_QuoteID",
@@ -1338,6 +1397,11 @@ namespace BOX.Migrations
                 name: "IX_Customer_Order_Line_FixedProductID",
                 table: "Customer_Order_Line",
                 column: "FixedProductID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customer_Order_Line_OrderLineStatusID",
+                table: "Customer_Order_Line",
+                column: "OrderLineStatusID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_Return_CustomerReturnReasonID",
@@ -1373,11 +1437,6 @@ namespace BOX.Migrations
                 name: "IX_Payment_CustomerOrderID",
                 table: "Payment",
                 column: "CustomerOrderID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payment_PaymentTypeID",
-                table: "Payment",
-                column: "PaymentTypeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Price_FixedProductID",
@@ -1574,9 +1633,6 @@ namespace BOX.Migrations
                 name: "Customer_Order_Line");
 
             migrationBuilder.DropTable(
-                name: "Customer_Review");
-
-            migrationBuilder.DropTable(
                 name: "Payment");
 
             migrationBuilder.DropTable(
@@ -1622,10 +1678,10 @@ namespace BOX.Migrations
                 name: "Customer_Return");
 
             migrationBuilder.DropTable(
-                name: "Customer_Order");
+                name: "Order_Line_Status");
 
             migrationBuilder.DropTable(
-                name: "Payment_Type");
+                name: "Customer_Order");
 
             migrationBuilder.DropTable(
                 name: "Custom_Product");
@@ -1661,7 +1717,16 @@ namespace BOX.Migrations
                 name: "Customer_Order_Status");
 
             migrationBuilder.DropTable(
+                name: "Customer_Review");
+
+            migrationBuilder.DropTable(
+                name: "Delivery_Type");
+
+            migrationBuilder.DropTable(
                 name: "Order_Delivery_Schedule");
+
+            migrationBuilder.DropTable(
+                name: "Payment_Type");
 
             migrationBuilder.DropTable(
                 name: "Quote");

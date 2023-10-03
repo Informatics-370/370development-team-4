@@ -1,1 +1,60 @@
-<p>review-order works!</p>
+<div class="app-customer-navbar" style="max-width: 100%;"></div>
+
+<div class="row page-row">
+  <div class="col-md-3 col-sm-12 all-categories-menu">
+    <app-categories-menu></app-categories-menu>
+  </div>
+
+  <!--PAGE CONTENT-->
+  <div class="col-md-9 col-sm-9 p-2">
+    <h3 style="color: black;" class="p-3">Review Order {{order == null ? '' : '#' + order.customerOrderID}}</h3>
+    
+    <form [formGroup]="reviewOrderForm" id="review-form" class="p-3">
+      <div class="form-group">
+        <label class="form-label bold">Rate your order:</label>
+        <div class="rating">
+          <button (click)="rate(1)" class="star" [ngClass]="{'active-star': rating > 0}">
+            <fa-icon [icon]="['fas', 'star']"></fa-icon>
+          </button>
+          <button (click)="rate(2)" class="star" [ngClass]="{'active-star': rating > 1}">
+            <fa-icon [icon]="['fas', 'star']"></fa-icon>
+          </button>
+          <button (click)="rate(3)" class="star" [ngClass]="{'active-star': rating > 2}">
+            <fa-icon [icon]="['fas', 'star']"></fa-icon>
+          </button>
+          <button (click)="rate(4)" class="star" [ngClass]="{'active-star': rating > 3}">
+            <fa-icon [icon]="['fas', 'star']"></fa-icon>
+          </button>
+          <button (click)="rate(5)" class="star" [ngClass]="{'active-star': rating > 4}">
+            <fa-icon [icon]="['fas', 'star']"></fa-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label modal-form-label bold">Would you recommend us to a friend?</label>
+
+        <label class="form-label recommendation" [ngClass]="{'recommend': recommendation?.value == 'true'}">
+          <input type="radio" formControlName="recommendation" value="true" class="recommendation-radio">
+          Yes <fa-icon class="recommendation-icon" [icon]="['fas', 'face-smile']"></fa-icon>
+        </label>
+
+        <label class="form-label recommendation" [ngClass]="{'not-recommend': recommendation?.value == 'false'}">
+          <input type="radio" formControlName="recommendation" value="false" class="recommendation-radio">
+          No <fa-icon class="recommendation-icon" [icon]="['fas', 'face-frown']"></fa-icon>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="comments" class="form-label modal-form-label bold">Comments:</label>
+        <textarea id="comments" type="text" formControlName="comments" class="form-control modal-form-input modal-form-text" 
+          required placeholder="The driver was very friendly. I look forward to ordering again!">
+        </textarea>
+      </div>
+
+      <button class="btn btn-create modal-form-submit" (click)="reviewOrder()" [disabled]="submitted">Review</button>
+    </form>
+  </div>
+</div>
+
+<div class="app-footer"></div>

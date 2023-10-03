@@ -62,7 +62,6 @@ export class DeliverOrderComponent {
       let codeFromURL = params.get('code');
       if (codeFromURL) {
         this.code = codeFromURL;
-        console.log(this.code);
         this.getDataFromDB(this.code);
       }      
     });

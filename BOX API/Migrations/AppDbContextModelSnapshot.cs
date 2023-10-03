@@ -2031,15 +2031,11 @@ namespace BOX.Migrations
                 {
                     b.HasOne("BOX.Models.Fixed_Product", "FixedProduct")
                         .WithMany()
-                        .HasForeignKey("FixedProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FixedProductId");
 
                     b.HasOne("BOX.Models.Raw_Material", "RawMaterial")
                         .WithMany()
-                        .HasForeignKey("RawMaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RawMaterialId");
 
                     b.HasOne("BOX.Models.Stock_Take", "Stock_Take")
                         .WithMany()

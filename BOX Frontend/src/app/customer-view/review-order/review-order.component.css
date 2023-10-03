@@ -1,2 +1,63 @@
 @import "../../dashboard/dashboard.component.css";
 @import "../../product-category/product-category.component.css";
+
+.form-group { margin-top: 1em; }
+
+.form-group:first-child { margin-top: 0; }
+
+.modal-form-label { display: block; }
+
+.rating .star {
+    color: lightgray;
+    font-size: 2em;
+    margin-right: 0.5em;
+    cursor: pointer;
+    background-color: white;
+    border: none;
+    padding: 0;
+}
+
+.rating .star:hover {
+    color: #bbbbbb;
+}
+
+.active-star { color: #D4AF37 !important; }
+
+.recommendation {
+    padding: 15px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    font-size: 1.2em;
+    margin-right: 15px;
+    cursor: pointer;
+    color: lightgray;
+}
+
+.recommendation:hover { border-color: black; }
+
+.recommend {
+    border-color: #32AF99 !important;
+    color: #32AF99;
+}
+
+.not-recommend {
+    border-color: #f64e4e !important;
+    color: #f64e4e;
+}
+
+.recommendation-radio { display: none; }
+
+.recommendation-icon {
+    margin-left: 10px;
+}
+
+#comments {
+    width: 80%;
+    resize: vertical;
+    height: 100px;
+}
+
+.modal-form-submit {
+    padding-left: 20px;
+    padding-right: 20px;
+}

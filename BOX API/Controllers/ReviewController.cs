@@ -35,6 +35,10 @@ namespace BOX.Controllers
             try
             {
                 _repository.Add(customerReview);
+                await _repository.SaveChangesAsync(); //this generates ID for review
+
+                var existingOrder = await _repository.GetCustomerOrderAsync(crVM.OrderID); //get order
+                existingOrder.CustomerReviewID = customerReview.CustomerReviewID; //assign review to order
                 await _repository.SaveChangesAsync();
             }
             catch (Exception)
