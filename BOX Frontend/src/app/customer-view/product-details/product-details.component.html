@@ -18,7 +18,7 @@
           <div class="row align-items-center" *ngIf="!loading">
             <div class="col-sm-12 col-md-6 product-img special-img">
               <img class="card-img product-card-img special-card-img"
-                src="data:image/png;base64,{{selectedProductVM.productPhotoB64}}" alt={{selectedProductVM.description}}>
+                src="data:image/png;base64,{{sizeDropdownArray[selectedSizeIndex].imageB64}}" alt={{selectedProductVM.description}}>
             </div>
             <div class="col-sm-12 col-md-6 card-body product-card-body special-card-body">
               <h5 class="card-text">{{selectedProductVM.description}} (Standard)</h5>

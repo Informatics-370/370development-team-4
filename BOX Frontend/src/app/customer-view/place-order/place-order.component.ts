@@ -84,6 +84,10 @@ export class PlaceOrderComponent {
       //get parameters from url
       let id = params.get('quoteID');
       if (id) this.quoteID = this.decodeQuoteID(id);
+      if (this.quoteID == 0) { //decode quote ID return 0 if URL is incorrect
+        //error message
+        this.preventOrder('Oh no', 'Something went wrong and this order can\'t be processed. Are you sure you accepted the quote by clicking accept on your Quotes page?');
+      }
 
       this.getDataFromDB();
 
@@ -144,9 +148,13 @@ export class PlaceOrderComponent {
 
   //decode quote ID from url
   decodeQuoteID(gibberish: string): number {
-    var sensible = atob(gibberish);
-    let sensibleArr = sensible.split('-');
-    return parseInt(sensibleArr[1]);
+    try {
+      var sensible = atob(gibberish);
+      let sensibleArr = sensible.split('-');
+      return parseInt(sensibleArr[1]);
+    } catch (error) {
+      return 0;
+    }
   }
 
   //function to get data from DB asynchronously (and simultaneously)
@@ -203,37 +211,39 @@ export class PlaceOrderComponent {
  - quote belongs to the customer currently logged in. If not, then the customer is trying to order off someone else's quote
   */
   checkIfAllowedToOrder(quote: QuoteVM): boolean {
+    let title = '';
+    let html = '';
     if (quote.quoteStatusID != 1 || this.customer.userId != quote.customerId) { //doesn't have status of generated or not right customer
       //error message
-      Swal.fire({
-        icon: 'error',
-        title: "Oops...",
-        html: "Something went wrong and, for security reasons, we cannot allow you to place this order. Please try again in a few minutes. If the problem persists, contact Mega Pack support.",
-        timer: 8000,
-        timerProgressBar: true,
-        confirmButtonColor: '#32AF99'
-      }).then((result) => {
-        this.cancel();
-      });
+      title = 'Oops...';
+      html = 'Something went wrong and, for security reasons, we cannot allow you to place this order. Please try again in a few minutes. If the problem persists, contact Mega Pack support.';
+      this.preventOrder(title, html);      
     }
     else if (!this.customer.emailConfirmed) {
       //error message
-      Swal.fire({
-        icon: 'error',
-        title: "Oh no",
-        html: "You have not confirmed your email. We emailed you a link when you registered so check your mailbox or spam. Once you confirm your email, you can place an order.",
-        timer: 8000,
-        timerProgressBar: true,
-        confirmButtonColor: '#32AF99'
-      }).then((result) => {
-        this.cancel();
-      });
+      title = 'Oh no';
+      html = 'You have not confirmed your email. We emailed you a link when you registered so check your mailbox or spam. Once you confirm your email, you can place an order.';
+      this.preventOrder(title, html);      
     }
     else {
       return true;
     }
 
     return false;
+  }
+
+  preventOrder(title: string, html: string) {
+    //error message
+    Swal.fire({
+      icon: 'error',
+      title: title,
+      html: html,
+      timer: 8000,
+      timerProgressBar: true,
+      confirmButtonColor: '#32AF99'
+    }).then((result) => {
+      this.cancel();
+    });
   }
 
   //check if user is approved for credit and sufficient credit left to place this order

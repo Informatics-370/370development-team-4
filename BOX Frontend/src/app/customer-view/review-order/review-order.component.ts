@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Route, Router, ActivatedRoute } from '@angular/router';
 import { OrderVM } from '../../shared/order-vm';
 import Swal from 'sweetalert2';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-review-order',
@@ -21,8 +20,8 @@ export class ReviewOrderComponent {
   submitClicked = false; //submit button was clicked
   processing = false; //data is being processed
 
-  constructor(private dataService: DataService, private http: HttpClient, private activatedRoute: ActivatedRoute, 
-    private formBuilder: FormBuilder, private router: Router) {
+  constructor(private dataService: DataService, private activatedRoute: ActivatedRoute, private formBuilder: FormBuilder, 
+    private router: Router) {
     this.reviewOrderForm = this.formBuilder.group({
       comments: ['', Validators.required],
       recommendation: ['true', Validators.required]
@@ -36,7 +35,7 @@ export class ReviewOrderComponent {
       let codeFromURL = params.get('code');
       if (codeFromURL) {
         this.code = codeFromURL;
-        //this.getOrder(this.code);
+        this.getOrder(this.code);
       }      
     });
   }

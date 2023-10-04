@@ -40,7 +40,7 @@ export class ProductDetailsComponent {
   //vat!: VAT;
 
   //ADD TO CART
-  sizeDropdownArray: SizeDropdrownItem[] = []; //array used to populate size dropdown
+  sizeDropdownArray: FixedProductSpecificInfo[] = []; //array used to populate size dropdown
   selectedFixedProdID = 1; //holds the ID of fixed prod with size currently selected
   selectedSizeIndex = 0; //holds index of size currently selected in dropdown
   total = 0; //hold total cost i.e. unit price * qty - discount
@@ -273,12 +273,13 @@ export class ProductDetailsComponent {
           //create object; e.g. result: {sizeString: '150x150', price: 12.99, id: 15, qtyOnHand: 243500}
           //let priceInclVAT = fixedProd.price * (1 + this.vat.percentage / 100); //let price shown incl vat
 
-          let sizeDropdownObject: SizeDropdrownItem = {
+          let sizeDropdownObject: FixedProductSpecificInfo = {
             sizeString: sizeDropdownString,
             //price: parseFloat(priceInclVAT.toFixed(2)),
             fixedProductID: fixedProd.fixedProductID,
             /* qtyOnHand: Math.floor((Math.random() * 2000000)) //random whole number between 0 and 2 000 000 */
-            qtyOnHand: fixedProd.quantityOnHand //when fixed product quantities can be updated
+            qtyOnHand: fixedProd.quantityOnHand, //when fixed product quantities can be updated
+            imageB64: fixedProd.productPhotoB64
           };
 
           this.sizeDropdownArray.push(sizeDropdownObject); //push to global array for size dropdown
@@ -790,11 +791,12 @@ export class ProductDetailsComponent {
   get quantity() { return this.customiseForm.get('quantity'); }
 }
 
-export interface SizeDropdrownItem {
+export interface FixedProductSpecificInfo {
   fixedProductID: number;
   sizeString: string;
   //price: number;
   qtyOnHand: number;
+  imageB64: string;
 }
 
 interface CustomisableProductItem {
