@@ -72,6 +72,7 @@ import { CreditApplicationComponent } from './credit-application/credit-applicat
 import { AdminCreditApplicationComponent } from './admin-credit-application/admin-credit-application.component';
 import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
 import { ReviewOrderComponent } from './customer-view/review-order/review-order.component';
+import { DeliveryScheduleListReportComponent } from './delivery-schedule-list-report/delivery-schedule-list-report.component';
 
 
 @NgModule({
@@ -141,7 +142,8 @@ import { ReviewOrderComponent } from './customer-view/review-order/review-order.
         CreditApplicationComponent,
         AdminCreditApplicationComponent,
         DeliverOrderComponent,
-        ReviewOrderComponent
+        ReviewOrderComponent,
+        DeliveryScheduleListReportComponent
   ],
   imports: [
     BrowserModule,
