@@ -495,6 +495,10 @@ export class DataService {
     return this.httpClient.put<any>(`${this.apiUrl}CustomerOrder/DeliverOrder/${customerOrderId}`, deliveredOrder, this.httpOptions);
   }
 
+  ReviewOrder(crVM: any): Observable<any> {
+    return this.httpClient.post<any>(`${this.apiUrl}Review/AddCustomerReview`, crVM, this.httpOptions);
+  }
+
   //-------------------------------------------------------Custom PRODUCT-------------------------------------------------------
   GetAllCustomProducts(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CustomProduct/GetAllCustomProducts`)

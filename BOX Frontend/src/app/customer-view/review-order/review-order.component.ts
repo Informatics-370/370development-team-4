@@ -18,7 +18,8 @@ export class ReviewOrderComponent {
   //forms logic
   reviewOrderForm: FormGroup;
   rating = 0;
-  submitted = false;
+  submitClicked = false; //submit button was clicked
+  processing = false; //data is being processed
 
   constructor(private dataService: DataService, private http: HttpClient, private activatedRoute: ActivatedRoute, 
     private formBuilder: FormBuilder, private router: Router) {
@@ -53,10 +54,51 @@ export class ReviewOrderComponent {
   }
 
   reviewOrder() {
-    
+    this.submitClicked = true;
+    if (this.reviewOrderForm.valid) {
+      this.processing = true;
+
+      try {
+        //get review data
+        let review = {
+          orderID: this.order.customerOrderID,
+          product_Rating: this.rating,
+          comments: this.comments?.value,
+          recommendation: this.recommendation?.value == 'true' ? true : false
+        }
+
+        console.log('review to submit', review);
+        this.dataService.ReviewOrder(review).subscribe((result) => {
+          console.log(result);
+          this.processing = false;
+          this.submitClicked = false;
+          Swal.fire({
+            icon: 'success',
+            title: "Review submitted",
+            html: "Thank you for your review!",
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonColor: '#32AF99'
+          }).then((response) => {
+            this.router.navigate(['customer-homepage']);
+          });
+        });
+
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: "Oops..",
+          html: "Something went wrong when submitting your review. Please try again later.",
+          timer: 3000,
+          timerProgressBar: true,
+          confirmButtonColor: '#32AF99'
+        }).then((result) => {
+        });
+      }
+    }
   }
 
-  openReviewModal() {
+  /* openReviewModal() {
     Swal.fire({
       title: 'Write a Review',
       html:
@@ -98,7 +140,8 @@ export class ReviewOrderComponent {
         Swal.fire('Error', 'An error occurred while submitting your review.', 'error');
       }
     );
-  }
+  } */
 
   get recommendation() { return this.reviewOrderForm.get('recommendation'); }
+  get comments() { return this.reviewOrderForm.get('comments'); }
 }

@@ -46,13 +46,27 @@
       </div>
 
       <div class="form-group">
-        <label for="comments" class="form-label modal-form-label bold">Comments:</label>
+        <label for="comments" class="form-label modal-form-label bold">Comments:
+          <button class="tooltip-icon">
+            <fa-icon [icon]="['fas', 'question']"></fa-icon>
+            <span class="tooltip-text">
+              Comment in your home language. You can see the list of
+              <a href="https://cloud.google.com/translate/docs/languages">supported languages here</a>.
+            </span>
+          </button>
+        </label>
         <textarea id="comments" type="text" formControlName="comments" class="form-control modal-form-input modal-form-text" 
           required placeholder="The driver was very friendly. I look forward to ordering again!">
         </textarea>
+        <!--Display validation error message-->
+        <div *ngIf="(comments?.dirty || comments?.touched || submitClicked) && comments?.errors?.['required']" class="error-msg">
+          This field is required.
+        </div>
       </div>
 
-      <button class="btn btn-create modal-form-submit" (click)="reviewOrder()" [disabled]="submitted">Review</button>
+      <button class="btn btn-create modal-form-submit" (click)="reviewOrder()" [disabled]="processing">
+        Review <span *ngIf="processing" class="loader"></span>
+      </button>
     </form>
   </div>
 </div>

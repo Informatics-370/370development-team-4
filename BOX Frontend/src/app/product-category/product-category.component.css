@@ -129,3 +129,85 @@
 .menu-card {
     box-shadow: inset;
 }
+
+/*Loading icon*/
+.loader {
+    height: 1em;
+    width: 1em;
+    display: inline-block;
+    border: 3px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    margin-left: 0.5em;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*Tooltip*/
+.tooltip-icon {
+  border: 1px solid white;
+  border-radius: 50%;
+  color: white;
+  background-color: #434343;
+  margin-left: 0.5em;
+  font-weight: normal;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  font-size: 10px;
+  position: relative;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  z-index: 1;
+  top: -90%;
+  left: 125%;
+  margin-left: 5px;
+  width: 180px;
+  background-color: #434343;
+  color: white;
+  text-align: center;
+  padding: 5px 8px;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 1em;
+  cursor: default;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip-text a { color: white; }
+
+/* Tooltip arrow */
+.tooltip-icon .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -8px;
+  
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #434343 transparent transparent;
+}
+
+/*Show tooltip*/
+.tooltip-icon:hover .tooltip-text, .tooltip-icon:active .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
