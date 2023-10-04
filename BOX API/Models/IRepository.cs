@@ -206,7 +206,11 @@ namespace BOX.Models
 
         //-------------------------------------------------------- PAYMENT --------------------------------------------------------
         Payment GetPayment(int paymentId);
+
         //---------------------------------------------------- PAYMENT TYPE ----------------------------------------------------
         Task<Payment_Type> GetPaymentTypeAsync(int paymentTypeId);
+
+        //------------------------------------------------------ REVIEW ------------------------------------------------------------
+        Task<Customer_Review> GetReviewAsync(int reviewId);
     }
 }

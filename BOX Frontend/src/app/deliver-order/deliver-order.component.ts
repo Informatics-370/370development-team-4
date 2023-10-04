@@ -221,6 +221,7 @@ export class DeliverOrderComponent {
         date: new Date(Date.now()),
         code: this.code,
         qrcodeB64: '',
+        reviewID: 0,
         orderLines: []
       }
 

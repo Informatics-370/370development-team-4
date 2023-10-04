@@ -601,6 +601,7 @@ export class DataService {
   SendEmail(email: any): Observable<any> {
     return this.httpClient.post<any>(`${this.apiUrl}Email/SendEmail`, email, this.httpOptions);
   }
+  
   //--------------------------------CREDIT APPLICATION------------------------------------
   GetCreditApplications(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CreditApplication/GetCreditApplications`)
@@ -619,6 +620,12 @@ export class DataService {
   downloadApplication(formData: FormData): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}CreditApplication/DownloadFile`)
     .pipe(map(result => result))
+  }
+
+  //-------------------------------- REVIEWS ------------------------------------
+  GetReview(reviewID: number): Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}Review/GetReview/${reviewID}`)
+      .pipe(map(result => result));
   }
 
 }

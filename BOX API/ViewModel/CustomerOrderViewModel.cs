@@ -21,6 +21,7 @@ namespace BOX.ViewModel
         public int PaymentID { get; set; } //ID of payment to attach order to
         public string Code { get; set; }
         public string QRCodeB64 { get; set; }
+        public int ReviewID { get; set; }
         public List<CustomerOrderLineViewModel> OrderLines { get; set; }
 	}
 }

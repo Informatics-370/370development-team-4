@@ -47,7 +47,7 @@ export class PlaceOrderComponent {
   orderBtnText = 'Order >';
 
   paymentResult: any;
-  submitted = false;
+  processing = false;
 
   //invoice info
   invoice: any = null;
@@ -283,7 +283,7 @@ export class PlaceOrderComponent {
 
   //---------------------------------------- PLACE ORDER ----------------------------------------
   async initiateOrder() {
-    this.submitted = true;
+    this.processing = true;
     let amount = 0;
     let deliveryTypeId = -1;
     let paymentTypeId = -1;
@@ -387,6 +387,7 @@ export class PlaceOrderComponent {
             confirmButtonColor: '#32AF99'
           }).then((result) => {
             this.placeOrder(payment);
+            this.processing = false;
           });
         }
         else { //result is payfast request
@@ -407,7 +408,7 @@ export class PlaceOrderComponent {
           }
           document.body.appendChild(form);
           form.submit();
-          this.submitted = false;
+          this.processing = false;
         }
       });
     } catch (error) {
@@ -438,7 +439,7 @@ export class PlaceOrderComponent {
       }
 
       console.error('Error submitting order: ', error);
-      this.submitted = false;
+      this.processing = false;
     }
   }  
 
@@ -466,6 +467,7 @@ export class PlaceOrderComponent {
       paymentType: '',
       code: '',
       qrcodeB64: '',
+      reviewID: 0,
       orderLines: []
     };
 

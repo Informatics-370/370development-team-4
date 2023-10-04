@@ -291,6 +291,8 @@ namespace BOX.Controllers
                         DeliveryPhoto = Convert.ToBase64String(order.Delivery_Photo),
                         PaymentTypeID = order.PaymentTypeID,
                         PaymentType = paymentType.Description,
+                        Code = order.Code, //used to redirect customer to review order
+                        ReviewID = order.CustomerReviewID == null ? 0 : order.CustomerReviewID.Value,
                         OrderLines = olList
                     };
                     customerOrderVMs.Add(orVM);
@@ -471,7 +473,7 @@ namespace BOX.Controllers
             }
         }
 
-        //-------------------- verify payment --------------------
+        //-------------------- handle successful payment --------------------
         private string UrlEncode(string value)
         {
             return WebUtility.UrlEncode(value)?.Replace("%20", "+");
@@ -798,6 +800,7 @@ namespace BOX.Controllers
                     PaymentType = paymentType.Description,
                     Code = order.Code,
                     QRCodeB64 = Convert.ToBase64String(order.QR_Code_Photo),
+                    ReviewID = order.CustomerReviewID == null ? 0 : order.CustomerReviewID.Value,
                     OrderLines = orderLineList,
                 };
 

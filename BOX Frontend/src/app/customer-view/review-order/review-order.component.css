@@ -23,6 +23,12 @@
   padding: 0;
 }
 
+.rating .star:disabled, .rating .star:disabled:hover {
+  opacity: 0.5;
+  color: lightgray;
+  cursor: not-allowed;
+}
+
 .rating .star:hover {
   color: #bbbbbb;
 }
@@ -43,6 +49,12 @@
 
 .recommendation:hover {
   border-color: black;
+}
+
+.disabled-recommendation, .disabled-recommendation:hover {
+  border-color: lightgray;
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .recommend {
@@ -68,6 +80,8 @@
   resize: vertical;
   height: 100px;
 }
+
+#comments:disabled { cursor: not-allowed; }
 
 .modal-form-submit {
   padding-left: 20px;

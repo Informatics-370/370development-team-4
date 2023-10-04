@@ -18,5 +18,6 @@ export interface OrderVM {
   paymentID: number;
   code: string;
   qrcodeB64: string;
+  reviewID: number;
   orderLines: OrderLineVM[];
 }

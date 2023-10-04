@@ -16,6 +16,30 @@ namespace BOX.Controllers
             _repository = repository;
         }
 
+        [HttpGet]
+        [Route("GetReview/{reviewId}")] //READ SPECIFIC CATEGORY AND ASSOCIATED SIZE VARIABLES
+        public async Task<IActionResult> GetReview(int reviewId)
+        {
+            try
+            {
+                var review = await _repository.GetReviewAsync(reviewId);
+                if (review == null) return NotFound("The review does not exist on the system");
+
+                CustomerReviewViewModel reviewVM = new CustomerReviewViewModel()
+                {
+                    Product_Rating = review.Product_Rating,
+                    Comments = review.Comments,
+                    Recommendation = review.Recommendation
+                };
+
+                return Ok(reviewVM);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error. Please contact B.O.X support services.");
+            }
+        }
+
         [HttpPost]
         [Route("AddCustomerReview")]
         public async Task<IActionResult> AddCustomerReview(CustomerReviewViewModel crVM)

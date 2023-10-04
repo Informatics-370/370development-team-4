@@ -845,6 +845,13 @@ namespace BOX.Models
             return await query.FirstOrDefaultAsync();
         }
 
+        //------------------------------------------------------ CUSTOMER REVIEW ------------------------------------------------------------
+        public async Task<Customer_Review> GetReviewAsync(int reviewId)
+        {
+            IQueryable<Customer_Review> query = _appDbContext.Customer_Review.Where(c => c.CustomerReviewID == reviewId);
+            return await query.FirstOrDefaultAsync();
+        }
+
         //--------------------------------- TRANSACTIONS --------------------------------
         public IDbContextTransaction BeginTransaction()
         {

@@ -74,13 +74,13 @@ export class QouteRequestsComponent {
     } 
     else if (months >= 1) {
       if (months == 1) {
-        return `${months} month ago`;
+        return `Last month`;
       }
       return `${months} months ago`;
     } 
     else if (days >= 1) {
       if (days == 1) {
-        return `${days} day ago`;
+        return `Yesterday`;
       }
       return `${days} days ago`;
     } 

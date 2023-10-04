@@ -13,6 +13,8 @@ import Swal from 'sweetalert2';
 export class ReviewOrderComponent {
   order!: OrderVM;
   code!: string;
+  review: any;
+  alreadyReviewed = false;
 
   //forms logic
   reviewOrderForm: FormGroup;
@@ -43,9 +45,36 @@ export class ReviewOrderComponent {
   getOrder(code: string) {
     this.dataService.GetOrderByCode(code).subscribe((result) => {
       this.order = result;
+      this.checkIfReviewed(this.order);
 
       console.log('Order to review:', this.order);
     });
+  }
+
+  checkIfReviewed(order: OrderVM) {
+    if (order.reviewID > 0) {
+      try {
+        this.dataService.GetReview(order.reviewID).subscribe((result) => {
+          this.review = result;
+          this.alreadyReviewed = true;
+
+          //disable controls
+          this.comments?.disable();
+          this.recommendation?.disable();
+
+          //set control values
+          this.rating = this.review.product_Rating;
+          this.reviewOrderForm.patchValue({
+            recommendation: this.review.recommendation ? 'true' : 'false',
+            comments: this.review.comments
+          });
+
+          console.log('reviewed', this.review);
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 
   rate(stars: number) {
@@ -96,50 +125,6 @@ export class ReviewOrderComponent {
       }
     }
   }
-
-  /* openReviewModal() {
-    Swal.fire({
-      title: 'Write a Review',
-      html:
-        '<input id="productRating" type="number" class="swal2-input" placeholder="Product Rating (1-5)" min="1" max="5">' +
-        '<input id="reviewComments" class="swal2-input" placeholder="Comments">' +
-        '<select id="recommendation" class="swal2-input">' +
-        '  <option value="true">Recommend</option>' +
-        '  <option value="false">Do Not Recommend</option>' +
-        '</select>',
-      focusConfirm: false,
-      preConfirm: () => {
-        const productRatingInput = Swal.getPopup()!.querySelector('#productRating') as HTMLInputElement;
-        const reviewCommentsInput = Swal.getPopup()!.querySelector('#reviewComments') as HTMLInputElement;
-        const recommendationSelect = Swal.getPopup()!.querySelector('#recommendation') as HTMLSelectElement;
-
-        const product_Rating = productRatingInput?.value;
-        const comments = reviewCommentsInput?.value;
-        const recommendation = recommendationSelect?.value === 'true';
-
-        return { product_Rating, comments, recommendation };
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log(result)
-        this.addReview(result.value);
-      }
-    });
-  }
-  
-  addReview(reviewData: any) {
-    const apiUrl = 'http://localhost:5116/api/Review/AddCustomerReview'; // Replace with your actual API endpoint
-    this.http.post(apiUrl, reviewData).subscribe(
-      (response) => {
-        // Handle successful review submission
-        Swal.fire('Review Submitted', 'Thank you for your review!', 'success');
-      },
-      (error) => {
-        // Handle error
-        Swal.fire('Error', 'An error occurred while submitting your review.', 'error');
-      }
-    );
-  } */
 
   get recommendation() { return this.reviewOrderForm.get('recommendation'); }
   get comments() { return this.reviewOrderForm.get('comments'); }
