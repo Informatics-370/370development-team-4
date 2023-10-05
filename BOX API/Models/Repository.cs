@@ -2,6 +2,7 @@ using BOX.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Web.WebPages;
 
 namespace BOX.Models
 {
@@ -747,10 +748,10 @@ namespace BOX.Models
         }
 
         //----------------------------------------------- REJECT REASON -----------------------------------------------
-        public Task<Reject_Reason[]> GetAllRejectReasonsAsync()
+        public async Task<Reject_Reason[]> GetAllRejectReasonsAsync()
         {
             IQueryable<Reject_Reason> query = _appDbContext.Reject_Reason;
-            return query.ToArrayAsync();
+            return await query.ToArrayAsync();
         }
 
         public async Task<Reject_Reason> GetRejectReasonAsync(int rejectReasonId)
@@ -768,37 +769,50 @@ namespace BOX.Models
         }
 
         //----------------------------------- CUSTOMER -----------------------------------
-        public Task<Customer[]> GetAllCustomersAsync()
+        public async Task<Customer[]> GetAllCustomersAsync()
         {
             IQueryable<Customer> query = _appDbContext.Customer;
-            return query.ToArrayAsync();
+            return await query.ToArrayAsync();
         }
 
         //----------------------------------- REPORTS -----------------------------------
-        public Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate)
+        public async Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate)
         {
             IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.Date >= startDate && c.Date <= endDate);
-            return query.ToArrayAsync();
+            return await query.ToArrayAsync();
         }
 
-        public Task<Customer_Order[]> GetCustomerOrdersWithinRange(string customerId, DateTime startDate, DateTime endDate)
+        public async Task<Customer_Order[]> GetCustomerOrdersWithinRange(string customerId, DateTime startDate, DateTime endDate)
         {
             IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.UserId == customerId && c.Date >= startDate && c.Date <= endDate);
-            return query.ToArrayAsync();
+            return await query.ToArrayAsync();
         }
 
-        public Task<Supplier_OrderLine[]> GetSupplierOrderLinesByProductAsync(int productId, bool isFixedProduct = true)
+        public async Task<Supplier_OrderLine[]> GetSupplierOrderLinesByProductAsync(int productId, bool isFixedProduct = true)
         {
             if (isFixedProduct) //if we're searching for a fixed product
             {
                 IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.FixedProductID  == productId);
-                return query.ToArrayAsync();
+                return await query.ToArrayAsync();
             }
             else
             {
                 IQueryable<Supplier_OrderLine> query = _appDbContext.Supplier_OrderLine.Where(c => c.RawMaterialID == productId);
-                return query.ToArrayAsync();
+                return await query.ToArrayAsync();
             }
+        }
+
+        public async Task<Customer_Order[]> GetOrdersByDeliveryDateAsync(DateTime date)
+        {
+            //if I just say Delivery_Date == date, it will only get orders where the time matches as well. So I must make sure it only compares the date not time
+            //get year, month, and day components of the input date
+            DateTime startDate = date.Date;
+            DateTime endDate = startDate.AddDays(1).AddTicks(-1); //set the end of the day
+
+            //get orders where Delivery_Date falls within the specified day
+            IQueryable<Customer_Order> query = _appDbContext.Customer_Order.Where(c => c.Delivery_Date >= startDate && c.Delivery_Date <= endDate);
+
+            return await query.ToArrayAsync();
         }
 
         //-------------------------------------------- UPATING USER ------------------------------------

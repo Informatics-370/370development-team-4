@@ -10,7 +10,6 @@ import { Users } from '../shared/user';
 import { OrderVMClass } from '../shared/order-vm-class';
 import { VAT } from '../shared/vat';
 import Swal from 'sweetalert2';
-import { OrderLineVM } from '../shared/order-line-vm';
 import { CurrencyPipe } from '@angular/common';
 
 @Component({

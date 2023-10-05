@@ -1,0 +1,5 @@
+@import "../dashboard/dashboard.component.css";
+@import "../product-category/product-category.component.css";
+@import "../inactive-customer-list/inactive-customer-list.component.css";
+
+.btn-table { margin-left: 0; }

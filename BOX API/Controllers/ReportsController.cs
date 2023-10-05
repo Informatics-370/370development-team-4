@@ -112,10 +112,8 @@ namespace BOX.Controllers
                 //a customer is inactive if they haven't ordered in 90 days
                 DateTime now = DateTime.Now;
                 int daysToSubtract = 90;
-                //int minutesToSubtract = 15;
 
                 DateTime ninetyDaysAgo = now.AddDays(-daysToSubtract);
-                //DateTime fifteenMinutesAgo = now.AddMinutes(-minutesToSubtract);
 
                 var allCustomers = await _repository.GetAllCustomersAsync();
                 List<UserViewModel> inactiveCustomers  = new List<UserViewModel>();
@@ -123,7 +121,6 @@ namespace BOX.Controllers
                 foreach (var cus in allCustomers)
                 {
                     var customerOrdersWithinRange = await _repository.GetCustomerOrdersWithinRange(cus.UserId, ninetyDaysAgo, now);
-                    //var customerOrdersWithinRange = await _repository.GetCustomerOrdersWithinRange(cus.UserId, fifteenMinutesAgo, now);
 
                     if (!(customerOrdersWithinRange.Count() > 0))
                     {
@@ -147,8 +144,6 @@ namespace BOX.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + " inner exception " + ex.InnerException);
             }
-
-
         }
 
         [HttpGet]
@@ -182,5 +177,41 @@ namespace BOX.Controllers
 
         }
 
+        [HttpGet]
+        [Route("GetDeliveryScheduleReport")]
+        public async Task<IActionResult> GetDeliveryScheduleReport()
+        {
+            try
+            {
+                //get today's date
+                DateTime now = DateTime.Now;
+
+                //get all orders scheduled for delivery today
+                var deliverySchedule = await _repository.GetOrdersByDeliveryDateAsync(now);
+                List<DeliveryScheduleReportViewModel> schedule = new List<DeliveryScheduleReportViewModel>();
+
+                foreach (var order in deliverySchedule)
+                {
+                    var user = await _repository.GetUserAsync(order.UserId); //get user associated with order
+
+                    DeliveryScheduleReportViewModel scheduledOrder = new DeliveryScheduleReportViewModel
+                    {
+                        OrderID = order.CustomerOrderID,
+                        CustomerID = order.UserId,
+                        CustomerAddress = user.user_Address,
+                        CustomerName = user.user_FirstName,
+                        Code = order.Code,
+                        QRCodeB64 = Convert.ToBase64String(order.QR_Code_Photo)
+                    };
+                    schedule.Add(scheduledOrder);
+                }
+
+                return Ok(schedule);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error. Please contact B.O.X support services." + ex.Message + " inner exception " + ex.InnerException);
+            }
+        }
     }
 }

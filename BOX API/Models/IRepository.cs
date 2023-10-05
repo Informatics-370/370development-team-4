@@ -192,6 +192,7 @@ namespace BOX.Models
         Task<Customer_Order[]> GetOrdersWithinRangeAsync(DateTime startDate, DateTime endDate);
         Task<Customer_Order[]> GetCustomerOrdersWithinRange(string customerId, DateTime startDate, DateTime endDate);
         Task<Supplier_OrderLine[]> GetSupplierOrderLinesByProductAsync(int productId, bool isFixedProduct = true);
+        Task<Customer_Order[]> GetOrdersByDeliveryDateAsync(DateTime date);
 
         //----------------------------------------------- CUSTOMER -----------------------------------------------
         Task<Customer[]> GetAllCustomersAsync();

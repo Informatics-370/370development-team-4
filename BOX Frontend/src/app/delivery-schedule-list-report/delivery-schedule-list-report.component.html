@@ -1,1 +1,60 @@
-<p>delivery-schedule-list-report works!</p>
+<div class="row page-row">
+  <!--Menu bar-->
+  <div class="col-md-2">
+    <div class="app-menu"></div>
+  </div>
+  <!--PAGE CONTENT-->
+  <div class="col-md-10 page-content">
+    <h3 class="p-3" style="color: black;">Delivery Schedule List Report</h3>
+
+    <button type="submit" class="btn btn-create" [disabled]="loading || processing" (click)="generateReport()">
+      Generate <span *ngIf="loading" class="loader"></span>
+    </button>
+    <button type="button" class="btn btn-create" [disabled]="loading || processing || scheduleCount < 1" (click)="generatePDF()">
+      Download PDF <span *ngIf="processing" class="loader"></span>
+    </button>
+    <hr class="hr hr-blurry m-3" />
+    <!--Messages to user-->
+    <div class="p-3">
+      <span *ngIf="loading">Generating report for you...</span>
+      <span *ngIf="scheduleCount == 0">No orders are scheduled for delivery today.</span>
+    </div>
+
+    <!--REPORT-->
+    <div *ngIf="!loading && scheduleCount > 0">
+      <div style="max-width: 90%; margin: auto; margin-left: 25px;">
+        <h4>Delivery Schedule List Report</h4>
+        <div style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }} at {{now | date:'hh:mm:ss' }}
+        </div>
+      </div>
+
+      <table class="table" style="max-width: 90%;">
+        <thead>
+          <tr>
+            <td colspan="4">
+              <img id="megapack-header" src="../../assets/mega-pack-header.jpg" alt="MegaPack header" class="header" />
+            </td>
+          </tr>
+          <tr>
+            <th scope="col">Order</th>
+            <th scope="col">Address</th>
+            <th scope="col">QR Code</th>
+            <th scope="col">Deliver</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of schedule">
+            <td>Order #{{order.orderID}}</td>
+            <td>{{order.customerAddress}}</td>
+            <td>
+              <button type="button" class="btn btn-create btn-table">Print QR Code</button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-create btn-table">Deliver Order</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
