@@ -12,7 +12,7 @@ import { DatePipe } from '@angular/common';
   providers: [DatePipe]
 })
 export class DeliveryScheduleListReportComponent {
-  schedule: any[] = [];
+  schedule: DeliveryScheduleReportVM[] = [];
   scheduleCount = -1;
   loading = false; //when report is being generated
   processing = false; //when pdf is being generated and downoloaded
@@ -34,8 +34,6 @@ export class DeliveryScheduleListReportComponent {
       this.driver = await this.authService.getUserByEmail(email);
       let id = await this.authService.getUserIdFromToken(token);
       if (id) this.driver.id = id;
-
-      console.log(this.driver)
     }
   }
 
@@ -75,16 +73,16 @@ export class DeliveryScheduleListReportComponent {
     //add heading text to pdf
     yOffset += 62.301845 + 20;
     pdf.setFontSize(20); // Set the font size
-    pdf.text('Delivery Schedule List Report', 10, yOffset); // Add the text
+    pdf.text(`Order Delivery Schedule for ${this.datePipe.transform(this.now, 'dd/MM/yyyy')}`, 10, yOffset); // Add the text
     yOffset += 10;
     pdf.setFontSize(11);
-    pdf.text(`Generated on ${this.datePipe.transform(this.now, 'ccc, d MMM yyyy')} at ${this.datePipe.transform(this.now, 'hh:mm:ss')}`, 10, yOffset);
+    pdf.text(`Generated at ${this.datePipe.transform(this.now, 'HH:mm:ss')}`, 10, yOffset);
   
     // Prepare table data
-    const headings = ["Order", "Address"];
+    const headings = ["Order ID", "Address"];
     const rows: any[] = [];
     this.schedule.forEach(order => {
-      rows.push(['Order #' + order.orderID, order.customerAddress]);
+      rows.push(['Order ' + order.orderID, order.customerAddress]);
     });
 
     // Set table style options
@@ -113,7 +111,57 @@ export class DeliveryScheduleListReportComponent {
     });
   
     // Save the PDF with the current date in the filename
-    pdf.save(`Delivery schedule list report for ${this.datePipe.transform(this.now, 'd MMM yyyy')}.pdf`);
+    pdf.save(`Order Delivery Schedule for ${this.datePipe.transform(this.now, 'd MMM yyyy')}.pdf`);
     this.processing = false;
   }
+
+  printQRCode(id: number) {
+    let order = this.schedule.find(o => o.orderID == id); //get order to rpint QR code for
+
+    if (order) {
+      // Create a new image element for the QR Code
+      var qrCodeImage = new Image();
+      qrCodeImage.src = `data:image/png;base64,${order.qrCodeB64}`;
+
+      qrCodeImage.onload = function () {
+        // Create a canvas element
+        var canvas = document.createElement('canvas');
+        canvas.width = qrCodeImage.width; // Set canvas width to match QR Code image width
+        canvas.height = qrCodeImage.height + 150; // Add extra space for text
+
+        // Get 2D rendering context
+        var ctx = canvas.getContext('2d');
+
+        if (ctx) {
+          // Draw QR Code image onto canvas
+          ctx.drawImage(qrCodeImage, 0, 0, qrCodeImage.width, qrCodeImage.height);
+
+          // Add text below QR Code
+          ctx.font = '35px Verdana';
+          ctx.fillStyle = '#000000';
+          ctx.textAlign = 'center';
+          ctx.fillText(order ? order.code : 'No code', canvas.width / 2, qrCodeImage.height - 20);
+
+          // Convert canvas to data URL representing a PNG image
+          var dataURL = canvas.toDataURL('image/png');
+  
+          // Create a download link
+          var downloadLink = document.createElement('a');
+          downloadLink.href = dataURL;
+          downloadLink.download = `Order ${order ? order.orderID : ''} QR Code.png`; // Set the desired file name
+          downloadLink.click();
+        }
+      };
+
+    }
+  }
+}
+
+interface DeliveryScheduleReportVM {
+  orderID: number;
+  customerID: string;
+  customerName: string;
+  customerAddress: string;
+  qrCodeB64: string;
+  code: string;
 }

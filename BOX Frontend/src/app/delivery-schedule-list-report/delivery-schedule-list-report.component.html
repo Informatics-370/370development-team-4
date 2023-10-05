@@ -23,8 +23,8 @@
     <!--REPORT-->
     <div *ngIf="!loading && scheduleCount > 0">
       <div style="max-width: 90%; margin: auto; margin-left: 25px;">
-        <h4>Delivery Schedule List Report</h4>
-        <div style="text-align: right;">Generated on {{now | date:'ccc, d MMM yyyy' }} at {{now | date:'hh:mm:ss' }}
+        <h4>Order Delivery Schedule for {{now | date:'dd/MM/yyyy' }}</h4>
+        <div style="text-align: right;">Generated at {{now | date:'HH:mm:ss' }}
         </div>
       </div>
 
@@ -36,7 +36,7 @@
             </td>
           </tr>
           <tr>
-            <th scope="col">Order</th>
+            <th scope="col">Order ID</th>
             <th scope="col">Address</th>
             <th scope="col">QR Code</th>
             <th scope="col">Deliver</th>
@@ -44,10 +44,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let order of schedule">
-            <td>Order #{{order.orderID}}</td>
+            <td>Order {{order.orderID}}</td>
             <td>{{order.customerAddress}}</td>
             <td>
-              <button type="button" class="btn btn-create btn-table">Print QR Code</button>
+              <button type="button" class="btn btn-create btn-table" (click)="printQRCode(order.orderID)">Download</button>
             </td>
             <td>
               <button type="button" class="btn btn-create btn-table">Deliver Order</button>
