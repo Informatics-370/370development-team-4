@@ -78,6 +78,36 @@
   }
 }
 
+#codeEntryPrompt { margin-top: 1em; }
+
+.strongShake {
+  animation: strongShake 0.15s ease-in-out;
+  animation-iteration-count: 2;
+}
+
+@keyframes strongShake {
+  0%, 100% {
+    font-size: 1em;
+    /* transform: translate(0, 0) rotate(0deg); */
+  }
+  /* 25% {
+    font-size: 1.2em;
+    transform: translate(5px, 5px) rotate(5deg);
+  } */
+  50% {
+    font-size: 1.2em;
+    /* transform: translate(0, 0) rotate(0eg); */
+  }
+  /* 75% {
+    font-size: 1.2em;
+    transform: translate(-5px, 5px) rotate(-5deg);
+  } */
+  100% {
+    font-size: 1em;
+    /* transform: translate(0, 0) rotate(0deg); */
+  }
+}
+
 .download {
   background-color: white;
   border: 1px solid #32AF99;

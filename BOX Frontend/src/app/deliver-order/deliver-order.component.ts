@@ -29,6 +29,7 @@ export class DeliverOrderComponent implements AfterViewInit {
   finishedScan = false;
   error = false;
   submitted = false;
+  promptManual = false;
 
   //forms logic
   deliveryForm: FormGroup;
@@ -43,8 +44,9 @@ export class DeliverOrderComponent implements AfterViewInit {
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder, private activatedRoute: ActivatedRoute, 
     private authService: AuthService, private emailService: EmailService, private currencyPipe: CurrencyPipe,
-    private router: Router) {
+    private router: Router, private renderer2: Renderer2) {
     this.deliveryForm = this.formBuilder.group({
+      code: ['', Validators.required],
       deliveryType: ['', Validators.required],
       paymentType: ['', Validators.required],
       amount: ['', Validators.required],
@@ -151,7 +153,7 @@ export class DeliverOrderComponent implements AfterViewInit {
       // Timer to check if 2 minutes have passed since scanning started and call promptCodeEntry if it has
       const timeoutTimer = setInterval(() => {
         const currentTime = new Date().getTime();
-        if (qrCodeScanned || currentTime - startTime >= 120000) { // 2 minutes = 120000 milliseconds
+        if (qrCodeScanned || currentTime - startTime >= 10000) { // 2 minutes = 120000 milliseconds
           console.log('qrCodeScanned ' + qrCodeScanned + ' time passed in ms ' + (currentTime - startTime));
           clearInterval(timeoutTimer); // Clear the timer when QR code is scanned or 2 minutes have passed
           if (!qrCodeScanned) {
@@ -161,7 +163,7 @@ export class DeliverOrderComponent implements AfterViewInit {
             html5QrCode.stop(); // Stop the QR code scanner
           }
         }
-      }, 60000); // Check every 1 minute
+      }, 5000); // Check every 1 minute = 60000ms
 
       //what to do if scan is successful
       const onScanSuccess = (decodedText, decodedResult) => {
@@ -173,6 +175,8 @@ export class DeliverOrderComponent implements AfterViewInit {
         html5QrCode.stop().then(() => {
           this.isScanning = false;
           this.finishedScan = true;
+
+          //do something with scan result
         }).catch((err) => {
           // Handle stop error
         });
@@ -198,7 +202,6 @@ export class DeliverOrderComponent implements AfterViewInit {
         console.error(error);
         // Error accessing cameras, start scanning using front camera
         if (error instanceof DOMException && error.message === "Could not start video source") {
-          console.log(this.isScanning);
           html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, onScanFailure);
         }
         // error scanning; prompt code entry
@@ -217,8 +220,39 @@ export class DeliverOrderComponent implements AfterViewInit {
 
   promptCodeEntry() {
     this.isScanning = false;
-    //advice the user to type in code string
-    console.log("Please type in code found below QR Code");
+    console.log('We here man');
+    // Scroll to the #codeEntryPrompt div
+    document.getElementById("codeEntryPrompt")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest"
+    });
+
+    // Add the strongShake class to trigger the animation by setting variable
+    this.promptManual = true;
+
+    // Clear the strongShake class after the animation duration (0.3s)
+    setTimeout(() => {
+      this.promptManual = false;
+    }, 300);
+
+    const timeoutTimer = setInterval(() => {
+      // Scroll to the #codeEntryPrompt div
+      document.getElementById("codeEntryPrompt")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest"
+      });
+
+      // Add the strongShake class to trigger the animation by setting variable
+      this.promptManual = true;
+
+      // Clear the strongShake class after the animation duration (0.3s)
+      setTimeout(() => {
+        this.promptManual = false;
+      }, 300);
+
+    }, 5000); // Repeat every 1 minute
   }
 
   //------------------- DELIVER ORDER -------------------
@@ -355,4 +389,7 @@ export class DeliverOrderComponent implements AfterViewInit {
       }
     }
   }
+
+  get codeInput() { return this.deliveryForm.get('code'); }
+
 }
