@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, Renderer2 } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
@@ -9,8 +9,10 @@ import { OrderVM } from '../shared/order-vm';
 import { Users } from '../shared/user';
 import { OrderVMClass } from '../shared/order-vm-class';
 import { VAT } from '../shared/vat';
-import Swal from 'sweetalert2';
 import { CurrencyPipe } from '@angular/common';
+import { Html5Qrcode, QrcodeSuccessCallback } from "html5-qrcode";
+import { Html5QrcodeScanner } from "html5-qrcode";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-deliver-order',
@@ -18,12 +20,13 @@ import { CurrencyPipe } from '@angular/common';
   styleUrls: ['./deliver-order.component.css'],
   providers: [CurrencyPipe]
 })
-export class DeliverOrderComponent {
+export class DeliverOrderComponent implements AfterViewInit {
   code: string = '';
   order!: OrderVMClass;
 
   //messages to user
-  loading = true;
+  isScanning = false;
+  finishedScan = false;
   error = false;
   submitted = false;
 
@@ -42,9 +45,9 @@ export class DeliverOrderComponent {
     private authService: AuthService, private emailService: EmailService, private currencyPipe: CurrencyPipe,
     private router: Router) {
     this.deliveryForm = this.formBuilder.group({
-      deliveryType: [Validators.required],
-      paymentType: [Validators.required],
-      amount: [Validators.required],
+      deliveryType: ['', Validators.required],
+      paymentType: ['', Validators.required],
+      amount: ['', Validators.required],
       deliveryPhoto: ['', Validators.required],
     });
 
@@ -54,7 +57,7 @@ export class DeliverOrderComponent {
     this.deliveryForm.get('amount')?.disable();
   }
 
-  ngOnInit() {    
+  ngAfterViewInit() {    
     //Retrieve the code that leads to this order from url
     this.activatedRoute.paramMap.subscribe(params => {
       //get parameters from url
@@ -62,7 +65,7 @@ export class DeliverOrderComponent {
       if (codeFromURL) {
         this.code = codeFromURL;
         this.getDataFromDB(this.code);
-      }      
+      }
     });
   }
 
@@ -108,12 +111,10 @@ export class DeliverOrderComponent {
         deliveryType: this.order.deliveryType,
         amount: this.cashOnDelivery ? this.currencyPipe.transform((this.order.totalBeforeVAT * 0.8) + this.order.totalVAT, 'ZAR', 'R') : 0
       });
-      this.loading = false;
 
       console.log('order', this.order);
 
     } catch (error) {
-      this.loading = false;
       this.error = true;
       console.error('An error occurred:', error);
     }
@@ -135,6 +136,92 @@ export class DeliverOrderComponent {
     }
   }
 
+  //---------------------- SCAN QR CODE ----------------------
+  async startScan() {
+    if (!this.isScanning) {
+      this.isScanning = true;
+      this.finishedScan = false;
+      let qrCodeScanned = false;
+      const html5QrCode = new Html5Qrcode("scanner"); // Flag to indicate whether QR code is successfully scanned
+      const config = { fps: 20, qrbox: { width: 350, height: 350 } };
+
+      // Start timer when scanning starts
+      const startTime = new Date().getTime();
+
+      // Timer to check if 2 minutes have passed since scanning started and call promptCodeEntry if it has
+      const timeoutTimer = setInterval(() => {
+        const currentTime = new Date().getTime();
+        if (qrCodeScanned || currentTime - startTime >= 120000) { // 2 minutes = 120000 milliseconds
+          console.log('qrCodeScanned ' + qrCodeScanned + ' time passed in ms ' + (currentTime - startTime));
+          clearInterval(timeoutTimer); // Clear the timer when QR code is scanned or 2 minutes have passed
+          if (!qrCodeScanned) {
+            // QR code not scanned within 2 minutes, call promptCodeEntry
+            console.log('Bout to prompt code reentry. it\'s been too long');
+            this.promptCodeEntry();
+            html5QrCode.stop(); // Stop the QR code scanner
+          }
+        }
+      }, 60000); // Check every 1 minute
+
+      //what to do if scan is successful
+      const onScanSuccess = (decodedText, decodedResult) => {
+        console.log(`Code matched = ${decodedText}`, decodedResult);
+        qrCodeScanned = true; // Set the flag to indicate QR code is scanned
+        clearInterval(timeoutTimer); // Clear the timer when QR code is scanned
+
+        //stop scanner
+        html5QrCode.stop().then(() => {
+          this.isScanning = false;
+          this.finishedScan = true;
+        }).catch((err) => {
+          // Handle stop error
+        });
+      };
+    
+      //what to do if scan fails
+      const onScanFailure = (error) => { };
+  
+      try {
+        // Attempt to get available cameras
+        const devices = await Html5Qrcode.getCameras();
+  
+        if (devices && devices.length) {
+          const cameraId = devices[0].id;
+          // Start scanning using the selected camera
+          html5QrCode.start({ deviceId: { exact: cameraId} }, config, onScanSuccess, onScanFailure);
+        } else {
+          // No cameras available, start scanning using front camera
+          html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, onScanFailure);
+        }
+  
+      } catch (error) {
+        console.error(error);
+        // Error accessing cameras, start scanning using front camera
+        if (error instanceof DOMException && error.message === "Could not start video source") {
+          console.log(this.isScanning);
+          html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, onScanFailure);
+        }
+        // error scanning; prompt code entry
+        else {
+          console.error('Can\'t scan', error);
+          this.promptCodeEntry();
+        }
+      }
+    }
+  }
+
+  //delay action by a number of milliseconds using promise
+  delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  promptCodeEntry() {
+    this.isScanning = false;
+    //advice the user to type in code string
+    console.log("Please type in code found below QR Code");
+  }
+
+  //------------------- DELIVER ORDER -------------------
   //function to display image name since I decided to be fancy with a custom input button
   showImageName(event: Event): void {
     const inputElement = event.target as HTMLInputElement;

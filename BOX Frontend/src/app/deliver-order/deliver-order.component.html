@@ -5,46 +5,77 @@
   </div>
   <!--PAGE CONTENT-->
   <div class="col-md-9 page-content">
-    <h3 class="p-3" style="color: black;">Deliver / Collect Order #{{order == null ? '' : order.customerOrderID}}</h3>
+    <h3 class="p-3" style="color: black;">Deliver / Collect Order {{order == null ? '' : '#' + order.customerOrderID}}</h3>
 
     <hr class="hr hr-blurry m-3" />
-    <div class="messages p-3" *ngIf="error || loading">
-      <span *ngIf="loading">Loading order data</span>
+    <!--Messages to user-->
+    <div class="messages p-3" *ngIf="error">
       <span *ngIf="error">Error retrieving data. Please check the code.</span>
     </div>
 
-    <form [formGroup]="deliveryForm" *ngIf="!loading" class="p-3">
-      <div class="form-group">
-        <label for="deliveryType" class="form-label modal-form-label bold">Delivery type:</label>
-        <input id="deliveryType" type="text" formControlName="deliveryType" class="form-control modal-form-input modal-form-text">
-      </div>
-      
-      <div class="form-group">
-        <label for="paymentType" class="form-label modal-form-label bold">Payment type:</label>
-        <input id="paymentType" type="text" formControlName="paymentType" class="form-control modal-form-input modal-form-text">
-      </div>
-      
-      <div class="form-group" *ngIf="cashOnDelivery">
-        <label for="amount" class="form-label modal-form-label bold">Amount:</label>
-        <input id="amount" type="text" formControlName="amount" class="form-control modal-form-input modal-form-text">
+    <div *ngIf="!error" class="p-3">
+      <!--Holds QR Code scanner-->
+      <div id="scanner" class="scanner"></div>
+
+      <div class="scanner is-not-scanning" (click)="startScan()" *ngIf="!isScanning">
+        <!-- Scanning UI -->
+        <!-- Corner things -->
+        <div id="top-left" class="corner"></div>
+        <div id="top-right" class="corner"></div>
+        <div id="bottom-left" class="corner"></div>
+        <div id="bottom-right" class="corner"></div>
+
+        <!-- Show before scanning has started -->
+        <div id="tap-text" class="scan-text" *ngIf="!finishedScan">
+          <fa-icon class="large-text" [icon]="['fas', 'qrcode']"></fa-icon><br /> Click / Tap <br /> to scan
+        </div>
+
+        <!-- Finished Scan UI -->
+        <div id="finishedScan" class="scan-text" *ngIf="finishedScan">
+          <!--Apply animations to divs-->
+          <div id="finishedIcon">
+            <fa-icon class="large-text" [icon]="['fas', 'check-circle']"></fa-icon>
+          </div>Scan successful
+        </div>
       </div>
 
-      <div class="form-group" id="choose-img">
-        <div class="bold">Upload the delivery photo:</div>
-        <label class="form-label btn-create btn download">
-          <input id="deliveryPhoto" type="file" accept="image/*" formControlName="deliveryPhoto"
-            name="deliveryPhoto" style="display: none;" (change)="showImageName($event)" />
-          Upload file
-        </label>
-        <span id="imageName" class="imageName"> </span>
-        <span *ngIf="noFileSelected" class="imageName" style="color: #E33131;">No file selected. Please upload quote
-          from competitor.</span>
-        <span *ngIf="invalidFile" class="imageName" style="color: #E33131;">Invalid file type chosen. Only photos 
-          (.jpg, .png) are permitted.</span>
-      </div>
-      <div style="font-size: 90%;">Please ensure the customer's hands and order number are visible and legible in the photo.</div>
+      <form [formGroup]="deliveryForm" *ngIf="code != ''">
+        <div class="form-group">
+          <label for="deliveryType" class="form-label modal-form-label bold">Delivery type:</label>
+          <input id="deliveryType" type="text" formControlName="deliveryType"
+            class="form-control modal-form-input modal-form-text">
+        </div>
 
-      <button class="btn btn-create modal-form-submit" (click)="deliverOrder()" [disabled]="submitted">Complete order</button>
-    </form>
+        <div class="form-group">
+          <label for="paymentType" class="form-label modal-form-label bold">Payment type:</label>
+          <input id="paymentType" type="text" formControlName="paymentType"
+            class="form-control modal-form-input modal-form-text">
+        </div>
+
+        <div class="form-group" *ngIf="cashOnDelivery">
+          <label for="amount" class="form-label modal-form-label bold">Amount:</label>
+          <input id="amount" type="text" formControlName="amount" class="form-control modal-form-input modal-form-text">
+        </div>
+
+        <div class="form-group" id="choose-img">
+          <div class="bold">Upload the delivery photo:</div>
+          <label class="form-label btn-create btn download">
+            <input id="deliveryPhoto" type="file" accept="image/*" formControlName="deliveryPhoto" name="deliveryPhoto"
+              style="display: none;" (change)="showImageName($event)" />
+            Upload file
+          </label>
+          <span id="imageName" class="imageName"> </span>
+          <span *ngIf="noFileSelected" class="imageName" style="color: #E33131;">No file selected. Please upload quote
+            from competitor.</span>
+          <span *ngIf="invalidFile" class="imageName" style="color: #E33131;">Invalid file type chosen. Only photos
+            (.jpg, .png) are permitted.</span>
+        </div>
+        <div style="font-size: 90%;">Please ensure the customer's hands and order number are visible and legible in the photo.
+        </div>
+
+        <button class="btn btn-create modal-form-submit" (click)="deliverOrder()" [disabled]="submitted">Complete
+          order</button>
+      </form>
+    </div>
   </div>
 </div>

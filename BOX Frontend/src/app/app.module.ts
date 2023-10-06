@@ -74,7 +74,6 @@ import { DeliverOrderComponent } from './deliver-order/deliver-order.component';
 import { ReviewOrderComponent } from './customer-view/review-order/review-order.component';
 import { DeliveryScheduleListReportComponent } from './delivery-schedule-list-report/delivery-schedule-list-report.component';
 
-
 @NgModule({
   declarations: [ 
         AppComponent,

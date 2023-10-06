@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { AuthService } from '../services/auth.service';
 import { Users } from '../shared/user';
-import jsPDF from 'jspdf';
 import { DatePipe } from '@angular/common';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-delivery-schedule-list-report',

@@ -39,7 +39,6 @@
             <th scope="col">Order ID</th>
             <th scope="col">Address</th>
             <th scope="col">QR Code</th>
-            <th scope="col">Deliver</th>
           </tr>
         </thead>
         <tbody>
@@ -48,9 +47,6 @@
             <td>{{order.customerAddress}}</td>
             <td>
               <button type="button" class="btn btn-create btn-table" (click)="printQRCode(order.orderID)">Download</button>
-            </td>
-            <td>
-              <button type="button" class="btn btn-create btn-table">Deliver Order</button>
             </td>
           </tr>
         </tbody>
