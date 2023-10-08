@@ -26,8 +26,13 @@
         <div id="bottom-right" class="corner"></div>
 
         <!-- Show before scanning has started -->
-        <div id="tap-text" class="scan-text" *ngIf="!finishedScan">
-          <fa-icon class="large-text" [icon]="['fas', 'qrcode']"></fa-icon><br /> Click / Tap <br /> to scan
+        <div id="tap-text" class="scan-text" *ngIf="!finishedScan && !errorScan">
+          <fa-icon class="large-text" [icon]="['fas', 'qrcode']"></fa-icon><br /> Click / Tap <br /> to scan QR Code
+        </div>
+
+        <!-- Error scanning -->
+        <div id="error-text" class="scan-text" *ngIf="errorScan">
+          <fa-icon style="color: #E33131;" class="large-text" [icon]="['fas', 'circle-xmark']"></fa-icon><br /> Error <br /> scanning
         </div>
 
         <!-- Finished Scan UI -->

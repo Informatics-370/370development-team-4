@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
@@ -20,7 +20,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./deliver-order.component.css'],
   providers: [CurrencyPipe]
 })
-export class DeliverOrderComponent implements AfterViewInit {
+export class DeliverOrderComponent {
   code: string = '';
   order!: OrderVMClass;
 
@@ -30,6 +30,7 @@ export class DeliverOrderComponent implements AfterViewInit {
   error = false;
   submitted = false;
   promptManual = false;
+  errorScan = false;
 
   //forms logic
   deliveryForm: FormGroup;
@@ -59,7 +60,7 @@ export class DeliverOrderComponent implements AfterViewInit {
     this.deliveryForm.get('amount')?.disable();
   }
 
-  ngAfterViewInit() {    
+  ngOnInit() {    
     //Retrieve the code that leads to this order from url
     this.activatedRoute.paramMap.subscribe(params => {
       //get parameters from url
@@ -153,7 +154,7 @@ export class DeliverOrderComponent implements AfterViewInit {
       // Timer to check if 2 minutes have passed since scanning started and call promptCodeEntry if it has
       const timeoutTimer = setInterval(() => {
         const currentTime = new Date().getTime();
-        if (qrCodeScanned || currentTime - startTime >= 10000) { // 2 minutes = 120000 milliseconds
+        if (qrCodeScanned || currentTime - startTime >= 120000) { // 2 minutes = 120000 milliseconds
           console.log('qrCodeScanned ' + qrCodeScanned + ' time passed in ms ' + (currentTime - startTime));
           clearInterval(timeoutTimer); // Clear the timer when QR code is scanned or 2 minutes have passed
           if (!qrCodeScanned) {
@@ -163,7 +164,7 @@ export class DeliverOrderComponent implements AfterViewInit {
             html5QrCode.stop(); // Stop the QR code scanner
           }
         }
-      }, 5000); // Check every 1 minute = 60000ms
+      }, 60000); // Check every 1 minute = 60000ms
 
       //what to do if scan is successful
       const onScanSuccess = (decodedText, decodedResult) => {
@@ -207,6 +208,7 @@ export class DeliverOrderComponent implements AfterViewInit {
         // error scanning; prompt code entry
         else {
           console.error('Can\'t scan', error);
+          this.errorScan = true;
           this.promptCodeEntry();
         }
       }
@@ -218,9 +220,9 @@ export class DeliverOrderComponent implements AfterViewInit {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  //---------------------- SCAN QR CODE ----------------------
   promptCodeEntry() {
     this.isScanning = false;
-    console.log('We here man');
     // Scroll to the #codeEntryPrompt div
     document.getElementById("codeEntryPrompt")?.scrollIntoView({
       behavior: "smooth",
@@ -231,10 +233,10 @@ export class DeliverOrderComponent implements AfterViewInit {
     // Add the strongShake class to trigger the animation by setting variable
     this.promptManual = true;
 
-    // Clear the strongShake class after the animation duration (0.3s)
+    // Clear the strongShake class after the animation duration (1.8s)
     setTimeout(() => {
       this.promptManual = false;
-    }, 300);
+    }, 2000);
 
     const timeoutTimer = setInterval(() => {
       // Scroll to the #codeEntryPrompt div
@@ -247,12 +249,12 @@ export class DeliverOrderComponent implements AfterViewInit {
       // Add the strongShake class to trigger the animation by setting variable
       this.promptManual = true;
 
-      // Clear the strongShake class after the animation duration (0.3s)
+      // Clear the strongShake class after the animation duration (1.8s)
       setTimeout(() => {
         this.promptManual = false;
-      }, 300);
+      }, 2000); //animation is 1.8s long
 
-    }, 5000); // Repeat every 1 minute
+    }, 120000); // Repeat every 2 minutes
   }
 
   //------------------- DELIVER ORDER -------------------

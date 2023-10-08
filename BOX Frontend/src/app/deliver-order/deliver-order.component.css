@@ -81,6 +81,40 @@
 #codeEntryPrompt { margin-top: 1em; }
 
 .strongShake {
+  animation: enlarge 200ms forwards, shake 1000ms 300ms forwards, shrink 200ms 1600ms forwards;
+} /*1800ms total*/
+
+@keyframes enlarge {
+  0% {
+    font-size: 1em;
+  }
+  100% {
+    font-size: 1.2em;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  15%, 45%, 75% {
+    transform: translate(-5px, -5px) rotate(-5deg);
+  }
+  30%, 60%, 90% {
+    transform: translate(5px, 5px) rotate(5deg);
+  }
+}
+
+@keyframes shrink {
+  0%, 100% {
+    font-size: 1.2em;
+  }
+  100% {
+    font-size: 1em;
+  }
+}
+
+/* .strongShake {
   animation: strongShake 0.15s ease-in-out;
   animation-iteration-count: 2;
 }
@@ -89,24 +123,24 @@
   0%, 100% {
     font-size: 1em;
     /* transform: translate(0, 0) rotate(0deg); */
-  }
+  /* }
   /* 25% {
     font-size: 1.2em;
     transform: translate(5px, 5px) rotate(5deg);
-  } */
-  50% {
+  }
+  /* 50% {
     font-size: 1.2em;
     /* transform: translate(0, 0) rotate(0eg); */
-  }
+  /* }
   /* 75% {
     font-size: 1.2em;
     transform: translate(-5px, 5px) rotate(-5deg);
   } */
-  100% {
+  /* 100% {
     font-size: 1em;
     /* transform: translate(0, 0) rotate(0deg); */
-  }
-}
+  /* }
+} */
 
 .download {
   background-color: white;
