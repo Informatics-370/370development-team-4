@@ -1,4 +1,4 @@
-import { Component, Renderer2 } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { DataService } from '../services/data.services';
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
@@ -20,7 +20,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./deliver-order.component.css'],
   providers: [CurrencyPipe]
 })
-export class DeliverOrderComponent {
+export class DeliverOrderComponent implements AfterViewInit {
   code: string = '';
   order!: OrderVMClass;
 
@@ -45,7 +45,7 @@ export class DeliverOrderComponent {
 
   constructor(private dataService: DataService, private formBuilder: FormBuilder, private activatedRoute: ActivatedRoute, 
     private authService: AuthService, private emailService: EmailService, private currencyPipe: CurrencyPipe,
-    private router: Router, private renderer2: Renderer2) {
+    private router: Router) {
     this.deliveryForm = this.formBuilder.group({
       code: ['', Validators.required],
       deliveryType: ['', Validators.required],
@@ -60,7 +60,7 @@ export class DeliverOrderComponent {
     this.deliveryForm.get('amount')?.disable();
   }
 
-  ngOnInit() {    
+  ngAfterViewInit() {    
     //Retrieve the code that leads to this order from url
     this.activatedRoute.paramMap.subscribe(params => {
       //get parameters from url
@@ -178,6 +178,7 @@ export class DeliverOrderComponent {
           this.finishedScan = true;
 
           //do something with scan result
+          this.captureCode(decodedText);
         }).catch((err) => {
           // Handle stop error
         });
@@ -215,12 +216,7 @@ export class DeliverOrderComponent {
     }
   }
 
-  //delay action by a number of milliseconds using promise
-  delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  //---------------------- SCAN QR CODE ----------------------
+  //---------------------- PROMPT USER TO ENTER CODE MANUALLY ----------------------
   promptCodeEntry() {
     this.isScanning = false;
     // Scroll to the #codeEntryPrompt div
@@ -255,6 +251,26 @@ export class DeliverOrderComponent {
       }, 2000); //animation is 1.8s long
 
     }, 120000); // Repeat every 2 minutes
+  }
+
+  //------------------- CAPTURE CODE -------------------
+  captureCode(capturedCode?: string) {
+    this.delay(1000); //wait for finished scanning animation to end
+
+    if (capturedCode) {
+      this.code = capturedCode;
+    }
+    else {
+      this.code = this.codeInput?.value;
+    }
+
+    console.log(this.code);
+    location.href += '/' + this.code;
+  }
+
+  //delay action by a number of milliseconds using promise
+  delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   //------------------- DELIVER ORDER -------------------

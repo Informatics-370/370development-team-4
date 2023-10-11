@@ -61,6 +61,13 @@
 
           <label for="delivery" class="form-label modal-form-label">
             <input id="delivery" type="radio" name="deliveryType" formControlName="deliveryType" value="Delivery">Delivery
+            <!--Tooltip-->
+            <button class="tooltip-icon">
+              <fa-icon [icon]="['fas', 'question']"></fa-icon>
+              <span id="delivery-tooltip" class="tooltip-text">
+                Deliveries are free. We try to deliver within 24 hours of order placement. Orders outside Gauteng will be couriered at the customer's expense.
+              </span>
+            </button>
           </label><br />
 
           <div style="margin-bottom: 0.5em;" class="form-group" *ngIf="deliveryType?.value == 'Delivery'">
@@ -85,6 +92,13 @@
 
           <label for="cash" class="form-label modal-form-label">
             <input id="cash" type="radio" name="paymentType" formControlName="paymentType" value="Cash on delivery">Cash on delivery / collection
+            <!--Tooltip-->
+            <button class="tooltip-icon">
+              <fa-icon [icon]="['fas', 'question']"></fa-icon>
+              <span id="deposit-tooltip" class="tooltip-text">
+                You must still pay 20% of the order total as a deposit.
+              </span>
+            </button>
           </label><br />
 
           <label for="credit" class="form-label modal-form-label" [ngClass]="{'text-red': !creditAllowed}">
@@ -162,8 +176,7 @@
         <li>Buying on credit will cause the order total to be deducted from your credit balance.</li>
         <li>You still need to pay the deposit if you choose cash on collection / delivery as your payment type. You'll be required to pay the 20% deposit using our payment gateway and the remaining 80% when you receive your order.</li>
         <li>Pay immediately means paying for the order completely right now.</li>
-        <li>Deliveries are free. We try to deliver within 24 hours of order placement. Orders outside Gauteng will be couriered.</li>
-        <!-- <li>Cash on collection / delivery is not available for orders that must be delivered outside Gauteng.</li> -->
+        <li>Deliveries are free. We try to deliver within 24 hours of order placement. Orders outside Gauteng will be couriered at the customer's expense.</li>
         <li><strong>Do not change your address until after your order is delivered</strong> because deliveries are always made to your account address. Changing the shipping address on this page will, thus, change your address.</li>
         <li>Within 7 days of order delivery / collection, you can request a return on any item in your order. Mega Pack will contact you to ensure the item is in good condition and determine how to refund you. Credit refunds cannot be redeemed as cash.</li>
         <li>No refunds on custom products.</li>

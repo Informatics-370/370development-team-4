@@ -65,16 +65,27 @@
 }
 
 /*Current progress bar step*/
-.active-step { box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; }
+.active-step {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
 
-.active-step .progress-counter { font-weight: 600; font-size: 1em; }
+.active-step .progress-counter {
+    font-weight: 600;
+    font-size: 1em;
+}
 
 /*Completed progress bar step */
-.complete { background-color: #32AF99; }
+.complete {
+    background-color: #32AF99;
+}
 
-.complete .progress-counter { display: none; }
+.complete .progress-counter {
+    display: none;
+}
 
-.complete .progress-check { display: flex; }
+.complete .progress-check {
+    display: flex;
+}
 
 .step-complete {
     width: 0%;
@@ -85,11 +96,18 @@
 }
 
 @keyframes progressBar {
-    0% { width: 0; }
-    100% { width: 100%; }
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 100%;
+    }
 }
 
-.text-red { color: #E33131;}
+.text-red {
+    color: #E33131;
+}
 
 .tab {
     padding: 1.5em;
@@ -119,39 +137,60 @@ input[type='radio'] {
     background-color: #32AF99;
 }
 
-.btn-order:hover, .btn-order:active { background-color: #2a9783;}
+.btn-order:hover,
+.btn-order:active {
+    background-color: #2a9783;
+}
 
-.btn-next { background-color: #e7a427; }
+.btn-next {
+    background-color: #e7a427;
+}
 
-.btn-next:hover, .btn-next:active { background-color: #d59724;}
+.btn-next:hover,
+.btn-next:active {
+    background-color: #d59724;
+}
 
-.btn-red { background-color: #E33131; }
+.btn-red {
+    background-color: #E33131;
+}
 
-.btn-red:hover, .btn-red:active { background-color: #a92626; }
+.btn-red:hover,
+.btn-red:active {
+    background-color: #a92626;
+}
 
-.light-bold {font-weight: 600;}
+.light-bold {
+    font-weight: 600;
+}
 
-#tfoot tr td { border: none; }
+#tfoot tr td {
+    border: none;
+}
 
 /*Responsive progress bar*/
 @media (max-width: 768px) {
-    #progress-container { width: 100%; }
+    #progress-container {
+        width: 100%;
+    }
 
-    .progress-label {font-size: 0.9em;}
+    .progress-label {
+        font-size: 0.9em;
+    }
 }
 
 /* INVOICE */
 #invoice-container {
-    width: 90%; 
-    padding: 1rem; 
-    margin: auto; 
+    width: 90%;
+    padding: 1rem;
+    margin: auto;
     font-family: Tahoma, Arial, Helvetica, sans-serif;
     opacity: 0;
     position: absolute;
     top: 0;
-  }
-  
-  .invoice-block {
+}
+
+.invoice-block {
     width: 48%;
     display: inline-block;
     margin: 1rem;
@@ -160,41 +199,83 @@ input[type='radio'] {
     background-color: white;
     border: 1px solid black;
     font-weight: 450;
-  }
-  
-  .small-block { height: 32vh; }
-  
-  .right { float: right; margin: 1rem 0; }
-  .text-right { text-align: right; }
-  .text-left { text-align: left; }
-  .full { width: 100%; }
-  .half { width: 40%; display: inline-block; }
-  .fit { width: fit-content;}
-  
-  #invoice-lines thead th {
+}
+
+.small-block {
+    height: 32vh;
+}
+
+.right {
+    float: right;
+    margin: 1rem 0;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.full {
+    width: 100%;
+}
+
+.half {
+    width: 40%;
+    display: inline-block;
+}
+
+.fit {
+    width: fit-content;
+}
+
+#invoice-lines thead th {
     border-bottom: 1px solid black;
-  }
-  
-  #invoice-lines tbody tr td {
+}
+
+#invoice-lines tbody tr td {
     padding: 0.25em 0.5em;
-  }
-  
-  .footer-block { height: 25vh; }
-  
-  .footer-table { display: inline-block; }
-  
-  .footer-table tr td {
+}
+
+.footer-block {
+    height: 25vh;
+}
+
+.footer-table {
+    display: inline-block;
+}
+
+.footer-table tr td {
     padding-right: 0.75rem;
     padding-bottom: 0.5em;
     width: fit-content;
-  }
-  
-  #invoice-totals { width: 100%; text-align: right; }
-  
-  #invoice-totals tr td {
+}
+
+#invoice-totals {
+    width: 100%;
+    text-align: right;
+}
+
+#invoice-totals tr td {
     padding: 0.25em 0.75rem;
-  }
-  
-  #invoice-totals tr td:first-child {
+}
+
+#invoice-totals tr td:first-child {
     border-right: 1px solid black;
-  }
+}
+
+/* TOOLTIPS */
+#deposit-tooltip {
+    top: -70%;
+    left: 100%;
+    margin-left: 5px;
+}
+
+#delivery-tooltip {
+    top: -140%;
+    left: 120%;
+    margin-left: 5px;
+    width: 200px;
+}

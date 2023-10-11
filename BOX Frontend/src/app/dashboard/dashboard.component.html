@@ -6,7 +6,8 @@
     <!-- Dashboard -->
     <div class="col-md-9">
         <div class="text-center pt-3 pb-3">
-            <h3 style="color: #000000;">Hello, {{user.firstName}} {{user.lastName}} </h3>
+            <!--Changed the code below to get rid of the constant error messages in the console-->
+            <h3 style="color: #000000;">Hello, {{ user == null ? '' : user.firstName + ' ' + user.lastName }} </h3>
         </div>
         <!-- First Row -->
         <div class="container">
@@ -252,7 +253,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;"
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;"
                         [routerLink]="'/delivery-schedule'">
                         <div class="card-body text-center">
                             <fa-icon class="fa-icon-large" [icon]="['fas', 'truck-field']"></fa-icon>
@@ -261,7 +262,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #31AF99;"
+                    <div class="card" data-clickable="true" style="width: 18rem; background-color: #AF9931;"
                         [routerLink]="'/order-calendar'">
                         <div class="card-body text-center">
                             <fa-icon class="fa-icon-large" [icon]="['fas', 'calendar']"></fa-icon>

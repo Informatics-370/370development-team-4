@@ -199,7 +199,9 @@
                     </div>
 
                     <div class="form-submit-div">
-                        <button class="btn btn-create modal-form-submit" (click)="addFixedProduct()">Add New Product</button>
+                        <button class="btn btn-create modal-form-submit" (click)="addFixedProduct()" [disabled]="processing">
+                            Add New Product <span *ngIf="processing" class="loader"></span>
+                        </button>
                     </div>
 
                 </form>
@@ -315,7 +317,9 @@
             </div>
 
             <div class="form-submit-div">
-                <button class="btn btn-create modal-form-submit" (click)="updateFixedProduct()" >Save Changes</button>
+                <button class="btn btn-create modal-form-submit" (click)="updateFixedProduct()" [disabled]="processing">
+                    Save changes <span *ngIf="processing" class="loader"></span>
+                </button>
             </div>
           </form>
         </div>

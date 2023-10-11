@@ -14,52 +14,58 @@
     </div>
 
     <div *ngIf="!error" class="p-3">
-      <!--Holds QR Code scanner-->
-      <div id="scanner" class="scanner"></div>
-
-      <div class="scanner is-not-scanning" (click)="startScan()" *ngIf="!isScanning">
-        <!-- Scanning UI -->
-        <!-- Corner things -->
-        <div id="top-left" class="corner"></div>
-        <div id="top-right" class="corner"></div>
-        <div id="bottom-left" class="corner"></div>
-        <div id="bottom-right" class="corner"></div>
-
-        <!-- Show before scanning has started -->
-        <div id="tap-text" class="scan-text" *ngIf="!finishedScan && !errorScan">
-          <fa-icon class="large-text" [icon]="['fas', 'qrcode']"></fa-icon><br /> Click / Tap <br /> to scan QR Code
-        </div>
-
-        <!-- Error scanning -->
-        <div id="error-text" class="scan-text" *ngIf="errorScan">
-          <fa-icon style="color: #E33131;" class="large-text" [icon]="['fas', 'circle-xmark']"></fa-icon><br /> Error <br /> scanning
-        </div>
-
-        <!-- Finished Scan UI -->
-        <div id="finishedScan" class="scan-text" *ngIf="finishedScan">
-          <!--Apply animations to divs-->
-          <div id="finishedIcon">
-            <fa-icon class="large-text" [icon]="['fas', 'check-circle']"></fa-icon>
-          </div>Scan successful
+      <div *ngIf="code == ''">
+        <!--Holds QR Code scanner-->
+        <div id="scanner" class="scanner"></div>
+      
+        <div class="scanner is-not-scanning" (click)="startScan()" *ngIf="!isScanning">
+          <!-- Scanning UI -->
+          <!-- Corner things -->
+          <div id="top-left" class="corner"></div>
+          <div id="top-right" class="corner"></div>
+          <div id="bottom-left" class="corner"></div>
+          <div id="bottom-right" class="corner"></div>
+      
+          <!-- Show before scanning has started -->
+          <div id="tap-text" class="scan-text" *ngIf="!finishedScan && !errorScan">
+            <fa-icon class="large-text" [icon]="['fas', 'qrcode']"></fa-icon><br /> Click / Tap <br /> to scan QR Code
+          </div>
+      
+          <!-- Error scanning -->
+          <div id="error-text" class="scan-text" *ngIf="errorScan">
+            <fa-icon style="color: #E33131;" class="large-text" [icon]="['fas', 'circle-xmark']"></fa-icon><br /> Error
+            scanning
+            <br /> Enter code manually
+          </div>
+      
+          <!-- Finished Scan UI -->
+          <div id="finishedScan" class="scan-text" *ngIf="finishedScan">
+            <!--Apply animations to divs-->
+            <div id="finishedIcon">
+              <fa-icon class="large-text" [icon]="['fas', 'check-circle']"></fa-icon>
+            </div>Scan successful
+          </div>
         </div>
       </div>
 
       <form [formGroup]="deliveryForm">
         <!--Enter code section-->
-        <div class="form-group">
-          <div id="codeEntryPrompt" [ngClass]="{'strongShake': promptManual}">
-            <label for="code" class="form-label modal-form-label bold">Enter alphanumericcode that appears below QR Code:</label>
+        <div *ngIf="code == ''">
+          <div class="form-group">
+            <div id="codeEntryPrompt" [ngClass]="{'strongShake': promptManual}">
+              <label for="code" class="form-label modal-form-label bold">Enter alphanumericcode that appears below QR Code:</label>
+            </div>
+            <input id="code" type="text" formControlName="code" minlength="13" maxlength="20"
+              class="form-control modal-form-input modal-form-text">
+            
+              <!--Display validation error message-->
+            <div *ngIf="(codeInput?.dirty || codeInput?.touched) && codeInput?.errors?.['required']" class="error-msg">
+              The code should have between 13 and 20 characters.
+            </div>
           </div>
-          <input id="code" type="text" formControlName="code" minlength="13" maxlength="20"
-            class="form-control modal-form-input modal-form-text">
-          
-            <!--Display validation error message-->
-          <div *ngIf="(codeInput?.dirty || codeInput?.touched) && codeInput?.errors?.['required']" class="error-msg">
-            This field is should have between 13 and 20 characters.
-          </div>
+  
+          <button id="submitCode" class="btn btn-create modal-form-submit" (click)="captureCode()" >Submit code</button>
         </div>
-
-        <button class="btn btn-create modal-form-submit" *ngIf="code == ''">Submit</button>
 
         <div *ngIf="code != ''">
           <div class="form-group">

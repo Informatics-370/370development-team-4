@@ -40,6 +40,7 @@ export class FixedProductComponent {
   public selectedCatValueUpdate = '';
   public selectedItemValueUpdate = '';
   public selectedSizeValueUpdate = '';
+  processing = false;
 
   //search functionality
   searchTerm: string = '';
@@ -132,7 +133,7 @@ export class FixedProductComponent {
 
     this.fixedProducts.forEach(currentProduct => {
       let sizeString: string = ''; //reset string
-// we instantiate the current product variable. By using a foreach loop, we go through each fixed product, eventually we will get to a certain ID
+      // we instantiate the current product variable. By using a foreach loop, we go through each fixed product, eventually we will get to a certain ID
       //get item description
       this.items.forEach(currentItem => {
         if (currentItem.itemID == currentProduct.itemID) {
@@ -158,10 +159,10 @@ export class FixedProductComponent {
           let sizeAsArr = Object.entries(currentSize).filter(([key, value]) => {
             return typeof value === 'number' && value > 0 && key !== 'categoryID' && key !== 'sizeID';
           });
-    
+
           //concatenate the sizes into a string joined by 'x' '150x150x150'
           sizeString = sizeAsArr.map(([key, value]) => value).join('x');
-    
+
           //if it's empty, N/A
           if (sizeString.trim() === '') {
             sizeString = 'N/A';
@@ -253,12 +254,14 @@ export class FixedProductComponent {
     this.submitClicked = true;
     if (this.addProductForm.valid) {
       try {
+        this.processing = true;
         //get form data
         const formData = this.addProductForm.value;
 
         //prevent user from creating multiple products with same description
         if (this.checkDuplicateDescription(formData.description)) {
           this.duplicateFound = true;
+          this.processing = false;
           setTimeout(() => {
             this.duplicateFound = false;
           }, 5000);
@@ -286,6 +289,7 @@ export class FixedProductComponent {
               console.log('New product successfully created!', result);
 
               this.getProductsPromise(); //refresh only product list excluding item, category, etc.
+              this.processing = false;
 
               $('#addFixedProduct').modal('hide');
 
@@ -309,6 +313,7 @@ export class FixedProductComponent {
         }
       }
       catch (error) {
+        this.processing = false;
         console.log('Error submitting form', error)
       }
     }
@@ -354,12 +359,12 @@ export class FixedProductComponent {
       imageNameSpan.appendChild(removeBtn);
     }
     else {
-      imageElement.src ='';
+      imageElement.src = '';
       imageElement.alt = 'No image found for this product.';
       imageNameSpan.innerHTML = '';
     }
 
-    $('#updateFixedProduct').modal('show');    
+    $('#updateFixedProduct').modal('show');
   }
 
   //update product
@@ -367,12 +372,14 @@ export class FixedProductComponent {
     this.submitClicked = true;
     if (this.updateProductForm.valid) {
       try {
+        this.processing = true;
         //get form data
         const formData = this.updateProductForm.value;
 
         //prevent user from creating multiple products with same description
         if (this.checkDuplicateDescription(formData.uDescription, this.selectedProduct.fixedProductID)) {
           this.duplicateFoundUpdate = true;
+          this.processing = false;
           setTimeout(() => {
             this.duplicateFoundUpdate = false;
           }, 8000);
@@ -381,7 +388,7 @@ export class FixedProductComponent {
           //get image
           let productImgB64 = this.selectedProduct.productPhoto;
           var formImage;
-          if (this.changedImage) { 
+          if (this.changedImage) {
             //form data makes the image a string with a fake url which I can't convert to B64 so I must get the actual value of the file input      
             const inputElement = document.getElementById('uProductPhoto') as HTMLInputElement;
             formImage = inputElement.files?.[0];
@@ -389,7 +396,7 @@ export class FixedProductComponent {
           }
 
           //put form data in VM
-          let updatedProduct : FixedProductVM = {
+          let updatedProduct: FixedProductVM = {
             fixedProductID: this.selectedProduct.fixedProductID,
             qrCodeID: 0,
             qrCodeBytesB64: '',
@@ -409,6 +416,7 @@ export class FixedProductComponent {
               this.getProductsPromise(); //refresh products list
               //reset form (kind of)
               this.changedImage = false;
+              this.processing = false;
               this.submitClicked = false;
               $('#updateFixedProduct').modal('hide');
             }
@@ -416,6 +424,7 @@ export class FixedProductComponent {
         }
       }
       catch (error) {
+        this.processing = false;
         console.log('Error submitting form', error)
       }
     }
@@ -434,7 +443,7 @@ export class FixedProductComponent {
         this.getProductsPromise(); //refresh products
         $('#deleteFixedProduct').modal('hide');
       }
-    );    
+    );
   }
 
   //--------------------------------------------------------MULTI-PURPOSE METHODS--------------------------------------------------------
@@ -451,12 +460,12 @@ export class FixedProductComponent {
       this.sizeID?.setValue('NA');
     }
     else if (crudAction == 'update') {  //update modal
-      index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValueUpdate));      
+      index = this.categories.findIndex(cat => cat.categoryID === parseInt(this.selectedCatValueUpdate));
       //reset values for size and item dropdowns in case user had already selected something
       this.uSizeID?.setValue("NA");
       this.uItemID?.setValue('NA');
     }
-    
+
     let cat = this.categories[index];
 
     //populate product item dropdown
@@ -475,10 +484,10 @@ export class FixedProductComponent {
         let sizeAsArray = Object.entries(this.sizes[i]).filter(([key, value]) => {
           return typeof value === 'number' && value > 0 && key !== 'categoryID' && key !== 'sizeID';
         });
-  
+
         //concatenate the sizes into a string joined by 'x' '150x150x150'
         sizeStr = sizeAsArray.map(([key, value]) => value).join('x');
-  
+
         //if it's empty, N/A
         if (sizeStr.trim() === '') {
           sizeStr = 'N/A';
@@ -501,7 +510,7 @@ export class FixedProductComponent {
   changedItem(selected: any, crudAction: string) {
     //set description input value for add/update form modal
     if (crudAction == 'add')
-    this.description?.setValue(selected.target[selected.target.selectedIndex].text);
+      this.description?.setValue(selected.target[selected.target.selectedIndex].text);
     else
       this.uDescription?.setValue(selected.target[selected.target.selectedIndex].text);
   }
@@ -513,7 +522,7 @@ export class FixedProductComponent {
     else
       this.uDescription?.setValue(this.uDescription.value + ' ' + selected.target[selected.target.selectedIndex].text);
   }
-  
+
   //function to display image name since I decided to be fancy with a custom input button
   showImageName(event: Event, crudAction: string): void {
     const inputElement = event.target as HTMLInputElement;
@@ -571,7 +580,7 @@ export class FixedProductComponent {
     //get image element, name span and file input from add/update form modal
     let imageElement: HTMLImageElement;
     let imageName: HTMLSpanElement;
-    let imageInput : HTMLInputElement;
+    let imageInput: HTMLInputElement;
 
     if (crudAction == 'add') {
       imageInput = document.getElementById('productPhoto') as HTMLInputElement;

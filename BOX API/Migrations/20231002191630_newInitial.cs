@@ -927,7 +927,7 @@ namespace BOX.Migrations
                 {
                     CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     isBusiness = table.Column<bool>(type: "bit", nullable: false),
                     vatNo = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     creditLimit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
@@ -947,8 +947,7 @@ namespace BOX.Migrations
                         name: "FK_Customer_Employee_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employee",
-                        principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "EmployeeId");
                 });
 
             migrationBuilder.CreateTable(

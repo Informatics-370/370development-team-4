@@ -349,7 +349,7 @@ export class ProductDetailsComponent {
         this.total = this.sizeDropdownArray[this.selectedSizeIndex].price * qtyInputValue; //set product total
       } */
     }
-    else if (qtyInputValue == 0) {
+    else if (qtyInputValue < 1) {
       this.addToCartForm.get("qty")?.setValue(1);
       this.invalidQty = true;
 
