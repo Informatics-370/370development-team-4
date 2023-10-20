@@ -4,14 +4,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { take, lastValueFrom } from 'rxjs';
 declare var $: any;
 import { OrderVM } from "../shared/order-vm";
-import { OrderLineVM } from '../shared/order-line-vm';
 import { OrderVMClass } from '../shared/order-vm-class';
 import { VAT } from '../shared/vat';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-customer-orders',
   templateUrl: './customer-orders.component.html',
-  styleUrls: ['./customer-orders.component.css']
+  styleUrls: ['./customer-orders.component.css'],
+  providers: [DatePipe]
 })
 export class CustomerOrdersComponent {
   orders: OrderVMClass[] = []; //hold all orders
@@ -38,7 +39,7 @@ export class CustomerOrdersComponent {
   2	In progress
   */
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private datePipe: DatePipe) { }
 
   ngOnInit() {
     this.getDataFromDB();
@@ -177,5 +178,9 @@ export class CustomerOrdersComponent {
     let applicableVAT = this.getApplicableVAT(order.date); //get vat applicable to that date
     this.selectedOrder = new OrderVMClass(order, orderlinesClass, applicableVAT);
     console.log('Order before showing', this.selectedOrder);
+  }
+
+  dateToString(date: Date) {
+    return this.datePipe.transform(date, 'd MMM yyyy HH:mm')
   }
 }

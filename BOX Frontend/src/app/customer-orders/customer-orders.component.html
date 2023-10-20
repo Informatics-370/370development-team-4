@@ -66,14 +66,46 @@
 
       <!--BODY-->
       <div class="modal-body">
-        <span class="bold">Customer: </span>{{selectedOrder.customerFullName}}<br />
-        <span class="bold">Status: </span>{{selectedOrder.orderStatusDescription}}<br />
-        <span class="bold">Date: </span>{{selectedOrder.date | date:'d MMM yyyy HH:mm' }}<br />
-        <span class="bold">Delivery date: </span>{{selectedOrder.orderStatusID != 5 ? 'Not yet scheduled for delivery' : selectedOrder.deliveryDate.toDateString() }} <br />
+        <div id="order-details">
+          <span id="left">
+            <table>
+              <tr>
+                <td class="bold">Customer:</td>
+                <td>{{selectedOrder.customerFullName}}</td>
+              </tr>
+              <tr>
+                <td class="bold">Status:</td>
+                <td>{{selectedOrder.orderStatusDescription}}</td>
+              </tr>
+              <tr>
+                <td class="bold">Date:</td>
+                <td>{{selectedOrder.date | date:'d MMM yyyy HH:mm' }}</td>
+              </tr>
+            </table>
+          </span>
+          <span id="right">
+            <div style="display: flex; justify-content: end;">
+              <table>
+                <tr>
+                  <td class="bold">Payment type:</td>
+                  <td>{{selectedOrder.paymentType}}</td>
+                </tr>
+                <tr>
+                  <td class="bold">Delivery type:</td>
+                  <td>{{selectedOrder.deliveryType}}</td>
+                </tr>
+                <tr>
+                  <td class="bold">Delivery date:</td>
+                  <td>{{selectedOrder.orderStatusID < 5 ? 'Not yet scheduled for delivery' : dateToString(selectedOrder.deliveryDate) }}</td>
+                </tr>
+              </table>
+            </div>
+          </span>
+        </div>
         <div *ngIf="selectedOrder.orderStatusID == 7">
-          <span class="bold">Photo of delivery: </span>
-        <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{selectedOrder.deliveryPhoto}}"
-          alt='Not yet delivered' />
+          <span class="bold">Photo of delivery: </span><br/>
+          <img id="view-qrCode" class="view-photo" src="data:image/png;base64,{{selectedOrder.deliveryPhoto}}"
+            alt='Not yet delivered' />
         </div>
 
         <!--Order details-->
@@ -106,19 +138,19 @@
 
         <table class="totals">
           <tr>
-            <td class="totals-label" style="padding-top: 0.5rem;">Subtotal:</td>
-            <td class="totals-qty">{{selectedOrder.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+            <td class="totals-label">Subtotal:</td>
+            <td class="text-center">{{selectedOrder.totalBeforeVAT | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr class="light-bold">
-            <td class="totals-label" style="padding-top: 0.5rem;">VAT:</td>
-            <td class="totals-qty">+{{selectedOrder.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
+            <td class="totals-label">VAT:</td>
+            <td class="text-center">+{{selectedOrder.totalVAT | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
           <tr class="total-divider">
             <td colspan="2"></td>
           </tr>
           <tr class="bold">
             <td class="totals-label">Total:</td>
-            <td class="totals-qty">{{selectedOrder.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
+            <td class="text-center">{{selectedOrder.getTotalAfterVAT() | currency: 'ZAR':'symbol-narrow'}}</td>
           </tr>
         </table>
 

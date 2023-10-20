@@ -8,9 +8,14 @@
     height: auto;
     max-height: 25%;
     margin-top: 10px;
-    margin-left: 30px;
 }
 
 input[type='checkbox'] {
     border-color: #41A0B5;
 }
+
+#left, #right { width: 50%; display: inline-block; }
+
+#right { text-align: right; float: right; }
+
+.totals tr td { padding-top: 0.5rem; }
