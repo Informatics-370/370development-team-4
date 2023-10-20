@@ -140,7 +140,10 @@ export class DeliveryScheduleListReportComponent {
           ctx.font = '35px Verdana';
           ctx.fillStyle = '#000000';
           ctx.textAlign = 'center';
-          ctx.fillText(order ? order.code : 'No code', canvas.width / 2, qrCodeImage.height - 20);
+          if (order) {
+            ctx.fillText('Order ' + order.orderID, canvas.width / 2, qrCodeImage.height - 20);
+            ctx.fillText(order.code, canvas.width / 2, qrCodeImage.height);
+          }
 
           // Convert canvas to data URL representing a PNG image
           var dataURL = canvas.toDataURL('image/png');

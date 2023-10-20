@@ -86,23 +86,60 @@
           </div>
   
           <div class="form-group" id="choose-img">
-            <div class="bold">Upload the delivery photo:</div>
-            <label class="form-label btn-create btn download">
-              <input id="deliveryPhoto" type="file" accept="image/*" formControlName="deliveryPhoto" name="deliveryPhoto"
-                style="display: none;" (change)="showImageName($event)" />
-              Upload file
-            </label>
-            <span id="imageName" class="imageName"> </span>
-            <span *ngIf="noFileSelected" class="imageName" style="color: #E33131;">No file selected. Please upload quote
-              from competitor.</span>
-            <span *ngIf="invalidFile" class="imageName" style="color: #E33131;">Invalid file type chosen. Only photos
-              (.jpg, .png) are permitted.</span>
-          </div>
-          <div style="font-size: 90%;">Please ensure the customer's hands and order number are visible and legible in the photo.
+            <div class="bold">Upload delivery photo:
+              <!--Tooltip-->
+              <button class="tooltip-icon">
+                <fa-icon [icon]="['fas', 'question']"></fa-icon>
+                <span class="tooltip-text">
+                  Please ensure the customer's hands and order number are visible and legible in the photo.<br/>
+                  <div class="tooltip-example">
+                    Example 1:
+                    <img class="tooltip-img" src="../../assets/correct.png" alt="Image of customer's hand holding delivery" />
+                    <div class="example-icon">
+                      <fa-icon [icon]="['fas', 'check']"></fa-icon>
+                    </div>
+                  </div>
+
+                  <div class="tooltip-example">
+                    Example 2:
+                    <img class="tooltip-img" src="../../assets/correct full.png" alt="Image of customer holding delivery" />
+                    <div class="example-icon">
+                      <fa-icon [icon]="['fas', 'check']"></fa-icon>
+                    </div>
+                  </div>
+
+                  <div class="tooltip-example">
+                    Example 3:
+                    <img class="tooltip-img" src="../../assets/wrong.png" alt="Image of customer holding delivery" />
+                    <div class="example-icon" style="background-color: #E33131;">
+                      <fa-icon [icon]="['fas', 'x']"></fa-icon>
+                    </div>
+                  </div>
+
+                </span>
+                <span class="tooltip-arrow"></span>
+              </button>
+            </div>
+
+            <div class="form-group" id="choose-img" class="display-photo">
+              <div>
+                <img id="display-img" src="{{deliverySrc}}" alt="{{deliveryAlt}}" class="view-photo" />
+              </div>
+              <label class="form-label btn-create btn download">
+                <input id="deliveryPhoto" type="file" accept="image/*" formControlName="deliveryPhoto" name="deliveryPhoto"
+                  style="display: none;" (change)="showImageName($event)" />
+                Upload file
+              </label>
+              <span id="imageName" class="imageName"> </span>
+              <span *ngIf="noFileSelected" class="imageName" style="color: #E33131;">No image selected. Please upload image.</span>
+              <span *ngIf="invalidFile" class="imageName" style="color: #E33131;">Invalid file type chosen. Only photos
+                (.jpg, .png) are permitted.</span>
+            </div>
+            
           </div>
   
           <button class="btn btn-create modal-form-submit" (click)="deliverOrder()" [disabled]="submitted">Complete
-            order</button>
+            order <span *ngIf="submitted" class="loader"></span></button>
         </div>
       </form>
     </div>

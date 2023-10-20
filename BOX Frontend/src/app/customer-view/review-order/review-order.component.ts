@@ -43,11 +43,30 @@ export class ReviewOrderComponent {
   }
 
   getOrder(code: string) {
-    this.dataService.GetOrderByCode(code).subscribe((result) => {
-      this.order = result;
-      this.checkIfReviewed(this.order);
+    this.dataService.GetOrderByCode(code).subscribe({
+      next: (result) => {
+        this.order = result;
+        this.checkIfReviewed(this.order);
+        console.log('Order to review:', this.order);
+      },
+      error: (error) => {
+        console.error(error);
+        this.preventReview('Oops..', 'Error retrieving order from the database. Please check that your link is not broken.');
+      }
+    });
+  }
 
-      console.log('Order to review:', this.order);
+  preventReview(title: string, html: string) {
+    //error message
+    Swal.fire({
+      icon: 'error',
+      title: title,
+      html: html,
+      timer: 8000,
+      timerProgressBar: true,
+      confirmButtonColor: '#32AF99'
+    }).then((result) => {
+      this.router.navigate(['order-history']);
     });
   }
 
@@ -72,6 +91,7 @@ export class ReviewOrderComponent {
           console.log('reviewed', this.review);
         });
       } catch (error) {
+        this.preventReview('Oh no', 'Something went wrong and we could not retrieve this review from the database. Don\'t worry, you\'ve already reviewed this order.')
         console.error(error);
       }
     }

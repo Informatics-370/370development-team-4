@@ -269,7 +269,7 @@ input[type='radio'] {
 /* TOOLTIPS */
 #deposit-tooltip {
     top: -70%;
-    left: 100%;
+    left: 120%;
     margin-left: 5px;
 }
 

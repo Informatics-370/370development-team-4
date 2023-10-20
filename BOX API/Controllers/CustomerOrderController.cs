@@ -630,7 +630,7 @@ namespace BOX.Controllers
         //generate alphanumeric code
         public string GenerateAlphanumericCode(Customer_Order[] existingOrders)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; //define character set
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //define character set
             Random random = new Random();
             string newCode;
 

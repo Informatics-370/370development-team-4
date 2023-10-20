@@ -194,20 +194,26 @@
 .tooltip-text a { color: white; }
 
 /* Tooltip arrow */
-.tooltip-icon .tooltip-text::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: -8px;
-  
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent #434343 transparent transparent;
-}
+.tooltip-icon .tooltip-arrow {
+    visibility: hidden;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 19px;
+    z-index: 100;
+    
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #434343 transparent transparent;
+  }
 
 /*Show tooltip*/
 .tooltip-icon:hover .tooltip-text, .tooltip-icon:active .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-icon:hover .tooltip-arrow, .tooltip-icon:active .tooltip-arrow {
   visibility: visible;
   opacity: 1;
 }

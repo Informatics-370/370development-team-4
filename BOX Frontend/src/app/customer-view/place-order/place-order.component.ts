@@ -202,6 +202,8 @@ export class PlaceOrderComponent {
       //check if customer can buy on credit
       this.creditAllowed = this.checkCredit();
     } catch (error) {
+      //error message
+      this.preventOrder('Oops...', 'Error retrieving prices from the database. You might have a broken link. Go back to your Quotes page and try accepting again.');
       console.error('An error occurred:', error);
     }
   }

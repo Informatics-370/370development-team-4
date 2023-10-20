@@ -35,8 +35,12 @@ export class DeliverOrderComponent implements AfterViewInit {
   //forms logic
   deliveryForm: FormGroup;
   cashOnDelivery = false;
+
+  //delivery photo
   noFileSelected = true;
   invalidFile = false;
+  deliverySrc = '';
+  deliveryAlt = '';
 
   //user data
   driver!: Users;
@@ -279,6 +283,7 @@ export class DeliverOrderComponent implements AfterViewInit {
     const inputElement = event.target as HTMLInputElement;
     const chosenFile = inputElement.files?.[0];
     let imageName = document.getElementById('imageName') as HTMLSpanElement;
+
     //create button to remove an uploaded pic
     let removeBtn: HTMLButtonElement = document.createElement('button');
     removeBtn.classList.add('remove-pic');
@@ -294,6 +299,14 @@ export class DeliverOrderComponent implements AfterViewInit {
         imageName.appendChild(removeBtn);
         this.noFileSelected = false;
         this.invalidFile = false;
+
+        //display image
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.deliverySrc = e.target?.result as string; // Set the src attribute of the image element
+        };
+        reader.readAsDataURL(chosenFile);
+        this.deliveryAlt = 'Could not display' + chosenFile.name;
       }
       else {
         imageName.style.display = 'none';
@@ -394,6 +407,7 @@ export class DeliverOrderComponent implements AfterViewInit {
 
         });
       } catch (error) {
+        this.submitted = false;
         Swal.fire({
           icon: 'error',
           title: "Oops..",
