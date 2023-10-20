@@ -42,18 +42,33 @@
             </div>
             <div class="flex-space-between" style="align-items: start;">
               <span class="date">{{order.date | date:'ccc, d MMM yyyy'}}</span>
-              <span class="light-bold" style="line-height: 0.9em;">{{order.orderStatusDescription}}</span>
+              <span class="light-bold" style="line-height: 0.9em;"
+                [ngClass]="{'placed': order.orderStatusID == 1 || order.orderStatusID == 7, 'in-progress': order.orderStatusID == 2 || (order.orderStatusID > 3 && order.orderStatusID < 7), 'cancelled': order.orderStatusID == 3}">
+                {{order.orderStatusDescription}}
+              </span>
+            </div>
+            <hr class="footer-divider pb-2" style="margin: 0;">
+            <div class="flex-space-between" style="align-items: start;">
+              <span class="date">Payment type:</span>
+              <span class="date">Delivery type:</span>
+            </div>
+            <div class="flex-space-between" style="align-items: start;">
+              <span class="light-bold" style="line-height: 0.9em;">{{order.paymentType}}</span>
+              <span class="light-bold" style="line-height: 0.9em;">{{order.deliveryType}}</span>
+            </div>
+            <div *ngIf="order.orderStatusID == 7" style="text-align: right;">
+              <span class="date">Delivered: {{order.deliveryDate | date:'d/MM/yyyy'}}</span>
             </div>
           </div>
           <!--Body-->
           <div class="quote-details">
-            <div class="quote-line row"  *ngFor="let orderLine of order.orderLines">
+            <div class="quote-line row" *ngFor="let orderLine of order.orderLines">
               <div class="product-img-container col-4">
                 <img class="product-img" src="data:image/png;base64,{{orderLine.productFileB64}}" alt="" />
               </div>
               <div class="col-8">
                 <span class="light-bold">{{orderLine.productDescription}}</span><br />
-                <span>Status: <span class="light-bold" [ngClass]="{'placed': orderLine.statusID == 1, 'in-progress': orderLine.statusID == 2}">
+                <span *ngIf="order.orderStatusID < 3">Status: <span class="light-bold" [ngClass]="{'placed': orderLine.statusID == 1, 'in-progress': orderLine.statusID == 2}">
                   {{orderLine.statusDescription}}</span>
                 </span>
 
@@ -91,6 +106,10 @@
             <!-- status 1 = placed and 2 = in progress-->
             <div class="buttons" style="margin: auto;" *ngIf="order.orderStatusID == 1 || order.orderStatusID == 2">
               <button class="btn btn-reject" (click)="warnCustomer(order.customerOrderID)">Cancel order</button>
+            </div>
+            
+            <div *ngIf="order.orderStatusID == 7 && order.reviewID == 0" class="buttons"><!-- Order is not reviewed -->
+              Help us improve by <button class="review-order" (click)="reviewOrder(order.code)">reviewing this order</button>.
             </div>
           </div>
         </div>

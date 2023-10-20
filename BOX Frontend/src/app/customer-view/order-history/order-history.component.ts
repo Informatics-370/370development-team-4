@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Route, Router } from '@angular/router';
 import { DataService } from '../../services/data.services';
 import { AuthService } from '../../services/auth.service';
 import { OrderVM } from '../../shared/order-vm';
@@ -34,12 +35,13 @@ export class OrderHistoryComponent {
   1 Placed
   2 In progress
   3 Cancelled
-  4 Ready for delivery
-  5 Out for delivery
-  6 Completed
+  4 Ready for delivery / collection
+  5 Scheduled for delivery
+  6 Out for delivery
+  7 Completed
   */
 
-  constructor(private dataService: DataService, private authService: AuthService) { }
+  constructor(private dataService: DataService, private authService: AuthService, private router: Router) { }
   
   ngOnInit(): void {
     //get customer ID
@@ -169,6 +171,7 @@ export class OrderHistoryComponent {
     console.log('Search results:', this.filteredOrders);
   }
 
+  //------------------- CANCEL ORDER -------------------
   warnCustomer(orderId: number) {
     //notify them of how cancellation works and their deposit
     //warn user
@@ -201,5 +204,10 @@ export class OrderHistoryComponent {
     } catch (error) {
       console.error('Error updating status: ', error);
     }
+  }
+
+  //------------------- REVIEW ORDER -------------------
+  reviewOrder(code: string) {
+    this.router.navigate(['review-order/' + code]);
   }
 }

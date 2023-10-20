@@ -10,3 +10,14 @@
 .placed { color: #32AF99; }
 
 .in-progress { color: #e7a427;}
+
+.cancelled { color: #E33131; }
+
+.buttons .review-order {
+    background-color: white;
+    color: black;
+    text-decoration: underline;
+    padding: 0;
+    margin: 0;
+    font-size: 1em;
+}
